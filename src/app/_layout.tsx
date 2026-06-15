@@ -3,15 +3,19 @@ import { ThemeProvider } from "../core/theme/ThemeContext";
 import '../global.css';
 import { SQLiteProvider } from "expo-sqlite";
 import { initializeDatabase } from "../core/database/schema";
+import { Provider } from "react-redux";
+import { store } from "../core/store/store";
 
 export default function RootLayout() {
   return (
-    <SQLiteProvider databaseName="ledgerlite.db" onInit={initializeDatabase}>
-      <ThemeProvider>
-        <Stack>
-          <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-        </Stack>
-      </ThemeProvider>
-    </SQLiteProvider>
+    <Provider store={store}>
+      <SQLiteProvider databaseName="ledgerlite.db" onInit={initializeDatabase}>
+        <ThemeProvider>
+          <Stack>
+            <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+          </Stack>
+        </ThemeProvider>
+      </SQLiteProvider>
+    </Provider>
   );
 }
