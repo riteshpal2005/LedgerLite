@@ -3,6 +3,7 @@ import { Modal, View, Text, TextInput, Pressable } from "react-native";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
 import { addExpense as addExpenseToRedux } from "../../../core/store/expenseSlice";
 import { useDispatch } from "react-redux";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 interface AddExpenseModalProps {
   isVisible: boolean;
@@ -12,6 +13,9 @@ interface AddExpenseModalProps {
 export default function AddExpenseModal({ isVisible, onClose }: AddExpenseModalProps) {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
+  const [merchant, setMerchant] = useState('');
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -22,9 +26,10 @@ export default function AddExpenseModal({ isVisible, onClose }: AddExpenseModalP
     const newExpense = {
       amount: parseFloat(amount),
       description: description,
-      date: Date.now(),
+      date: date.getTime(),
       type: 'debit' as const,
-      categoryId: 1
+      categoryId: 1,
+      merchant: merchant
     };
 
     await addExpense(newExpense);
@@ -33,6 +38,8 @@ export default function AddExpenseModal({ isVisible, onClose }: AddExpenseModalP
 
     setAmount('');
     setDescription('');
+    setMerchant('');
+    setDate(new Date());
     onClose();
   };
 
@@ -70,7 +77,34 @@ export default function AddExpenseModal({ isVisible, onClose }: AddExpenseModalP
               placeholderTextColor='#52525b'
               className='text-white text-lg font-semibold'
             />
+            <Text className='text-zinc-400 text-sm mb-2'>Merchant</Text>
+            <TextInput
+              value={merchant}
+              onChangeText={setMerchant}
+              placeholder='e.g. Zomato,. etc.'
+              placeholderTextColor='#52525b'
+              className='text-white text-lg font-semibold'
+            />
           </View>
+          <View className="bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800">
+            <Text className="text-zinc-400 text-sm mb-2">Date</Text>
+            <Pressable
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text className="text-white text-lg font-semibold">{date.toLocaleDateString()}</Text>
+            </Pressable>
+          </View>
+          {showDatePicker && (
+            <DateTimePicker
+              value={date}
+              mode='date'
+              display="default"
+              onChange={(event, selectedDate) => {
+                setShowDatePicker(false);
+                if (selectedDate) setDate(selectedDate);
+              }}
+            />
+          )}
           <Pressable
             onPress={handleSave}
             className='bg-blue-600 rounded-xl p-4'

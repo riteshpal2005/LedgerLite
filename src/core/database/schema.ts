@@ -10,6 +10,7 @@ export interface Expense {
   date: number;
   type: TransactionType;
   categoryId: number;
+  merchant?: string;
 }
 
 export interface Category {
@@ -35,11 +36,13 @@ export const CREATE_EXPENSES_TABLE = `
     description TEXT,
     date INTEGER NOT NULL,
     categoryId INTEGER NOT NULL,
-    type TEXT NOT NULL
+    type TEXT NOT NULL,
+    merchant TEXT
   );
 `;
 
 export async function initializeDatabase(db: SQLiteDatabase) {
+  // await db.execAsync(`DROP TABLE IF EXISTS expenses;`);
   await db.execAsync(CREATE_CATEGORIES_TABLE);
   await db.execAsync(CREATE_EXPENSES_TABLE);
 }

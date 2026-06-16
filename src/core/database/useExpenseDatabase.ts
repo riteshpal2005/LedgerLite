@@ -10,7 +10,7 @@ export function useExpenseDatabase() {
   }
 
   const addExpense = async (expense: Omit<Expense, 'id'>) => {
-    const result = await db.runAsync('INSERT INTO expenses (amount, description, date, categoryId, type) VALUES (?, ?, ?, ?, ?)', [expense.amount, expense.description, expense.date, expense.categoryId, expense.type]);
+    const result = await db.runAsync('INSERT INTO expenses (amount, description, date, categoryId, type, merchant) VALUES (?, ?, ?, ?, ?, ?)', [expense.amount, expense.description, expense.date, expense.categoryId, expense.type, expense.merchant || null]);
     return result.lastInsertRowId;
   };
 
