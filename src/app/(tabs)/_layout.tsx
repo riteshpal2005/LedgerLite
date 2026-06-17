@@ -37,7 +37,7 @@ export default function TabLayout() {
         name='index'
         options={{
           title: 'Expenses',
-          tabBarIcon: ({ color }: { color: string }) => <Ionicons name='home' size={24} color={color} />
+          tabBarIcon: ({ color }: { color: string }) => <Ionicons name='cash-outline' size={24} color={color} />
         }}
       />
       <MaterialTabs.Screen

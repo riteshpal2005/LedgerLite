@@ -1,5 +1,5 @@
 import { useSQLiteContext } from "expo-sqlite";
-import { Expense } from "./schema";
+import { Expense, Category } from "./schema";
 
 export function useExpenseDatabase() {
   const db = useSQLiteContext();
@@ -16,12 +16,17 @@ export function useExpenseDatabase() {
     return result?.total || 0;
   };
 
+  const getAllCategories = async () => {
+    const result = await db.getAllAsync<Category>('SELECT * FROM categories');
+    return result;
+  };
+
   const addExpense = async (expense: Omit<Expense, 'id'>) => {
     const result = await db.runAsync('INSERT INTO expenses (amount, description, date, categoryId, type, merchant) VALUES (?, ?, ?, ?, ?, ?)', [expense.amount, expense.description, expense.date, expense.categoryId, expense.type, expense.merchant || null]);
     return result.lastInsertRowId;
   };
 
-  return { addExpense, getAllExpenses, getTotalSpent };
+  return { addExpense, getAllExpenses, getTotalSpent, getAllCategories };
 }
 
 
