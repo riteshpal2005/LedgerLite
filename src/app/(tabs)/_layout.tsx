@@ -1,40 +1,59 @@
-import { Tabs } from "expo-router";
 import { Ionicons } from '@expo/vector-icons';
+import { withLayoutContext } from "expo-router";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const { Navigator } = createMaterialTopTabNavigator();
+
+const MaterialTabs = withLayoutContext(Navigator);
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
   return (
-    <Tabs
+    <MaterialTabs
+      tabBarPosition='bottom'
       screenOptions={{
-        headerShown: false,
+        swipeEnabled: true,
         tabBarStyle: {
-          backgroundColor: '#09090b',
+          backgroundColor: '#18181b',
           borderTopWidth: 0,
+          height: 60 + insets.bottom,
+          paddingBottom: insets.bottom,
         },
         tabBarActiveTintColor: '#2563eb',
-        tabBarInactiveTintColor: '#52525b'
+        tabBarInactiveTintColor: '#52525b',
+        tabBarIndicatorStyle: {
+          backgroundColor: '#2563eb',
+          height: 3,
+        },
+        tabBarShowIcon: true,
+        tabBarLabelStyle: {
+          fontSize: 10,
+          fontWeight: 'bold'
+        },
       }}
     >
-      <Tabs.Screen
+      <MaterialTabs.Screen
         name='index'
         options={{
           title: 'Expenses',
-          tabBarIcon: ({ color }) => <Ionicons name='home' size={24} color={color} />
+          tabBarIcon: ({ color }: { color: string }) => <Ionicons name='home' size={24} color={color} />
         }}
       />
-      <Tabs.Screen
+      <MaterialTabs.Screen
         name='analytics'
         options={{
           title: 'Analytics',
-          tabBarIcon: ({ color }) => <Ionicons name='pie-chart' size={24} color={color} />
+          tabBarIcon: ({ color }: { color: string }) => <Ionicons name='pie-chart' size={24} color={color} />
         }}
       />
-      <Tabs.Screen
+      <MaterialTabs.Screen
         name='settings'
         options={{
           title: 'Settings',
-          tabBarIcon: ({ color }) => <Ionicons name='settings' size={24} color={color} />
+          tabBarIcon: ({ color }: { color: string }) => <Ionicons name='settings' size={24} color={color} />
         }}
       />
-    </Tabs>
+    </MaterialTabs>
   )
 }

@@ -10,7 +10,7 @@ export default function Home() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <View className='flex-1 bg-zinc-950 p-6 pt-20'>
+    <View className='flex-1 bg-zinc-950 p-6 pt-12'>
       <ExpenseList />
       <Pressable
         onPress={() => setIsModalVisible(true)}
