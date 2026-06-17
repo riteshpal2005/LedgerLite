@@ -13,7 +13,10 @@ export default function RootLayout() {
       <SQLiteProvider databaseName="ledgerlite.db" onInit={initializeDatabase}>
         <ThemeProvider>
           <StatusBar style="light" />
-          <Stack screenOptions={{ headerShown: false }} />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name='(tabs)' />
+            <Stack.Screen name='add-expense' options={{ presentation: 'modal' }} />
+          </Stack>
         </ThemeProvider>
       </SQLiteProvider>
     </Provider>
