@@ -12,7 +12,7 @@ export default function SettingsScreen() {
         <PreferencesSection />
         <AccountsSection />
         <DataManagementSection />
-        <View className="h-12" /> {/* Bottom padding */}
+        <View className="h-12" />
       </ScrollView>
     </View>
   );

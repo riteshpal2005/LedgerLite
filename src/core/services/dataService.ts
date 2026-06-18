@@ -76,3 +76,22 @@ export const importData = async (): Promise<Expense[] | null> => {
     return null;
   }
 };
+
+export const exportSettingsJSON = async (settingsData: any) => {
+  try {
+    const jsonString = JSON.stringify(settingsData, null, 2);
+    const filename = `LedgerLite_Settings_${Date.now()}.json`;
+    const fileUri = FileSystem.cacheDirectory + filename;
+
+    await FileSystem.writeAsStringAsync(fileUri, jsonString, {
+      encoding: 'utf8'
+    });
+
+    await Sharing.shareAsync(fileUri, {
+      mimeType: 'application/json',
+      dialogTitle: 'Export LedgerLite Settings'
+    });
+  } catch (error) {
+    console.error("Settings Export Error: ", error);
+  }
+};
