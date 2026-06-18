@@ -2,19 +2,25 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import * as XLSX from 'xlsx';
-import { Expense } from '../database/schema';
+import { Expense, Account, Category } from '../database/schema';
 
-export const exportData = async (expenses: Expense[], format: 'csv' | 'xlsx') => {
+export const exportData = async (expenses: Expense[], accounts: Account[], categories: Category[], format: 'csv' | 'xlsx') => {
   try {
-    const formattedData = expenses.map(e => ({
-      Amount: e.amount,
-      Description: e.description,
-      Merchant: e.merchant || '',
-      Date: new Date(e.date).toLocaleDateString(),
-      Time: new Date(e.date).toLocaleTimeString(),
-      Type: e.type,
-      CategoryId: e.categoryId
-    }));
+    const formattedData = expenses.map(e => {
+      const account = accounts.find(a => a.id === e.accountId);
+      const category = categories.find(c => c.id === e.categoryId);
+      return {
+        Date: new Date(e.date).toLocaleDateString(),
+        Time: new Date(e.date).toLocaleTimeString(),
+        Type: e.type === 'credit' ? 'Income' : 'Expense',
+        Category: category ? category.name : 'Unknown',
+        Amount: e.amount,
+        Description: e.description,
+        Merchant: e.merchant || '',
+        AccountName: account ? account.name : 'Unassigned',
+        AccountType: account ? account.type : 'N/A'
+      };
+    });
 
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();

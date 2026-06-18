@@ -23,13 +23,15 @@ export function DataManagementSection() {
   const handleExportExcel = async () => {
     const expenses = await getAllExpenses();
     if (expenses.length === 0) return Alert.alert("No Data", "There are no expenses to export.");
-    await exportData(expenses, 'xlsx');
+    const state = store.getState();
+    await exportData(expenses, state.accounts.accounts, state.categories.categories, 'xlsx');
   };
 
   const handleExportCSV = async () => {
     const expenses = await getAllExpenses();
     if (expenses.length === 0) return Alert.alert("No Data", "There are no expenses to export.");
-    await exportData(expenses, 'csv');
+    const state = store.getState();
+    await exportData(expenses, state.accounts.accounts, state.categories.categories, 'csv');
   };
 
   const handleImport = async () => {
