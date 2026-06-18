@@ -1,9 +1,12 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
+import * as Print from 'expo-print';
 import * as XLSX from 'xlsx';
 import { Expense, Account, Category } from '../database/schema';
 import { Platform } from 'react-native';
+
+export type ExportColumn = 'Date' | 'Time' | 'Type' | 'Category' | 'Amount' | 'Description' | 'Merchant' | 'Account';
 
 export const exportData = async (
   expenses: Expense[], 
@@ -22,7 +25,7 @@ export const exportData = async (
         Time: new Date(e.date).toLocaleTimeString().replace(/\u202F/g, ' '),
         Type: e.type === 'credit' ? 'Income' : 'Expense',
         Category: category ? category.name : 'Unknown',
-        Amount: e.amount,
+        Amount: `₹${e.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         Description: e.description,
         Merchant: e.merchant || '',
         AccountName: account ? account.name : 'Unassigned',
@@ -168,3 +171,126 @@ export const exportSettingsJSON = async (settingsData: any) => {
     console.error("Settings Export Error: ", error);
   }
 };
+
+export const exportToPDF = async (
+  expenses: Expense[], 
+  accounts: Account[], 
+  categories: Category[], 
+  selectedColumns: ExportColumn[],
+  action: 'save' | 'share' = 'share',
+  savedDirectoryUri?: string | null
+): Promise<string | undefined> => {
+  try {
+    const escapeHTML = (str: any) => {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    };
+
+    const formattedData = expenses.map(e => {
+      const account = accounts.find(a => a.id === e.accountId);
+      const category = categories.find(c => c.id === e.categoryId);
+      return {
+        Date: new Date(e.date).toLocaleDateString().replace(/\u202F/g, ' '),
+        Time: new Date(e.date).toLocaleTimeString().replace(/\u202F/g, ' '),
+        Type: e.type === 'credit' ? 'Income' : 'Expense',
+        Category: category ? category.name : 'Unknown',
+        Amount: `₹${e.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        Description: e.description,
+        Merchant: e.merchant || '',
+        Account: account ? account.name : 'Unassigned'
+      };
+    });
+
+    const thHeaders = selectedColumns.map(col => `<th>${escapeHTML(col)}</th>`).join('');
+    const trRows = formattedData.map(row => {
+      const tdCells = selectedColumns.map(col => `<td>${escapeHTML((row as any)[col])}</td>`).join('');
+      return `<tr>${tdCells}</tr>`;
+    }).join('');
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            h1 { text-align: center; color: #333; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+            th { background-color: #eee; }
+          </style>
+        </head>
+        <body>
+          <h1>LedgerLite Report</h1>
+          <table>
+            <thead><tr>${thHeaders}</tr></thead>
+            <tbody>${trRows}</tbody>
+          </table>
+        </body>
+      </html>
+    `;
+
+    const { uri } = await Print.printToFileAsync({ 
+      html,
+      width: 612, // US Letter width in points
+      height: 792 // US Letter height in points
+    });
+    
+    // Wait 1.5s to absolutely guarantee the Android OS has flushed the PDF disk buffer
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const filename = `LedgerLite_Report_${Date.now()}.pdf`;
+    const mimeType = 'application/pdf';
+
+    if (action === 'save' && Platform.OS === 'android') {
+      const fileBase64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
+      let targetDirUri = savedDirectoryUri || undefined;
+
+      if (!targetDirUri) {
+        const initialUri = 'content://com.android.externalstorage.documents/tree/primary%3ADocuments';
+        const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(initialUri);
+        
+        if (permissions.granted) {
+          targetDirUri = permissions.directoryUri;
+          if (!decodeURIComponent(targetDirUri).endsWith('LedgerLite')) {
+            let folderCreatedOrFound = false;
+            try {
+              const files = await FileSystem.StorageAccessFramework.readDirectoryAsync(permissions.directoryUri);
+              const existingLedgerLite = files.find(f => decodeURIComponent(f).endsWith('/LedgerLite') || decodeURIComponent(f).endsWith(':LedgerLite'));
+              if (existingLedgerLite) {
+                targetDirUri = existingLedgerLite;
+                folderCreatedOrFound = true;
+              }
+            } catch (e) {}
+
+            if (!folderCreatedOrFound) {
+              try { targetDirUri = await FileSystem.StorageAccessFramework.makeDirectoryAsync(permissions.directoryUri, 'LedgerLite'); } catch (e) {}
+            }
+          }
+        }
+      }
+
+      if (targetDirUri) {
+        try {
+          const safUri = await FileSystem.StorageAccessFramework.createFileAsync(targetDirUri, filename, mimeType);
+          await FileSystem.writeAsStringAsync(safUri, fileBase64, { encoding: 'base64' });
+          return targetDirUri;
+        } catch (e) {
+          console.log("PDF save failed", e);
+        }
+      }
+    }
+
+    // iOS or Share Flow (Just share the URI generated directly by expo-print)
+    await Sharing.shareAsync(uri, { mimeType, dialogTitle: 'Export PDF' });
+    return undefined;
+
+  } catch (error) {
+    console.error("PDF Export Error: ", error);
+    return undefined;
+  }
+}

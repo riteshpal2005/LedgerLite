@@ -37,7 +37,7 @@ export function ExportActionRow({ iconName, title, iconColor, onSave, onShare, i
             className="flex-row items-center p-3 border-b border-bordercolor"
           >
             <Ionicons name="save-outline" size={18} color="#10b981" />
-            <Text className="text-primary font-semibold ml-3">Download / Save</Text>
+            <Text className="text-primary font-semibold ml-3">Save</Text>
           </Pressable>
           <Pressable 
             onPress={() => {
