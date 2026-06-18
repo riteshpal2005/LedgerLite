@@ -48,52 +48,52 @@ export function AddAccountModal({ visible, onClose }: AddAccountModalProps) {
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
         <Pressable className="flex-1 bg-black/60 justify-end" onPress={onClose}>
-          <Pressable className="bg-[#09090b] p-6 rounded-t-[32px] border-t border-zinc-800 shadow-2xl" onPress={(e) => e.stopPropagation()}>
+          <Pressable className="bg-[#09090b] p-6 rounded-t-[32px] border-t border-bordercolor shadow-2xl" onPress={(e) => e.stopPropagation()}>
             
             {/* Drag Indicator */}
             <View className="w-12 h-1.5 bg-[#52525b] rounded-full self-center mb-6" />
 
             <View className="flex-row justify-between items-center mb-6">
-            <Text className="text-2xl font-bold text-white">Add Account</Text>
+            <Text className="text-2xl font-bold text-primary">Add Account</Text>
             <Pressable onPress={onClose}>
               <Text className="text-blue-500 font-bold text-lg">Cancel</Text>
             </Pressable>
           </View>
 
-          <View className='bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800'>
-            <Text className='text-zinc-400 text-sm mb-2'>Account Name</Text>
+          <View className='bg-surface rounded-2xl p-4 mb-4 border border-bordercolor'>
+            <Text className='text-secondary text-sm mb-2'>Account Name</Text>
             <TextInput
               value={name}
               onChangeText={setName}
               placeholder="e.g., Chase Checking"
               placeholderTextColor="#52525b"
-              className="text-white text-xl font-semibold"
+              className="text-primary text-xl font-semibold"
             />
           </View>
 
-          <View className='bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800'>
-            <Text className='text-zinc-400 text-sm mb-2'>Initial Balance (₹)</Text>
+          <View className='bg-surface rounded-2xl p-4 mb-4 border border-bordercolor'>
+            <Text className='text-secondary text-sm mb-2'>Initial Balance (₹)</Text>
             <TextInput
               value={balance}
               onChangeText={setBalance}
               placeholder="0.00"
               placeholderTextColor="#52525b"
               keyboardType="numeric"
-              className="text-white text-xl font-semibold"
+              className="text-primary text-xl font-semibold"
             />
           </View>
 
-          <Text className='text-zinc-400 text-sm mb-2 ml-1'>Account Type</Text>
+          <Text className='text-secondary text-sm mb-2 ml-1'>Account Type</Text>
           <View className="flex-row gap-2 mb-8">
             {['Cash', 'Bank', 'Credit Card'].map((t) => (
               <Pressable
                 key={t}
                 onPress={() => setType(t as any)}
                 className={`flex-1 p-3 rounded-xl border ${
-                  type === t ? 'bg-blue-600 border-blue-500' : 'bg-zinc-900 border-zinc-800'
+                  type === t ? 'bg-blue-600 border-blue-500' : 'bg-surface border-bordercolor'
                 }`}
               >
-                <Text className={`text-center font-bold ${type === t ? 'text-white' : 'text-zinc-400'}`}>
+                <Text className={`text-center font-bold ${type === t ? 'text-primary' : 'text-secondary'}`}>
                   {t}
                 </Text>
               </Pressable>
@@ -101,7 +101,7 @@ export function AddAccountModal({ visible, onClose }: AddAccountModalProps) {
           </View>
 
             <Pressable onPress={handleSave} className='bg-blue-600 rounded-xl p-4 mt-2 mb-8'>
-              <Text className='text-white font-bold text-center text-lg'>Create Account</Text>
+              <Text className='text-primary font-bold text-center text-lg'>Create Account</Text>
             </Pressable>
           </Pressable>
         </Pressable>

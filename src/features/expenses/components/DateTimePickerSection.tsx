@@ -55,14 +55,14 @@ export function DateTimePickerSection({ date, setDate }: DateTimePickerSectionPr
     <>
       <View className="flex-row gap-4 mb-4">
         {/* Ref: DateTimePickerSection-6 */}
-        <View className="flex-1 bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
-          <Text className="text-zinc-400 text-sm mb-2">Date</Text>
-          <View className="flex-row items-center justify-between border-b border-zinc-800 pb-1">
+        <View className="flex-1 bg-surface rounded-2xl p-4 border border-bordercolor">
+          <Text className="text-secondary text-sm mb-2">Date</Text>
+          <View className="flex-row items-center justify-between border-b border-bordercolor pb-1">
             <BottomSheetTextInput
               value={dateStr}
               onChangeText={setDateStr}
               onBlur={handleDateBlur}
-              className="text-white text-lg font-semibold flex-1 mr-2"
+              className="text-primary text-lg font-semibold flex-1 mr-2"
               placeholder="MM/DD/YYYY"
               placeholderTextColor="#52525b"
             />
@@ -73,14 +73,14 @@ export function DateTimePickerSection({ date, setDate }: DateTimePickerSectionPr
         </View>
 
         {/* Ref: DateTimePickerSection-7 */}
-        <View className="flex-1 bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
-          <Text className="text-zinc-400 text-sm mb-2">Time (24h)</Text>
-          <View className="flex-row items-center justify-between border-b border-zinc-800 pb-1">
+        <View className="flex-1 bg-surface rounded-2xl p-4 border border-bordercolor">
+          <Text className="text-secondary text-sm mb-2">Time (24h)</Text>
+          <View className="flex-row items-center justify-between border-b border-bordercolor pb-1">
             <BottomSheetTextInput
               value={timeStr}
               onChangeText={setTimeStr}
               onBlur={handleTimeBlur}
-              className="text-white text-lg font-semibold flex-1 mr-2"
+              className="text-primary text-lg font-semibold flex-1 mr-2"
               placeholder="HH:MM"
               placeholderTextColor="#52525b"
             />

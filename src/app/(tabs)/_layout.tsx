@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { withLayoutContext } from "expo-router";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '../../core/theme/ThemeContext';
 
 const { Navigator } = createMaterialTopTabNavigator();
 
@@ -9,19 +10,32 @@ const MaterialTabs = withLayoutContext(Navigator);
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
+  const { activeThemeClass } = useTheme();
+
+  const getBackgroundColor = () => {
+    if (activeThemeClass === 'theme-pitch-black') return '#09090b'; // Use surface color
+    if (activeThemeClass === 'theme-dark') return '#18181b';
+    return '#f4f4f5'; // Light mode (dull white)
+  };
+
+  const getTextColor = () => {
+    if (activeThemeClass === '') return '#000000'; // Light mode
+    return '#ffffff'; // Dark mode
+  };
+
   return (
     <MaterialTabs
       tabBarPosition='bottom'
       screenOptions={{
         swipeEnabled: true,
         tabBarStyle: {
-          backgroundColor: '#18181b',
+          backgroundColor: getBackgroundColor(),
           borderTopWidth: 0,
           height: 60 + insets.bottom,
           paddingBottom: insets.bottom,
         },
         tabBarActiveTintColor: '#2563eb',
-        tabBarInactiveTintColor: '#52525b',
+        tabBarInactiveTintColor: '#a1a1aa',
         tabBarIndicatorStyle: {
           backgroundColor: '#2563eb',
           height: 3,

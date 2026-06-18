@@ -86,9 +86,9 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
       <BottomSheetView style={{ flex: 1, padding: 24 }}>
         {/* Ref: AddExpenseSheet-1 */}
         <View className="flex-row justify-between items-center mb-6">
-          <Text className="text-2xl font-bold text-white">Add Expense</Text>
+          <Text className="text-2xl font-bold text-primary">Add Expense</Text>
           <Pressable onPress={handleClose}>
-            <Text className="text-zinc-400 font-bold text-lg">Cancel</Text>
+            <Text className="text-secondary font-bold text-lg">Cancel</Text>
           </Pressable>
         </View>
 
@@ -105,10 +105,10 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
               />
             </View>
             <View className="flex-1">
-              <View className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 h-[72px] justify-center">
-                <Text className="text-zinc-400 text-sm mb-1">Account</Text>
+              <View className="bg-surface rounded-2xl p-4 border border-bordercolor h-[72px] justify-center">
+                <Text className="text-secondary text-sm mb-1">Account</Text>
                 <Pressable onPress={() => setShowAccountPicker(true)} className="flex-row items-center justify-between">
-                  <Text className="text-white font-bold text-lg flex-1" numberOfLines={1}>
+                  <Text className="text-primary font-bold text-lg flex-1" numberOfLines={1}>
                     {selectedAccount?.name || 'Select'}
                   </Text>
                 </Pressable>
@@ -123,7 +123,7 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
             onChangeText={setAmount}
             placeholder="0.00"
             keyboardType="numeric"
-            inputClassName="text-white text-4xl font-semibold"
+            inputClassName="text-primary text-4xl font-semibold"
           />
 
           {/* Ref: AddExpenseSheet-5 */}
@@ -146,7 +146,7 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
 
           {/* Ref: AddExpenseSheet-7 */}
           <Pressable onPress={handleSave} className='bg-blue-600 rounded-xl p-4 mb-8 mt-4'>
-            <Text className='text-white font-bold text-center text-lg'>Save Transaction</Text>
+            <Text className='text-primary font-bold text-center text-lg'>Save Transaction</Text>
           </Pressable>
         </BottomSheetScrollView>
       </BottomSheetView>

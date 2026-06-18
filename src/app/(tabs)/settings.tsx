@@ -5,8 +5,8 @@ import { DataManagementSection } from "../../features/settings/components/DataMa
 
 export default function SettingsScreen() {
   return (
-    <View className="flex-1 bg-zinc-950 p-6 pt-12">
-      <Text className="text-3xl font-bold text-white mb-8">Settings</Text>
+    <View className="flex-1 bg-background p-6 pt-12">
+      <Text className="text-3xl font-bold text-primary mb-8">Settings</Text>
       
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
         <PreferencesSection />

@@ -43,85 +43,85 @@ export default function AddExpenseScreen() {
   };
 
   return (
-    <View className="flex-1 bg-zinc-950 p-6 pt-12">
+    <View className="flex-1 bg-background p-6 pt-12">
       {/* Ref: add-expense-1 */}
       <View className="flex-row justify-between items-center mb-6">
-        <Text className="text-2xl font-bold text-white">Add Expense</Text>
+        <Text className="text-2xl font-bold text-primary">Add Expense</Text>
         <Pressable onPress={() => router.back()}>
-          <Text className="text-zinc-400 font-bold text-lg">Cancel</Text>
+          <Text className="text-secondary font-bold text-lg">Cancel</Text>
         </Pressable>
       </View>
 
       {/* Ref: add-expense-2 */}
-      <View className="flex-row bg-zinc-900 rounded-xl p-1 mb-6 border border-zinc-800">
+      <View className="flex-row bg-surface rounded-xl p-1 mb-6 border border-bordercolor">
         <Pressable onPress={() => setType('debit')} className={`flex-1 p-3 rounded-lg ${type === 'debit' ? 'bg-red-500/20' : 'bg-transparent'}`}>
-          <Text className={`text-center font-bold ${type === 'debit' ? 'text-red-400' : 'text-zinc-500'}`}>Debit (Out)</Text>
+          <Text className={`text-center font-bold ${type === 'debit' ? 'text-red-400' : 'text-tertiary'}`}>Debit (Out)</Text>
         </Pressable>
         <Pressable onPress={() => setType('credit')} className={`flex-1 p-3 rounded-lg ${type === 'credit' ? 'bg-green-500/20' : 'bg-transparent'}`}>
-          <Text className={`text-center font-bold ${type === 'credit' ? 'text-green-400' : 'text-zinc-500'}`}>Credit (In)</Text>
+          <Text className={`text-center font-bold ${type === 'credit' ? 'text-green-400' : 'text-tertiary'}`}>Credit (In)</Text>
         </Pressable>
       </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Ref: add-expense-3 */}
-        <View className="bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800">
-          <Text className="text-zinc-400 text-sm mb-2">Category</Text>
+        <View className="bg-surface rounded-2xl p-4 mb-4 border border-bordercolor">
+          <Text className="text-secondary text-sm mb-2">Category</Text>
           <Pressable onPress={() => setShowCategoryPicker(true)} className="flex-row items-center">
             {selectedCategory && (
               <View style={{ backgroundColor: selectedCategory.color }} className="w-8 h-8 rounded-full mr-3 items-center justify-center">
                 <Ionicons name={selectedCategory.icon as any} size={16} color="white" />
               </View>
             )}
-            <Text className="text-white text-lg font-semibold">{selectedCategory ? selectedCategory.name : 'Select a Category'}</Text>
+            <Text className="text-primary text-lg font-semibold">{selectedCategory ? selectedCategory.name : 'Select a Category'}</Text>
           </Pressable>
         </View>
 
         {/* Ref: add-expense-4 */}
-        <View className='bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800'>
-          <Text className='text-zinc-400 text-sm mb-2'>Amount</Text>
+        <View className='bg-surface rounded-2xl p-4 mb-4 border border-bordercolor'>
+          <Text className='text-secondary text-sm mb-2'>Amount</Text>
           <TextInput
             keyboardType='numeric'
             value={amount}
             onChangeText={setAmount}
             placeholder='0.00'
             placeholderTextColor='#52525b'
-            className='text-white text-4xl font-semibold'
+            className='text-primary text-4xl font-semibold'
             autoFocus
           />
         </View>
 
         {/* Ref: add-expense-5 */}
-        <View className='bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800'>
-          <Text className='text-zinc-400 text-sm mb-2'>Description</Text>
+        <View className='bg-surface rounded-2xl p-4 mb-4 border border-bordercolor'>
+          <Text className='text-secondary text-sm mb-2'>Description</Text>
           <TextInput
             value={description}
             onChangeText={setDescription}
             placeholder='e.g. Lunch, Groceries...'
             placeholderTextColor='#52525b'
-            className='text-white text-lg font-semibold'
+            className='text-primary text-lg font-semibold'
           />
-          <Text className='text-zinc-400 text-sm mt-4 mb-2'>Merchant</Text>
+          <Text className='text-secondary text-sm mt-4 mb-2'>Merchant</Text>
           <TextInput
             value={merchant}
             onChangeText={setMerchant}
             placeholder='e.g. Zomato...'
             placeholderTextColor='#52525b'
-            className='text-white text-lg font-semibold'
+            className='text-primary text-lg font-semibold'
           />
         </View>
 
         {/* Ref: add-expense-6 */}
         <View className="flex-row gap-4 mb-4">
-          <View className="flex-1 bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
-            <Text className="text-zinc-400 text-sm mb-2">Date</Text>
+          <View className="flex-1 bg-surface rounded-2xl p-4 border border-bordercolor">
+            <Text className="text-secondary text-sm mb-2">Date</Text>
             <Pressable onPress={() => setShowDatePicker(true)}>
-              <Text className="text-white text-lg font-semibold">{date.toLocaleDateString()}</Text>
+              <Text className="text-primary text-lg font-semibold">{date.toLocaleDateString()}</Text>
             </Pressable>
           </View>
-          <View className="flex-1 bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
-            <Text className="text-zinc-400 text-sm mb-2">Time</Text>
+          <View className="flex-1 bg-surface rounded-2xl p-4 border border-bordercolor">
+            <Text className="text-secondary text-sm mb-2">Time</Text>
             <Pressable onPress={() => setShowTimePicker(true)}>
-              <Text className="text-white text-lg font-semibold">
+              <Text className="text-primary text-lg font-semibold">
                 {date.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' })}
               </Text>
             </Pressable>
@@ -130,7 +130,7 @@ export default function AddExpenseScreen() {
 
         {/* Ref: add-expense-7 */}
         <Pressable onPress={handleSave} className='bg-blue-600 rounded-xl p-4 mb-8 mt-4'>
-          <Text className='text-white font-bold text-center text-lg'>Save Transaction</Text>
+          <Text className='text-primary font-bold text-center text-lg'>Save Transaction</Text>
         </Pressable>
       </ScrollView>
 
@@ -169,8 +169,8 @@ export default function AddExpenseScreen() {
 
       {/* Ref: add-expense-9 */}
       <Modal visible={showCategoryPicker} animationType='slide'>
-        <View className="flex-1 bg-zinc-950 p-6 pt-20">
-          <Text className="text-3xl font-bold text-white mb-8">Select Category</Text>
+        <View className="flex-1 bg-background p-6 pt-20">
+          <Text className="text-3xl font-bold text-primary mb-8">Select Category</Text>
           <ScrollView className="flex-1 mb-4" showsVerticalScrollIndicator={false}>
             {categories.map((cat) => (
               <Pressable
@@ -179,17 +179,17 @@ export default function AddExpenseScreen() {
                   setCategoryId(cat.id);
                   setShowCategoryPicker(false);
                 }}
-                className="flex-row items-center bg-zinc-900 p-4 rounded-2xl mb-3 border border-zinc-800"
+                className="flex-row items-center bg-surface p-4 rounded-2xl mb-3 border border-bordercolor"
               >
                 <View style={{ backgroundColor: cat.color }} className="w-10 h-10 rounded-full mr-4 items-center justify-center">
                   <Ionicons name={cat.icon as any} size={20} color="white" />
                 </View>
-                <Text className="text-white text-xl font-semibold">{cat.name}</Text>
+                <Text className="text-primary text-xl font-semibold">{cat.name}</Text>
               </Pressable>
             ))}
           </ScrollView>
-          <Pressable onPress={() => setShowCategoryPicker(false)} className="mt-4 p-4 bg-zinc-800 rounded-xl">
-            <Text className="text-center text-white font-bold">Cancel</Text>
+          <Pressable onPress={() => setShowCategoryPicker(false)} className="mt-4 p-4 bg-bordercolor rounded-xl">
+            <Text className="text-center text-primary font-bold">Cancel</Text>
           </Pressable>
         </View>
       </Modal>

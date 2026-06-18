@@ -14,14 +14,14 @@ export function CategorySelectModal({ visible, onClose, categories, onSelect }: 
   return (
     <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
       <Pressable className="flex-1 justify-end bg-black/60" onPress={onClose}>
-        <Pressable className="bg-[#09090b] p-6 rounded-t-[32px] h-[60%] border-t border-zinc-800 shadow-2xl" onPress={(e) => e.stopPropagation()}>
+        <Pressable className="bg-[#09090b] p-6 rounded-t-[32px] h-[60%] border-t border-bordercolor shadow-2xl" onPress={(e) => e.stopPropagation()}>
           
           {/* Drag Indicator */}
           <View className="w-12 h-1.5 bg-[#52525b] rounded-full self-center mb-6" />
 
           <View className="flex-row justify-between items-center mb-6">
-            <Text className="text-2xl font-bold text-white">Select Category</Text>
-            <Pressable onPress={onClose} className="bg-zinc-900 p-2 rounded-full">
+            <Text className="text-2xl font-bold text-primary">Select Category</Text>
+            <Pressable onPress={onClose} className="bg-surface p-2 rounded-full">
               <Ionicons name="close" size={20} color="#a1a1aa" />
             </Pressable>
           </View>
@@ -34,12 +34,12 @@ export function CategorySelectModal({ visible, onClose, categories, onSelect }: 
                   onSelect(cat.id);
                   onClose();
                 }}
-                className="flex-row items-center bg-zinc-900 p-4 rounded-2xl mb-3 border border-zinc-800"
+                className="flex-row items-center bg-surface p-4 rounded-2xl mb-3 border border-bordercolor"
               >
                 <View style={{ backgroundColor: cat.color }} className="w-10 h-10 rounded-full mr-4 items-center justify-center">
                   <Ionicons name={cat.icon as any} size={20} color="white" />
                 </View>
-                <Text className="text-white text-xl font-semibold">{cat.name}</Text>
+                <Text className="text-primary text-xl font-semibold">{cat.name}</Text>
               </Pressable>
             ))}
           </ScrollView>

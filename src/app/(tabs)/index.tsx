@@ -36,7 +36,7 @@ export default function Home() {
   };
 
   return (
-    <View className='flex-1 bg-zinc-950 p-6 pt-12'>
+    <View className='flex-1 bg-background p-6 pt-12'>
       <ExpenseSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <ExpenseSortFilter sortMode={sortMode} setSortMode={setSortMode} />
       <ExpenseList searchQuery={searchQuery} sortMode={sortMode} />
@@ -56,16 +56,16 @@ export default function Home() {
         onRequestClose={() => setShowExitModal(false)}
       >
         <View className="flex-1 bg-black/60 justify-center items-center p-6">
-          <View className="bg-zinc-900 w-full rounded-3xl p-6 border border-zinc-800 shadow-2xl">
-            <Text className="text-white text-2xl font-bold mb-3">Exit App</Text>
-            <Text className="text-zinc-400 text-base mb-8">Are you sure you want to exit LedgerLite?</Text>
+          <View className="bg-surface w-full rounded-3xl p-6 border border-bordercolor shadow-2xl">
+            <Text className="text-primary text-2xl font-bold mb-3">Exit App</Text>
+            <Text className="text-secondary text-base mb-8">Are you sure you want to exit LedgerLite?</Text>
             
             <View className="flex-row justify-end">
               <Pressable 
                 onPress={() => setShowExitModal(false)}
                 className="px-6 py-3 rounded-xl"
               >
-                <Text className="text-white font-bold text-base">Cancel</Text>
+                <Text className="text-primary font-bold text-base">Cancel</Text>
               </Pressable>
               <Pressable 
                 onPress={() => BackHandler.exitApp()}

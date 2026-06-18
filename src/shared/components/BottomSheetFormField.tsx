@@ -9,13 +9,13 @@ interface BottomSheetFormFieldProps extends TextInputProps {
 
 export function BottomSheetFormField({
   label,
-  className = "bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800",
-  inputClassName = "text-white text-lg font-semibold",
+  className = "bg-surface rounded-2xl p-4 mb-4 border border-bordercolor",
+  inputClassName = "text-primary text-lg font-semibold",
   ...textInputProps
 }: BottomSheetFormFieldProps) {
   return (
     <View className={className}>
-      <Text className="text-zinc-400 text-sm mb-2">{label}</Text>
+      <Text className="text-secondary text-sm mb-2">{label}</Text>
       <BottomSheetTextInput
         placeholderTextColor="#52525b"
         className={inputClassName}

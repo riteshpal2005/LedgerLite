@@ -28,8 +28,8 @@ export default function AnalyticsScreen() {
   }, [loadData]));
 
   return (
-    <View className="flex-1 p-6 pt-12 bg-zinc-950">
-      <Text className="text-white text-3xl font-bold mb-4">Analytics</Text>
+    <View className="flex-1 p-6 pt-12 bg-background">
+      <Text className="text-primary text-3xl font-bold mb-4">Analytics</Text>
       
       <AnalyticsFilter 
         onDateRangeChange={(start, end) => setDateRange({start, end})} 
@@ -40,7 +40,7 @@ export default function AnalyticsScreen() {
         <Text className="text-white text-5xl font-bold">₹{totalSpent.toFixed(2)}</Text>
       </View>
       
-      <Text className="text-xl font-bold text-white mb-4">Spending by Category</Text>
+      <Text className="text-xl font-bold text-primary mb-4">Spending by Category</Text>
       <ExpensePieChart spendingData={spendingData} />
     </View>
   );

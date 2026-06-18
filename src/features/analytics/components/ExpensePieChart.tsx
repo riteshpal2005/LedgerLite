@@ -25,14 +25,14 @@ export function ExpensePieChart({ spendingData }: ExpensePieChartProps) {
 
   if (chartData.length === 0) {
     return (
-      <View className="items-center justify-center h-48 bg-zinc-900 rounded-3xl border border-zinc-800">
-        <Text className="text-zinc-500 text-lg">No expenses in this range</Text>
+      <View className="items-center justify-center h-48 bg-surface rounded-3xl border border-bordercolor">
+        <Text className="text-tertiary text-lg">No expenses in this range</Text>
       </View>
     );
   }
 
   return (
-    <View className="bg-zinc-900 rounded-3xl border border-zinc-800 overflow-hidden items-center justify-center p-4">
+    <View className="bg-surface rounded-3xl border border-bordercolor overflow-hidden items-center justify-center p-4">
       <PieChart
         data={chartData}
         width={Dimensions.get('window').width - 48}

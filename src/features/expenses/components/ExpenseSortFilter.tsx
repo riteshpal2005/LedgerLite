@@ -19,12 +19,12 @@ export function ExpenseSortFilter({ sortMode, setSortMode }: ExpenseSortFilterPr
           className={`px-3 py-1.5 rounded-full border ${
             sortMode === mode
               ? 'bg-blue-600 border-blue-600'
-              : 'bg-transparent border-zinc-700'
+              : 'bg-surface border-bordercolor'
           }`}
         >
           <Text
             className={`text-xs font-bold capitalize ${
-              sortMode === mode ? 'text-white' : 'text-zinc-400'
+              sortMode === mode ? 'text-white' : 'text-secondary'
             }`}
           >
             {mode}

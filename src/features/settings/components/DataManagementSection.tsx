@@ -49,41 +49,41 @@ export function DataManagementSection() {
 
   return (
     <>
-      <Text className="text-zinc-500 font-bold mb-2 mt-8 uppercase text-xs tracking-wider">Data Management</Text>
-      <View className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
+      <Text className="text-tertiary font-bold mb-2 mt-8 uppercase text-xs tracking-wider">Data Management</Text>
+      <View className="bg-surface rounded-2xl p-4 border border-bordercolor">
         <Pressable className="flex-row justify-between items-center py-2" onPress={handleExportExcel}>
           <View className="flex-row items-center">
             <Ionicons name="download-outline" size={24} color="#2563eb" />
-            <Text className="text-white text-lg font-semibold ml-3">Export to Excel</Text>
+            <Text className="text-primary text-lg font-semibold ml-3">Export to Excel</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#52525b" />
         </Pressable>
 
-        <View className="h-[1px] bg-zinc-800 my-2" />
+        <View className="h-[1px] bg-bordercolor my-2" />
 
         <Pressable className="flex-row justify-between items-center py-2" onPress={handleExportCSV}>
           <View className="flex-row items-center">
             <Ionicons name="document-text-outline" size={24} color="#2563eb" />
-            <Text className="text-white text-lg font-semibold ml-3">Export to CSV</Text>
+            <Text className="text-primary text-lg font-semibold ml-3">Export to CSV</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#52525b" />
         </Pressable>
 
-        <View className="h-[1px] bg-zinc-800 my-2" />
+        <View className="h-[1px] bg-bordercolor my-2" />
 
         <Pressable className="flex-row justify-between items-center py-2" onPress={handleImport}>
           <View className="flex-row items-center">
             <Ionicons name="push-outline" size={24} color="#10b981" />
-            <Text className="text-white text-lg font-semibold ml-3">Import Data</Text>
+            <Text className="text-primary text-lg font-semibold ml-3">Import Data</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#52525b" />
         </Pressable>
-        <View className="h-[1px] bg-zinc-800 my-2" />
+        <View className="h-[1px] bg-bordercolor my-2" />
 
         <Pressable className="flex-row justify-between items-center py-2" onPress={handleExportSettings}>
           <View className="flex-row items-center">
             <Ionicons name="settings-outline" size={24} color="#a855f7" />
-            <Text className="text-white text-lg font-semibold ml-3">Backup Settings (JSON)</Text>
+            <Text className="text-primary text-lg font-semibold ml-3">Backup Settings (JSON)</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#52525b" />
         </Pressable>

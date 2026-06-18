@@ -92,9 +92,9 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
       {/* Ref: AnalyticsFilter-3 */}
       <Pressable
         onPress={() => setDropdownVisible(true)}
-        className="flex-row items-center justify-between bg-zinc-900 border border-zinc-800 rounded-2xl p-4 shadow-sm"
+        className="flex-row items-center justify-between bg-surface border border-bordercolor rounded-2xl p-4 shadow-sm"
       >
-        <Text className="text-white font-bold text-lg">{selectedLabel}</Text>
+        <Text className="text-primary font-bold text-lg">{selectedLabel}</Text>
         <Ionicons name="chevron-down" size={20} color="#a1a1aa" />
       </Pressable>
 
@@ -104,14 +104,14 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
           className="flex-1 bg-black/50 justify-center items-center p-6"
           onPress={() => setDropdownVisible(false)}
         >
-          <View className="bg-zinc-900 w-full rounded-3xl p-2 border border-zinc-800">
+          <View className="bg-surface w-full rounded-3xl p-2 border border-bordercolor">
             {filterOptions.map((option) => (
               <Pressable
                 key={option.value}
                 onPress={() => handleSelectFilter(option.value)}
-                className={`p-4 rounded-2xl ${filter === option.value ? 'bg-zinc-800' : 'bg-transparent'}`}
+                className={`p-4 rounded-2xl ${filter === option.value ? 'bg-bordercolor' : 'bg-surface'}`}
               >
-                <Text className={`text-center font-bold text-lg ${filter === option.value ? 'text-blue-500' : 'text-white'}`}>
+                <Text className={`text-center font-bold text-lg ${filter === option.value ? 'text-blue-500' : 'text-primary'}`}>
                   {option.label}
                 </Text>
               </Pressable>
@@ -123,16 +123,16 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
       {/* Ref: AnalyticsFilter-5 */}
       {filter === 'custom' && (
         <View className="flex-row justify-between mt-4 gap-4">
-          <View className="flex-1 bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
-            <Text className="text-zinc-400 text-xs mb-1">From Date</Text>
+          <View className="flex-1 bg-surface rounded-2xl p-4 border border-bordercolor">
+            <Text className="text-secondary text-xs mb-1">From Date</Text>
             <Pressable onPress={() => setShowStartPicker(true)}>
-              <Text className="text-white font-semibold">{customStart.toLocaleDateString()}</Text>
+              <Text className="text-primary font-semibold">{customStart.toLocaleDateString()}</Text>
             </Pressable>
           </View>
-          <View className="flex-1 bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
-            <Text className="text-zinc-400 text-xs mb-1">To Date</Text>
+          <View className="flex-1 bg-surface rounded-2xl p-4 border border-bordercolor">
+            <Text className="text-secondary text-xs mb-1">To Date</Text>
             <Pressable onPress={() => setShowEndPicker(true)}>
-              <Text className="text-white font-semibold">{customEnd.toLocaleDateString()}</Text>
+              <Text className="text-primary font-semibold">{customEnd.toLocaleDateString()}</Text>
             </Pressable>
           </View>
         </View>

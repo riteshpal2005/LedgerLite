@@ -76,11 +76,11 @@ export default function ExpenseList({ searchQuery, sortMode }: ExpenseListProps)
 
   return (
     <View className='flex-1'>
-      <Text className='text-xl font-bold text-white mb-4'>Recent Expenses</Text>
+      <Text className='text-xl font-bold text-primary mb-4'>Recent Expenses</Text>
       <FlashList
         data={sortedExpenses}
         ListEmptyComponent={
-          <Text className='text-zinc-500 text-center mt-10'>No expenses yet. Add one above!</Text>
+          <Text className='text-tertiary text-center mt-10'>No expenses yet. Add one above!</Text>
         }
         renderItem={({ item }) => {
           const category = categories.find(c => c.id === item.categoryId);
@@ -88,7 +88,7 @@ export default function ExpenseList({ searchQuery, sortMode }: ExpenseListProps)
           const isCredit = item.type === 'credit';
 
           return (
-            <View className='bg-zinc-900 p-4 rounded-xl mb-3 flex-row justify-between items-center border border-zinc-800'>
+            <View className='bg-surface p-4 rounded-xl mb-3 flex-row justify-between items-center border border-bordercolor'>
 
               <View className="flex-row items-center flex-1">
                 {showIcons && category && (
@@ -98,12 +98,12 @@ export default function ExpenseList({ searchQuery, sortMode }: ExpenseListProps)
                 )}
 
                 <View className="flex-1 pr-2">
-                  <Text className='text-white font-bold text-lg'>{category?.name || 'Unknown'}</Text>
+                  <Text className='text-primary font-bold text-lg'>{category?.name || 'Unknown'}</Text>
                   
                   <View className="flex-row items-center mt-1">
-                    <Text className='text-zinc-400 text-sm' numberOfLines={1}>{item.description}</Text>
+                    <Text className='text-secondary text-sm' numberOfLines={1}>{item.description}</Text>
                     {account ? (
-                      <Text className="text-zinc-500 text-xs ml-2">• {account.name}</Text>
+                      <Text className="text-tertiary text-xs ml-2">• {account.name}</Text>
                     ) : (
                       <Pressable 
                         className="ml-2 bg-yellow-500/20 px-2 py-0.5 rounded-md border border-yellow-500/30"
@@ -119,7 +119,7 @@ export default function ExpenseList({ searchQuery, sortMode }: ExpenseListProps)
                 <Text className={`font-bold text-lg ${isCredit ? 'text-green-400' : 'text-red-400'}`}>
                   {isCredit ? '+' : '-'}₹{item.amount.toFixed(2)}
                 </Text>
-                <Text className="text-zinc-500 text-xs mt-1">
+                <Text className="text-tertiary text-xs mt-1">
                   {new Date(item.date).toLocaleTimeString('en-US', {
                     month: 'short',
                     day: 'numeric',
