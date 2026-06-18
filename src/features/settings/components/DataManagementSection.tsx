@@ -2,28 +2,46 @@ import { View, Text, Pressable, Alert, ToastAndroid, Platform } from "react-nati
 import { useDispatch, useSelector } from "react-redux";
 import { setExpenses } from "../../../core/store/expenseSlice";
 import { RootState, store } from "../../../core/store/store";
-import { setExportDirectoryUri } from "../../../core/store/settingsSlice";
+import { setExportDirectoryUri, loadSettings } from "../../../core/store/settingsSlice";
+import { setCategories } from "../../../core/store/categorySlice";
 import { Ionicons } from "@expo/vector-icons";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
-import { exportData, importData, exportSettingsJSON, exportToPDF } from "../../../core/services/dataService";
+import { exportData, importData, exportSettingsJSON, importSettingsJSON, exportToPDF } from "../../../core/services/dataService";
 import { ExportActionRow } from "./ExportActionRow";
+import { ImportActionRow } from "./ImportActionRow";
+import { RestoreRawJsonModal } from "./RestoreRawJsonModal";
 import { useState } from "react";
 import { ColumnSelectionModal, ExportColumn } from "./ColumnSelectionModal";
 
 export function DataManagementSection() {
   const dispatch = useDispatch();
-  const { getAllExpenses, addExpense } = useExpenseDatabase();
+  const { getAllExpenses, addExpense, getAllCategories, restoreCategory } = useExpenseDatabase();
 
   const [pdfModalVisible, setPdfModalVisible] = useState(false);
   const [pdfAction, setPdfAction] = useState<'save' | 'share' | null>(null);
 
-  const handleExportSettings = async () => {
+  const [rawJsonModalVisible, setRawJsonModalVisible] = useState(false);
+
+  const handleExportSettings = async (action: 'save' | 'share' | 'copy') => {
     const fullState = store.getState();
     const payload = {
       settings: fullState.settings,
       categories: fullState.categories.categories
     };
-    await exportSettingsJSON(payload);
+    const newDirUri = await exportSettingsJSON(payload, action, fullState.settings.exportDirectoryUri);
+    if (newDirUri && newDirUri !== fullState.settings.exportDirectoryUri) {
+      dispatch(setExportDirectoryUri(newDirUri));
+    }
+    if (action === 'save' && Platform.OS === 'android' && newDirUri) {
+      ToastAndroid.show("JSON file saved to LedgerLite folder!", ToastAndroid.SHORT);
+    }
+    if (action === 'copy') {
+      if (Platform.OS === 'android') {
+        ToastAndroid.show("JSON copied to clipboard", ToastAndroid.SHORT);
+      } else {
+        Alert.alert("Copied", "Raw JSON copied to clipboard");
+      }
+    }
   };
 
   const handleExportExcel = async (action: 'save' | 'share') => {
@@ -96,6 +114,29 @@ export function DataManagementSection() {
     }
   };
 
+  const processRestoration = async (importedData: any) => {
+    if (importedData) {
+      if (importedData.settings) {
+        dispatch(loadSettings(importedData.settings));
+      }
+      if (importedData.categories && Array.isArray(importedData.categories)) {
+        for (const cat of importedData.categories) {
+          await restoreCategory(cat);
+        }
+        const updatedCategories = await getAllCategories();
+        dispatch(setCategories(updatedCategories));
+      }
+      Alert.alert("Success", "Settings & Categories restored successfully!");
+    }
+  };
+
+  const handleImportSettingsFromFile = async () => {
+    const importedData = await importSettingsJSON();
+    if (importedData) {
+      await processRestoration(importedData);
+    }
+  };
+
   return (
     <>
       <Text className="text-tertiary font-bold mb-2 mt-8 uppercase text-xs tracking-wider">Data Management</Text>
@@ -139,14 +180,34 @@ export function DataManagementSection() {
         </Pressable>
         <View className="h-[1px] bg-bordercolor my-2" />
 
-        <Pressable className="flex-row justify-between items-center py-2" onPress={handleExportSettings}>
-          <View className="flex-row items-center">
-            <Ionicons name="settings-outline" size={24} color="#a855f7" />
-            <Text className="text-primary text-lg font-semibold ml-3">Backup Settings (JSON)</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={20} color="#52525b" />
-        </Pressable>
+        <View style={{ zIndex: 5 }}>
+          <ExportActionRow
+            title="Backup Settings (JSON)"
+            iconName="settings-outline"
+            iconColor="#a855f7"
+            onSave={() => handleExportSettings('save')}
+            onShare={() => handleExportSettings('share')}
+            onCopy={() => handleExportSettings('copy')}
+          />
+        </View>
+
+        <View style={{ zIndex: 4 }}>
+          <ImportActionRow
+            title="Restore Settings (JSON)"
+            iconName="refresh-circle-outline"
+            iconColor="#a855f7"
+            onFilePicker={handleImportSettingsFromFile}
+            onRawJson={() => setRawJsonModalVisible(true)}
+            isLast={true}
+          />
+        </View>
       </View>
+
+      <RestoreRawJsonModal 
+        visible={rawJsonModalVisible}
+        onClose={() => setRawJsonModalVisible(false)}
+        onRestore={processRestoration}
+      />
 
       <ColumnSelectionModal 
         visible={pdfModalVisible} 

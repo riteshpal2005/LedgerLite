@@ -36,6 +36,13 @@ export function useExpenseDatabase() {
     return result.lastInsertRowId;
   };
 
+  const restoreCategory = async (category: Category) => {
+    await db.runAsync(
+      'INSERT OR REPLACE INTO categories (id, name, icon, color) VALUES (?, ?, ?, ?)',
+      [category.id, category.name, category.icon, category.color]
+    );
+  };
+
   const addExpense = async (expense: Omit<Expense, 'id'>) => {
     // Ref: useExpenseDatabase-1
     const result = await db.runAsync(
@@ -99,7 +106,7 @@ export function useExpenseDatabase() {
     await db.runAsync('UPDATE expenses SET accountId = ? WHERE accountId = ?', [newAccountId, oldAccountId]);
   };
 
-  return { addExpense, getAllExpenses, getTotalSpent, getAllCategories, updateCategory, addCategory, getAllAccounts, addAccount, updateAccount, adjustAccountBalance, updateExpenseAccount, updateExpenseFull, deleteExpense, deleteAccount, deleteExpensesByAccount, reassignExpenses };
+  return { addExpense, getAllExpenses, getTotalSpent, getAllCategories, updateCategory, addCategory, restoreCategory, getAllAccounts, addAccount, updateAccount, adjustAccountBalance, updateExpenseAccount, updateExpenseFull, deleteExpense, deleteAccount, deleteExpensesByAccount, reassignExpenses };
 }
 
 

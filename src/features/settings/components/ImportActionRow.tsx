@@ -2,17 +2,16 @@ import { useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-interface ExportActionRowProps {
+interface ImportActionRowProps {
   iconName: any;
   title: string;
   iconColor: string;
-  onSave: () => void;
-  onShare: () => void;
-  onCopy?: () => void;
+  onFilePicker: () => void;
+  onRawJson: () => void;
   isLast?: boolean;
 }
 
-export function ExportActionRow({ iconName, title, iconColor, onSave, onShare, onCopy, isLast }: ExportActionRowProps) {
+export function ImportActionRow({ iconName, title, iconColor, onFilePicker, onRawJson, isLast }: ImportActionRowProps) {
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   return (
@@ -33,35 +32,23 @@ export function ExportActionRow({ iconName, title, iconColor, onSave, onShare, o
           <Pressable 
             onPress={() => {
               setDropdownVisible(false);
-              onSave();
+              onFilePicker();
             }}
             className="flex-row items-center p-3 border-b border-bordercolor"
           >
-            <Ionicons name="save-outline" size={18} color="#10b981" />
-            <Text className="text-primary font-semibold ml-3">Save</Text>
+            <Ionicons name="document-outline" size={18} color="#10b981" />
+            <Text className="text-primary font-semibold ml-3">From File</Text>
           </Pressable>
           <Pressable 
             onPress={() => {
               setDropdownVisible(false);
-              onShare();
+              onRawJson();
             }}
-            className={`flex-row items-center p-3 ${onCopy ? 'border-b border-bordercolor' : ''}`}
+            className="flex-row items-center p-3"
           >
-            <Ionicons name="share-outline" size={18} color="#3b82f6" />
-            <Text className="text-primary font-semibold ml-3">Share via...</Text>
+            <Ionicons name="code-slash-outline" size={18} color="#f59e0b" />
+            <Text className="text-primary font-semibold ml-3">Paste Raw JSON</Text>
           </Pressable>
-          {onCopy && (
-            <Pressable 
-              onPress={() => {
-                setDropdownVisible(false);
-                onCopy();
-              }}
-              className="flex-row items-center p-3"
-            >
-              <Ionicons name="copy-outline" size={18} color="#8b5cf6" />
-              <Text className="text-primary font-semibold ml-3">Copy Raw JSON</Text>
-            </Pressable>
-          )}
         </View>
       )}
 

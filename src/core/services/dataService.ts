@@ -3,6 +3,7 @@ import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Print from 'expo-print';
 import * as XLSX from 'xlsx';
+import * as Clipboard from 'expo-clipboard';
 import { Expense, Account, Category } from '../database/schema';
 import { Platform } from 'react-native';
 
@@ -153,22 +154,103 @@ export const importData = async (): Promise<Expense[] | null> => {
   }
 };
 
-export const exportSettingsJSON = async (settingsData: any) => {
+export const exportSettingsJSON = async (
+  settingsData: any, 
+  action: 'save' | 'share' | 'copy' = 'share',
+  savedDirectoryUri?: string | null
+): Promise<string | undefined> => {
   try {
     const jsonString = JSON.stringify(settingsData, null, 2);
-    const filename = `LedgerLite_Settings_${Date.now()}.json`;
-    const fileUri = FileSystem.cacheDirectory + filename;
 
+    if (action === 'copy') {
+      await Clipboard.setStringAsync(jsonString);
+      return undefined;
+    }
+
+    const filename = `LedgerLite_Settings_${Date.now()}.json`;
+    const mimeType = 'application/json';
+
+    if (action === 'save' && Platform.OS === 'android') {
+      if (savedDirectoryUri) {
+        try {
+          const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
+            savedDirectoryUri,
+            filename,
+            mimeType
+          );
+          await FileSystem.writeAsStringAsync(safUri, jsonString, { encoding: 'utf8' });
+          return savedDirectoryUri;
+        } catch (e) {
+          console.log("Silent save failed, requesting permissions again");
+        }
+      }
+
+      const initialUri = 'content://com.android.externalstorage.documents/tree/primary%3ADocuments';
+      const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(initialUri);
+      
+      if (permissions.granted) {
+        let targetDirUri = permissions.directoryUri;
+        if (!decodeURIComponent(targetDirUri).endsWith('LedgerLite')) {
+          let folderCreatedOrFound = false;
+          try {
+            const files = await FileSystem.StorageAccessFramework.readDirectoryAsync(permissions.directoryUri);
+            const existingLedgerLite = files.find(f => decodeURIComponent(f).endsWith('/LedgerLite') || decodeURIComponent(f).endsWith(':LedgerLite'));
+            if (existingLedgerLite) {
+              targetDirUri = existingLedgerLite;
+              folderCreatedOrFound = true;
+            }
+          } catch (e) {}
+          if (!folderCreatedOrFound) {
+            try { targetDirUri = await FileSystem.StorageAccessFramework.makeDirectoryAsync(permissions.directoryUri, 'LedgerLite'); } catch (e) {}
+          }
+        }
+
+        const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
+          targetDirUri,
+          filename,
+          mimeType
+        );
+        await FileSystem.writeAsStringAsync(safUri, jsonString, { encoding: 'utf8' });
+        return targetDirUri;
+      }
+    }
+
+    // Share fallback
+    const fileUri = FileSystem.cacheDirectory + filename;
     await FileSystem.writeAsStringAsync(fileUri, jsonString, {
       encoding: 'utf8'
     });
 
     await Sharing.shareAsync(fileUri, {
-      mimeType: 'application/json',
+      mimeType: mimeType,
       dialogTitle: 'Export LedgerLite Settings'
     });
+    
+    return undefined;
   } catch (error) {
     console.error("Settings Export Error: ", error);
+    return undefined;
+  }
+};
+export const importSettingsJSON = async () => {
+  try {
+    const result = await DocumentPicker.getDocumentAsync({
+      type: 'application/json',
+      copyToCacheDirectory: true
+    });
+
+    if (result.canceled || !result.assets || result.assets.length === 0) {
+      return null;
+    }
+
+    const fileUri = result.assets[0].uri;
+    const fileContent = await FileSystem.readAsStringAsync(fileUri, { encoding: 'utf8' });
+    const parsedData = JSON.parse(fileContent);
+    return parsedData;
+
+  } catch (error) {
+    console.error("Settings Import Error: ", error);
+    return null;
   }
 };
 
