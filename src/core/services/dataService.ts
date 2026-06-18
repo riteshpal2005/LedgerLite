@@ -10,8 +10,8 @@ export const exportData = async (expenses: Expense[], accounts: Account[], categ
       const account = accounts.find(a => a.id === e.accountId);
       const category = categories.find(c => c.id === e.categoryId);
       return {
-        Date: new Date(e.date).toLocaleDateString(),
-        Time: new Date(e.date).toLocaleTimeString(),
+        Date: new Date(e.date).toLocaleDateString().replace(/\u202F/g, ' '),
+        Time: new Date(e.date).toLocaleTimeString().replace(/\u202F/g, ' '),
         Type: e.type === 'credit' ? 'Income' : 'Expense',
         Category: category ? category.name : 'Unknown',
         Amount: e.amount,
