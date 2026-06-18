@@ -14,7 +14,6 @@ export function DataManagementSection() {
     const fullState = store.getState();
     const payload = {
       settings: fullState.settings,
-      accounts: fullState.accounts.accounts,
       categories: fullState.categories.categories
     };
     await exportSettingsJSON(payload);
