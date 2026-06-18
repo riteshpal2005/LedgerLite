@@ -8,7 +8,7 @@ import { store } from "../core/store/store";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import * as FileSystem from 'expo-file-system/legacy';
 import { loadSettings } from "../core/store/settingsSlice";
 
