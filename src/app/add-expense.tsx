@@ -44,7 +44,7 @@ export default function AddExpenseScreen() {
 
   return (
     <View className="flex-1 bg-zinc-950 p-6 pt-12">
-      {/* 1. HEADER */}
+      {/* Ref: add-expense-1 */}
       <View className="flex-row justify-between items-center mb-6">
         <Text className="text-2xl font-bold text-white">Add Expense</Text>
         <Pressable onPress={() => router.back()}>
@@ -52,7 +52,7 @@ export default function AddExpenseScreen() {
         </Pressable>
       </View>
 
-      {/* 2. DEBIT / CREDIT TOGGLE */}
+      {/* Ref: add-expense-2 */}
       <View className="flex-row bg-zinc-900 rounded-xl p-1 mb-6 border border-zinc-800">
         <Pressable onPress={() => setType('debit')} className={`flex-1 p-3 rounded-lg ${type === 'debit' ? 'bg-red-500/20' : 'bg-transparent'}`}>
           <Text className={`text-center font-bold ${type === 'debit' ? 'text-red-400' : 'text-zinc-500'}`}>Debit (Out)</Text>
@@ -63,7 +63,7 @@ export default function AddExpenseScreen() {
       </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* 3. CATEGORY SELECTOR */}
+        {/* Ref: add-expense-3 */}
         <View className="bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800">
           <Text className="text-zinc-400 text-sm mb-2">Category</Text>
           <Pressable onPress={() => setShowCategoryPicker(true)} className="flex-row items-center">
@@ -76,7 +76,7 @@ export default function AddExpenseScreen() {
           </Pressable>
         </View>
 
-        {/* 4. AMOUNT */}
+        {/* Ref: add-expense-4 */}
         <View className='bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800'>
           <Text className='text-zinc-400 text-sm mb-2'>Amount</Text>
           <TextInput
@@ -90,7 +90,7 @@ export default function AddExpenseScreen() {
           />
         </View>
 
-        {/* 5. TEXT INPUTS */}
+        {/* Ref: add-expense-5 */}
         <View className='bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800'>
           <Text className='text-zinc-400 text-sm mb-2'>Description</Text>
           <TextInput
@@ -110,7 +110,7 @@ export default function AddExpenseScreen() {
           />
         </View>
 
-        {/* 6. DATE & TIME BUTTONS (Side by Side!) */}
+        {/* Ref: add-expense-6 */}
         <View className="flex-row gap-4 mb-4">
           <View className="flex-1 bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
             <Text className="text-zinc-400 text-sm mb-2">Date</Text>
@@ -128,13 +128,13 @@ export default function AddExpenseScreen() {
           </View>
         </View>
 
-        {/* SAVE BUTTON */}
+        {/* Ref: add-expense-7 */}
         <Pressable onPress={handleSave} className='bg-blue-600 rounded-xl p-4 mb-8 mt-4'>
           <Text className='text-white font-bold text-center text-lg'>Save Transaction</Text>
         </Pressable>
       </ScrollView>
 
-      {/* 7. THE NATIVE PICKERS & MODALS (Hidden until triggered) */}
+      {/* Ref: add-expense-8 */}
       {showDatePicker && (
         <DateTimePicker
           value={date}
@@ -167,7 +167,7 @@ export default function AddExpenseScreen() {
         />
       )}
 
-      {/* FULL SCREEN CATEGORY MODAL */}
+      {/* Ref: add-expense-9 */}
       <Modal visible={showCategoryPicker} animationType='slide'>
         <View className="flex-1 bg-zinc-950 p-6 pt-20">
           <Text className="text-3xl font-bold text-white mb-8">Select Category</Text>

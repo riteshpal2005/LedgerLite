@@ -30,7 +30,7 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
   const categories = useSelector((state: RootState) => state.categories.categories);
   const selectedCategory = categories.find(c => c.id === categoryId);
 
-  // Snap points for the bottom sheet (e.g., 90% of the screen height)
+  // Ref: AddExpenseSheet-10
   const snapPoints = useMemo(() => ['90%'], []);
 
   const handleClose = useCallback(() => {
@@ -51,7 +51,7 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
     const insertedId = await addExpense(newExpense);
     dispatch(addExpenseToRedux({ ...newExpense, id: insertedId }));
 
-    // Reset fields
+    // Ref: AddExpenseSheet-11
     setAmount('');
     setDescription('');
     setMerchant('');
@@ -64,8 +64,8 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
       ref={bottomSheetRef}
       index={0}
       snapPoints={snapPoints}
-      backgroundStyle={{ backgroundColor: '#09090b' }} // bg-zinc-950 equivalent
-      handleIndicatorStyle={{ backgroundColor: '#52525b' }} // text-zinc-400
+      backgroundStyle={{ backgroundColor: '#09090b' }} // Ref: AddExpenseSheet-12
+      handleIndicatorStyle={{ backgroundColor: '#52525b' }} // Ref: AddExpenseSheet-13
     >
       <BottomSheetView style={{ flex: 1, padding: 24 }}>
         {/* Ref: AddExpenseSheet-1 */}

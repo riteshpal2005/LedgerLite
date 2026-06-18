@@ -3,15 +3,15 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 
 interface BottomSheetFormFieldProps extends TextInputProps {
   label: string;
-  className?: string; // Optional class for the container
-  inputClassName?: string; // Optional class for the input itself
+  className?: string; // Ref: BottomSheetFormField-1
+  inputClassName?: string; // Ref: BottomSheetFormField-2
 }
 
-export function BottomSheetFormField({ 
-  label, 
+export function BottomSheetFormField({
+  label,
   className = "bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800",
   inputClassName = "text-white text-lg font-semibold",
-  ...textInputProps 
+  ...textInputProps
 }: BottomSheetFormFieldProps) {
   return (
     <View className={className}>

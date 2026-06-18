@@ -42,7 +42,7 @@ export const CREATE_EXPENSES_TABLE = `
 `;
 
 export async function initializeDatabase(db: SQLiteDatabase) {
-  // await db.execAsync(`DROP TABLE IF EXISTS expenses;`);
+  // Ref: schema-1
   await db.execAsync(CREATE_CATEGORIES_TABLE);
   await db.execAsync(CREATE_EXPENSES_TABLE);
 }

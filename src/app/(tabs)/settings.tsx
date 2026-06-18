@@ -16,7 +16,7 @@ export default function SettingsScreen() {
 
       <View className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
 
-        {/* The Toggle Row */}
+        {/* Ref: settings-1 */}
         <View className="flex-row justify-between items-center">
           <View className="flex-row items-center">
             <Ionicons name="image" size={24} color="#71717a" />
