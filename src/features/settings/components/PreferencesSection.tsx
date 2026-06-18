@@ -8,7 +8,24 @@ import { useTheme, ThemeOption } from "../../../core/theme/ThemeContext";
 export function PreferencesSection() {
   const showIcons = useSelector((state: RootState) => state.settings.showIcons);
   const dispatch = useDispatch();
-  const { themeOption, setThemeOption } = useTheme();
+  const { themeOption, setThemeOption, activeThemeClass } = useTheme();
+
+  const CustomToggle = ({ value, onValueChange }: { value: boolean, onValueChange: (v: boolean) => void }) => {
+    const getTrackColor = () => {
+      if (value) return '#2563eb'; // Blue
+      return activeThemeClass === '' ? '#000000' : '#3f3f46'; // Black in Light, Grey in Dark
+    };
+
+    return (
+      <Pressable 
+        onPress={() => onValueChange(!value)}
+        style={{ backgroundColor: getTrackColor() }}
+        className="w-12 h-6 rounded-full justify-center px-1"
+      >
+        <View className={`w-4 h-4 rounded-full bg-white shadow-sm ${value ? 'self-end' : 'self-start'}`} />
+      </Pressable>
+    );
+  };
 
   const ThemeButton = ({ title, value }: { title: string, value: ThemeOption }) => {
     const isActive = themeOption === value;
@@ -44,11 +61,9 @@ export function PreferencesSection() {
             <Ionicons name="image" size={24} color="#71717a" />
             <Text className="text-primary text-lg font-semibold ml-3">Show Category Icons</Text>
           </View>
-          <Switch
+          <CustomToggle
             value={showIcons}
             onValueChange={() => { dispatch(toggleShowIcons()); }}
-            trackColor={{ false: '#3f3f46', true: '#2563eb' }}
-            thumbColor={'#ffffff'}
           />
         </View>
       </View>
