@@ -8,6 +8,7 @@ import { BottomSheetModal, BottomSheetView, BottomSheetTextInput, BottomSheetScr
 import { TransactionTypeToggle } from "./TransactionTypeToggle";
 import { CategoryPickerButton } from "./CategoryPickerButton";
 import { CategorySelectModal } from "./CategorySelectModal";
+import { AccountSelectModal } from "../../accounts/components/AccountSelectModal";
 import { DateTimePickerSection } from "./DateTimePickerSection";
 import { BottomSheetFormField } from "../../../shared/components/BottomSheetFormField";
 
@@ -30,6 +31,13 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
   const categories = useSelector((state: RootState) => state.categories.categories);
   const selectedCategory = categories.find(c => c.id === categoryId);
 
+  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const defaultAccountId = useSelector((state: RootState) => state.settings.defaultAccountId);
+  
+  const [accountId, setAccountId] = useState(defaultAccountId);
+  const [showAccountPicker, setShowAccountPicker] = useState(false);
+  const selectedAccount = accounts.find(a => a.id === accountId) || accounts[0];
+
   // Ref: AddExpenseSheet-10
   const snapPoints = useMemo(() => ['90%'], []);
 
@@ -45,7 +53,8 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
       date: date.getTime(),
       type: type,
       categoryId: categoryId,
-      merchant: merchant
+      merchant: merchant,
+      accountId: selectedAccount?.id || undefined, // Send the selected account
     };
 
     const insertedId = await addExpense(newExpense);
@@ -81,10 +90,24 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
 
         <BottomSheetScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
           {/* Ref: AddExpenseSheet-3 */}
-          <CategoryPickerButton 
-            selectedCategory={selectedCategory as any} 
-            onPress={() => setShowCategoryPicker(true)} 
-          />
+          <View className="flex-row gap-4 mb-4">
+            <View className="flex-1">
+              <CategoryPickerButton 
+                selectedCategory={selectedCategory as any} 
+                onPress={() => setShowCategoryPicker(true)} 
+              />
+            </View>
+            <View className="flex-1">
+              <View className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 h-[72px] justify-center">
+                <Text className="text-zinc-400 text-sm mb-1">Account</Text>
+                <Pressable onPress={() => setShowAccountPicker(true)} className="flex-row items-center justify-between">
+                  <Text className="text-white font-bold text-lg flex-1" numberOfLines={1}>
+                    {selectedAccount?.name || 'Select'}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
 
           {/* Ref: AddExpenseSheet-4 */}
           <BottomSheetFormField
@@ -129,6 +152,13 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
         onClose={() => setShowCategoryPicker(false)} 
         categories={categories as any[]} 
         onSelect={setCategoryId} 
+      />
+
+      <AccountSelectModal
+        visible={showAccountPicker}
+        onClose={() => setShowAccountPicker(false)}
+        accounts={accounts}
+        onSelect={setAccountId}
       />
 
     </BottomSheetModal>
