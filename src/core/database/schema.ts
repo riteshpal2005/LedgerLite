@@ -25,7 +25,8 @@ export interface Account {
   id: number;
   name: string;
   type: 'Cash' | 'Bank' | 'Credit Card';
-  balance: number;
+  balance: number; // This acts as the Initial Balance in DB
+  currentBalance?: number; // Dynamically calculated Current Balance
 }
 
 export const CREATE_CATEGORIES_TABLE = `

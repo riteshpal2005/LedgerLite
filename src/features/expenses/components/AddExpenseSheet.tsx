@@ -40,27 +40,29 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
 
   const accounts = useSelector(selectAccountsWithBalances);
   const defaultAccountId = useSelector((state: RootState) => state.settings.defaultAccountId);
-  
+
   const [accountId, setAccountId] = useState(defaultAccountId);
   const [showAccountPicker, setShowAccountPicker] = useState(false);
   const selectedAccount = accounts.find(a => a.id === accountId) || accounts[0];
 
-  useEffect(() => {
-    if (initialExpense) {
-      setAmount(initialExpense.amount.toString());
-      setDescription(initialExpense.description);
-      setMerchant(initialExpense.merchant || '');
-      setDate(new Date(initialExpense.date));
-      setType(initialExpense.type);
-      setCategoryId(initialExpense.categoryId);
-      if (initialExpense.accountId) setAccountId(initialExpense.accountId);
-    } else {
-      setAmount('');
-      setDescription('');
-      setMerchant('');
-      setDate(new Date());
-      setType('debit');
-      if (defaultAccountId) setAccountId(defaultAccountId);
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === 0) {
+      if (initialExpense) {
+        setAmount(initialExpense.amount.toString());
+        setDescription(initialExpense.description);
+        setMerchant(initialExpense.merchant || '');
+        setDate(new Date(initialExpense.date));
+        setType(initialExpense.type);
+        setCategoryId(initialExpense.categoryId);
+        if (initialExpense.accountId) setAccountId(initialExpense.accountId);
+      } else {
+        setAmount('');
+        setDescription('');
+        setMerchant('');
+        setDate(new Date());
+        setType('debit');
+        if (defaultAccountId) setAccountId(defaultAccountId);
+      }
     }
   }, [initialExpense, defaultAccountId]);
 
@@ -91,17 +93,14 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
       dispatch(addExpenseToRedux({ ...expenseData, id: insertedId }));
 
       if (isBackdatedMode && selectedAccount) {
-        // Backdated Mode (Time Travel):
-        // Logging an expense (debit) implies the balance was HIGHER in the past -> Add
-        // Logging an income (credit) implies the balance was LOWER in the past -> Subtract
         const amountAdjustment = type === 'debit' ? expenseData.amount : -expenseData.amount;
         await adjustAccountBalance(selectedAccount.id, amountAdjustment);
-        
+
         const updatedAccounts = await getAllAccounts();
         dispatch(setAccounts(updatedAccounts));
       }
     }
-    
+
     handleClose();
   };
 
@@ -118,6 +117,9 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
       ref={bottomSheetRef}
       index={0}
       snapPoints={snapPoints}
+      onChange={handleSheetChanges}
+      keyboardBehavior="extend"
+      keyboardBlurBehavior="restore"
       backgroundStyle={{ backgroundColor: '#09090b' }} // Ref: AddExpenseSheet-12
       handleIndicatorStyle={{ backgroundColor: '#52525b' }} // Ref: AddExpenseSheet-13
     >
@@ -137,9 +139,9 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
           {/* Ref: AddExpenseSheet-3 */}
           <View className="flex-row gap-4 mb-4">
             <View className="flex-1">
-              <CategoryPickerButton 
-                selectedCategory={selectedCategory as any} 
-                onPress={() => setShowCategoryPicker(true)} 
+              <CategoryPickerButton
+                selectedCategory={selectedCategory as any}
+                onPress={() => setShowCategoryPicker(true)}
               />
             </View>
             <View className="flex-1">
@@ -160,24 +162,31 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
             value={amount}
             onChangeText={setAmount}
             placeholder="0.00"
-            keyboardType="numeric"
+            keyboardType="decimal-pad"
             inputClassName="text-primary text-4xl font-semibold"
           />
 
           {/* Ref: AddExpenseSheet-5 */}
-          <BottomSheetFormField
-            label="Description"
-            value={description}
-            onChangeText={setDescription}
-            placeholder="e.g. Lunch, Groceries..."
-          />
-
-          <BottomSheetFormField
-            label="Merchant"
-            value={merchant}
-            onChangeText={setMerchant}
-            placeholder="e.g. Zomato..."
-          />
+          <View className="flex-row gap-4 mb-4">
+            <View className="flex-1">
+              <BottomSheetFormField
+                label="Description"
+                value={description}
+                onChangeText={setDescription}
+                placeholder="e.g. Lunch..."
+                className="bg-surface rounded-2xl p-4 border border-bordercolor h-[76px]"
+              />
+            </View>
+            <View className="flex-1">
+              <BottomSheetFormField
+                label="Merchant"
+                value={merchant}
+                onChangeText={setMerchant}
+                placeholder="e.g. Zomato..."
+                className="bg-surface rounded-2xl p-4 border border-bordercolor h-[76px]"
+              />
+            </View>
+          </View>
 
           {/* Ref: AddExpenseSheet-6 */}
           <DateTimePickerSection date={date} setDate={setDate} />
@@ -198,11 +207,11 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
 
 
       {/* Ref: AddExpenseSheet-8 */}
-      <CategorySelectModal 
+      <CategorySelectModal
         visible={showCategoryPicker}
         onClose={() => setShowCategoryPicker(false)}
-        categories={categories as any[]} 
-        onSelect={setCategoryId} 
+        categories={categories as any[]}
+        onSelect={setCategoryId}
       />
 
       <AccountSelectModal

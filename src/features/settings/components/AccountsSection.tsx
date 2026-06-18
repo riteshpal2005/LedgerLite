@@ -61,7 +61,7 @@ export function AccountsSection() {
                 >
                   <View>
                     <Text className="text-primary text-lg font-semibold">{account.name}</Text>
-                    <Text className="text-tertiary text-sm">{account.type} • ₹{account.balance.toFixed(2)}</Text>
+                    <Text className="text-tertiary text-sm">{account.type} • ₹{(account.currentBalance ?? account.balance).toFixed(2)}</Text>
                   </View>
                   <View className="flex-row items-center">
                     {isDefault && <Text className="text-blue-500 text-xs font-bold mr-3 bg-blue-500/20 px-2 py-1 rounded-full">DEFAULT</Text>}

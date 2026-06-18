@@ -53,7 +53,7 @@ export const selectAccountsWithBalances = createSelector(
       
       return {
         ...account,
-        balance: currentBalance // override initial balance with real-time balance
+        currentBalance: currentBalance // Set computed balance here, leaving account.balance intact
       };
     });
   }

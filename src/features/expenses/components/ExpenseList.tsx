@@ -36,7 +36,7 @@ export default function ExpenseList({ searchQuery, sortMode, onExpensePress }: E
   useEffect(() => {
     const loadData = async () => {
       // Add a slight delay to ensure the premium skeleton loader is visible on app boot
-      await new Promise(resolve => setTimeout(resolve, 600));
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       const expenseData = await getAllExpenses();
       dispatch(setExpenses(expenseData));

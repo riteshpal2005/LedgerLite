@@ -47,7 +47,7 @@ export function AccountSelectModal({ visible, onClose, accounts, onSelect }: Acc
                   </View>
                   <View className="flex-1">
                     <Text className="text-primary font-bold text-lg">{account.name}</Text>
-                    <Text className="text-tertiary">{account.type} • ₹{account.balance.toFixed(2)}</Text>
+                    <Text className="text-tertiary">{account.type} • ₹{(account.currentBalance ?? account.balance).toFixed(2)}</Text>
                   </View>
                   <Ionicons name="chevron-forward" size={20} color="#52525b" />
                 </Pressable>

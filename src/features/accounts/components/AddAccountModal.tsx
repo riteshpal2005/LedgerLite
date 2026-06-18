@@ -89,7 +89,7 @@ export function AddAccountModal({ visible, onClose, initialAccount }: AddAccount
               onChangeText={setBalance}
               placeholder="0.00"
               placeholderTextColor="#52525b"
-              keyboardType="numeric"
+              keyboardType="decimal-pad"
               className="text-primary text-xl font-semibold"
             />
           </View>
