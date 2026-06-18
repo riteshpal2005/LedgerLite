@@ -1,21 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Modal, Pressable, TextInput, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useExpenseDatabase } from '../../../core/database/useExpenseDatabase';
-import { addAccountToRedux } from '../../../core/store/accountSlice';
+import { addAccountToRedux, updateAccountInRedux } from '../../../core/store/accountSlice';
+import { Account } from '../../../core/database/schema';
 
 interface AddAccountModalProps {
   visible: boolean;
   onClose: () => void;
+  initialAccount?: Account;
 }
 
-export function AddAccountModal({ visible, onClose }: AddAccountModalProps) {
-  const [name, setName] = useState('');
-  const [balance, setBalance] = useState('');
-  const [type, setType] = useState<'Cash' | 'Bank' | 'Credit Card'>('Cash');
+export function AddAccountModal({ visible, onClose, initialAccount }: AddAccountModalProps) {
+  const [name, setName] = useState(initialAccount?.name || '');
+  const [balance, setBalance] = useState(initialAccount ? initialAccount.balance.toString() : '');
+  const [type, setType] = useState<'Cash' | 'Bank' | 'Credit Card'>(initialAccount?.type || 'Cash');
+
+  useEffect(() => {
+    if (visible) {
+      setName(initialAccount?.name || '');
+      setBalance(initialAccount ? initialAccount.balance.toString() : '');
+      setType(initialAccount?.type || 'Cash');
+    }
+  }, [visible, initialAccount]);
 
   const dispatch = useDispatch();
-  const { addAccount } = useExpenseDatabase();
+  const { addAccount, updateAccount } = useExpenseDatabase();
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -30,13 +40,14 @@ export function AddAccountModal({ visible, onClose }: AddAccountModalProps) {
     };
 
     try {
-      const id = await addAccount(newAccount);
-      dispatch(addAccountToRedux({ ...newAccount, id }));
+      if (initialAccount) {
+        await updateAccount(initialAccount.id, newAccount);
+        dispatch(updateAccountInRedux({ ...newAccount, id: initialAccount.id }));
+      } else {
+        const id = await addAccount(newAccount);
+        dispatch(addAccountToRedux({ ...newAccount, id }));
+      }
       
-      // Reset and close
-      setName('');
-      setBalance('');
-      setType('Cash');
       onClose();
     } catch (error) {
       console.error(error);
@@ -54,7 +65,7 @@ export function AddAccountModal({ visible, onClose }: AddAccountModalProps) {
             <View className="w-12 h-1.5 bg-[#52525b] rounded-full self-center mb-6" />
 
             <View className="flex-row justify-between items-center mb-6">
-            <Text className="text-2xl font-bold text-primary">Add Account</Text>
+            <Text className="text-2xl font-bold text-primary">{initialAccount ? 'Edit Account' : 'Add Account'}</Text>
             <Pressable onPress={onClose}>
               <Text className="text-blue-500 font-bold text-lg">Cancel</Text>
             </Pressable>
@@ -101,7 +112,7 @@ export function AddAccountModal({ visible, onClose }: AddAccountModalProps) {
           </View>
 
             <Pressable onPress={handleSave} className='bg-blue-600 rounded-xl p-4 mt-2 mb-8'>
-              <Text className='text-primary font-bold text-center text-lg'>Create Account</Text>
+              <Text className='text-primary font-bold text-center text-lg'>{initialAccount ? 'Save Changes' : 'Create Account'}</Text>
             </Pressable>
           </Pressable>
         </Pressable>

@@ -58,6 +58,13 @@ export function useExpenseDatabase() {
     return result.lastInsertRowId;
   };
 
+  const updateAccount = async (id: number, account: Omit<Account, 'id'>) => {
+    await db.runAsync(
+      'UPDATE accounts SET name = ?, type = ?, balance = ? WHERE id = ?',
+      [account.name, account.type, account.balance, id]
+    );
+  };
+
   const updateExpenseAccount = async (expenseId: number, accountId: number) => {
     await db.runAsync('UPDATE expenses SET accountId = ? WHERE id = ?', [accountId, expenseId]);
   };
@@ -73,7 +80,19 @@ export function useExpenseDatabase() {
     await db.runAsync('DELETE FROM expenses WHERE id = ?', [id]);
   };
 
-  return { addExpense, getAllExpenses, getTotalSpent, getAllCategories, updateCategory, addCategory, getAllAccounts, addAccount, updateExpenseAccount, updateExpenseFull, deleteExpense };
+  const deleteAccount = async (id: number) => {
+    await db.runAsync('DELETE FROM accounts WHERE id = ?', [id]);
+  };
+
+  const deleteExpensesByAccount = async (accountId: number) => {
+    await db.runAsync('DELETE FROM expenses WHERE accountId = ?', [accountId]);
+  };
+
+  const reassignExpenses = async (oldAccountId: number, newAccountId: number) => {
+    await db.runAsync('UPDATE expenses SET accountId = ? WHERE accountId = ?', [newAccountId, oldAccountId]);
+  };
+
+  return { addExpense, getAllExpenses, getTotalSpent, getAllCategories, updateCategory, addCategory, getAllAccounts, addAccount, updateAccount, updateExpenseAccount, updateExpenseFull, deleteExpense, deleteAccount, deleteExpensesByAccount, reassignExpenses };
 }
 
 

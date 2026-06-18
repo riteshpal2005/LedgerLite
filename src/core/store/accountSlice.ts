@@ -19,11 +19,20 @@ export const accountSlice = createSlice({
     },
     addAccountToRedux: (state, action: PayloadAction<Account>) => {
       state.accounts.push(action.payload);
+    },
+    updateAccountInRedux: (state, action: PayloadAction<Account>) => {
+      const index = state.accounts.findIndex(acc => acc.id === action.payload.id);
+      if (index !== -1) {
+        state.accounts[index] = action.payload;
+      }
+    },
+    removeAccountFromRedux: (state, action: PayloadAction<number>) => {
+      state.accounts = state.accounts.filter(acc => acc.id !== action.payload);
     }
   },
 });
 
-export const { setAccounts, addAccountToRedux } = accountSlice.actions;
+export const { setAccounts, addAccountToRedux, updateAccountInRedux, removeAccountFromRedux } = accountSlice.actions;
 
 export const selectAccountsWithBalances = createSelector(
   (state: RootState) => state.accounts.accounts,
