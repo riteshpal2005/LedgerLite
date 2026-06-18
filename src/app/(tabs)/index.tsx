@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 import ExpenseList from '../../features/expenses/components/ExpenseList';
 import { ExpenseSearchBar } from '../../features/expenses/components/ExpenseSearchBar';
-import { ExpenseSortFilter, SortMode } from '../../features/expenses/components/ExpenseSortFilter';
+import { ExpenseSortFilter, SortMode, FilterType, FilterAccountId } from '../../features/expenses/components/ExpenseSortFilter';
 import { AddExpenseSheet } from '../../features/expenses/components/AddExpenseSheet';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
@@ -14,6 +14,8 @@ export default function Home() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [sortMode, setSortMode] = useState<SortMode>('newest');
+  const [filterType, setFilterType] = useState<FilterType>('all');
+  const [filterAccountId, setFilterAccountId] = useState<FilterAccountId>('all');
   const [selectedExpenseToEdit, setSelectedExpenseToEdit] = useState<Expense | undefined>(undefined);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -45,9 +47,22 @@ export default function Home() {
     <View className='flex-1 bg-background p-6 pt-12'>
       <View className="flex-row items-center mb-6 mt-2 z-50 relative">
         <ExpenseSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-        <ExpenseSortFilter sortMode={sortMode} setSortMode={setSortMode} />
+        <ExpenseSortFilter 
+          sortMode={sortMode} 
+          setSortMode={setSortMode}
+          filterType={filterType}
+          setFilterType={setFilterType}
+          filterAccountId={filterAccountId}
+          setFilterAccountId={setFilterAccountId}
+        />
       </View>
-      <ExpenseList searchQuery={searchQuery} sortMode={sortMode} onExpensePress={handleExpensePress} />
+      <ExpenseList 
+        searchQuery={searchQuery} 
+        sortMode={sortMode} 
+        filterType={filterType}
+        filterAccountId={filterAccountId}
+        onExpensePress={handleExpensePress} 
+      />
       <Pressable
         onPress={handlePresentModalPress}
         className="absolute bottom-6 right-6 w-16 h-16 bg-blue-600 rounded-full items-center justify-center shadow-lg elevation-5"

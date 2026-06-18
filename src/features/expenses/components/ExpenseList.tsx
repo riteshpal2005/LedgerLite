@@ -14,13 +14,17 @@ import { useState } from "react";
 import { AccountSelectModal } from "../../accounts/components/AccountSelectModal";
 import { SkeletonExpenseRow } from "./SkeletonExpenseRow";
 
+import { FilterType, FilterAccountId } from "./ExpenseSortFilter";
+
 interface ExpenseListProps {
   searchQuery: string;
   sortMode: SortMode;
+  filterType: FilterType;
+  filterAccountId: FilterAccountId;
   onExpensePress?: (expense: any) => void;
 }
 
-export default function ExpenseList({ searchQuery, sortMode, onExpensePress }: ExpenseListProps) {
+export default function ExpenseList({ searchQuery, sortMode, filterType, filterAccountId, onExpensePress }: ExpenseListProps) {
   const expenses = useSelector((state: RootState) => state.expenses.expenses);
   const categories = useSelector((state: RootState) => state.categories.categories);
   const showIcons = useSelector((state: RootState) => state.settings.showIcons);
@@ -54,6 +58,13 @@ export default function ExpenseList({ searchQuery, sortMode, onExpensePress }: E
   }, []);
 
   const filteredExpenses = expenses.filter(expense => {
+    // 1. Type Filter
+    if (filterType !== 'all' && expense.type !== filterType) return false;
+    
+    // 2. Account Filter
+    if (filterAccountId !== 'all' && expense.accountId !== filterAccountId) return false;
+
+    // 3. Search Filter
     if (!searchQuery) return true;
     const lowerQuery = searchQuery.toLowerCase();
     const matchesDesc = expense.description.toLowerCase().includes(lowerQuery);
