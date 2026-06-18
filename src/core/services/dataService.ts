@@ -3,8 +3,16 @@ import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import * as XLSX from 'xlsx';
 import { Expense, Account, Category } from '../database/schema';
+import { Platform } from 'react-native';
 
-export const exportData = async (expenses: Expense[], accounts: Account[], categories: Category[], format: 'csv' | 'xlsx') => {
+export const exportData = async (
+  expenses: Expense[], 
+  accounts: Account[], 
+  categories: Category[], 
+  format: 'csv' | 'xlsx', 
+  action: 'save' | 'share' = 'share',
+  savedDirectoryUri?: string | null
+): Promise<string | undefined> => {
   try {
     const formattedData = expenses.map(e => {
       const account = accounts.find(a => a.id === e.accountId);
@@ -26,20 +34,79 @@ export const exportData = async (expenses: Expense[], accounts: Account[], categ
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Expenses');
     const fileBase64 = XLSX.write(workbook, { type: 'base64', bookType: format });
+    const mimeType = format === 'csv' ? 'text/csv' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
     const filename = `LedgerLite_Export_${Date.now()}.${format}`;
-    const fileUri = FileSystem.cacheDirectory + filename;
 
+    if (action === 'save' && Platform.OS === 'android') {
+      if (savedDirectoryUri) {
+        try {
+          const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
+            savedDirectoryUri,
+            filename,
+            mimeType
+          );
+          await FileSystem.writeAsStringAsync(safUri, fileBase64, { encoding: 'base64' });
+          return savedDirectoryUri;
+        } catch (e) {
+          console.log("Silent save failed, requesting permissions again");
+        }
+      }
+
+      const initialUri = 'content://com.android.externalstorage.documents/tree/primary%3ADocuments';
+      const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(initialUri);
+      
+      if (permissions.granted) {
+        let targetDirUri = permissions.directoryUri;
+        
+        // If they didn't explicitly pick a folder named LedgerLite, try to create/use one inside their selection
+        if (!decodeURIComponent(targetDirUri).endsWith('LedgerLite')) {
+          let folderCreatedOrFound = false;
+
+          try {
+            const files = await FileSystem.StorageAccessFramework.readDirectoryAsync(permissions.directoryUri);
+            const existingLedgerLite = files.find(f => decodeURIComponent(f).endsWith('/LedgerLite') || decodeURIComponent(f).endsWith(':LedgerLite'));
+            if (existingLedgerLite) {
+              targetDirUri = existingLedgerLite;
+              folderCreatedOrFound = true;
+            }
+          } catch (e) {
+            console.log("Could not read directory for LedgerLite search", e);
+          }
+
+          if (!folderCreatedOrFound) {
+            try {
+              targetDirUri = await FileSystem.StorageAccessFramework.makeDirectoryAsync(permissions.directoryUri, 'LedgerLite');
+            } catch (e) {
+              console.log("Could not create LedgerLite subfolder", e);
+            }
+          }
+        }
+
+        const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
+          targetDirUri,
+          filename,
+          mimeType
+        );
+        await FileSystem.writeAsStringAsync(safUri, fileBase64, { encoding: 'base64' });
+        return targetDirUri;
+      }
+    }
+
+    const fileUri = FileSystem.cacheDirectory + filename;
     await FileSystem.writeAsStringAsync(fileUri, fileBase64, {
       encoding: 'base64'
     });
 
     await Sharing.shareAsync(fileUri, {
-      mimeType: format === 'csv' ? 'text/csv' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      mimeType: mimeType,
       dialogTitle: 'Export LedgerLite Data'
     });
+    
+    return undefined;
 
   } catch (error) {
     console.error("Export Error: ", error);
+    return undefined;
   }
 }
 
