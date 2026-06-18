@@ -19,8 +19,14 @@ const categorySlice = createSlice({
     addCategory: (state, action: PayloadAction<Category>) => {
       state.categories.push(action.payload);
     },
+    updateCategoryAction: (state, action: PayloadAction<Category>) => {
+      const index = state.categories.findIndex(c => c.id === action.payload.id);
+      if (index !== -1) {
+        state.categories[index] = action.payload;
+      }
+    },
   },
 });
 
-export const { setCategories, addCategory } = categorySlice.actions;
+export const { setCategories, addCategory, updateCategoryAction } = categorySlice.actions;
 export default categorySlice.reducer;

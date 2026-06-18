@@ -21,6 +21,21 @@ export function useExpenseDatabase() {
     return result;
   };
 
+  const updateCategory = async (id: number, category: Omit<Category, 'id'>) => {
+    await db.runAsync(
+      'UPDATE categories SET name = ?, icon = ?, color = ? WHERE id = ?',
+      [category.name, category.icon, category.color, id]
+    );
+  };
+
+  const addCategory = async (category: Omit<Category, 'id'>) => {
+    const result = await db.runAsync(
+      'INSERT INTO categories (name, icon, color) VALUES (?, ?, ?)',
+      [category.name, category.icon, category.color]
+    );
+    return result.lastInsertRowId;
+  };
+
   const addExpense = async (expense: Omit<Expense, 'id'>) => {
     // Ref: useExpenseDatabase-1
     const result = await db.runAsync(
@@ -58,7 +73,7 @@ export function useExpenseDatabase() {
     await db.runAsync('DELETE FROM expenses WHERE id = ?', [id]);
   };
 
-  return { addExpense, getAllExpenses, getTotalSpent, getAllCategories, getAllAccounts, addAccount, updateExpenseAccount, updateExpenseFull, deleteExpense };
+  return { addExpense, getAllExpenses, getTotalSpent, getAllCategories, updateCategory, addCategory, getAllAccounts, addAccount, updateExpenseAccount, updateExpenseFull, deleteExpense };
 }
 
 
