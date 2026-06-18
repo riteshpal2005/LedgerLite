@@ -8,8 +8,19 @@ import { store } from "../core/store/store";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { loadSettings } from "../core/store/settingsSlice";
 
 export default function RootLayout() {
+  useEffect(() => {
+    AsyncStorage.getItem('ledgerLite_settings').then(data => {
+      if (data) {
+        store.dispatch(loadSettings(JSON.parse(data)));
+      }
+    }).catch(console.error);
+  }, []);
+
   return (
     <Provider store={store}>
       <SQLiteProvider databaseName="ledgerlite.db" onInit={initializeDatabase}>

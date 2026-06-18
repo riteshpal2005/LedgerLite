@@ -6,8 +6,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { AddAccountModal } from "../../accounts/components/AddAccountModal";
 import { useState } from "react";
 
+import { selectAccountsWithBalances } from "../../../core/store/accountSlice";
+
 export function AccountsSection() {
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const accounts = useSelector(selectAccountsWithBalances);
   const defaultAccountId = useSelector((state: RootState) => state.settings.defaultAccountId);
   
   const [showAddAccount, setShowAddAccount] = useState(false);

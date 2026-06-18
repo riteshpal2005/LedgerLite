@@ -12,6 +12,7 @@
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
     "@gorhom/bottom-sheet": "^5.2.14",
+    "@react-native-async-storage/async-storage": "^3.1.1",
     "@react-native-community/datetimepicker": "8.4.4",
     "@react-navigation/material-top-tabs": "^7.6.2",
     "@reduxjs/toolkit": "^2.12.0",

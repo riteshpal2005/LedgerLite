@@ -12,9 +12,12 @@ const settingsSlice = createSlice({
     },
     setDefaultAccount: (state, action) => {
       state.defaultAccountId = action.payload;
+    },
+    loadSettings: (state, action) => {
+      return { ...state, ...action.payload };
     }
   }
 });
 
-export const { toggleShowIcons, setDefaultAccount } = settingsSlice.actions;
+export const { toggleShowIcons, setDefaultAccount, loadSettings } = settingsSlice.actions;
 export default settingsSlice.reducer;
