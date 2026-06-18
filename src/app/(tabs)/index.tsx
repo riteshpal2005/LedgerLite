@@ -1,7 +1,6 @@
 import { Text, View, Pressable, BackHandler, Modal } from 'react-native';
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
-import { useTheme } from '../../core/theme/ThemeContext';
 import ExpenseList from '../../features/expenses/components/ExpenseList';
 import { ExpenseSearchBar } from '../../features/expenses/components/ExpenseSearchBar';
 import { ExpenseSortFilter, SortMode } from '../../features/expenses/components/ExpenseSortFilter';
@@ -12,7 +11,6 @@ import { useRef } from 'react';
 
 export default function Home() {
 
-  const { theme, toggleTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortMode, setSortMode] = useState<SortMode>('newest');
 
@@ -37,8 +35,10 @@ export default function Home() {
 
   return (
     <View className='flex-1 bg-background p-6 pt-12'>
-      <ExpenseSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <ExpenseSortFilter sortMode={sortMode} setSortMode={setSortMode} />
+      <View className="flex-row items-center mb-6 mt-2 z-50 relative">
+        <ExpenseSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <ExpenseSortFilter sortMode={sortMode} setSortMode={setSortMode} />
+      </View>
       <ExpenseList searchQuery={searchQuery} sortMode={sortMode} />
       <Pressable
         onPress={handlePresentModalPress}

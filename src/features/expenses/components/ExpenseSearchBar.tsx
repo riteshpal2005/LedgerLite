@@ -8,7 +8,7 @@ interface ExpenseSearchBarProps {
 
 export function ExpenseSearchBar({ searchQuery, setSearchQuery }: ExpenseSearchBarProps) {
   return (
-    <View className="flex-row items-center bg-surface rounded-2xl px-4 py-3 mb-6 mt-2 border border-bordercolor">
+    <View className="flex-1 flex-row items-center bg-surface rounded-2xl px-4 h-[46px] border border-bordercolor">
       <Ionicons name="search" size={20} color="#71717a" />
       <TextInput
         value={searchQuery}
