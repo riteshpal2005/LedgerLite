@@ -1,22 +1,26 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
-import { View, Text, TextInput, Pressable } from "react-native";
+import { View, Text } from "react-native";
+import { SortMode } from "./ExpenseSortFilter";
 import { FlashList } from "@shopify/flash-list";
 import { useEffect } from "react";
 import { setExpenses } from "../../../core/store/expenseSlice";
 import { useDispatch } from "react-redux";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
-import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { setCategories } from "../../../core/store/categorySlice";
 
-export default function ExpenseList() {
+interface ExpenseListProps {
+  searchQuery: string;
+  sortMode: SortMode;
+}
+
+export default function ExpenseList({ searchQuery, sortMode }: ExpenseListProps) {
   const expenses = useSelector((state: RootState) => state.expenses.expenses);
   const categories = useSelector((state: RootState) => state.categories.categories);
   const showIcons = useSelector((state: RootState) => state.settings.showIcons);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortMode, setSortMode] = useState<'newest' | 'oldest' | 'highest' | 'lowest'>('newest');
+
   const dispatch = useDispatch();
 
   const { getAllExpenses, getAllCategories } = useExpenseDatabase();
@@ -55,34 +59,6 @@ export default function ExpenseList() {
 
   return (
     <View className='flex-1'>
-      <View className="flex-row items-center bg-zinc-900 rounded-2xl px-4 py-3 mb-6 mt-2 border border-zinc-800">
-        <Ionicons name='search' size={20} color='#71717a' />
-        <TextInput
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Search by description, shop, or amount..."
-          placeholderTextColor="#71717a"
-          className="flex-1 text-white text-base ml-3"
-        />
-        {searchQuery.length > 0 && (
-          <Pressable
-            onPress={() => setSearchQuery('')}
-          >
-            <Ionicons name='close-circle' size={20} color='#71717a' />
-          </Pressable>
-        )}
-      </View>
-      <View className="flex-row gap-2 mb-4">
-        {['newest', 'oldest', 'highest', 'lowest'].map((mode) => (
-          <Pressable
-            key={mode}
-            onPress={() => setSortMode(mode as any)}
-            className={`px-3 py-1.5 rounded-full border ${sortMode === mode ? 'bg-blue-600 border-blue-600' : 'bg-transparent border-zinc-700'}`}
-          >
-            <Text className={`text-xs font-bold capitalize ${sortMode === mode ? 'text-white' : 'text-zinc-400'}`}>{mode}</Text>
-          </Pressable>
-        ))}
-      </View>
       <Text className='text-xl font-bold text-white mb-4'>Recent Expenses</Text>
       <FlashList
         data={sortedExpenses}
