@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { View, Text, Pressable } from "react-native";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,6 +38,12 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
   const [accountId, setAccountId] = useState(defaultAccountId);
   const [showAccountPicker, setShowAccountPicker] = useState(false);
   const selectedAccount = accounts.find(a => a.id === accountId) || accounts[0];
+
+  useEffect(() => {
+    if (defaultAccountId) {
+      setAccountId(defaultAccountId);
+    }
+  }, [defaultAccountId]);
 
   // Ref: AddExpenseSheet-10
   const snapPoints = useMemo(() => ['90%'], []);

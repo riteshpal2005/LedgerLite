@@ -70,4 +70,26 @@ export async function initializeDatabase(db: SQLiteDatabase) {
   } catch (error) {
     // Column likely already exists, safe to ignore.
   }
+
+  // Seed default categories
+  const categoriesCount = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM categories');
+  if (categoriesCount && categoriesCount.count === 0) {
+    await db.execAsync(`
+      INSERT INTO categories (name, icon, color) VALUES 
+      ('Food & Dining', 'restaurant', '#f43f5e'),
+      ('Shopping', 'cart', '#3b82f6'),
+      ('Transportation', 'car', '#eab308'),
+      ('Entertainment', 'film', '#a855f7'),
+      ('Bills & Utilities', 'flash', '#10b981');
+    `);
+  }
+
+  // Seed default account
+  const accountsCount = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM accounts');
+  if (accountsCount && accountsCount.count === 0) {
+    await db.execAsync(`
+      INSERT INTO accounts (name, type, balance) VALUES 
+      ('Cash Wallet', 'Cash', 0);
+    `);
+  }
 }
