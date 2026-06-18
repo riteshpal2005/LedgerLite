@@ -8,11 +8,13 @@ import { AddExpenseSheet } from '../../features/expenses/components/AddExpenseSh
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useRef } from 'react';
+import { Expense } from '../../core/database/schema';
 
 export default function Home() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [sortMode, setSortMode] = useState<SortMode>('newest');
+  const [selectedExpenseToEdit, setSelectedExpenseToEdit] = useState<Expense | undefined>(undefined);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [showExitModal, setShowExitModal] = useState(false);
@@ -30,6 +32,12 @@ export default function Home() {
   );
 
   const handlePresentModalPress = () => {
+    setSelectedExpenseToEdit(undefined); // Clear any edit state when adding new
+    bottomSheetModalRef.current?.present();
+  };
+
+  const handleExpensePress = (expense: Expense) => {
+    setSelectedExpenseToEdit(expense);
     bottomSheetModalRef.current?.present();
   };
 
@@ -39,7 +47,7 @@ export default function Home() {
         <ExpenseSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
         <ExpenseSortFilter sortMode={sortMode} setSortMode={setSortMode} />
       </View>
-      <ExpenseList searchQuery={searchQuery} sortMode={sortMode} />
+      <ExpenseList searchQuery={searchQuery} sortMode={sortMode} onExpensePress={handleExpensePress} />
       <Pressable
         onPress={handlePresentModalPress}
         className="absolute bottom-6 right-6 w-16 h-16 bg-blue-600 rounded-full items-center justify-center shadow-lg elevation-5"
@@ -47,7 +55,7 @@ export default function Home() {
         <Ionicons name="add" size={32} color="white" />
       </Pressable>
 
-      <AddExpenseSheet bottomSheetRef={bottomSheetModalRef} />
+      <AddExpenseSheet bottomSheetRef={bottomSheetModalRef} initialExpense={selectedExpenseToEdit} />
 
       <Modal
         visible={showExitModal}

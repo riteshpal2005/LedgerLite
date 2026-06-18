@@ -47,7 +47,18 @@ export function useExpenseDatabase() {
     await db.runAsync('UPDATE expenses SET accountId = ? WHERE id = ?', [accountId, expenseId]);
   };
 
-  return { addExpense, getAllExpenses, getTotalSpent, getAllCategories, getAllAccounts, addAccount, updateExpenseAccount };
+  const updateExpenseFull = async (id: number, expense: Omit<Expense, 'id'>) => {
+    await db.runAsync(
+      'UPDATE expenses SET amount = ?, description = ?, date = ?, categoryId = ?, type = ?, merchant = ?, accountId = ? WHERE id = ?',
+      [expense.amount, expense.description, expense.date, expense.categoryId, expense.type, expense.merchant || null, expense.accountId || null, id]
+    );
+  };
+
+  const deleteExpense = async (id: number) => {
+    await db.runAsync('DELETE FROM expenses WHERE id = ?', [id]);
+  };
+
+  return { addExpense, getAllExpenses, getTotalSpent, getAllCategories, getAllAccounts, addAccount, updateExpenseAccount, updateExpenseFull, deleteExpense };
 }
 
 

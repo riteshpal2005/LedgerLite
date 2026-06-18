@@ -12,12 +12,16 @@ import { CategorySelectModal } from "./CategorySelectModal";
 import { AccountSelectModal } from "../../accounts/components/AccountSelectModal";
 import { DateTimePickerSection } from "./DateTimePickerSection";
 import { BottomSheetFormField } from "../../../shared/components/BottomSheetFormField";
+import { Expense } from "../../../core/database/schema";
+import { updateExpenseAction, deleteExpenseAction } from "../../../core/store/expenseSlice";
+import { DeleteConfirmationModal } from "../../../shared/components/DeleteConfirmationModal";
 
 interface AddExpenseSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
+  initialExpense?: Expense;
 }
 
-export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
+export function AddExpenseSheet({ bottomSheetRef, initialExpense }: AddExpenseSheetProps) {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [merchant, setMerchant] = useState('');
@@ -26,9 +30,10 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
   const [type, setType] = useState<'debit' | 'credit'>('debit');
   const [categoryId, setCategoryId] = useState(1);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const dispatch = useDispatch();
-  const { addExpense } = useExpenseDatabase();
+  const { addExpense, updateExpenseFull, deleteExpense } = useExpenseDatabase();
   const categories = useSelector((state: RootState) => state.categories.categories);
   const selectedCategory = categories.find(c => c.id === categoryId);
 
@@ -40,10 +45,23 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
   const selectedAccount = accounts.find(a => a.id === accountId) || accounts[0];
 
   useEffect(() => {
-    if (defaultAccountId) {
-      setAccountId(defaultAccountId);
+    if (initialExpense) {
+      setAmount(initialExpense.amount.toString());
+      setDescription(initialExpense.description);
+      setMerchant(initialExpense.merchant || '');
+      setDate(new Date(initialExpense.date));
+      setType(initialExpense.type);
+      setCategoryId(initialExpense.categoryId);
+      if (initialExpense.accountId) setAccountId(initialExpense.accountId);
+    } else {
+      setAmount('');
+      setDescription('');
+      setMerchant('');
+      setDate(new Date());
+      setType('debit');
+      if (defaultAccountId) setAccountId(defaultAccountId);
     }
-  }, [defaultAccountId]);
+  }, [initialExpense, defaultAccountId]);
 
   // Ref: AddExpenseSheet-10
   const snapPoints = useMemo(() => ['90%'], []);
@@ -54,24 +72,32 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
 
   const handleSave = async () => {
     if (!amount || !description) return;
-    const newExpense = {
+    const expenseData = {
       amount: parseFloat(amount),
       description: description,
       date: date.getTime(),
       type: type,
       categoryId: categoryId,
       merchant: merchant,
-      accountId: selectedAccount?.id || undefined, // Send the selected account
+      accountId: selectedAccount?.id || undefined,
     };
 
-    const insertedId = await addExpense(newExpense);
-    dispatch(addExpenseToRedux({ ...newExpense, id: insertedId }));
-
-    // Ref: AddExpenseSheet-11
-    setAmount('');
-    setDescription('');
-    setMerchant('');
+    if (initialExpense) {
+      await updateExpenseFull(initialExpense.id, expenseData);
+      dispatch(updateExpenseAction({ ...expenseData, id: initialExpense.id }));
+    } else {
+      const insertedId = await addExpense(expenseData);
+      dispatch(addExpenseToRedux({ ...expenseData, id: insertedId }));
+    }
     
+    handleClose();
+  };
+
+  const handleDelete = async () => {
+    if (!initialExpense) return;
+    await deleteExpense(initialExpense.id);
+    dispatch(deleteExpenseAction(initialExpense.id));
+    setShowDeleteModal(false);
     handleClose();
   };
 
@@ -86,7 +112,7 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
       <BottomSheetView style={{ flex: 1, padding: 24 }}>
         {/* Ref: AddExpenseSheet-1 */}
         <View className="flex-row justify-between items-center mb-6">
-          <Text className="text-2xl font-bold text-primary">Add Expense</Text>
+          <Text className="text-2xl font-bold text-primary">{initialExpense ? 'Edit Transaction' : 'Add Expense'}</Text>
           <Pressable onPress={handleClose}>
             <Text className="text-secondary font-bold text-lg">Cancel</Text>
           </Pressable>
@@ -145,9 +171,15 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
           <DateTimePickerSection date={date} setDate={setDate} />
 
           {/* Ref: AddExpenseSheet-7 */}
-          <Pressable onPress={handleSave} className='bg-blue-600 rounded-xl p-4 mb-8 mt-4'>
-            <Text className='text-primary font-bold text-center text-lg'>Save Transaction</Text>
+          <Pressable onPress={handleSave} className='bg-blue-600 rounded-xl p-4 mb-4 mt-4'>
+            <Text className='text-white font-bold text-center text-lg'>{initialExpense ? 'Save Changes' : 'Save Transaction'}</Text>
           </Pressable>
+
+          {initialExpense && (
+            <Pressable onPress={() => setShowDeleteModal(true)} className='bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-8'>
+              <Text className='text-red-500 font-bold text-center text-lg'>Delete Transaction</Text>
+            </Pressable>
+          )}
         </BottomSheetScrollView>
       </BottomSheetView>
 
@@ -168,6 +200,11 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
         onSelect={setAccountId}
       />
 
+      <DeleteConfirmationModal
+        visible={showDeleteModal}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteModal(false)}
+      />
     </BottomSheetModal>
   );
 }

@@ -16,9 +16,10 @@ import { AccountSelectModal } from "../../accounts/components/AccountSelectModal
 interface ExpenseListProps {
   searchQuery: string;
   sortMode: SortMode;
+  onExpensePress?: (expense: any) => void;
 }
 
-export default function ExpenseList({ searchQuery, sortMode }: ExpenseListProps) {
+export default function ExpenseList({ searchQuery, sortMode, onExpensePress }: ExpenseListProps) {
   const expenses = useSelector((state: RootState) => state.expenses.expenses);
   const categories = useSelector((state: RootState) => state.categories.categories);
   const showIcons = useSelector((state: RootState) => state.settings.showIcons);
@@ -88,7 +89,10 @@ export default function ExpenseList({ searchQuery, sortMode }: ExpenseListProps)
           const isCredit = item.type === 'credit';
 
           return (
-            <View className='bg-surface p-4 rounded-xl mb-3 flex-row justify-between items-center border border-bordercolor'>
+            <Pressable 
+              onPress={() => onExpensePress && onExpensePress(item)}
+              className='bg-surface p-4 rounded-xl mb-3 flex-row justify-between items-center border border-bordercolor active:opacity-80'
+            >
 
               <View className="flex-row items-center flex-1">
                 {showIcons && category && (
@@ -130,7 +134,7 @@ export default function ExpenseList({ searchQuery, sortMode }: ExpenseListProps)
                   })}
                 </Text>
               </View>
-            </View>
+            </Pressable>
           )
         }}
       />
