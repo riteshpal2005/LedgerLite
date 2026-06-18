@@ -1,9 +1,10 @@
 import { useState, useMemo, useCallback } from "react";
-import { View, Text, Pressable, Modal } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
-import { addExpense as addExpenseToRedux } from "../../../core/store/expenseSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
+import { selectAccountsWithBalances } from "../../../core/store/accountSlice";
+import { addExpense as addExpenseToRedux } from "../../../core/store/expenseSlice";
 import { BottomSheetModal, BottomSheetView, BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { TransactionTypeToggle } from "./TransactionTypeToggle";
 import { CategoryPickerButton } from "./CategoryPickerButton";
@@ -31,7 +32,7 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
   const categories = useSelector((state: RootState) => state.categories.categories);
   const selectedCategory = categories.find(c => c.id === categoryId);
 
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const accounts = useSelector(selectAccountsWithBalances);
   const defaultAccountId = useSelector((state: RootState) => state.settings.defaultAccountId);
   
   const [accountId, setAccountId] = useState(defaultAccountId);
@@ -148,8 +149,8 @@ export function AddExpenseSheet({ bottomSheetRef }: AddExpenseSheetProps) {
 
       {/* Ref: AddExpenseSheet-8 */}
       <CategorySelectModal 
-        visible={showCategoryPicker} 
-        onClose={() => setShowCategoryPicker(false)} 
+        visible={showCategoryPicker}
+        onClose={() => setShowCategoryPicker(false)}
         categories={categories as any[]} 
         onSelect={setCategoryId} 
       />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Modal, Pressable, TextInput, Alert } from 'react-native';
+import { View, Text, Modal, Pressable, TextInput, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useExpenseDatabase } from '../../../core/database/useExpenseDatabase';
 import { addAccountToRedux } from '../../../core/store/accountSlice';
@@ -45,10 +45,15 @@ export function AddAccountModal({ visible, onClose }: AddAccountModalProps) {
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
-      <View className="flex-1 bg-black/80 justify-end">
-        <View className="bg-zinc-950 rounded-t-3xl p-6 h-3/4 border-t border-zinc-800">
-          <View className="flex-row justify-between items-center mb-6">
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
+        <Pressable className="flex-1 bg-black/60 justify-end" onPress={onClose}>
+          <Pressable className="bg-[#09090b] p-6 rounded-t-[32px] border-t border-zinc-800 shadow-2xl" onPress={(e) => e.stopPropagation()}>
+            
+            {/* Drag Indicator */}
+            <View className="w-12 h-1.5 bg-[#52525b] rounded-full self-center mb-6" />
+
+            <View className="flex-row justify-between items-center mb-6">
             <Text className="text-2xl font-bold text-white">Add Account</Text>
             <Pressable onPress={onClose}>
               <Text className="text-blue-500 font-bold text-lg">Cancel</Text>
@@ -95,11 +100,12 @@ export function AddAccountModal({ visible, onClose }: AddAccountModalProps) {
             ))}
           </View>
 
-          <Pressable onPress={handleSave} className='bg-blue-600 rounded-xl p-4'>
-            <Text className='text-white font-bold text-center text-lg'>Create Account</Text>
+            <Pressable onPress={handleSave} className='bg-blue-600 rounded-xl p-4 mt-2 mb-8'>
+              <Text className='text-white font-bold text-center text-lg'>Create Account</Text>
+            </Pressable>
           </Pressable>
-        </View>
-      </View>
+        </Pressable>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

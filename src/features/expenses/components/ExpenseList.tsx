@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
 import { Ionicons } from "@expo/vector-icons";
 import { setCategories } from "../../../core/store/categorySlice";
-import { setAccounts } from "../../../core/store/accountSlice";
+import { setAccounts, selectAccountsWithBalances } from "../../../core/store/accountSlice";
 import { useState } from "react";
 import { AccountSelectModal } from "../../accounts/components/AccountSelectModal";
 
@@ -22,7 +22,7 @@ export default function ExpenseList({ searchQuery, sortMode }: ExpenseListProps)
   const expenses = useSelector((state: RootState) => state.expenses.expenses);
   const categories = useSelector((state: RootState) => state.categories.categories);
   const showIcons = useSelector((state: RootState) => state.settings.showIcons);
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const accounts = useSelector(selectAccountsWithBalances);
 
   const [expenseToAssign, setExpenseToAssign] = useState<number | null>(null);
 
