@@ -9,14 +9,17 @@ import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as FileSystem from 'expo-file-system/legacy';
 import { loadSettings } from "../core/store/settingsSlice";
 
 export default function RootLayout() {
   useEffect(() => {
-    AsyncStorage.getItem('ledgerLite_settings').then(data => {
-      if (data) {
-        store.dispatch(loadSettings(JSON.parse(data)));
+    const fileUri = FileSystem.documentDirectory + 'ledgerLite_settings.json';
+    FileSystem.getInfoAsync(fileUri).then(info => {
+      if (info.exists) {
+        FileSystem.readAsStringAsync(fileUri).then(data => {
+          store.dispatch(loadSettings(JSON.parse(data)));
+        }).catch(console.error);
       }
     }).catch(console.error);
   }, []);

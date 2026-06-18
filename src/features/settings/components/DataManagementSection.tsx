@@ -1,7 +1,7 @@
 import { View, Text, Pressable, Alert } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { setExpenses } from "../../../core/store/expenseSlice";
-import { RootState } from "../../../core/store/store";
+import { RootState, store } from "../../../core/store/store";
 import { Ionicons } from "@expo/vector-icons";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
 import { exportData, importData, exportSettingsJSON } from "../../../core/services/dataService";
@@ -9,9 +9,9 @@ import { exportData, importData, exportSettingsJSON } from "../../../core/servic
 export function DataManagementSection() {
   const dispatch = useDispatch();
   const { getAllExpenses, addExpense } = useExpenseDatabase();
-  const fullState = useSelector((state: RootState) => state);
 
   const handleExportSettings = async () => {
+    const fullState = store.getState();
     const payload = {
       settings: fullState.settings,
       accounts: fullState.accounts.accounts,

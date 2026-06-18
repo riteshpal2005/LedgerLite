@@ -3,7 +3,7 @@ import expenseReducer from './expenseSlice';
 import categoryReducer from './categorySlice';
 import settingsReducer from './settingsSlice';
 import accountReducer from './accountSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system/legacy';
 
 export const store = configureStore({
   reducer: {
@@ -17,7 +17,8 @@ export const store = configureStore({
       const result = next(action);
       if (action.type?.startsWith('settings/')) {
         const state = storeAPI.getState();
-        AsyncStorage.setItem('ledgerLite_settings', JSON.stringify(state.settings)).catch(console.error);
+        const fileUri = FileSystem.documentDirectory + 'ledgerLite_settings.json';
+        FileSystem.writeAsStringAsync(fileUri, JSON.stringify(state.settings)).catch(console.error);
       }
       return result;
     })
