@@ -65,6 +65,13 @@ export function useExpenseDatabase() {
     );
   };
 
+  const adjustAccountBalance = async (accountId: number, amount: number) => {
+    await db.runAsync(
+      'UPDATE accounts SET balance = balance + ? WHERE id = ?',
+      [amount, accountId]
+    );
+  };
+
   const updateExpenseAccount = async (expenseId: number, accountId: number) => {
     await db.runAsync('UPDATE expenses SET accountId = ? WHERE id = ?', [accountId, expenseId]);
   };
@@ -92,7 +99,7 @@ export function useExpenseDatabase() {
     await db.runAsync('UPDATE expenses SET accountId = ? WHERE accountId = ?', [newAccountId, oldAccountId]);
   };
 
-  return { addExpense, getAllExpenses, getTotalSpent, getAllCategories, updateCategory, addCategory, getAllAccounts, addAccount, updateAccount, updateExpenseAccount, updateExpenseFull, deleteExpense, deleteAccount, deleteExpensesByAccount, reassignExpenses };
+  return { addExpense, getAllExpenses, getTotalSpent, getAllCategories, updateCategory, addCategory, getAllAccounts, addAccount, updateAccount, adjustAccountBalance, updateExpenseAccount, updateExpenseFull, deleteExpense, deleteAccount, deleteExpensesByAccount, reassignExpenses };
 }
 
 

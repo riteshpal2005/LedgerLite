@@ -3,7 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
-import { selectAccountsWithBalances } from "../../../core/store/accountSlice";
+import { selectAccountsWithBalances, setAccounts } from "../../../core/store/accountSlice";
 import { addExpense as addExpenseToRedux } from "../../../core/store/expenseSlice";
 import { BottomSheetModal, BottomSheetView, BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { TransactionTypeToggle } from "./TransactionTypeToggle";
@@ -19,9 +19,10 @@ import { DeleteConfirmationModal } from "../../../shared/components/DeleteConfir
 interface AddExpenseSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
   initialExpense?: Expense;
+  isBackdatedMode?: boolean;
 }
 
-export function AddExpenseSheet({ bottomSheetRef, initialExpense }: AddExpenseSheetProps) {
+export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMode = false }: AddExpenseSheetProps) {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [merchant, setMerchant] = useState('');
@@ -33,7 +34,7 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense }: AddExpenseSh
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const dispatch = useDispatch();
-  const { addExpense, updateExpenseFull, deleteExpense } = useExpenseDatabase();
+  const { addExpense, updateExpenseFull, deleteExpense, adjustAccountBalance, getAllAccounts } = useExpenseDatabase();
   const categories = useSelector((state: RootState) => state.categories.categories);
   const selectedCategory = categories.find(c => c.id === categoryId);
 
@@ -88,6 +89,17 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense }: AddExpenseSh
     } else {
       const insertedId = await addExpense(expenseData);
       dispatch(addExpenseToRedux({ ...expenseData, id: insertedId }));
+
+      if (isBackdatedMode && selectedAccount) {
+        // Backdated Mode (Time Travel):
+        // Logging an expense (debit) implies the balance was HIGHER in the past -> Add
+        // Logging an income (credit) implies the balance was LOWER in the past -> Subtract
+        const amountAdjustment = type === 'debit' ? expenseData.amount : -expenseData.amount;
+        await adjustAccountBalance(selectedAccount.id, amountAdjustment);
+        
+        const updatedAccounts = await getAllAccounts();
+        dispatch(setAccounts(updatedAccounts));
+      }
     }
     
     handleClose();

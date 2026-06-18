@@ -2,6 +2,7 @@ import { View, Text, ScrollView, Pressable } from "react-native";
 import { PreferencesSection } from "../../features/settings/components/PreferencesSection";
 import { AccountsSection } from "../../features/settings/components/AccountsSection";
 import { DataManagementSection } from "../../features/settings/components/DataManagementSection";
+import { AdvancedSection } from "../../features/settings/components/AdvancedSection";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
@@ -31,6 +32,7 @@ export default function SettingsScreen() {
         <PreferencesSection />
         <AccountsSection />
         <DataManagementSection />
+        <AdvancedSection />
         <View className="h-12" />
       </ScrollView>
     </View>
