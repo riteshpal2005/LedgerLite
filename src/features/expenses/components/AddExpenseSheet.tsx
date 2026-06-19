@@ -30,7 +30,7 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
   const [date, setDate] = useState(new Date());
 
   const [type, setType] = useState<'debit' | 'credit'>('debit');
-  const [categoryId, setCategoryId] = useState(1);
+  const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -69,6 +69,7 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
       setMerchant('');
       setDate(new Date());
       setType('debit');
+      setCategoryId(undefined);
       if (defaultAccountId) setAccountId(defaultAccountId);
     }
   }, [initialExpense, defaultAccountId]);
@@ -85,7 +86,7 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
   }, []);
 
   const handleSave = async () => {
-    if (!amount || !description) return;
+    if (!amount || !description || categoryId === undefined) return;
     const expenseData = {
       amount: parseFloat(amount),
       description: description,
