@@ -12,6 +12,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { useTheme } from '../../core/theme/ThemeContext';
 import { Expense } from '../../core/database/schema';
+import Constants from 'expo-constants';
+import { Alert } from 'react-native';
+import { CustomAlert } from '../../shared/components/CustomAlert';
 
 export default function Home() {
 
@@ -20,17 +23,12 @@ export default function Home() {
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [filterAccountId, setFilterAccountId] = useState<FilterAccountId>('all');
   const [selectedExpenseToEdit, setSelectedExpenseToEdit] = useState<Expense | undefined>(undefined);
+  const [showExitModal, setShowExitModal] = useState(false);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const exitSheetRef = useRef<BottomSheetModal>(null);
   const addAccountSheetRef = useRef<BottomSheetModal>(null);
 
   const { bottomSheetBackgroundColor, bottomSheetIndicatorColor, bottomSheetBorderColor, colors } = useTheme();
-  const snapPointsExit = useMemo(() => ['30%'], []);
-
-  const handleExitSheetChanges = useCallback((index: number) => {
-    // no-op, handled imperatively
-  }, []);
 
   const renderBackdrop = useCallback(
     (props: any) => React.createElement(BottomSheetBackdrop, { ...props, disappearsOnIndex: -1, appearsOnIndex: 0, opacity: 0.5 }),
@@ -42,7 +40,7 @@ export default function Home() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        exitSheetRef.current?.present();
+        setShowExitModal(true);
         return true;
       };
 
@@ -98,36 +96,23 @@ export default function Home() {
       <AddExpenseSheet bottomSheetRef={bottomSheetModalRef} initialExpense={selectedExpenseToEdit} />
       <AddAccountModal bottomSheetRef={addAccountSheetRef} />
 
-      <BottomSheetModal
-        ref={exitSheetRef}
-        index={0}
-        snapPoints={snapPointsExit}
-        onChange={handleExitSheetChanges}
-        backdropComponent={renderBackdrop}
-        backgroundStyle={{ backgroundColor: bottomSheetBackgroundColor, borderWidth: 1, borderColor: bottomSheetBorderColor }}
-        handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
-        enablePanDownToClose
-      >
-        <View style={{ flex: 1, padding: 24, paddingBottom: 0 }}>
-          <Text className="text-primary text-2xl font-bold mb-3">Exit App</Text>
-          <Text className="text-secondary text-base mb-8">Are you sure you want to exit LedgerLite?</Text>
-          
-          <View className="flex-row justify-end mt-auto mb-6">
-            <Pressable 
-              onPress={() => exitSheetRef.current?.dismiss()}
-              className="px-6 py-3 rounded-xl border border-bordercolor bg-surface mr-2"
-            >
-              <Text className="text-primary font-bold text-base">Cancel</Text>
-            </Pressable>
-            <Pressable 
-              onPress={() => BackHandler.exitApp()}
-              className="px-6 py-3 bg-status-danger rounded-xl"
-            >
-              <Text className="text-status-danger-content font-bold text-base">Exit</Text>
-            </Pressable>
-          </View>
-        </View>
-      </BottomSheetModal>
+      <CustomAlert 
+        visible={showExitModal}
+        title="Exit App"
+        message="Are you sure you want to exit LedgerLite?"
+        confirmText="Exit"
+        cancelText="Cancel"
+        confirmStyle="danger"
+        onCancel={() => setShowExitModal(false)}
+        onConfirm={() => {
+          if (Constants.appOwnership === 'expo') {
+            setShowExitModal(false);
+            Alert.alert("Expo Go", "App exit is disabled inside the Expo Go sandbox. In a production APK, this will close the app.");
+          } else {
+            BackHandler.exitApp();
+          }
+        }}
+      />
     </View>
   );
 }
