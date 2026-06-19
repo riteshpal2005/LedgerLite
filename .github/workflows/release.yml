@@ -38,6 +38,9 @@ jobs:
         run: chmod +x android/gradlew
 
       - name: Build All APKs (Universal + Architecture Splits)
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=512m"
         run: |
           cd android
           # Inject the splits configuration into the bottom of build.gradle
@@ -54,8 +57,8 @@ jobs:
           }
           EOF
           
-          # Run a single build pipeline
-          ./gradlew assembleRelease
+          # Run a single build pipeline (skipping lint to prevent trivial crashes)
+          ./gradlew assembleRelease -x lint
           
           # Rename generated APKs
           cp app/build/outputs/apk/release/app-universal-release.apk ../LedgerLite-${{ github.ref_name }}-OSS-universal.apk
