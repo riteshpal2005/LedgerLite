@@ -10,6 +10,8 @@ import { exportData, importData, exportSettingsJSON, importSettingsJSON, exportT
 import { ExportActionRow } from "./ExportActionRow";
 import { ImportActionRow } from "./ImportActionRow";
 import { RestoreRawJsonModal } from "./RestoreRawJsonModal";
+import { AddAccountModal } from "../../accounts/components/AddAccountModal";
+import { Account } from "../../../core/database/schema";
 import { useState } from "react";
 import { ColumnSelectionModal, ExportColumn } from "./ColumnSelectionModal";
 import { triggerHaptic } from "../../../core/utils/haptics";
@@ -22,6 +24,13 @@ export function DataManagementSection() {
   const [pdfAction, setPdfAction] = useState<'save' | 'share' | null>(null);
 
   const [rawJsonModalVisible, setRawJsonModalVisible] = useState(false);
+
+  // Import State for Missing Accounts
+  const [missingAccountsForImport, setMissingAccountsForImport] = useState<string[]>([]);
+  const [pendingImportExpenses, setPendingImportExpenses] = useState<any[]>([]);
+  const [currentMissingAccountIndex, setCurrentMissingAccountIndex] = useState(0);
+  const [accountMappingModalVisible, setAccountMappingModalVisible] = useState(false);
+  const [newlyCreatedAccountsCache, setNewlyCreatedAccountsCache] = useState<Account[]>([]);
 
   const handleExportSettings = async (action: 'save' | 'share' | 'copy') => {
     const fullState = store.getState();
@@ -51,7 +60,7 @@ export function DataManagementSection() {
     if (expenses.length === 0) return Alert.alert("No Data", "There are no expenses to export.");
     const state = store.getState();
     const newDirUri = await exportData(expenses, state.accounts.accounts, state.categories.categories, 'xlsx', action, state.settings.exportDirectoryUri);
-    
+
     if (newDirUri && newDirUri !== state.settings.exportDirectoryUri) {
       dispatch(setExportDirectoryUri(newDirUri));
     }
@@ -65,9 +74,9 @@ export function DataManagementSection() {
     const expenses = await getAllExpenses();
     if (expenses.length === 0) return Alert.alert("No Data", "There are no expenses to export.");
     const state = store.getState();
-    
+
     const newDirUri = await exportData(expenses, state.accounts.accounts, state.categories.categories, 'csv', action, state.settings.exportDirectoryUri);
-    
+
     if (newDirUri && newDirUri !== state.settings.exportDirectoryUri) {
       dispatch(setExportDirectoryUri(newDirUri));
     }
@@ -91,7 +100,7 @@ export function DataManagementSection() {
     const expenses = await getAllExpenses();
     const state = store.getState();
     const newDirUri = await exportToPDF(expenses, state.accounts.accounts, state.categories.categories, selectedColumns, pdfAction, state.settings.exportDirectoryUri);
-    
+
     if (newDirUri && newDirUri !== state.settings.exportDirectoryUri) {
       dispatch(setExportDirectoryUri(newDirUri));
     }
@@ -99,7 +108,7 @@ export function DataManagementSection() {
     if (pdfAction === 'save' && Platform.OS === 'android' && newDirUri) {
       ToastAndroid.show("PDF file saved to LedgerLite folder!", ToastAndroid.SHORT);
     }
-    
+
     setPdfAction(null);
   };
 
@@ -108,23 +117,66 @@ export function DataManagementSection() {
     const categories = await getAllCategories();
     const accounts = await getAllAccounts();
 
-    const importedExpenses = await importData(categories, accounts, expenses);
-    if (importedExpenses) {
-      let addedCount = 0;
-      for (const expense of importedExpenses) {
-        const { id, ...expenseData } = expense;
-        await addExpense(expenseData);
-        addedCount++;
+    const importResult = await importData(categories, accounts, expenses);
+    if (importResult) {
+      if (importResult.missingAccounts && importResult.missingAccounts.length > 0) {
+        // Pause import, show sequential account creation modals
+        setMissingAccountsForImport(importResult.missingAccounts);
+        setPendingImportExpenses(importResult.expenses);
+        setCurrentMissingAccountIndex(0);
+        setNewlyCreatedAccountsCache([]);
+        setAccountMappingModalVisible(true);
+        return;
       }
-      if (addedCount > 0) {
-        const updatedExpenses = await getAllExpenses();
-        dispatch(setExpenses(updatedExpenses));
-        triggerHaptic.success();
-        Alert.alert("Success", `Imported ${addedCount} new transactions successfully.`);
-      } else {
-        triggerHaptic.light();
-        Alert.alert("Notice", "No new transactions were found to import (all were duplicates).");
+
+      await finalizeImport(importResult.expenses, []);
+    }
+  };
+
+  const handleAccountCreated = (account: Account) => {
+    const updatedCache = [...newlyCreatedAccountsCache, account];
+    setNewlyCreatedAccountsCache(updatedCache);
+
+    if (currentMissingAccountIndex + 1 < missingAccountsForImport.length) {
+      setCurrentMissingAccountIndex(prev => prev + 1);
+    } else {
+      // All accounts created! Proceed to finalize
+      setAccountMappingModalVisible(false);
+      finalizeImport(pendingImportExpenses, updatedCache);
+
+      // Cleanup state
+      setMissingAccountsForImport([]);
+      setPendingImportExpenses([]);
+      setCurrentMissingAccountIndex(0);
+      setNewlyCreatedAccountsCache([]);
+    }
+  };
+
+  const finalizeImport = async (expensesToImport: any[], newlyCreatedAccounts: Account[]) => {
+    let addedCount = 0;
+    for (const expense of expensesToImport) {
+      const { id, _accountName, ...expenseData } = expense;
+
+      // If this expense had a missing account, try to resolve it from the newlyCreatedAccounts
+      if (_accountName && !expenseData.accountId) {
+        const mappedAccount = newlyCreatedAccounts.find(a => a.name === _accountName);
+        if (mappedAccount) {
+          expenseData.accountId = mappedAccount.id;
+        }
       }
+
+      await addExpense(expenseData);
+      addedCount++;
+    }
+
+    if (addedCount > 0) {
+      const updatedExpenses = await getAllExpenses();
+      dispatch(setExpenses(updatedExpenses));
+      triggerHaptic.success();
+      Alert.alert("Success", `Imported ${addedCount} new transactions successfully.`);
+    } else {
+      triggerHaptic.light();
+      Alert.alert("Notice", "No new transactions were found to import (all were duplicates).");
     }
   };
 
@@ -218,19 +270,33 @@ export function DataManagementSection() {
         </View>
       </View>
 
-      <RestoreRawJsonModal 
+      <RestoreRawJsonModal
         visible={rawJsonModalVisible}
         onClose={() => setRawJsonModalVisible(false)}
         onRestore={processRestoration}
       />
 
-      <ColumnSelectionModal 
-        visible={pdfModalVisible} 
+      <ColumnSelectionModal
+        visible={pdfModalVisible}
         onClose={() => {
           setPdfModalVisible(false);
           setPdfAction(null);
-        }} 
-        onConfirm={handleConfirmPDF} 
+        }}
+        onConfirm={handleConfirmPDF}
+      />
+
+      <AddAccountModal
+        visible={accountMappingModalVisible}
+        onClose={() => {
+          setAccountMappingModalVisible(false);
+          setMissingAccountsForImport([]);
+          setPendingImportExpenses([]);
+          setCurrentMissingAccountIndex(0);
+          setNewlyCreatedAccountsCache([]);
+          Alert.alert("Import Cancelled", "Import was cancelled because not all missing accounts were mapped.");
+        }}
+        initialName={missingAccountsForImport[currentMissingAccountIndex] || ''}
+        onAccountCreated={handleAccountCreated}
       />
     </>
   );

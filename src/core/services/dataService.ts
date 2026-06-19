@@ -119,7 +119,7 @@ export const importData = async (
   categories: Category[],
   accounts: Account[],
   existingExpenses: Expense[]
-): Promise<Expense[] | null> => {
+): Promise<{ expenses: any[], missingAccounts: string[] } | null> => {
   try {
     const result = await DocumentPicker.getDocumentAsync({
       type: [
@@ -144,7 +144,8 @@ export const importData = async (
 
     const rawJson = XLSX.utils.sheet_to_json(worksheet) as any[];
 
-    const importedExpenses: Expense[] = [];
+    const importedExpenses: any[] = [];
+    const missingAccounts: string[] = [];
 
     for (const row of rawJson) {
       // Parse amount (remove currency symbols and commas)
@@ -160,6 +161,12 @@ export const importData = async (
       const accountName = row.AccountName || row.Account;
       const matchedAccount = accounts.find(a => a.name === accountName);
       const accountId = matchedAccount ? matchedAccount.id : undefined;
+
+      if (!matchedAccount && accountName && accountName !== 'Unassigned') {
+        if (!missingAccounts.includes(accountName)) {
+          missingAccounts.push(accountName);
+        }
+      }
 
       let parsedDate = Date.now();
       if (row._RawDateUnix) {
@@ -216,12 +223,13 @@ export const importData = async (
           date: parsedDate,
           type,
           categoryId,
-          accountId
+          accountId,
+          _accountName: accountName // Keep this so we can assign the new ID later if missing
         });
       }
     }
 
-    return importedExpenses;
+    return { expenses: importedExpenses, missingAccounts };
 
   } catch (error) {
     console.error("Import Error: ", error);

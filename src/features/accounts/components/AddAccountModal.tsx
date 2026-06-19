@@ -9,20 +9,22 @@ interface AddAccountModalProps {
   visible: boolean;
   onClose: () => void;
   initialAccount?: Account;
+  initialName?: string;
+  onAccountCreated?: (account: Account) => void;
 }
 
-export function AddAccountModal({ visible, onClose, initialAccount }: AddAccountModalProps) {
-  const [name, setName] = useState(initialAccount?.name || '');
+export function AddAccountModal({ visible, onClose, initialAccount, initialName, onAccountCreated }: AddAccountModalProps) {
+  const [name, setName] = useState(initialAccount?.name || initialName || '');
   const [balance, setBalance] = useState(initialAccount ? initialAccount.balance.toString() : '');
   const [type, setType] = useState<'Cash' | 'Bank' | 'Credit Card'>(initialAccount?.type || 'Cash');
 
   useEffect(() => {
     if (visible) {
-      setName(initialAccount?.name || '');
+      setName(initialAccount?.name || initialName || '');
       setBalance(initialAccount ? initialAccount.balance.toString() : '');
       setType(initialAccount?.type || 'Cash');
     }
-  }, [visible, initialAccount]);
+  }, [visible, initialAccount, initialName]);
 
   const dispatch = useDispatch();
   const { addAccount, updateAccount } = useExpenseDatabase();
@@ -45,7 +47,11 @@ export function AddAccountModal({ visible, onClose, initialAccount }: AddAccount
         dispatch(updateAccountInRedux({ ...newAccount, id: initialAccount.id }));
       } else {
         const id = await addAccount(newAccount);
-        dispatch(addAccountToRedux({ ...newAccount, id }));
+        const createdAccount = { ...newAccount, id };
+        dispatch(addAccountToRedux(createdAccount));
+        if (onAccountCreated) {
+          onAccountCreated(createdAccount);
+        }
       }
       
       onClose();
