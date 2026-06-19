@@ -119,7 +119,10 @@ export const importData = async (): Promise<Expense[] | null> => {
     const result = await DocumentPicker.getDocumentAsync({
       type: [
         'text/csv',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        'text/comma-separated-values',
+        'application/csv',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-excel'
       ],
       copyToCacheDirectory: true
     });
