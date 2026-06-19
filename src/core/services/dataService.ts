@@ -114,7 +114,11 @@ export const exportData = async (
   }
 }
 
-export const importData = async (): Promise<Expense[] | null> => {
+export const importData = async (
+  categories: Category[],
+  accounts: Account[],
+  existingExpenses: Expense[]
+): Promise<Expense[] | null> => {
   try {
     const result = await DocumentPicker.getDocumentAsync({
       type: [
@@ -139,16 +143,51 @@ export const importData = async (): Promise<Expense[] | null> => {
 
     const rawJson = XLSX.utils.sheet_to_json(worksheet) as any[];
 
-    const importedExpenses: Expense[] = rawJson.map((row: any) => ({
-      id: Date.now() + Math.random(),
+    const importedExpenses: Expense[] = [];
 
-      amount: parseFloat(row.Amount) || 0,
-      description: row.Description || 'Imported Transaction',
-      merchant: row.Merchant || null,
-      date: new Date(`${row.Date} ${row.Time}`).getTime() || Date.now(),
-      type: row.Type === 'credit' ? 'credit' : 'debit',
-      categoryId: parseInt(row.CategoryId) || 1
-    }));
+    for (const row of rawJson) {
+      // Parse amount (remove currency symbols and commas)
+      const rawAmountStr = String(row.Amount || '0').replace(/[^0-9.-]+/g, "");
+      const parsedAmount = parseFloat(rawAmountStr) || 0;
+
+      // Find Category ID
+      const categoryName = row.Category;
+      const matchedCategory = categories.find(c => c.name === categoryName);
+      const categoryId = matchedCategory ? matchedCategory.id : 1;
+
+      // Find Account ID
+      const accountName = row.AccountName || row.Account;
+      const matchedAccount = accounts.find(a => a.name === accountName);
+      const accountId = matchedAccount ? matchedAccount.id : undefined;
+
+      const dateObj = new Date(`${row.Date} ${row.Time}`);
+      const parsedDate = dateObj.getTime() || Date.now();
+      const type = row.Type === 'Income' || row.Type === 'credit' ? 'credit' : 'debit';
+      const description = row.Description || 'Imported Transaction';
+
+      // Check for duplicates
+      const isDuplicate = existingExpenses.some(ex => {
+        const timeDiff = Math.abs(ex.date - parsedDate);
+        return ex.amount === parsedAmount &&
+          ex.description === description &&
+          ex.type === type &&
+          timeDiff < 60000; // within 1 minute
+      });
+
+      if (!isDuplicate) {
+        importedExpenses.push({
+          id: Date.now() + Math.random(), // Temp ID, will be ignored by addExpense
+          amount: parsedAmount,
+          description,
+          merchant: row.Merchant || null,
+          date: parsedDate,
+          type,
+          categoryId,
+          accountId
+        });
+      }
+    }
+
     return importedExpenses;
 
   } catch (error) {

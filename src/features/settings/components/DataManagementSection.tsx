@@ -15,7 +15,7 @@ import { ColumnSelectionModal, ExportColumn } from "./ColumnSelectionModal";
 
 export function DataManagementSection() {
   const dispatch = useDispatch();
-  const { getAllExpenses, addExpense, getAllCategories, restoreCategory } = useExpenseDatabase();
+  const { getAllExpenses, addExpense, getAllCategories, restoreCategory, getAllAccounts } = useExpenseDatabase();
 
   const [pdfModalVisible, setPdfModalVisible] = useState(false);
   const [pdfAction, setPdfAction] = useState<'save' | 'share' | null>(null);
@@ -102,15 +102,25 @@ export function DataManagementSection() {
   };
 
   const handleImport = async () => {
-    const importedExpenses = await importData();
+    const expenses = await getAllExpenses();
+    const categories = await getAllCategories();
+    const accounts = await getAllAccounts();
+
+    const importedExpenses = await importData(categories, accounts, expenses);
     if (importedExpenses) {
+      let addedCount = 0;
       for (const expense of importedExpenses) {
         const { id, ...expenseData } = expense;
         await addExpense(expenseData);
+        addedCount++;
       }
-      const updatedExpenses = await getAllExpenses();
-      dispatch(setExpenses(updatedExpenses));
-      Alert.alert("Success", `Imported ${importedExpenses.length} transactions successfully.`);
+      if (addedCount > 0) {
+        const updatedExpenses = await getAllExpenses();
+        dispatch(setExpenses(updatedExpenses));
+        Alert.alert("Success", `Imported ${addedCount} new transactions successfully.`);
+      } else {
+        Alert.alert("Notice", "No new transactions were found to import (all were duplicates).");
+      }
     }
   };
 
