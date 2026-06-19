@@ -46,7 +46,6 @@ jobs:
       - name: Build Architecture-Specific APKs
         run: |
           cd android
-          ./gradlew clean
           ./gradlew assembleRelease -PenableSeparateBuildPerCPUArchitecture=true
           cp app/build/outputs/apk/release/app-arm64-v8a-release.apk ../LedgerLite-${{ github.ref_name }}-OSS-arm64_v8a.apk
           cp app/build/outputs/apk/release/app-x86_64-release.apk ../LedgerLite-${{ github.ref_name }}-OSS-x86_64.apk
