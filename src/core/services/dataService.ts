@@ -30,7 +30,8 @@ export const exportData = async (
         Description: e.description,
         Merchant: e.merchant || '',
         AccountName: account ? account.name : 'Unassigned',
-        AccountType: account ? account.type : 'N/A'
+        AccountType: account ? account.type : 'N/A',
+        _RawDateUnix: e.date
       };
     });
 
@@ -160,8 +161,40 @@ export const importData = async (
       const matchedAccount = accounts.find(a => a.name === accountName);
       const accountId = matchedAccount ? matchedAccount.id : undefined;
 
-      const dateObj = new Date(`${row.Date} ${row.Time}`);
-      const parsedDate = dateObj.getTime() || Date.now();
+      let parsedDate = Date.now();
+      if (row._RawDateUnix) {
+        parsedDate = parseInt(row._RawDateUnix);
+      } else {
+        const dateStr = `${row.Date} ${row.Time}`;
+        const dateObj = new Date(dateStr);
+        if (!isNaN(dateObj.getTime())) {
+          parsedDate = dateObj.getTime();
+        } else if (row.Date) {
+          // Fallback parsing for DD/MM/YYYY formats
+          const dateParts = String(row.Date).split(/[-/]/);
+          if (dateParts.length === 3) {
+            const day = parseInt(dateParts[0]);
+            const month = parseInt(dateParts[1]) - 1;
+            let year = parseInt(dateParts[2]);
+            if (year < 100) year += 2000; // Handle 2-digit years
+
+            let hours = 0; let minutes = 0; let seconds = 0;
+            if (row.Time) {
+              const timeParts = String(row.Time).match(/(\d+):(\d+)(?::(\d+))?\s*(AM|PM)?/i);
+              if (timeParts) {
+                hours = parseInt(timeParts[1]);
+                minutes = parseInt(timeParts[2]);
+                seconds = timeParts[3] ? parseInt(timeParts[3]) : 0;
+                const ampm = timeParts[4] ? timeParts[4].toUpperCase() : '';
+                if (ampm === 'PM' && hours < 12) hours += 12;
+                if (ampm === 'AM' && hours === 12) hours = 0;
+              }
+            }
+            const fallbackDate = new Date(year, month, day, hours, minutes, seconds).getTime();
+            if (!isNaN(fallbackDate)) parsedDate = fallbackDate;
+          }
+        }
+      }
       const type = row.Type === 'Income' || row.Type === 'credit' ? 'credit' : 'debit';
       const description = row.Description || 'Imported Transaction';
 
