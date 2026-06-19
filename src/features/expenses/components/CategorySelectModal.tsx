@@ -1,5 +1,8 @@
-import { Modal, View, Text, Pressable, ScrollView } from "react-native";
+import { View, Text, Pressable } from "react-native";
+import { BottomSheetModal, BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { Ionicons } from "@expo/vector-icons";
+import { useRef, useEffect, useMemo, useCallback } from 'react';
+import { useTheme } from '../../../core/theme/ThemeContext';
 
 type Category = { id: number; name: string; color: string; icon: string; };
 
@@ -11,22 +14,43 @@ interface CategorySelectModalProps {
 }
 
 export function CategorySelectModal({ visible, onClose, categories, onSelect }: CategorySelectModalProps) {
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ['60%'], []);
+  const { bottomSheetBackgroundColor, bottomSheetIndicatorColor } = useTheme();
+
+  useEffect(() => {
+    if (visible) bottomSheetRef.current?.present();
+    else bottomSheetRef.current?.dismiss();
+  }, [visible]);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === -1) onClose();
+  }, [onClose]);
+
+  const renderBackdrop = useCallback(
+    (props: any) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
+    []
+  );
+
   return (
-    <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
-      <Pressable className="flex-1 justify-end bg-black/60" onPress={onClose}>
-        <Pressable className="bg-[#09090b] p-6 rounded-t-[32px] h-[60%] border-t border-bordercolor shadow-2xl" onPress={(e) => e.stopPropagation()}>
-          
-          {/* Drag Indicator */}
-          <View className="w-12 h-1.5 bg-[#52525b] rounded-full self-center mb-6" />
+    <BottomSheetModal
+      ref={bottomSheetRef}
+      index={0}
+      snapPoints={snapPoints}
+      onChange={handleSheetChanges}
+      backdropComponent={renderBackdrop}
+      backgroundStyle={{ backgroundColor: bottomSheetBackgroundColor }}
+      handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
+    >
+      <View style={{ flex: 1, padding: 24, paddingTop: 12 }}>
+        <View className="flex-row justify-between items-center mb-6">
+          <Text className="text-2xl font-bold text-primary">Select Category</Text>
+          <Pressable onPress={onClose} className="bg-surface p-2 rounded-full border border-bordercolor">
+            <Ionicons name="close" size={20} color="#a1a1aa" />
+          </Pressable>
+        </View>
 
-          <View className="flex-row justify-between items-center mb-6">
-            <Text className="text-2xl font-bold text-primary">Select Category</Text>
-            <Pressable onPress={onClose} className="bg-surface p-2 rounded-full">
-              <Ionicons name="close" size={20} color="#a1a1aa" />
-            </Pressable>
-          </View>
-
-          <ScrollView showsVerticalScrollIndicator={false}>
+        <BottomSheetScrollView showsVerticalScrollIndicator={false}>
             {categories.map((cat) => (
               <Pressable
                 key={cat.id}
@@ -42,9 +66,8 @@ export function CategorySelectModal({ visible, onClose, categories, onSelect }: 
                 <Text className="text-primary text-xl font-semibold">{cat.name}</Text>
               </Pressable>
             ))}
-          </ScrollView>
-        </Pressable>
-      </Pressable>
-    </Modal>
+        </BottomSheetScrollView>
+      </View>
+    </BottomSheetModal>
   );
 }

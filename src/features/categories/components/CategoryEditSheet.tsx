@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { View, Text, Pressable, ScrollView } from "react-native";
-import { BottomSheetModal, BottomSheetView, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetView, BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
@@ -46,18 +46,7 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
     return expenses.filter(e => e.categoryId === initialCategory.id).length;
   }, [initialCategory, expenses]);
   const { updateCategory, addCategory } = useExpenseDatabase();
-  const { activeThemeClass } = useTheme();
-
-  const getSurfaceColor = () => {
-    if (activeThemeClass === 'theme-pitch-black') return '#09090b';
-    if (activeThemeClass === 'theme-dark') return '#18181b';
-    return '#ffffff';
-  };
-
-  const getIndicatorColor = () => {
-    if (activeThemeClass === '') return '#e4e4e7';
-    return '#52525b';
-  };
+  const { bottomSheetBackgroundColor, bottomSheetIndicatorColor, bottomSheetBorderColor, colors } = useTheme();
 
   useEffect(() => {
     if (initialCategory) {
@@ -72,6 +61,11 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
   }, [initialCategory]);
 
   const snapPoints = useMemo(() => ['75%', '90%'], []);
+
+  const renderBackdrop = useCallback(
+    (props: any) => React.createElement(BottomSheetBackdrop, { ...props, disappearsOnIndex: -1, appearsOnIndex: 0, opacity: 0.5 }),
+    []
+  );
 
   const handleClose = useCallback(() => {
     bottomSheetRef.current?.dismiss();
@@ -102,8 +96,9 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
       ref={bottomSheetRef}
       index={0}
       snapPoints={snapPoints}
-      backgroundStyle={{ backgroundColor: getSurfaceColor() }}
-      handleIndicatorStyle={{ backgroundColor: getIndicatorColor() }}
+      backdropComponent={renderBackdrop}
+      backgroundStyle={{ backgroundColor: bottomSheetBackgroundColor, borderWidth: 1, borderColor: bottomSheetBorderColor }}
+      handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
     >
       <BottomSheetScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         <View className="px-6 py-2 pb-10">
@@ -133,9 +128,9 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6 flex-row">
             <Pressable
               onPress={() => setShowColorPicker(!showColorPicker)}
-              className={`w-12 h-12 rounded-full mr-3 items-center justify-center border-2 ${showColorPicker ? 'border-blue-500 bg-blue-500/10' : 'border-bordercolor bg-surface'}`}
+              className={`w-12 h-12 rounded-full mr-3 items-center justify-center border-2 ${showColorPicker ? 'border-brand-primary bg-brand-primary/10' : 'border-bordercolor bg-surface'}`}
             >
-              <Ionicons name="color-palette" size={24} color={showColorPicker ? '#3b82f6' : '#71717a'} />
+              <Ionicons name="color-palette" size={24} color={showColorPicker ? colors.brandPrimary : '#71717a'} />
             </Pressable>
             {PRESET_COLORS.map(c => (
               <Pressable 
@@ -171,9 +166,9 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
               <Pressable
                 key={i}
                 onPress={() => setIcon(i)}
-                className={`w-14 h-14 rounded-2xl items-center justify-center border ${icon === i ? 'bg-blue-600 border-blue-500' : 'bg-surface border-bordercolor'}`}
+                className={`w-14 h-14 rounded-2xl items-center justify-center border ${icon === i ? 'bg-brand-primary border-brand-primary' : 'bg-surface border-bordercolor'}`}
               >
-                <Ionicons name={i as any} size={28} color={icon === i ? 'white' : '#71717a'} />
+                <Ionicons name={i as any} size={28} color={icon === i ? colors.brandPrimaryContent : '#71717a'} />
               </Pressable>
             ))}
           </View>
@@ -182,13 +177,13 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
             {initialCategory && (
               <Pressable 
                 onPress={() => setShowDeleteModal(true)} 
-                className='flex-1 border border-red-500/50 bg-red-500/10 rounded-xl p-4 items-center justify-center'
+                className='flex-1 border border-status-danger/50 bg-status-danger/10 rounded-xl p-4 items-center justify-center'
               >
-                <Ionicons name="trash-outline" size={24} color="#ef4444" />
+                <Ionicons name="trash-outline" size={24} color={colors.statusDanger} />
               </Pressable>
             )}
-            <Pressable onPress={handleSave} className='flex-[3] bg-blue-600 rounded-xl p-4'>
-              <Text className='text-white font-bold text-center text-lg'>{initialCategory ? 'Save Changes' : 'Create Category'}</Text>
+            <Pressable onPress={handleSave} className='flex-[3] bg-brand-primary rounded-xl p-4'>
+              <Text className='text-brand-primary-content font-bold text-center text-lg'>{initialCategory ? 'Save Changes' : 'Create Category'}</Text>
             </Pressable>
           </View>
 

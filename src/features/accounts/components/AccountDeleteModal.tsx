@@ -1,5 +1,7 @@
-import { View, Text, Modal, Pressable, TextInput, ScrollView, Alert } from "react-native";
-import { useState, useEffect } from "react";
+import { View, Text, Pressable, ScrollView, Alert } from "react-native";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { BottomSheetModal, BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { useTheme } from '../../../core/theme/ThemeContext';
 import { Ionicons } from "@expo/vector-icons";
 import { Account } from "../../../core/database/schema";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
@@ -25,14 +27,29 @@ export function AccountDeleteModal({ visible, onClose, account, accounts, linked
   const { deleteAccount, deleteExpensesByAccount, reassignExpenses, getAllExpenses } = useExpenseDatabase();
   const dispatch = useDispatch();
 
-  // Reset state when modal opens/closes
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ['70%'], []);
+  const { bottomSheetBackgroundColor, bottomSheetIndicatorColor, colors } = useTheme();
+
   useEffect(() => {
     if (visible) {
       setOption('delete');
       const otherAccounts = accounts.filter(a => a.id !== account?.id);
       setSelectedExistingAccountId(otherAccounts.length > 0 ? otherAccounts[0].id : null);
+      bottomSheetRef.current?.present();
+    } else {
+      bottomSheetRef.current?.dismiss();
     }
   }, [visible, account]);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === -1) onClose();
+  }, [onClose]);
+
+  const renderBackdrop = useCallback(
+    (props: any) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
+    []
+  );
 
   const handleConfirm = async () => {
     if (!account) return;
@@ -77,68 +94,74 @@ export function AccountDeleteModal({ visible, onClose, account, accounts, linked
   }
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
-      <View className="flex-1 bg-black/60 justify-end">
-        <View className="bg-background rounded-t-3xl p-6 border-t border-bordercolor max-h-[90%]">
-          <Text className="text-primary text-xl font-bold mb-2">Delete Account</Text>
-          <Text className="text-secondary mb-6">
-            You are about to delete <Text className="font-bold text-primary">{account?.name}</Text>.
-          </Text>
+    <BottomSheetModal
+      ref={bottomSheetRef}
+      index={0}
+      snapPoints={snapPoints}
+      onChange={handleSheetChanges}
+      backdropComponent={renderBackdrop}
+      backgroundStyle={{ backgroundColor: bottomSheetBackgroundColor }}
+      handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
+    >
+      <View style={{ flex: 1, padding: 24, paddingBottom: 0 }}>
+        <Text className="text-primary text-xl font-bold mb-2">Delete Account</Text>
+        <Text className="text-secondary mb-6">
+          You are about to delete <Text className="font-bold text-primary">{account?.name}</Text>.
+        </Text>
 
-          {linkedExpenseCount > 0 && (
-            <ScrollView className="mb-6" showsVerticalScrollIndicator={false}>
-              <View className="bg-red-500/10 p-3 rounded-xl border border-red-500/30 mb-6">
-                <Text className="text-red-500 font-bold">Warning: {linkedExpenseCount} linked transactions found.</Text>
-                <Text className="text-red-400 text-sm mt-1">What would you like to do with them?</Text>
-              </View>
+        {linkedExpenseCount > 0 && (
+          <BottomSheetScrollView className="mb-6" showsVerticalScrollIndicator={false}>
+            <View className="bg-status-danger/10 p-3 rounded-xl border border-status-danger/30 mb-6">
+              <Text className="text-status-danger font-bold">Warning: {linkedExpenseCount} linked transactions found.</Text>
+              <Text className="text-status-danger opacity-80 text-sm mt-1">What would you like to do with them?</Text>
+            </View>
 
-              {/* Option 1 */}
+            {/* Option 1 */}
+            <Pressable 
+              onPress={() => setOption('delete')}
+              className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === 'delete' ? 'bg-status-danger/20 border-status-danger' : 'bg-surface border-bordercolor'}`}
+            >
+              <Ionicons name={option === 'delete' ? "radio-button-on" : "radio-button-off"} size={24} color={option === 'delete' ? colors.statusDanger : "#71717a"} />
+              <Text className={`ml-3 font-semibold ${option === 'delete' ? 'text-status-danger' : 'text-primary'}`}>Delete all linked transactions</Text>
+            </Pressable>
+
+            {/* Option 2: Reassign */}
+            {otherAccounts.length > 0 && (
               <Pressable 
-                onPress={() => setOption('delete')}
-                className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === 'delete' ? 'bg-red-500/20 border-red-500' : 'bg-surface border-bordercolor'}`}
+                onPress={() => setOption('reassign')}
+                className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === 'reassign' ? 'bg-status-success/20 border-status-success' : 'bg-surface border-bordercolor'}`}
               >
-                <Ionicons name={option === 'delete' ? "radio-button-on" : "radio-button-off"} size={24} color={option === 'delete' ? "#ef4444" : "#71717a"} />
-                <Text className={`ml-3 font-semibold ${option === 'delete' ? 'text-red-500' : 'text-primary'}`}>Delete all linked transactions</Text>
+                <Ionicons name={option === 'reassign' ? "radio-button-on" : "radio-button-off"} size={24} color={option === 'reassign' ? colors.statusSuccess : "#71717a"} />
+                <Text className={`ml-3 font-semibold ${option === 'reassign' ? 'text-status-success' : 'text-primary'}`}>Move to existing account</Text>
               </Pressable>
+            )}
 
-              {/* Option 2: Reassign */}
-              {otherAccounts.length > 0 && (
-                <Pressable 
-                  onPress={() => setOption('reassign')}
-                  className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === 'reassign' ? 'bg-green-500/20 border-green-500' : 'bg-surface border-bordercolor'}`}
-                >
-                  <Ionicons name={option === 'reassign' ? "radio-button-on" : "radio-button-off"} size={24} color={option === 'reassign' ? "#10b981" : "#71717a"} />
-                  <Text className={`ml-3 font-semibold ${option === 'reassign' ? 'text-green-500' : 'text-primary'}`}>Move to existing account</Text>
-                </Pressable>
-              )}
+            {option === 'reassign' && otherAccounts.length > 0 && (
+              <View className="bg-surface p-2 rounded-xl border border-status-success/30 mb-3 ml-6">
+                {otherAccounts.map((acc, index) => (
+                  <Pressable
+                    key={acc.id}
+                    onPress={() => setSelectedExistingAccountId(acc.id)}
+                    className={`p-3 flex-row justify-between items-center ${index < otherAccounts.length - 1 ? 'border-b border-bordercolor' : ''}`}
+                  >
+                    <Text className={selectedExistingAccountId === acc.id ? 'text-status-success font-bold' : 'text-primary'}>{acc.name}</Text>
+                    {selectedExistingAccountId === acc.id && <Ionicons name="checkmark" size={20} color={colors.statusSuccess} />}
+                  </Pressable>
+                ))}
+              </View>
+            )}
+          </BottomSheetScrollView>
+        )}
 
-              {option === 'reassign' && otherAccounts.length > 0 && (
-                <View className="bg-surface p-2 rounded-xl border border-green-500/30 mb-3 ml-6">
-                  {otherAccounts.map((acc, index) => (
-                    <Pressable
-                      key={acc.id}
-                      onPress={() => setSelectedExistingAccountId(acc.id)}
-                      className={`p-3 flex-row justify-between items-center ${index < otherAccounts.length - 1 ? 'border-b border-bordercolor' : ''}`}
-                    >
-                      <Text className={selectedExistingAccountId === acc.id ? 'text-green-500 font-bold' : 'text-primary'}>{acc.name}</Text>
-                      {selectedExistingAccountId === acc.id && <Ionicons name="checkmark" size={20} color="#10b981" />}
-                    </Pressable>
-                  ))}
-                </View>
-              )}
-            </ScrollView>
-          )}
-
-          <View className="flex-row justify-end gap-4 mt-2">
-            <Pressable onPress={onClose} className="px-5 py-3 rounded-xl bg-surface border border-bordercolor">
-              <Text className="text-primary font-bold">Cancel</Text>
-            </Pressable>
-            <Pressable onPress={handleConfirm} className="px-5 py-3 rounded-xl bg-red-600">
-              <Text className="text-white font-bold">Confirm Delete</Text>
-            </Pressable>
-          </View>
+        <View className="flex-row justify-end gap-4 mt-auto mb-6">
+          <Pressable onPress={onClose} className="px-5 py-3 rounded-xl bg-surface border border-bordercolor">
+            <Text className="text-primary font-bold">Cancel</Text>
+          </Pressable>
+          <Pressable onPress={handleConfirm} className="px-5 py-3 rounded-xl bg-status-danger">
+            <Text className="text-status-danger-content font-bold">Confirm Delete</Text>
+          </Pressable>
         </View>
       </View>
-    </Modal>
+    </BottomSheetModal>
   );
 }

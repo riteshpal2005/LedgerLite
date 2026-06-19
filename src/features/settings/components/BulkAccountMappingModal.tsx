@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Modal, Pressable, TextInput, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { View, Text, Pressable, TextInput, Platform, Alert } from 'react-native';
+import { BottomSheetModal, BottomSheetScrollView, BottomSheetTextInput, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { useTheme } from '../../../core/theme/ThemeContext';
 
 export type AccountType = 'Cash' | 'Bank' | 'Credit Card';
 
@@ -19,6 +21,10 @@ interface BulkAccountMappingModalProps {
 export function BulkAccountMappingModal({ visible, missingAccounts, onClose, onConfirm }: BulkAccountMappingModalProps) {
   const [mappings, setMappings] = useState<Record<string, { balance: string, type: AccountType }>>({});
 
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ['85%'], []);
+  const { bottomSheetBackgroundColor, bottomSheetIndicatorColor } = useTheme();
+
   useEffect(() => {
     if (visible && missingAccounts.length > 0) {
       const initialMappings: Record<string, { balance: string, type: AccountType }> = {};
@@ -26,8 +32,20 @@ export function BulkAccountMappingModal({ visible, missingAccounts, onClose, onC
         initialMappings[acc.name] = { balance: acc.initialBalance.toString(), type: 'Bank' };
       });
       setMappings(initialMappings);
+      bottomSheetRef.current?.present();
+    } else {
+      bottomSheetRef.current?.dismiss();
     }
   }, [visible, missingAccounts]);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === -1) onClose();
+  }, [onClose]);
+
+  const renderBackdrop = useCallback(
+    (props: any) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
+    []
+  );
 
   const handleUpdateMapping = (name: string, field: 'balance' | 'type', value: string) => {
     setMappings(prev => ({
@@ -50,38 +68,44 @@ export function BulkAccountMappingModal({ visible, missingAccounts, onClose, onC
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
-        <Pressable className="flex-1 bg-black/60 justify-end" onPress={onClose}>
-          <Pressable className="bg-[#09090b] h-[85%] rounded-t-[32px] border-t border-bordercolor shadow-2xl" onPress={(e) => e.stopPropagation()}>
-            
-            <View className="p-6 pb-2">
-              <View className="w-12 h-1.5 bg-[#52525b] rounded-full self-center mb-6" />
-              <View className="flex-row justify-between items-center mb-4">
-                <Text className="text-2xl font-bold text-primary">Map Unknown Accounts</Text>
-                <Pressable onPress={onClose}>
-                  <Text className="text-blue-500 font-bold text-lg">Cancel</Text>
-                </Pressable>
-              </View>
-              <Text className="text-secondary mb-4">
-                We found {missingAccounts.length} account{missingAccounts.length > 1 ? 's' : ''} in your import file that don't exist in LedgerLite. Please configure them below to proceed.
-              </Text>
-            </View>
+    <BottomSheetModal
+      ref={bottomSheetRef}
+      index={0}
+      snapPoints={snapPoints}
+      onChange={handleSheetChanges}
+      backdropComponent={renderBackdrop}
+      backgroundStyle={{ backgroundColor: bottomSheetBackgroundColor }}
+      handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
+      keyboardBehavior="extend"
+      keyboardBlurBehavior="restore"
+    >
+      <View style={{ flex: 1, paddingBottom: 0 }}>
+        <View className="px-6 pb-2">
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-2xl font-bold text-primary">Map Unknown Accounts</Text>
+            <Pressable onPress={onClose}>
+              <Text className="text-brand-primary font-bold text-lg">Cancel</Text>
+            </Pressable>
+          </View>
+          <Text className="text-secondary mb-4">
+            We found {missingAccounts.length} account{missingAccounts.length > 1 ? 's' : ''} in your import file that don't exist in LedgerLite. Please configure them below to proceed.
+          </Text>
+        </View>
 
-            <ScrollView className="px-6 flex-1" showsVerticalScrollIndicator={false}>
+        <BottomSheetScrollView className="px-6 flex-1" showsVerticalScrollIndicator={false}>
               {missingAccounts.map(acc => (
                 <View key={acc.name} className="bg-surface rounded-2xl p-4 mb-4 border border-bordercolor">
                   <Text className="text-secondary text-sm mb-1">Account Name (Locked)</Text>
                   <Text className="text-primary text-xl font-bold mb-4">{acc.name}</Text>
 
                   <Text className="text-secondary text-sm mb-2">Initial Balance (₹)</Text>
-                  <TextInput
+                  <BottomSheetTextInput
                     value={mappings[acc.name]?.balance}
                     onChangeText={(val) => handleUpdateMapping(acc.name, 'balance', val)}
                     placeholder="0.00"
                     placeholderTextColor="#52525b"
                     keyboardType="decimal-pad"
-                    className="bg-[#09090b] text-primary text-lg font-semibold rounded-xl p-3 border border-bordercolor mb-4"
+                    className="bg-surface text-primary text-lg font-semibold rounded-xl p-3 border border-bordercolor mb-4"
                   />
 
                   <Text className="text-secondary text-sm mb-2">Account Type</Text>
@@ -91,10 +115,10 @@ export function BulkAccountMappingModal({ visible, missingAccounts, onClose, onC
                         key={t}
                         onPress={() => handleUpdateMapping(acc.name, 'type', t)}
                         className={`flex-1 p-3 rounded-xl border ${
-                          mappings[acc.name]?.type === t ? 'bg-blue-600 border-blue-500' : 'bg-[#09090b] border-bordercolor'
+                          mappings[acc.name]?.type === t ? 'bg-brand-primary border-brand-primary' : 'bg-surface border-bordercolor'
                         }`}
                       >
-                        <Text className={`text-center font-bold text-xs sm:text-sm ${mappings[acc.name]?.type === t ? 'text-primary' : 'text-secondary'}`}>
+                        <Text className={`text-center font-bold text-xs sm:text-sm ${mappings[acc.name]?.type === t ? 'text-brand-primary-content' : 'text-secondary'}`}>
                           {t}
                         </Text>
                       </Pressable>
@@ -103,17 +127,15 @@ export function BulkAccountMappingModal({ visible, missingAccounts, onClose, onC
                 </View>
               ))}
               <View className="h-6" />
-            </ScrollView>
+        </BottomSheetScrollView>
 
-            <View className="p-6 bg-[#09090b] border-t border-bordercolor">
-              <Pressable onPress={handleConfirm} className="bg-blue-600 rounded-xl p-4">
-                <Text className="text-primary font-bold text-center text-lg">Create Accounts & Import</Text>
-              </Pressable>
-            </View>
-
+        <View className="p-6 bg-background border-t border-bordercolor">
+          <Pressable onPress={handleConfirm} className="bg-brand-primary rounded-xl p-4">
+            <Text className="text-brand-primary-content font-bold text-center text-lg">Create Accounts & Import</Text>
           </Pressable>
-        </Pressable>
-      </KeyboardAvoidingView>
-    </Modal>
+        </View>
+
+      </View>
+    </BottomSheetModal>
   );
 }

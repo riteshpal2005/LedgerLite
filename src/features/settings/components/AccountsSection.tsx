@@ -5,8 +5,9 @@ import { setDefaultAccount } from "../../../core/store/settingsSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { AddAccountModal } from "../../accounts/components/AddAccountModal";
 import { AccountDeleteModal } from "../../accounts/components/AccountDeleteModal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Alert, Modal } from "react-native";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Account } from "../../../core/database/schema";
 
 import { selectAccountsWithBalances } from "../../../core/store/accountSlice";
@@ -16,7 +17,7 @@ export function AccountsSection() {
   const defaultAccountId = useSelector((state: RootState) => state.settings.defaultAccountId);
   const expenses = useSelector((state: RootState) => state.expenses.expenses);
   
-  const [showAddAccount, setShowAddAccount] = useState(false);
+  const addAccountSheetRef = useRef<BottomSheetModal>(null);
   const [accountToEdit, setAccountToEdit] = useState<Account | undefined>(undefined);
   const [accountToDelete, setAccountToDelete] = useState<Account | null>(null);
   const [linkedExpenseCount, setLinkedExpenseCount] = useState(0);
@@ -84,7 +85,10 @@ export function AccountsSection() {
 
         <Pressable 
           className="flex-row items-center py-2 justify-center"
-          onPress={() => setShowAddAccount(true)}
+          onPress={() => {
+            setAccountToEdit(undefined);
+            addAccountSheetRef.current?.present();
+          }}
         >
           <Ionicons name="add-circle-outline" size={24} color="#10b981" />
           <Text className="text-emerald-500 text-lg font-bold ml-2">Add New Account</Text>
@@ -92,11 +96,7 @@ export function AccountsSection() {
       </View>
 
       <AddAccountModal 
-        visible={showAddAccount} 
-        onClose={() => {
-          setShowAddAccount(false);
-          setAccountToEdit(undefined);
-        }}
+        bottomSheetRef={addAccountSheetRef}
         initialAccount={accountToEdit}
       />
       <AccountDeleteModal 
@@ -117,7 +117,7 @@ export function AccountsSection() {
             <Pressable 
               onPress={() => {
                 setAccountToEdit(actionAccount!);
-                setShowAddAccount(true);
+                addAccountSheetRef.current?.present();
                 setActionAccount(null);
               }}
               className="flex-row items-center p-4 rounded-2xl active:bg-white/5"

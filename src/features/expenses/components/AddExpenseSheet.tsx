@@ -1,11 +1,11 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { View, Text, Pressable } from "react-native";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
 import { selectAccountsWithBalances, setAccounts } from "../../../core/store/accountSlice";
 import { addExpense as addExpenseToRedux } from "../../../core/store/expenseSlice";
-import { BottomSheetModal, BottomSheetView, BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetView, BottomSheetTextInput, BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { TransactionTypeToggle } from "./TransactionTypeToggle";
 import { CategoryPickerButton } from "./CategoryPickerButton";
 import { CategorySelectModal } from "./CategorySelectModal";
@@ -15,6 +15,7 @@ import { BottomSheetFormField } from "../../../shared/components/BottomSheetForm
 import { Expense } from "../../../core/database/schema";
 import { updateExpenseAction, deleteExpenseAction } from "../../../core/store/expenseSlice";
 import { DeleteConfirmationModal } from "../../../shared/components/DeleteConfirmationModal";
+import { useTheme } from "../../../core/theme/ThemeContext";
 
 interface AddExpenseSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
@@ -38,6 +39,13 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
   const categories = useSelector((state: RootState) => state.categories.categories);
   const selectedCategory = categories.find(c => c.id === categoryId);
 
+  const { bottomSheetBackgroundColor, bottomSheetIndicatorColor, bottomSheetBorderColor } = useTheme();
+
+  const renderBackdrop = useCallback(
+    (props: any) => React.createElement(BottomSheetBackdrop, { ...props, disappearsOnIndex: -1, appearsOnIndex: 0, opacity: 0.5 }),
+    []
+  );
+
   const accounts = useSelector(selectAccountsWithBalances);
   const defaultAccountId = useSelector((state: RootState) => state.settings.defaultAccountId);
 
@@ -45,26 +53,29 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
   const [showAccountPicker, setShowAccountPicker] = useState(false);
   const selectedAccount = accounts.find(a => a.id === accountId) || accounts[0];
 
-  const handleSheetChanges = useCallback((index: number) => {
-    if (index === 0) {
-      if (initialExpense) {
-        setAmount(initialExpense.amount.toString());
-        setDescription(initialExpense.description);
-        setMerchant(initialExpense.merchant || '');
-        setDate(new Date(initialExpense.date));
-        setType(initialExpense.type);
-        setCategoryId(initialExpense.categoryId);
-        if (initialExpense.accountId) setAccountId(initialExpense.accountId);
-      } else {
-        setAmount('');
-        setDescription('');
-        setMerchant('');
-        setDate(new Date());
-        setType('debit');
-        if (defaultAccountId) setAccountId(defaultAccountId);
-      }
+  // Instantly load data when the user taps an existing transaction
+  useEffect(() => {
+    if (initialExpense) {
+      setAmount(initialExpense.amount.toString());
+      setDescription(initialExpense.description);
+      setMerchant(initialExpense.merchant || '');
+      setDate(new Date(initialExpense.date));
+      setType(initialExpense.type);
+      setCategoryId(initialExpense.categoryId);
+      if (initialExpense.accountId) setAccountId(initialExpense.accountId);
+    } else {
+      setAmount('');
+      setDescription('');
+      setMerchant('');
+      setDate(new Date());
+      setType('debit');
+      if (defaultAccountId) setAccountId(defaultAccountId);
     }
   }, [initialExpense, defaultAccountId]);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    // State is now managed instantly via useEffect when initialExpense changes
+  }, []);
 
   // Ref: AddExpenseSheet-10
   const snapPoints = useMemo(() => ['90%'], []);
@@ -118,10 +129,11 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
       index={0}
       snapPoints={snapPoints}
       onChange={handleSheetChanges}
+      backdropComponent={renderBackdrop}
       keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
-      backgroundStyle={{ backgroundColor: '#09090b' }} // Ref: AddExpenseSheet-12
-      handleIndicatorStyle={{ backgroundColor: '#52525b' }} // Ref: AddExpenseSheet-13
+      backgroundStyle={{ backgroundColor: bottomSheetBackgroundColor, borderWidth: 1, borderColor: bottomSheetBorderColor }}
+      handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
     >
       <BottomSheetView style={{ flex: 1, padding: 24 }}>
         {/* Ref: AddExpenseSheet-1 */}
@@ -192,13 +204,13 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
           <DateTimePickerSection date={date} setDate={setDate} />
 
           {/* Ref: AddExpenseSheet-7 */}
-          <Pressable onPress={handleSave} className='bg-blue-600 rounded-xl p-4 mb-4 mt-4'>
-            <Text className='text-white font-bold text-center text-lg'>{initialExpense ? 'Save Changes' : 'Save Transaction'}</Text>
+          <Pressable onPress={handleSave} className='bg-brand-primary rounded-xl p-4 mb-4 mt-4'>
+            <Text className='text-brand-primary-content font-bold text-center text-lg'>{initialExpense ? 'Save Changes' : 'Save Transaction'}</Text>
           </Pressable>
 
           {initialExpense && (
-            <Pressable onPress={() => setShowDeleteModal(true)} className='bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-8'>
-              <Text className='text-red-500 font-bold text-center text-lg'>Delete Transaction</Text>
+            <Pressable onPress={() => setShowDeleteModal(true)} className='bg-status-danger/10 border border-status-danger/20 rounded-xl p-4 mb-8'>
+              <Text className='text-status-danger font-bold text-center text-lg'>Delete Transaction</Text>
             </Pressable>
           )}
         </BottomSheetScrollView>

@@ -1,5 +1,7 @@
-import React from 'react';
-import { Modal, View, Text, Pressable } from 'react-native';
+import React, { useEffect, useRef, useMemo, useCallback } from 'react';
+import { View, Text, Pressable } from 'react-native';
+import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { useTheme } from '../../core/theme/ThemeContext';
 
 interface CustomAlertProps {
   visible: boolean;
@@ -22,44 +24,68 @@ export function CustomAlert({
   cancelText = 'Cancel',
   confirmStyle = 'default' 
 }: CustomAlertProps) {
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ['35%'], []);
+  const { bottomSheetBackgroundColor, bottomSheetIndicatorColor } = useTheme();
+
+  useEffect(() => {
+    if (visible) bottomSheetRef.current?.present();
+    else bottomSheetRef.current?.dismiss();
+  }, [visible]);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === -1 && onCancel) onCancel();
+    else if (index === -1 && !onCancel) {
+      // If there's no cancel, default to confirming if dismissed? Or just close?
+      // Usually, closing an alert without acting is a cancel.
+    }
+  }, [onCancel]);
+
+  const renderBackdrop = useCallback(
+    (props: any) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
+    []
+  );
+
   return (
-    <Modal
-      visible={visible}
-      transparent={true}
-      animationType="fade"
-      onRequestClose={onCancel || onConfirm}
+    <BottomSheetModal
+      ref={bottomSheetRef}
+      index={0}
+      snapPoints={snapPoints}
+      onChange={handleSheetChanges}
+      backdropComponent={renderBackdrop}
+      backgroundStyle={{ backgroundColor: bottomSheetBackgroundColor }}
+      handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
+      enablePanDownToClose={!!onCancel}
     >
-      <View className="flex-1 bg-black/60 justify-center items-center p-6">
-        <View className="bg-surface w-full rounded-3xl p-6 border border-bordercolor shadow-2xl">
-          <Text className="text-primary text-2xl font-bold mb-3">{title}</Text>
-          <Text className="text-secondary text-base mb-8">{message}</Text>
-          
-          <View className="flex-row justify-end">
-            {onCancel && (
-              <Pressable 
-                onPress={onCancel}
-                className="px-6 py-3 rounded-xl"
-              >
-                <Text className="text-primary font-bold text-base">{cancelText}</Text>
-              </Pressable>
-            )}
+      <View style={{ flex: 1, padding: 24, paddingBottom: 0 }}>
+        <Text className="text-primary text-2xl font-bold mb-3">{title}</Text>
+        <Text className="text-secondary text-base mb-8">{message}</Text>
+        
+        <View className="flex-row justify-end mt-auto mb-6">
+          {onCancel && (
             <Pressable 
-              onPress={onConfirm}
-              className={`px-6 py-3 rounded-xl ml-2 ${
-                confirmStyle === 'danger' 
-                  ? 'bg-red-500/10 border border-red-500/30' 
-                  : 'bg-blue-600'
-              }`}
+              onPress={onCancel}
+              className="px-6 py-3 rounded-xl border border-bordercolor bg-surface mr-2"
             >
-              <Text className={`${
-                confirmStyle === 'danger' ? 'text-red-500' : 'text-white'
-              } font-bold text-base`}>
-                {confirmText}
-              </Text>
+              <Text className="text-primary font-bold text-base">{cancelText}</Text>
             </Pressable>
-          </View>
+          )}
+          <Pressable 
+            onPress={onConfirm}
+            className={`px-6 py-3 rounded-xl ${
+              confirmStyle === 'danger' 
+                ? 'bg-status-danger' 
+                : 'bg-brand-primary'
+            }`}
+          >
+            <Text className={`${
+              confirmStyle === 'danger' ? 'text-status-danger-content' : 'text-brand-primary-content'
+            } font-bold text-base`}>
+              {confirmText}
+            </Text>
+          </Pressable>
         </View>
       </View>
-    </Modal>
+    </BottomSheetModal>
   );
 }

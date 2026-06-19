@@ -4,6 +4,7 @@ import { useRef, useMemo, useCallback } from "react";
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { useSelector } from "react-redux";
 import { selectAccountsWithBalances } from "../../../core/store/accountSlice";
+import { useTheme } from "../../../core/theme/ThemeContext";
 export type SortMode = 'newest' | 'oldest' | 'highest' | 'lowest';
 export type FilterType = 'all' | 'debit' | 'credit';
 export type FilterAccountId = number | 'all';
@@ -18,17 +19,18 @@ interface ExpenseSortFilterProps {
 }
 
 // Ref: ExpenseSortFilter-1
-export function ExpenseSortFilter({ 
-  sortMode, setSortMode, 
-  filterType, setFilterType, 
-  filterAccountId, setFilterAccountId 
+export function ExpenseSortFilter({
+  sortMode, setSortMode,
+  filterType, setFilterType,
+  filterAccountId, setFilterAccountId
 }: ExpenseSortFilterProps) {
-  
+
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const accounts = useSelector(selectAccountsWithBalances);
+  const { bottomSheetBackgroundColor, bottomSheetIndicatorColor } = useTheme();
 
   const openSheet = () => bottomSheetRef.current?.present();
-  
+
   // Ref: ExpenseSortFilter-2
   const snapPoints = useMemo(() => ['65%'], []);
   const renderBackdrop = useCallback(
@@ -37,7 +39,7 @@ export function ExpenseSortFilter({
   );
 
   const getSortLabel = (mode: SortMode) => {
-    switch(mode) {
+    switch (mode) {
       case 'newest': return 'Newest';
       case 'oldest': return 'Oldest';
       case 'highest': return 'Highest';
@@ -51,7 +53,7 @@ export function ExpenseSortFilter({
     <View className="relative z-50 ml-3">
       {/* Trigger Button */}
       {/* Ref: ExpenseSortFilter-3 */}
-      <Pressable 
+      <Pressable
         onPress={openSheet}
         className={`h-[46px] px-3 rounded-2xl flex-row items-center justify-center border ${hasActiveFilters ? 'bg-blue-500/10 border-blue-500/30' : 'bg-surface border-bordercolor'}`}
       >
@@ -65,8 +67,8 @@ export function ExpenseSortFilter({
         index={0}
         snapPoints={snapPoints}
         backdropComponent={renderBackdrop}
-        backgroundStyle={{ backgroundColor: '#09090b' }} 
-        handleIndicatorStyle={{ backgroundColor: '#52525b' }}
+        backgroundStyle={{ backgroundColor: bottomSheetBackgroundColor }}
+        handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
       >
         <BottomSheetView style={{ flex: 1, padding: 24 }}>
           <View className="flex-row justify-between items-center mb-6">
@@ -124,7 +126,7 @@ export function ExpenseSortFilter({
               >
                 <Text className={`font-bold ${filterAccountId === 'all' ? 'text-blue-500' : 'text-primary'}`}>All Accounts</Text>
               </Pressable>
-              
+
               {accounts.map(account => (
                 <Pressable
                   key={account.id}
@@ -136,7 +138,6 @@ export function ExpenseSortFilter({
               ))}
             </ScrollView>
           </View>
-
         </BottomSheetView>
       </BottomSheetModal>
     </View>

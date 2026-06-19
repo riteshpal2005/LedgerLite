@@ -1,5 +1,5 @@
-import { Text, View, Pressable, BackHandler, Modal } from 'react-native';
-import { useState, useCallback } from 'react';
+import { Text, View, Pressable, BackHandler } from 'react-native';
+import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../core/store/store';
 import { useFocusEffect } from 'expo-router';
@@ -9,8 +9,8 @@ import { ExpenseSortFilter, SortMode, FilterType, FilterAccountId } from '../../
 import { AddExpenseSheet } from '../../features/expenses/components/AddExpenseSheet';
 import { AddAccountModal } from '../../features/accounts/components/AddAccountModal';
 import { Ionicons } from '@expo/vector-icons';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { useRef } from 'react';
+import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { useTheme } from '../../core/theme/ThemeContext';
 import { Expense } from '../../core/database/schema';
 
 export default function Home() {
@@ -22,15 +22,27 @@ export default function Home() {
   const [selectedExpenseToEdit, setSelectedExpenseToEdit] = useState<Expense | undefined>(undefined);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const [showExitModal, setShowExitModal] = useState(false);
-  const [showAddAccountModal, setShowAddAccountModal] = useState(false);
+  const exitSheetRef = useRef<BottomSheetModal>(null);
+  const addAccountSheetRef = useRef<BottomSheetModal>(null);
+
+  const { bottomSheetBackgroundColor, bottomSheetIndicatorColor, bottomSheetBorderColor, colors } = useTheme();
+  const snapPointsExit = useMemo(() => ['30%'], []);
+
+  const handleExitSheetChanges = useCallback((index: number) => {
+    // no-op, handled imperatively
+  }, []);
+
+  const renderBackdrop = useCallback(
+    (props: any) => React.createElement(BottomSheetBackdrop, { ...props, disappearsOnIndex: -1, appearsOnIndex: 0, opacity: 0.5 }),
+    []
+  );
 
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
 
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        setShowExitModal(true);
+        exitSheetRef.current?.present();
         return true;
       };
 
@@ -41,7 +53,7 @@ export default function Home() {
 
   const handlePresentModalPress = () => {
     if (accounts.length === 0) {
-      setShowAddAccountModal(true);
+      addAccountSheetRef.current?.present();
       return;
     }
     setSelectedExpenseToEdit(undefined); // Clear any edit state when adding new
@@ -50,7 +62,10 @@ export default function Home() {
 
   const handleExpensePress = (expense: Expense) => {
     setSelectedExpenseToEdit(expense);
-    bottomSheetModalRef.current?.present();
+    // Defer the bottom sheet animation so the state update and re-render don't cause frame drops
+    setTimeout(() => {
+      bottomSheetModalRef.current?.present();
+    }, 0);
   };
 
   return (
@@ -75,42 +90,44 @@ export default function Home() {
       />
       <Pressable
         onPress={handlePresentModalPress}
-        className="absolute bottom-6 right-6 w-16 h-16 bg-blue-600 rounded-full items-center justify-center shadow-lg elevation-5"
+        className="absolute bottom-6 right-6 w-16 h-16 bg-brand-primary rounded-full items-center justify-center shadow-lg elevation-5"
       >
-        <Ionicons name="add" size={32} color="white" />
+        <Ionicons name="add" size={32} color={colors.brandPrimaryContent} />
       </Pressable>
 
       <AddExpenseSheet bottomSheetRef={bottomSheetModalRef} initialExpense={selectedExpenseToEdit} />
-      <AddAccountModal visible={showAddAccountModal} onClose={() => setShowAddAccountModal(false)} />
+      <AddAccountModal bottomSheetRef={addAccountSheetRef} />
 
-      <Modal
-        visible={showExitModal}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setShowExitModal(false)}
+      <BottomSheetModal
+        ref={exitSheetRef}
+        index={0}
+        snapPoints={snapPointsExit}
+        onChange={handleExitSheetChanges}
+        backdropComponent={renderBackdrop}
+        backgroundStyle={{ backgroundColor: bottomSheetBackgroundColor, borderWidth: 1, borderColor: bottomSheetBorderColor }}
+        handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
+        enablePanDownToClose
       >
-        <View className="flex-1 bg-black/60 justify-center items-center p-6">
-          <View className="bg-surface w-full rounded-3xl p-6 border border-bordercolor shadow-2xl">
-            <Text className="text-primary text-2xl font-bold mb-3">Exit App</Text>
-            <Text className="text-secondary text-base mb-8">Are you sure you want to exit LedgerLite?</Text>
-            
-            <View className="flex-row justify-end">
-              <Pressable 
-                onPress={() => setShowExitModal(false)}
-                className="px-6 py-3 rounded-xl"
-              >
-                <Text className="text-primary font-bold text-base">Cancel</Text>
-              </Pressable>
-              <Pressable 
-                onPress={() => BackHandler.exitApp()}
-                className="px-6 py-3 bg-red-500/10 rounded-xl border border-red-500/30 ml-2"
-              >
-                <Text className="text-red-500 font-bold text-base">Exit</Text>
-              </Pressable>
-            </View>
+        <View style={{ flex: 1, padding: 24, paddingBottom: 0 }}>
+          <Text className="text-primary text-2xl font-bold mb-3">Exit App</Text>
+          <Text className="text-secondary text-base mb-8">Are you sure you want to exit LedgerLite?</Text>
+          
+          <View className="flex-row justify-end mt-auto mb-6">
+            <Pressable 
+              onPress={() => exitSheetRef.current?.dismiss()}
+              className="px-6 py-3 rounded-xl border border-bordercolor bg-surface mr-2"
+            >
+              <Text className="text-primary font-bold text-base">Cancel</Text>
+            </Pressable>
+            <Pressable 
+              onPress={() => BackHandler.exitApp()}
+              className="px-6 py-3 bg-status-danger rounded-xl"
+            >
+              <Text className="text-status-danger-content font-bold text-base">Exit</Text>
+            </Pressable>
           </View>
         </View>
-      </Modal>
+      </BottomSheetModal>
     </View>
   );
 }

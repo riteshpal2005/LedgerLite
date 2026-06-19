@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Modal, Pressable, TextInput } from 'react-native';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { View, Text, Pressable, TextInput } from 'react-native';
+import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { useTheme } from '../../../core/theme/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
 interface CustomDateTimePickerModalProps {
@@ -22,6 +24,10 @@ export function CustomDateTimePickerModal({ visible, onClose, date, setDate, mod
   const [hourStr, setHourStr] = useState(hour.toString().padStart(2, '0'));
   const [minuteStr, setMinuteStr] = useState(minute.toString().padStart(2, '0'));
 
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => [mode === 'date' ? '60%' : '50%'], [mode]);
+  const { bottomSheetBackgroundColor, bottomSheetIndicatorColor } = useTheme();
+
   useEffect(() => {
     if (visible) {
       setCurrentMonth(new Date(date.getFullYear(), date.getMonth(), 1));
@@ -30,8 +36,20 @@ export function CustomDateTimePickerModal({ visible, onClose, date, setDate, mod
       setHour(h);
       setMinute(m);
       setIsPM(date.getHours() >= 12);
+      bottomSheetRef.current?.present();
+    } else {
+      bottomSheetRef.current?.dismiss();
     }
   }, [visible, date]);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === -1) onClose();
+  }, [onClose]);
+
+  const renderBackdrop = useCallback(
+    (props: any) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
+    []
+  );
 
   useEffect(() => setHourStr(hour.toString().padStart(2, '0')), [hour]);
   useEffect(() => setMinuteStr(minute.toString().padStart(2, '0')), [minute]);
@@ -94,9 +112,17 @@ export function CustomDateTimePickerModal({ visible, onClose, date, setDate, mod
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade">
-      <Pressable className="flex-1 bg-black/60 justify-center items-center p-6" onPress={onClose}>
-        <Pressable className="bg-surface w-full rounded-3xl p-6 border border-bordercolor shadow-2xl" onPress={(e) => e.stopPropagation()}>
+    <BottomSheetModal
+      ref={bottomSheetRef}
+      index={0}
+      snapPoints={snapPoints}
+      onChange={handleSheetChanges}
+      backdropComponent={renderBackdrop}
+      backgroundStyle={{ backgroundColor: bottomSheetBackgroundColor }}
+      handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
+      enablePanDownToClose
+    >
+      <View style={{ flex: 1, padding: 24, paddingTop: 12 }}>
           
           {mode === 'date' ? (
             <View>
@@ -142,8 +168,8 @@ export function CustomDateTimePickerModal({ visible, onClose, date, setDate, mod
                       onPress={() => handleDateSelect(day)}
                       className="w-[14.28%] h-12 justify-center items-center"
                     >
-                      <View className={`w-10 h-10 justify-center items-center rounded-full ${isSelected ? 'bg-blue-600' : isToday ? 'border border-blue-500/50' : ''}`}>
-                        <Text className={`font-semibold ${isSelected ? 'text-white' : isToday ? 'text-blue-400' : 'text-primary'}`}>
+                      <View className={`w-10 h-10 justify-center items-center rounded-full ${isSelected ? 'bg-brand-primary' : isToday ? 'border border-brand-primary/50' : ''}`}>
+                        <Text className={`font-semibold ${isSelected ? 'text-brand-primary-content' : isToday ? 'text-brand-primary' : 'text-primary'}`}>
                           {day}
                         </Text>
                       </View>
@@ -203,27 +229,26 @@ export function CustomDateTimePickerModal({ visible, onClose, date, setDate, mod
                 <View className="ml-2 gap-3">
                   <Pressable 
                     onPress={() => setIsPM(false)}
-                    className={`px-4 py-3 rounded-xl border ${!isPM ? 'bg-blue-600 border-blue-500' : 'bg-surface border-bordercolor'}`}
+                    className={`px-4 py-3 rounded-xl border ${!isPM ? 'bg-brand-primary border-brand-primary' : 'bg-surface border-bordercolor'}`}
                   >
-                    <Text className={`font-bold ${!isPM ? 'text-white' : 'text-secondary'}`}>AM</Text>
+                    <Text className={`font-bold ${!isPM ? 'text-brand-primary-content' : 'text-secondary'}`}>AM</Text>
                   </Pressable>
                   <Pressable 
                     onPress={() => setIsPM(true)}
-                    className={`px-4 py-3 rounded-xl border ${isPM ? 'bg-blue-600 border-blue-500' : 'bg-surface border-bordercolor'}`}
+                    className={`px-4 py-3 rounded-xl border ${isPM ? 'bg-brand-primary border-brand-primary' : 'bg-surface border-bordercolor'}`}
                   >
-                    <Text className={`font-bold ${isPM ? 'text-white' : 'text-secondary'}`}>PM</Text>
+                    <Text className={`font-bold ${isPM ? 'text-brand-primary-content' : 'text-secondary'}`}>PM</Text>
                   </Pressable>
                 </View>
               </View>
 
-              <Pressable onPress={handleTimeSave} className="bg-blue-600 py-4 rounded-xl items-center">
-                <Text className="text-white font-bold text-lg">Save Time</Text>
+              <Pressable onPress={handleTimeSave} className="bg-brand-primary py-4 rounded-xl items-center">
+                <Text className="text-brand-primary-content font-bold text-lg">Save Time</Text>
               </Pressable>
             </View>
           )}
 
-        </Pressable>
-      </Pressable>
-    </Modal>
+      </View>
+    </BottomSheetModal>
   );
 }
