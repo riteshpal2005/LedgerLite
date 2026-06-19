@@ -12,6 +12,7 @@ import { ImportActionRow } from "./ImportActionRow";
 import { RestoreRawJsonModal } from "./RestoreRawJsonModal";
 import { useState } from "react";
 import { ColumnSelectionModal, ExportColumn } from "./ColumnSelectionModal";
+import { triggerHaptic } from "../../../core/utils/haptics";
 
 export function DataManagementSection() {
   const dispatch = useDispatch();
@@ -33,6 +34,7 @@ export function DataManagementSection() {
       dispatch(setExportDirectoryUri(newDirUri));
     }
     if (action === 'save' && Platform.OS === 'android' && newDirUri) {
+      triggerHaptic.success();
       ToastAndroid.show("JSON file saved to LedgerLite folder!", ToastAndroid.SHORT);
     }
     if (action === 'copy') {
@@ -117,8 +119,10 @@ export function DataManagementSection() {
       if (addedCount > 0) {
         const updatedExpenses = await getAllExpenses();
         dispatch(setExpenses(updatedExpenses));
+        triggerHaptic.success();
         Alert.alert("Success", `Imported ${addedCount} new transactions successfully.`);
       } else {
+        triggerHaptic.light();
         Alert.alert("Notice", "No new transactions were found to import (all were duplicates).");
       }
     }
@@ -136,6 +140,7 @@ export function DataManagementSection() {
         const updatedCategories = await getAllCategories();
         dispatch(setCategories(updatedCategories));
       }
+      triggerHaptic.success();
       Alert.alert("Success", "Settings & Categories restored successfully!");
     }
   };

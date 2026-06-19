@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { useState, useCallback } from "react";
 import { useAnalyticsDatabase, CategorySpending } from "../../features/analytics/db/analyticsQueries";
@@ -28,7 +28,11 @@ export default function AnalyticsScreen() {
   }, [loadData]));
 
   return (
-    <View className="flex-1 p-6 pt-12 bg-background">
+    <ScrollView 
+      className="flex-1 bg-background" 
+      contentContainerStyle={{ padding: 24, paddingTop: 48 }}
+      showsVerticalScrollIndicator={false}
+    >
       <Text className="text-primary text-3xl font-bold mb-4">Analytics</Text>
       
       <AnalyticsFilter 
@@ -42,6 +46,6 @@ export default function AnalyticsScreen() {
       
       <Text className="text-xl font-bold text-primary mb-4">Spending by Category</Text>
       <ExpensePieChart spendingData={spendingData} />
-    </View>
+    </ScrollView>
   );
 }

@@ -13,6 +13,7 @@ import { setAccounts, selectAccountsWithBalances } from "../../../core/store/acc
 import { useState } from "react";
 import { AccountSelectModal } from "../../accounts/components/AccountSelectModal";
 import { SkeletonExpenseRow } from "./SkeletonExpenseRow";
+import Animated from "react-native-reanimated";
 
 import { FilterType, FilterAccountId } from "./ExpenseSortFilter";
 
@@ -104,6 +105,7 @@ export default function ExpenseList({ searchQuery, sortMode, filterType, filterA
       ) : (
         <FlashList
           data={sortedExpenses}
+          showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <Text className='text-tertiary text-center mt-10'>No expenses yet. Add one above!</Text>
           }
@@ -113,10 +115,11 @@ export default function ExpenseList({ searchQuery, sortMode, filterType, filterA
             const isCredit = item.type === 'credit';
 
             return (
-              <Pressable 
-                onPress={() => onExpensePress && onExpensePress(item)}
-                className='bg-surface p-4 rounded-xl mb-3 flex-row justify-between items-center border border-bordercolor active:opacity-80'
-              >
+              <Animated.View>
+                <Pressable 
+                  onPress={() => onExpensePress && onExpensePress(item)}
+                  className='bg-surface p-4 rounded-xl mb-3 flex-row justify-between items-center border border-bordercolor active:opacity-80'
+                >
 
                 <View className="flex-row items-center flex-1">
                   {showIcons && category && (
@@ -159,6 +162,7 @@ export default function ExpenseList({ searchQuery, sortMode, filterType, filterA
                   </Text>
                 </View>
               </Pressable>
+            </Animated.View>
             )
           }}
         />

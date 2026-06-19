@@ -4,6 +4,7 @@ const settingsSlice = createSlice({
   name: 'settings',
   initialState: { 
     showIcons: true,
+    hapticsEnabled: true,
     defaultAccountId: null as number | null,
     themeOption: 'dark' as 'light' | 'dark' | 'pitch-black' | 'system',
     exportDirectoryUri: null as string | null
@@ -11,6 +12,9 @@ const settingsSlice = createSlice({
   reducers: {
     toggleShowIcons: (state) => {
       state.showIcons = !state.showIcons;
+    },
+    toggleHaptics: (state) => {
+      state.hapticsEnabled = !state.hapticsEnabled;
     },
     setDefaultAccount: (state, action) => {
       state.defaultAccountId = action.payload;
@@ -27,5 +31,5 @@ const settingsSlice = createSlice({
   }
 });
 
-export const { toggleShowIcons, setDefaultAccount, loadSettings, setThemeOptionRedux, setExportDirectoryUri } = settingsSlice.actions;
+export const { toggleShowIcons, toggleHaptics, setDefaultAccount, loadSettings, setThemeOptionRedux, setExportDirectoryUri } = settingsSlice.actions;
 export default settingsSlice.reducer;

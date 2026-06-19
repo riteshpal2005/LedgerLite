@@ -59,11 +59,22 @@ export const CREATE_EXPENSES_TABLE = `
   );
 `;
 
+export const CREATE_EXPENSES_DATE_INDEX = `
+  CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date);
+`;
+
+export const CREATE_EXPENSES_CATEGORY_INDEX = `
+  CREATE INDEX IF NOT EXISTS idx_expenses_categoryId ON expenses(categoryId);
+`;
+
 export async function initializeDatabase(db: SQLiteDatabase) {
   // Ref: schema-1
   await db.execAsync(CREATE_ACCOUNTS_TABLE);
   await db.execAsync(CREATE_CATEGORIES_TABLE);
   await db.execAsync(CREATE_EXPENSES_TABLE);
+
+  await db.execAsync(CREATE_EXPENSES_DATE_INDEX);
+  await db.execAsync(CREATE_EXPENSES_CATEGORY_INDEX);
 
   // Ref: schema-3
   try {
