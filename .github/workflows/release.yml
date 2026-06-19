@@ -1,0 +1,64 @@
+name: Build and Release Android APKs
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on tags like v1.0.0
+
+jobs:
+  build:
+    name: Build Android APKs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to create a Release
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prebuild Android
+        run: npx expo prebuild --platform android --clean
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
+
+      - name: Build Universal APK
+        run: |
+          cd android
+          ./gradlew assembleRelease
+          cp app/build/outputs/apk/release/app-release.apk ../LedgerLite-${{ github.ref_name }}-OSS-universal.apk
+
+      - name: Build Architecture-Specific APKs
+        run: |
+          cd android
+          ./gradlew clean
+          ./gradlew assembleRelease -PenableSeparateBuildPerCPUArchitecture=true
+          cp app/build/outputs/apk/release/app-arm64-v8a-release.apk ../LedgerLite-${{ github.ref_name }}-OSS-arm64_v8a.apk
+          cp app/build/outputs/apk/release/app-x86_64-release.apk ../LedgerLite-${{ github.ref_name }}-OSS-x86_64.apk
+
+      - name: Create Release and Upload APKs
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            LedgerLite-${{ github.ref_name }}-OSS-universal.apk
+            LedgerLite-${{ github.ref_name }}-OSS-arm64.apk
+            LedgerLite-${{ github.ref_name }}-OSS-x86.apk
+          name: LedgerLite ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
