@@ -10,10 +10,10 @@ import { Platform } from 'react-native';
 export type ExportColumn = 'Date' | 'Time' | 'Type' | 'Category' | 'Amount' | 'Description' | 'Merchant' | 'Account';
 
 export const exportData = async (
-  expenses: Expense[], 
-  accounts: Account[], 
-  categories: Category[], 
-  format: 'csv' | 'xlsx', 
+  expenses: Expense[],
+  accounts: Account[],
+  categories: Category[],
+  format: 'csv' | 'xlsx',
   action: 'save' | 'share' = 'share',
   savedDirectoryUri?: string | null
 ): Promise<string | undefined> => {
@@ -58,10 +58,10 @@ export const exportData = async (
 
       const initialUri = 'content://com.android.externalstorage.documents/tree/primary%3ADocuments';
       const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(initialUri);
-      
+
       if (permissions.granted) {
         let targetDirUri = permissions.directoryUri;
-        
+
         // If they didn't explicitly pick a folder named LedgerLite, try to create/use one inside their selection
         if (!decodeURIComponent(targetDirUri).endsWith('LedgerLite')) {
           let folderCreatedOrFound = false;
@@ -105,7 +105,7 @@ export const exportData = async (
       mimeType: mimeType,
       dialogTitle: 'Export LedgerLite Data'
     });
-    
+
     return undefined;
 
   } catch (error) {
@@ -158,7 +158,7 @@ export const importData = async (): Promise<Expense[] | null> => {
 };
 
 export const exportSettingsJSON = async (
-  settingsData: any, 
+  settingsData: any,
   action: 'save' | 'share' | 'copy' = 'share',
   savedDirectoryUri?: string | null
 ): Promise<string | undefined> => {
@@ -190,7 +190,7 @@ export const exportSettingsJSON = async (
 
       const initialUri = 'content://com.android.externalstorage.documents/tree/primary%3ADocuments';
       const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(initialUri);
-      
+
       if (permissions.granted) {
         let targetDirUri = permissions.directoryUri;
         if (!decodeURIComponent(targetDirUri).endsWith('LedgerLite')) {
@@ -202,9 +202,9 @@ export const exportSettingsJSON = async (
               targetDirUri = existingLedgerLite;
               folderCreatedOrFound = true;
             }
-          } catch (e) {}
+          } catch (e) { }
           if (!folderCreatedOrFound) {
-            try { targetDirUri = await FileSystem.StorageAccessFramework.makeDirectoryAsync(permissions.directoryUri, 'LedgerLite'); } catch (e) {}
+            try { targetDirUri = await FileSystem.StorageAccessFramework.makeDirectoryAsync(permissions.directoryUri, 'LedgerLite'); } catch (e) { }
           }
         }
 
@@ -228,7 +228,7 @@ export const exportSettingsJSON = async (
       mimeType: mimeType,
       dialogTitle: 'Export LedgerLite Settings'
     });
-    
+
     return undefined;
   } catch (error) {
     console.error("Settings Export Error: ", error);
@@ -258,9 +258,9 @@ export const importSettingsJSON = async () => {
 };
 
 export const exportToPDF = async (
-  expenses: Expense[], 
-  accounts: Account[], 
-  categories: Category[], 
+  expenses: Expense[],
+  accounts: Account[],
+  categories: Category[],
   selectedColumns: ExportColumn[],
   action: 'save' | 'share' = 'share',
   savedDirectoryUri?: string | null
@@ -319,15 +319,15 @@ export const exportToPDF = async (
       </html>
     `;
 
-    const { uri } = await Print.printToFileAsync({ 
+    const { uri } = await Print.printToFileAsync({
       html,
       width: 612, // US Letter width in points
       height: 792 // US Letter height in points
     });
-    
+
     // Wait 1.5s to absolutely guarantee the Android OS has flushed the PDF disk buffer
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     const filename = `LedgerLite_Report_${Date.now()}.pdf`;
     const mimeType = 'application/pdf';
 
@@ -338,7 +338,7 @@ export const exportToPDF = async (
       if (!targetDirUri) {
         const initialUri = 'content://com.android.externalstorage.documents/tree/primary%3ADocuments';
         const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(initialUri);
-        
+
         if (permissions.granted) {
           targetDirUri = permissions.directoryUri;
           if (!decodeURIComponent(targetDirUri).endsWith('LedgerLite')) {
@@ -350,10 +350,10 @@ export const exportToPDF = async (
                 targetDirUri = existingLedgerLite;
                 folderCreatedOrFound = true;
               }
-            } catch (e) {}
+            } catch (e) { }
 
             if (!folderCreatedOrFound) {
-              try { targetDirUri = await FileSystem.StorageAccessFramework.makeDirectoryAsync(permissions.directoryUri, 'LedgerLite'); } catch (e) {}
+              try { targetDirUri = await FileSystem.StorageAccessFramework.makeDirectoryAsync(permissions.directoryUri, 'LedgerLite'); } catch (e) { }
             }
           }
         }
