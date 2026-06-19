@@ -40,11 +40,22 @@ jobs:
       - name: Build All APKs (Universal + Architecture Splits)
         run: |
           cd android
-          # Modify build.gradle to generate a Universal APK alongside the split APKs
-          sed -i 's/universalApk false/universalApk true/' app/build.gradle
+          # Inject the splits configuration into the bottom of build.gradle
+          cat << 'EOF' >> app/build.gradle
+          android {
+              splits {
+                  abi {
+                      enable true
+                      reset()
+                      include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+                      universalApk true
+                  }
+              }
+          }
+          EOF
           
           # Run a single build pipeline
-          ./gradlew assembleRelease -PenableSeparateBuildPerCPUArchitecture=true
+          ./gradlew assembleRelease
           
           # Rename generated APKs
           cp app/build/outputs/apk/release/app-universal-release.apk ../LedgerLite-${{ github.ref_name }}-OSS-universal.apk
