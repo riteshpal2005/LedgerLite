@@ -1,75 +1,80 @@
-import { View, Text, Modal, Pressable, TextInput, ScrollView, Alert } from "react-native";
+import { View, Text, Modal, Pressable, ScrollView, Alert } from "react-native";
 import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { Account } from "../../../core/database/schema";
+import { Category } from "../../../core/database/schema";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
 import { useDispatch } from "react-redux";
 import { setExpenses } from "../../../core/store/expenseSlice";
-import { removeAccountFromRedux, addAccountToRedux } from "../../../core/store/accountSlice";
+import { removeCategory } from "../../../core/store/categorySlice";
 import { CustomAlert } from "../../../shared/components/CustomAlert";
 
-interface AccountDeleteModalProps {
+interface CategoryDeleteModalProps {
   visible: boolean;
   onClose: () => void;
-  account: Account | null;
-  accounts: Account[];
+  onSuccess?: () => void;
+  category: Category | null;
+  categories: Category[];
   linkedExpenseCount: number;
 }
 
 type ActionOption = 'delete' | 'reassign';
 
-export function AccountDeleteModal({ visible, onClose, account, accounts, linkedExpenseCount }: AccountDeleteModalProps) {
+export function CategoryDeleteModal({ visible, onClose, onSuccess, category, categories, linkedExpenseCount }: CategoryDeleteModalProps) {
   const [option, setOption] = useState<ActionOption>('delete');
-  const [selectedExistingAccountId, setSelectedExistingAccountId] = useState<number | null>(null);
+  const [selectedExistingCategoryId, setSelectedExistingCategoryId] = useState<number | null>(null);
   
-  const { deleteAccount, deleteExpensesByAccount, reassignExpenses, getAllExpenses } = useExpenseDatabase();
+  const { deleteCategory, deleteExpensesByCategory, reassignExpensesCategory, getAllExpenses } = useExpenseDatabase();
   const dispatch = useDispatch();
 
   // Reset state when modal opens/closes
   useEffect(() => {
     if (visible) {
       setOption('delete');
-      const otherAccounts = accounts.filter(a => a.id !== account?.id);
-      setSelectedExistingAccountId(otherAccounts.length > 0 ? otherAccounts[0].id : null);
+      const otherCategories = categories.filter(c => c.id !== category?.id);
+      setSelectedExistingCategoryId(otherCategories.length > 0 ? otherCategories[0].id : null);
     }
-  }, [visible, account]);
+  }, [visible, category]);
 
   const handleConfirm = async () => {
-    if (!account) return;
+    if (!category) return;
 
     try {
       if (linkedExpenseCount > 0) {
         if (option === 'delete') {
-          await deleteExpensesByAccount(account.id);
+          await deleteExpensesByCategory(category.id);
         } else if (option === 'reassign') {
-          if (!selectedExistingAccountId) return;
-          await reassignExpenses(account.id, selectedExistingAccountId);
+          if (!selectedExistingCategoryId) return;
+          await reassignExpensesCategory(category.id, selectedExistingCategoryId);
         }
       }
 
-      // Finally delete the account itself
-      await deleteAccount(account.id);
-      dispatch(removeAccountFromRedux(account.id));
+      // Finally delete the category itself
+      await deleteCategory(category.id);
+      dispatch(removeCategory(category.id));
       
       // Refresh expenses globally
       const updatedExpenses = await getAllExpenses();
       dispatch(setExpenses(updatedExpenses));
       
-      onClose();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        onClose();
+      }
     } catch (error) {
       console.error(error);
-      Alert.alert("Error", "Failed to delete account.");
+      Alert.alert("Error", "Failed to delete category.");
     }
   };
 
-  const otherAccounts = accounts.filter(a => a.id !== account?.id);
+  const otherCategories = categories.filter(c => c.id !== category?.id);
 
-  if (accounts.length <= 1) {
+  if (categories.length <= 1) {
     return (
       <CustomAlert
         visible={visible}
         title="Cannot Delete"
-        message="You must have at least one active account to track expenses."
+        message="You must have at least one active category to track expenses."
         onConfirm={onClose}
         confirmText="OK"
       />
@@ -80,9 +85,9 @@ export function AccountDeleteModal({ visible, onClose, account, accounts, linked
     <Modal visible={visible} transparent animationType="slide">
       <View className="flex-1 bg-black/60 justify-end">
         <View className="bg-background rounded-t-3xl p-6 border-t border-bordercolor max-h-[90%]">
-          <Text className="text-primary text-xl font-bold mb-2">Delete Account</Text>
+          <Text className="text-primary text-xl font-bold mb-2">Delete Category</Text>
           <Text className="text-secondary mb-6">
-            You are about to delete <Text className="font-bold text-primary">{account?.name}</Text>.
+            You are about to delete <Text className="font-bold text-primary">{category?.name}</Text>.
           </Text>
 
           {linkedExpenseCount > 0 && (
@@ -102,26 +107,31 @@ export function AccountDeleteModal({ visible, onClose, account, accounts, linked
               </Pressable>
 
               {/* Option 2: Reassign */}
-              {otherAccounts.length > 0 && (
+              {otherCategories.length > 0 && (
                 <Pressable 
                   onPress={() => setOption('reassign')}
                   className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === 'reassign' ? 'bg-green-500/20 border-green-500' : 'bg-surface border-bordercolor'}`}
                 >
                   <Ionicons name={option === 'reassign' ? "radio-button-on" : "radio-button-off"} size={24} color={option === 'reassign' ? "#10b981" : "#71717a"} />
-                  <Text className={`ml-3 font-semibold ${option === 'reassign' ? 'text-green-500' : 'text-primary'}`}>Move to existing account</Text>
+                  <Text className={`ml-3 font-semibold ${option === 'reassign' ? 'text-green-500' : 'text-primary'}`}>Move to existing category</Text>
                 </Pressable>
               )}
 
-              {option === 'reassign' && otherAccounts.length > 0 && (
+              {option === 'reassign' && otherCategories.length > 0 && (
                 <View className="bg-surface p-2 rounded-xl border border-green-500/30 mb-3 ml-6">
-                  {otherAccounts.map((acc, index) => (
+                  {otherCategories.map((cat, index) => (
                     <Pressable
-                      key={acc.id}
-                      onPress={() => setSelectedExistingAccountId(acc.id)}
-                      className={`p-3 flex-row justify-between items-center ${index < otherAccounts.length - 1 ? 'border-b border-bordercolor' : ''}`}
+                      key={cat.id}
+                      onPress={() => setSelectedExistingCategoryId(cat.id)}
+                      className={`p-3 flex-row justify-between items-center ${index < otherCategories.length - 1 ? 'border-b border-bordercolor' : ''}`}
                     >
-                      <Text className={selectedExistingAccountId === acc.id ? 'text-green-500 font-bold' : 'text-primary'}>{acc.name}</Text>
-                      {selectedExistingAccountId === acc.id && <Ionicons name="checkmark" size={20} color="#10b981" />}
+                      <View className="flex-row items-center">
+                        <View style={{ backgroundColor: cat.color }} className="w-8 h-8 rounded-full items-center justify-center mr-3">
+                          <Ionicons name={cat.icon as any} size={16} color="white" />
+                        </View>
+                        <Text className={selectedExistingCategoryId === cat.id ? 'text-green-500 font-bold' : 'text-primary'}>{cat.name}</Text>
+                      </View>
+                      {selectedExistingCategoryId === cat.id && <Ionicons name="checkmark" size={20} color="#10b981" />}
                     </Pressable>
                   ))}
                 </View>

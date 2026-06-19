@@ -41,7 +41,7 @@ export default function ExpenseList({ searchQuery, sortMode, filterType, filterA
   useEffect(() => {
     const loadData = async () => {
       // Add a slight delay to ensure the premium skeleton loader is visible on app boot
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       const expenseData = await getAllExpenses();
       dispatch(setExpenses(expenseData));
@@ -61,7 +61,7 @@ export default function ExpenseList({ searchQuery, sortMode, filterType, filterA
   const filteredExpenses = expenses.filter(expense => {
     // 1. Type Filter
     if (filterType !== 'all' && expense.type !== filterType) return false;
-    
+
     // 2. Account Filter
     if (filterAccountId !== 'all' && expense.accountId !== filterAccountId) return false;
 
@@ -97,7 +97,7 @@ export default function ExpenseList({ searchQuery, sortMode, filterType, filterA
   return (
     <View className='flex-1'>
       <Text className='text-xl font-bold text-primary mb-4'>Recent Expenses</Text>
-      
+
       {isLoading ? (
         <View className="flex-1">
           {[1, 2, 3, 4, 5, 6].map(i => <SkeletonExpenseRow key={i} />)}
@@ -116,53 +116,53 @@ export default function ExpenseList({ searchQuery, sortMode, filterType, filterA
 
             return (
               <Animated.View>
-                <Pressable 
+                <Pressable
                   onPress={() => onExpensePress && onExpensePress(item)}
                   className='bg-surface p-4 rounded-xl mb-3 flex-row justify-between items-center border border-bordercolor active:opacity-80'
                 >
 
-                <View className="flex-row items-center flex-1">
-                  {showIcons && category && (
-                    <View style={{ backgroundColor: category.color }} className="w-10 h-10 rounded-full mr-3 items-center justify-center">
-                      <Ionicons name={category.icon as any} size={20} color="white" />
-                    </View>
-                  )}
+                  <View className="flex-row items-center flex-1">
+                    {showIcons && category && (
+                      <View style={{ backgroundColor: category.color }} className="w-10 h-10 rounded-full mr-3 items-center justify-center">
+                        <Ionicons name={category.icon as any} size={20} color="white" />
+                      </View>
+                    )}
 
-                  <View className="flex-1 pr-2">
-                    <Text className='text-primary font-bold text-lg'>{category?.name || 'Unknown'}</Text>
-                    
-                    <View className="flex-row items-center mt-1">
-                      <Text className='text-secondary text-sm' numberOfLines={1}>{item.description}</Text>
-                      {account ? (
-                        <Text className="text-tertiary text-xs ml-2">• {account.name}</Text>
-                      ) : (
-                        <Pressable 
-                          className="ml-2 bg-yellow-500/20 px-2 py-0.5 rounded-md border border-yellow-500/30"
-                          onPress={() => setExpenseToAssign(item.id)}
-                        >
-                          <Text className="text-yellow-500 text-xs font-bold">Assign Account</Text>
-                        </Pressable>
-                      )}
+                    <View className="flex-1 pr-2">
+                      <Text className='text-primary font-bold text-lg'>{category?.name || 'Unknown'}</Text>
+
+                      <View className="flex-row items-center mt-1">
+                        <Text className='text-secondary text-sm' numberOfLines={1}>{item.description}</Text>
+                        {account ? (
+                          <Text className="text-tertiary text-xs ml-2">• {account.name}</Text>
+                        ) : (
+                          <Pressable
+                            className="ml-2 bg-yellow-500/20 px-2 py-0.5 rounded-md border border-yellow-500/30"
+                            onPress={() => setExpenseToAssign(item.id)}
+                          >
+                            <Text className="text-yellow-500 text-xs font-bold">Assign Account</Text>
+                          </Pressable>
+                        )}
+                      </View>
                     </View>
                   </View>
-                </View>
-                <View className="items-end">
-                  <Text className={`font-bold text-lg ${isCredit ? 'text-green-400' : 'text-red-400'}`}>
-                    {isCredit ? '+' : '-'}₹{item.amount.toFixed(2)}
-                  </Text>
-                  <Text className="text-tertiary text-xs mt-1">
-                    {new Date(item.date).toLocaleTimeString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      hour12: true,
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      second: '2-digit'
-                    })}
-                  </Text>
-                </View>
-              </Pressable>
-            </Animated.View>
+                  <View className="items-end">
+                    <Text className={`font-bold text-lg ${isCredit ? 'text-green-400' : 'text-red-400'}`}>
+                      {isCredit ? '+' : '-'}₹{item.amount.toFixed(2)}
+                    </Text>
+                    <Text className="text-tertiary text-xs mt-1">
+                      {new Date(item.date).toLocaleTimeString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour12: true,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                      })}
+                    </Text>
+                  </View>
+                </Pressable>
+              </Animated.View>
             )
           }}
         />

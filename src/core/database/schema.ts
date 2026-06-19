@@ -95,13 +95,4 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       ('Bills & Utilities', 'flash', '#10b981');
     `);
   }
-
-  // Seed default account
-  const accountsCount = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM accounts');
-  if (accountsCount && accountsCount.count === 0) {
-    await db.execAsync(`
-      INSERT INTO accounts (name, type, balance) VALUES 
-      ('Cash Wallet', 'Cash', 0);
-    `);
-  }
 }

@@ -1,36 +1,47 @@
-import { View, Text, Pressable, Alert, ToastAndroid, Platform } from "react-native";
+import { View, Text, Pressable, Platform } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { setExpenses } from "../../../core/store/expenseSlice";
 import { RootState, store } from "../../../core/store/store";
 import { setExportDirectoryUri, loadSettings } from "../../../core/store/settingsSlice";
 import { setCategories } from "../../../core/store/categorySlice";
+import { setAccounts } from "../../../core/store/accountSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
 import { exportData, importData, exportSettingsJSON, importSettingsJSON, exportToPDF } from "../../../core/services/dataService";
 import { ExportActionRow } from "./ExportActionRow";
 import { ImportActionRow } from "./ImportActionRow";
 import { RestoreRawJsonModal } from "./RestoreRawJsonModal";
-import { AddAccountModal } from "../../accounts/components/AddAccountModal";
+import { BulkAccountMappingModal, AccountMapping } from "./BulkAccountMappingModal";
 import { Account } from "../../../core/database/schema";
 import { useState } from "react";
 import { ColumnSelectionModal, ExportColumn } from "./ColumnSelectionModal";
 import { triggerHaptic } from "../../../core/utils/haptics";
+import { CustomAlert } from "../../../shared/components/CustomAlert";
 
 export function DataManagementSection() {
   const dispatch = useDispatch();
-  const { getAllExpenses, addExpense, getAllCategories, restoreCategory, getAllAccounts } = useExpenseDatabase();
+  const { getAllExpenses, addExpense, getAllCategories, restoreCategory, getAllAccounts, addAccount, restoreAccount } = useExpenseDatabase();
 
   const [pdfModalVisible, setPdfModalVisible] = useState(false);
   const [pdfAction, setPdfAction] = useState<'save' | 'share' | null>(null);
 
   const [rawJsonModalVisible, setRawJsonModalVisible] = useState(false);
 
-  // Import State for Missing Accounts
-  const [missingAccountsForImport, setMissingAccountsForImport] = useState<string[]>([]);
+  const [missingAccountsForImport, setMissingAccountsForImport] = useState<{ name: string, initialBalance: number }[]>([]);
   const [pendingImportExpenses, setPendingImportExpenses] = useState<any[]>([]);
-  const [currentMissingAccountIndex, setCurrentMissingAccountIndex] = useState(0);
   const [accountMappingModalVisible, setAccountMappingModalVisible] = useState(false);
-  const [newlyCreatedAccountsCache, setNewlyCreatedAccountsCache] = useState<Account[]>([]);
+
+  // Global Custom Alert State
+  const [alertConfig, setAlertConfig] = useState<{ visible: boolean; title: string; message: string }>({
+    visible: false,
+    title: '',
+    message: ''
+  });
+
+  const showAlert = (title: string, message: string) => {
+    setAlertConfig({ visible: true, title, message });
+  };
+  const hideAlert = () => setAlertConfig(prev => ({ ...prev, visible: false }));
 
   const handleExportSettings = async (action: 'save' | 'share' | 'copy') => {
     const fullState = store.getState();
@@ -44,20 +55,16 @@ export function DataManagementSection() {
     }
     if (action === 'save' && Platform.OS === 'android' && newDirUri) {
       triggerHaptic.success();
-      ToastAndroid.show("JSON file saved to LedgerLite folder!", ToastAndroid.SHORT);
+      showAlert("Success", "JSON file saved to LedgerLite folder!");
     }
     if (action === 'copy') {
-      if (Platform.OS === 'android') {
-        ToastAndroid.show("JSON copied to clipboard", ToastAndroid.SHORT);
-      } else {
-        Alert.alert("Copied", "Raw JSON copied to clipboard");
-      }
+      showAlert("Copied", "Raw JSON copied to clipboard");
     }
   };
 
   const handleExportExcel = async (action: 'save' | 'share') => {
     const expenses = await getAllExpenses();
-    if (expenses.length === 0) return Alert.alert("No Data", "There are no expenses to export.");
+    if (expenses.length === 0) return showAlert("No Data", "There are no expenses to export.");
     const state = store.getState();
     const newDirUri = await exportData(expenses, state.accounts.accounts, state.categories.categories, 'xlsx', action, state.settings.exportDirectoryUri);
 
@@ -66,13 +73,13 @@ export function DataManagementSection() {
     }
 
     if (action === 'save' && Platform.OS === 'android' && newDirUri) {
-      ToastAndroid.show("Excel file saved to LedgerLite folder!", ToastAndroid.SHORT);
+      showAlert("Success", "Excel file saved to LedgerLite folder!");
     }
   };
 
   const handleExportCSV = async (action: 'save' | 'share') => {
     const expenses = await getAllExpenses();
-    if (expenses.length === 0) return Alert.alert("No Data", "There are no expenses to export.");
+    if (expenses.length === 0) return showAlert("No Data", "There are no expenses to export.");
     const state = store.getState();
 
     const newDirUri = await exportData(expenses, state.accounts.accounts, state.categories.categories, 'csv', action, state.settings.exportDirectoryUri);
@@ -82,20 +89,20 @@ export function DataManagementSection() {
     }
 
     if (action === 'save' && Platform.OS === 'android' && newDirUri) {
-      ToastAndroid.show("CSV file saved to LedgerLite folder!", ToastAndroid.SHORT);
+      showAlert("Success", "CSV file saved to LedgerLite folder!");
     }
   };
 
   const initiateExportPDF = async (action: 'save' | 'share') => {
     const expenses = await getAllExpenses();
-    if (expenses.length === 0) return Alert.alert("No Data", "There are no expenses to export.");
+    if (expenses.length === 0) return showAlert("No Data", "There are no expenses to export.");
     setPdfAction(action);
     setPdfModalVisible(true);
   };
 
   const handleConfirmPDF = async (selectedColumns: ExportColumn[]) => {
     if (!pdfAction) return;
-    if (selectedColumns.length === 0) return Alert.alert("Error", "Please select at least one column.");
+    if (selectedColumns.length === 0) return showAlert("Error", "Please select at least one column.");
 
     const expenses = await getAllExpenses();
     const state = store.getState();
@@ -106,7 +113,7 @@ export function DataManagementSection() {
     }
 
     if (pdfAction === 'save' && Platform.OS === 'android' && newDirUri) {
-      ToastAndroid.show("PDF file saved to LedgerLite folder!", ToastAndroid.SHORT);
+      showAlert("Success", "PDF file saved to LedgerLite folder!");
     }
 
     setPdfAction(null);
@@ -120,11 +127,9 @@ export function DataManagementSection() {
     const importResult = await importData(categories, accounts, expenses);
     if (importResult) {
       if (importResult.missingAccounts && importResult.missingAccounts.length > 0) {
-        // Pause import, show sequential account creation modals
+        // Pause import, show bulk account creation modal
         setMissingAccountsForImport(importResult.missingAccounts);
         setPendingImportExpenses(importResult.expenses);
-        setCurrentMissingAccountIndex(0);
-        setNewlyCreatedAccountsCache([]);
         setAccountMappingModalVisible(true);
         return;
       }
@@ -133,23 +138,30 @@ export function DataManagementSection() {
     }
   };
 
-  const handleAccountCreated = (account: Account) => {
-    const updatedCache = [...newlyCreatedAccountsCache, account];
-    setNewlyCreatedAccountsCache(updatedCache);
-
-    if (currentMissingAccountIndex + 1 < missingAccountsForImport.length) {
-      setCurrentMissingAccountIndex(prev => prev + 1);
-    } else {
-      // All accounts created! Proceed to finalize
-      setAccountMappingModalVisible(false);
-      finalizeImport(pendingImportExpenses, updatedCache);
-
-      // Cleanup state
-      setMissingAccountsForImport([]);
-      setPendingImportExpenses([]);
-      setCurrentMissingAccountIndex(0);
-      setNewlyCreatedAccountsCache([]);
+  const handleConfirmBulkMapping = async (mappings: AccountMapping[]) => {
+    setAccountMappingModalVisible(false);
+    
+    // Create all mapped accounts in SQLite sequentially
+    const newlyCreatedAccounts: Account[] = [];
+    for (const mapping of mappings) {
+      const id = await addAccount({
+        name: mapping.name,
+        type: mapping.type,
+        balance: mapping.balance
+      });
+      newlyCreatedAccounts.push({ ...mapping, id });
     }
+
+    // Sync to Redux
+    const updatedAccounts = await getAllAccounts();
+    dispatch(setAccounts(updatedAccounts));
+
+    // Finalize import with the new mapping cache
+    await finalizeImport(pendingImportExpenses, newlyCreatedAccounts);
+    
+    // Cleanup state
+    setMissingAccountsForImport([]);
+    setPendingImportExpenses([]);
   };
 
   const finalizeImport = async (expensesToImport: any[], newlyCreatedAccounts: Account[]) => {
@@ -173,10 +185,10 @@ export function DataManagementSection() {
       const updatedExpenses = await getAllExpenses();
       dispatch(setExpenses(updatedExpenses));
       triggerHaptic.success();
-      Alert.alert("Success", `Imported ${addedCount} new transactions successfully.`);
+      showAlert("Success", `Imported ${addedCount} new transactions successfully.`);
     } else {
       triggerHaptic.light();
-      Alert.alert("Notice", "No new transactions were found to import (all were duplicates).");
+      showAlert("Notice", "No new transactions were found to import (all were duplicates).");
     }
   };
 
@@ -193,7 +205,7 @@ export function DataManagementSection() {
         dispatch(setCategories(updatedCategories));
       }
       triggerHaptic.success();
-      Alert.alert("Success", "Settings & Categories restored successfully!");
+      showAlert("Success", "Settings & Categories restored successfully!");
     }
   };
 
@@ -285,18 +297,23 @@ export function DataManagementSection() {
         onConfirm={handleConfirmPDF}
       />
 
-      <AddAccountModal
+      <BulkAccountMappingModal
         visible={accountMappingModalVisible}
+        missingAccounts={missingAccountsForImport}
         onClose={() => {
           setAccountMappingModalVisible(false);
           setMissingAccountsForImport([]);
           setPendingImportExpenses([]);
-          setCurrentMissingAccountIndex(0);
-          setNewlyCreatedAccountsCache([]);
-          Alert.alert("Import Cancelled", "Import was cancelled because not all missing accounts were mapped.");
+          showAlert("Import Cancelled", "Import was cancelled because you discarded the unknown accounts mapping.");
         }}
-        initialName={missingAccountsForImport[currentMissingAccountIndex] || ''}
-        onAccountCreated={handleAccountCreated}
+        onConfirm={handleConfirmBulkMapping}
+      />
+
+      <CustomAlert 
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onConfirm={hideAlert}
       />
     </>
   );

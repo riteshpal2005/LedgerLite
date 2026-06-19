@@ -1,10 +1,13 @@
 import { Text, View, Pressable, BackHandler, Modal } from 'react-native';
 import { useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../core/store/store';
 import { useFocusEffect } from 'expo-router';
 import ExpenseList from '../../features/expenses/components/ExpenseList';
 import { ExpenseSearchBar } from '../../features/expenses/components/ExpenseSearchBar';
 import { ExpenseSortFilter, SortMode, FilterType, FilterAccountId } from '../../features/expenses/components/ExpenseSortFilter';
 import { AddExpenseSheet } from '../../features/expenses/components/AddExpenseSheet';
+import { AddAccountModal } from '../../features/accounts/components/AddAccountModal';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useRef } from 'react';
@@ -20,6 +23,9 @@ export default function Home() {
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [showExitModal, setShowExitModal] = useState(false);
+  const [showAddAccountModal, setShowAddAccountModal] = useState(false);
+
+  const accounts = useSelector((state: RootState) => state.accounts.accounts);
 
   useFocusEffect(
     useCallback(() => {
@@ -34,6 +40,10 @@ export default function Home() {
   );
 
   const handlePresentModalPress = () => {
+    if (accounts.length === 0) {
+      setShowAddAccountModal(true);
+      return;
+    }
     setSelectedExpenseToEdit(undefined); // Clear any edit state when adding new
     bottomSheetModalRef.current?.present();
   };
@@ -71,6 +81,7 @@ export default function Home() {
       </Pressable>
 
       <AddExpenseSheet bottomSheetRef={bottomSheetModalRef} initialExpense={selectedExpenseToEdit} />
+      <AddAccountModal visible={showAddAccountModal} onClose={() => setShowAddAccountModal(false)} />
 
       <Modal
         visible={showExitModal}

@@ -113,7 +113,19 @@ export function useExpenseDatabase() {
     await db.runAsync('UPDATE expenses SET accountId = ? WHERE accountId = ?', [newAccountId, oldAccountId]);
   };
 
-  return { addExpense, getAllExpenses, getTotalSpent, getAllCategories, updateCategory, addCategory, restoreCategory, getAllAccounts, addAccount, restoreAccount, updateAccount, adjustAccountBalance, updateExpenseAccount, updateExpenseFull, deleteExpense, deleteAccount, deleteExpensesByAccount, reassignExpenses };
+  const deleteCategory = async (id: number) => {
+    await db.runAsync('DELETE FROM categories WHERE id = ?', [id]);
+  };
+
+  const deleteExpensesByCategory = async (categoryId: number) => {
+    await db.runAsync('DELETE FROM expenses WHERE categoryId = ?', [categoryId]);
+  };
+
+  const reassignExpensesCategory = async (oldCategoryId: number, newCategoryId: number) => {
+    await db.runAsync('UPDATE expenses SET categoryId = ? WHERE categoryId = ?', [newCategoryId, oldCategoryId]);
+  };
+
+  return { addExpense, getAllExpenses, getTotalSpent, getAllCategories, updateCategory, addCategory, restoreCategory, deleteCategory, deleteExpensesByCategory, reassignExpensesCategory, getAllAccounts, addAccount, restoreAccount, updateAccount, adjustAccountBalance, updateExpenseAccount, updateExpenseFull, deleteExpense, deleteAccount, deleteExpensesByAccount, reassignExpenses };
 }
 
 

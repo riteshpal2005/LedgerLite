@@ -2,12 +2,15 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import { View, Text, Pressable, ScrollView } from "react-native";
 import { BottomSheetModal, BottomSheetView, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Ionicons } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../core/store/store";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
 import { updateCategoryAction, addCategory as addCategoryAction } from "../../../core/store/categorySlice";
 import { BottomSheetFormField } from "../../../shared/components/BottomSheetFormField";
 import { Category } from "../../../core/database/schema";
 import { useTheme } from "../../../core/theme/ThemeContext";
+import ColorPicker, { Panel1, HueSlider, OpacitySlider, Preview } from 'reanimated-color-picker';
+import { CategoryDeleteModal } from "./CategoryDeleteModal";
 
 interface CategoryEditSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
@@ -31,8 +34,17 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
   const [name, setName] = useState('');
   const [color, setColor] = useState(PRESET_COLORS[0]);
   const [icon, setIcon] = useState(PRESET_ICONS[0]);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const dispatch = useDispatch();
+  const categories = useSelector((state: RootState) => state.categories.categories);
+  const expenses = useSelector((state: RootState) => state.expenses.expenses);
+
+  const linkedExpenseCount = useMemo(() => {
+    if (!initialCategory) return 0;
+    return expenses.filter(e => e.categoryId === initialCategory.id).length;
+  }, [initialCategory, expenses]);
   const { updateCategory, addCategory } = useExpenseDatabase();
   const { activeThemeClass } = useTheme();
 
@@ -59,7 +71,7 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
     }
   }, [initialCategory]);
 
-  const snapPoints = useMemo(() => ['75%'], []);
+  const snapPoints = useMemo(() => ['75%', '90%'], []);
 
   const handleClose = useCallback(() => {
     bottomSheetRef.current?.dismiss();
@@ -119,17 +131,39 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
 
           <Text className="text-secondary font-bold mb-3 uppercase text-xs tracking-wider mt-4">Color</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6 flex-row">
+            <Pressable
+              onPress={() => setShowColorPicker(!showColorPicker)}
+              className={`w-12 h-12 rounded-full mr-3 items-center justify-center border-2 ${showColorPicker ? 'border-blue-500 bg-blue-500/10' : 'border-bordercolor bg-surface'}`}
+            >
+              <Ionicons name="color-palette" size={24} color={showColorPicker ? '#3b82f6' : '#71717a'} />
+            </Pressable>
             {PRESET_COLORS.map(c => (
               <Pressable 
                 key={c}
-                onPress={() => setColor(c)}
+                onPress={() => { setColor(c); setShowColorPicker(false); }}
                 style={{ backgroundColor: c }}
-                className={`w-12 h-12 rounded-full mr-3 items-center justify-center ${color === c ? 'border-2 border-white' : ''}`}
+                className={`w-12 h-12 rounded-full mr-3 items-center justify-center ${color === c && !showColorPicker ? 'border-2 border-white' : ''}`}
               >
-                {color === c && <Ionicons name="checkmark" size={24} color="white" />}
+                {color === c && !showColorPicker && <Ionicons name="checkmark" size={24} color="white" />}
               </Pressable>
             ))}
           </ScrollView>
+
+          {showColorPicker && (
+            <View className="mb-6 bg-surface p-4 rounded-2xl border border-bordercolor" style={{ minHeight: 350 }}>
+              <ColorPicker
+                style={{ width: '100%', justifyContent: 'center' }}
+                value={color}
+                onCompleteJS={(colors) => setColor(colors.hex)}
+                boundedThumb={true}
+              >
+                <Preview hideInitialColor hideText style={{ height: 40, borderRadius: 12, marginBottom: 16 }} />
+                <Panel1 style={{ borderRadius: 12, height: 200, marginBottom: 16 }} />
+                <HueSlider style={{ borderRadius: 12, height: 30, marginBottom: 16 }} />
+                <OpacitySlider style={{ borderRadius: 12, height: 30 }} />
+              </ColorPicker>
+            </View>
+          )}
 
           <Text className="text-secondary font-bold mb-3 uppercase text-xs tracking-wider">Icon</Text>
           <View className="flex-row flex-wrap gap-3 mb-8">
@@ -144,12 +178,34 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
             ))}
           </View>
 
-          <Pressable onPress={handleSave} className='bg-blue-600 rounded-xl p-4 mb-8'>
-            <Text className='text-white font-bold text-center text-lg'>{initialCategory ? 'Save Changes' : 'Create Category'}</Text>
-          </Pressable>
+          <View className="flex-row gap-4 mb-8">
+            {initialCategory && (
+              <Pressable 
+                onPress={() => setShowDeleteModal(true)} 
+                className='flex-1 border border-red-500/50 bg-red-500/10 rounded-xl p-4 items-center justify-center'
+              >
+                <Ionicons name="trash-outline" size={24} color="#ef4444" />
+              </Pressable>
+            )}
+            <Pressable onPress={handleSave} className='flex-[3] bg-blue-600 rounded-xl p-4'>
+              <Text className='text-white font-bold text-center text-lg'>{initialCategory ? 'Save Changes' : 'Create Category'}</Text>
+            </Pressable>
+          </View>
 
         </View>
       </BottomSheetScrollView>
+      
+      <CategoryDeleteModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onSuccess={() => {
+          setShowDeleteModal(false);
+          bottomSheetRef.current?.dismiss();
+        }}
+        category={initialCategory || null}
+        categories={categories}
+        linkedExpenseCount={linkedExpenseCount}
+      />
     </BottomSheetModal>
   );
 }

@@ -7,7 +7,7 @@ import * as Clipboard from 'expo-clipboard';
 import { Expense, Account, Category } from '../database/schema';
 import { Platform } from 'react-native';
 
-export type ExportColumn = 'Date' | 'Time' | 'Type' | 'Category' | 'Amount' | 'Description' | 'Merchant' | 'Account';
+export type ExportColumn = 'Date' | 'Time' | 'Type' | 'Category' | 'Amount' | 'Description' | 'Merchant' | 'Account' | 'AccountInitialBalance';
 
 export const exportData = async (
   expenses: Expense[],
@@ -31,6 +31,7 @@ export const exportData = async (
         Merchant: e.merchant || '',
         AccountName: account ? account.name : 'Unassigned',
         AccountType: account ? account.type : 'N/A',
+        AccountInitialBalance: account ? account.balance : 0,
         _RawDateUnix: e.date
       };
     });
@@ -119,7 +120,7 @@ export const importData = async (
   categories: Category[],
   accounts: Account[],
   existingExpenses: Expense[]
-): Promise<{ expenses: any[], missingAccounts: string[] } | null> => {
+): Promise<{ expenses: any[], missingAccounts: { name: string; initialBalance: number }[] } | null> => {
   try {
     const result = await DocumentPicker.getDocumentAsync({
       type: [
@@ -163,8 +164,9 @@ export const importData = async (
       const accountId = matchedAccount ? matchedAccount.id : undefined;
 
       if (!matchedAccount && accountName && accountName !== 'Unassigned') {
-        if (!missingAccounts.includes(accountName)) {
-          missingAccounts.push(accountName);
+        if (!missingAccounts.find(m => m.name === accountName)) {
+          const initialBalance = parseFloat(String(row.AccountInitialBalance).replace(/[^0-9.-]+/g, "")) || 0;
+          missingAccounts.push({ name: accountName, initialBalance });
         }
       }
 
@@ -367,7 +369,8 @@ export const exportToPDF = async (
         Amount: `₹${e.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         Description: e.description,
         Merchant: e.merchant || '',
-        Account: account ? account.name : 'Unassigned'
+        Account: account ? account.name : 'Unassigned',
+        AccountInitialBalance: account ? account.balance : 0
       };
     });
 
