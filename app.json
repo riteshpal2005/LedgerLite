@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "LedgerLite",
-    "slug": "LedgerLite",
-    "version": "1.1.1",
+    "slug": "ledgerlite",
+    "version": "1.1.6",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -30,6 +30,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      "./withVectorMonochrome.js",
       "expo-router",
       "expo-sqlite",
       "@react-native-community/datetimepicker"
