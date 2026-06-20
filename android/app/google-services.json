@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "217077896059",
+    "project_id": "ledgelite",
+    "storage_bucket": "ledgelite.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217077896059:android:111a66892172ce2f45e3de",
+        "android_client_info": {
+          "package_name": "dev.ritesh.ledgerlite"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "217077896059-ts0uvihl29o6mr2kvm1paokd2vifuecq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKUApaiHyb-8CvxafIlUypHOLQlVEd_MQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "217077896059-ts0uvihl29o6mr2kvm1paokd2vifuecq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
