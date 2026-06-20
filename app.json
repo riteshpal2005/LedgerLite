@@ -30,7 +30,6 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "./withVectorMonochrome.js",
       "expo-router",
       "expo-sqlite",
       "@react-native-community/datetimepicker"
