@@ -39,15 +39,15 @@ export function RestoreRawJsonModal({ visible, onClose, onRestore }: RestoreRawJ
     >
       <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }} onPress={onClose}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1, justifyContent: 'flex-end' }}>
-          <Pressable 
-            onPress={(e) => e.stopPropagation()} 
-            style={{ 
-              height: '85%', 
-              backgroundColor: bottomSheetBackgroundColor, 
-              borderTopLeftRadius: 24, 
-              borderTopRightRadius: 24, 
-              borderTopWidth: 1, 
-              borderTopColor: bottomSheetBorderColor 
+          <Pressable
+            onPress={(e) => e.stopPropagation()}
+            style={{
+              height: '85%',
+              backgroundColor: bottomSheetBackgroundColor,
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+              borderTopWidth: 1,
+              borderTopColor: bottomSheetBorderColor
             }}
           >
             <View style={{ flex: 1, padding: 24 }}>
@@ -74,7 +74,7 @@ export function RestoreRawJsonModal({ visible, onClose, onRestore }: RestoreRawJ
                 autoCorrect={false}
               />
 
-              <Pressable 
+              <Pressable
                 onPress={handleRestore}
                 className="bg-brand-primary rounded-xl p-4 mb-4"
               >

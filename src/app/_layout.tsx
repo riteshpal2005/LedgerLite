@@ -7,9 +7,10 @@ import { Provider } from "react-redux";
 import { store } from "../core/store/store";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import * as FileSystem from 'expo-file-system/legacy';
 import { loadSettings } from "../core/store/settingsSlice";
+import { AuthProvider } from "../core/firebase/AuthContext";
 
 export default function RootLayout() {
   useEffect(() => {
@@ -29,9 +30,12 @@ export default function RootLayout() {
         <ThemeProvider>
           <GestureHandlerRootView style={{ flex: 1 }}>
             <BottomSheetModalProvider>
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name='(tabs)' />
-              </Stack>
+              <AuthProvider>
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name='(tabs)' />
+                  <Stack.Screen name='(auth)' />
+                </Stack>
+              </AuthProvider>
             </BottomSheetModalProvider>
           </GestureHandlerRootView>
         </ThemeProvider>

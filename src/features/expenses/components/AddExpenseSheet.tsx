@@ -120,8 +120,14 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
     if (!initialExpense) return;
     await deleteExpense(initialExpense.id);
     dispatch(deleteExpenseAction(initialExpense.id));
+    
+    // First dismiss the Alert/Popup
     setShowDeleteModal(false);
-    handleClose();
+    
+    // Then dismiss the Options Modal/Sheet after a slight delay for the animation
+    setTimeout(() => {
+      handleClose();
+    }, 300);
   };
 
   return (

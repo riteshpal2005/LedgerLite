@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Platform } from "react-native";
+import { View, Text, Pressable, Platform, Alert } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { setExpenses } from "../../../core/store/expenseSlice";
 import { RootState, store } from "../../../core/store/store";
@@ -8,6 +8,8 @@ import { setAccounts } from "../../../core/store/accountSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
 import { exportData, importData, exportSettingsJSON, importSettingsJSON, exportToPDF } from "../../../core/services/dataService";
+import { SyncService } from "../../../core/services/syncService";
+import { useAuth } from "../../../core/firebase/AuthContext";
 import { ExportActionRow } from "./ExportActionRow";
 import { ImportActionRow } from "./ImportActionRow";
 import { RestoreRawJsonModal } from "./RestoreRawJsonModal";
@@ -20,8 +22,10 @@ import { CustomAlert } from "../../../shared/components/CustomAlert";
 
 export function DataManagementSection() {
   const dispatch = useDispatch();
-  const { getAllExpenses, addExpense, getAllCategories, restoreCategory, getAllAccounts, addAccount, restoreAccount } = useExpenseDatabase();
+  const { user } = useAuth();
+  const { getAllExpenses, addExpense, getAllCategories, restoreCategory, getAllAccounts, addAccount, restoreAccount, deleteExpense, deleteAccount, deleteCategory } = useExpenseDatabase();
 
+  const [isSyncing, setIsSyncing] = useState(false);
   const [pdfModalVisible, setPdfModalVisible] = useState(false);
   const [pdfAction, setPdfAction] = useState<'save' | 'share' | null>(null);
 
@@ -32,16 +36,148 @@ export function DataManagementSection() {
   const [accountMappingModalVisible, setAccountMappingModalVisible] = useState(false);
 
   // Global Custom Alert State
-  const [alertConfig, setAlertConfig] = useState<{ visible: boolean; title: string; message: string }>({
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    onConfirm?: () => void;
+    onCancel?: () => void;
+    confirmText?: string;
+    cancelText?: string;
+    confirmStyle?: 'default' | 'danger';
+  }>({
     visible: false,
     title: '',
     message: ''
   });
 
-  const showAlert = (title: string, message: string) => {
-    setAlertConfig({ visible: true, title, message });
+  const showAlert = (
+    title: string,
+    message: string,
+    onConfirm?: () => void,
+    onCancel?: () => void,
+    confirmText?: string,
+    cancelText?: string,
+    confirmStyle?: 'default' | 'danger'
+  ) => {
+    setAlertConfig({
+      visible: true,
+      title,
+      message,
+      onConfirm: onConfirm || hideAlert,
+      onCancel,
+      confirmText: confirmText || 'OK',
+      cancelText,
+      confirmStyle: confirmStyle || 'default'
+    });
   };
+
   const hideAlert = () => setAlertConfig(prev => ({ ...prev, visible: false }));
+
+  const handleSyncToCloud = async () => {
+    if (!user) return showAlert("Error", "You must be logged in to sync to the cloud.");
+    setIsSyncing(true);
+    try {
+      const expenses = await getAllExpenses();
+      const accounts = await getAllAccounts();
+      const categories = await getAllCategories();
+      const settings = store.getState().settings;
+
+      const snapshot = {
+        timestamp: Date.now(),
+        expenses,
+        accounts,
+        categories,
+        settings
+      };
+
+      const { success, error } = await SyncService.syncToCloud(user.uid, snapshot);
+      if (success) {
+        triggerHaptic.success();
+        showAlert("Success", "Data successfully synced to Firestore!");
+      } else {
+        showAlert("Sync Failed", error || "Unknown error");
+      }
+    } catch (e: any) {
+      showAlert("Error", e.message);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleRestoreFromCloud = async () => {
+    if (!user) return showAlert("Error", "You must be logged in to restore from the cloud.");
+    
+    showAlert(
+      "Restore from Cloud",
+      "We will merge your cloud backup with your local data. Duplicate transactions will be skipped.",
+      async () => {
+        hideAlert();
+        setIsSyncing(true);
+        try {
+          const { snapshot, error } = await SyncService.restoreFromCloud(user.uid);
+          if (error) return showAlert("Error", error);
+          if (!snapshot) return showAlert("Error", "No cloud backup found.");
+
+          // We do NOT wipe local data anymore. We merge it!
+          
+          // 1. Restore settings (Redux merges automatically)
+          if (snapshot.settings) dispatch(loadSettings(snapshot.settings));
+
+          // 2. Restore Categories (INSERT OR REPLACE)
+          if (snapshot.categories) {
+            for (const cat of snapshot.categories) await restoreCategory(cat);
+            dispatch(setCategories(await getAllCategories()));
+          }
+
+          // 3. Restore Accounts (INSERT OR REPLACE)
+          if (snapshot.accounts) {
+            for (const acc of snapshot.accounts) await restoreAccount(acc);
+            dispatch(setAccounts(await getAllAccounts()));
+          }
+
+          // 4. Smart Merge Expenses
+          if (snapshot.expenses) {
+            const oldExpenses = await getAllExpenses();
+            let addedCount = 0;
+            
+            for (const exp of snapshot.expenses) {
+              // Deduplication logic: Check if an expense with the same amount, description, type, and approximate date already exists locally
+              const isDuplicate = oldExpenses.some(localExp => {
+                const timeDiff = Math.abs(localExp.date - exp.date);
+                return localExp.amount === exp.amount &&
+                       localExp.description === exp.description &&
+                       localExp.type === exp.type &&
+                       timeDiff < 60000; // Within 1 minute buffer
+              });
+
+              if (!isDuplicate) {
+                // addExpense generates a fresh new ID, so it won't conflict with local IDs
+                await addExpense(exp);
+                addedCount++;
+              }
+            }
+            dispatch(setExpenses(await getAllExpenses()));
+            
+            triggerHaptic.success();
+            showAlert("Success", `Data merged! Added ${addedCount} new transactions from the cloud.`);
+          } else {
+            triggerHaptic.success();
+            showAlert("Success", "Settings and Categories merged from the cloud.");
+          }
+
+        } catch (e: any) {
+          showAlert("Error", e.message);
+        } finally {
+          setIsSyncing(false);
+        }
+      },
+      hideAlert,
+      "Smart Merge",
+      "Cancel",
+      "default"
+    );
+  };
 
   const handleExportSettings = async (action: 'save' | 'share' | 'copy') => {
     const fullState = store.getState();
@@ -259,7 +395,41 @@ export function DataManagementSection() {
         </Pressable>
         <View className="h-[1px] bg-bordercolor my-2" />
 
-        <View style={{ zIndex: 5 }}>
+        {user && (
+          <>
+            <View style={{ zIndex: 6 }}>
+              <Pressable 
+                className="flex-row justify-between items-center py-2" 
+                onPress={handleSyncToCloud}
+                disabled={isSyncing}
+              >
+                <View className="flex-row items-center">
+                  <Ionicons name="cloud-upload-outline" size={24} color="#3b82f6" />
+                  <Text className="text-primary text-lg font-semibold ml-3">Sync to Cloud</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#52525b" />
+              </Pressable>
+            </View>
+            <View className="h-[1px] bg-bordercolor my-2" />
+
+            <View style={{ zIndex: 5 }}>
+              <Pressable 
+                className="flex-row justify-between items-center py-2" 
+                onPress={handleRestoreFromCloud}
+                disabled={isSyncing}
+              >
+                <View className="flex-row items-center">
+                  <Ionicons name="cloud-download-outline" size={24} color="#10b981" />
+                  <Text className="text-primary text-lg font-semibold ml-3">Restore from Cloud</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#52525b" />
+              </Pressable>
+            </View>
+            <View className="h-[1px] bg-bordercolor my-2" />
+          </>
+        )}
+
+        <View style={{ zIndex: 4 }}>
           <ExportActionRow
             title="Backup Settings (JSON)"
             iconName="settings-outline"
@@ -313,7 +483,11 @@ export function DataManagementSection() {
         visible={alertConfig.visible}
         title={alertConfig.title}
         message={alertConfig.message}
-        onConfirm={hideAlert}
+        onConfirm={alertConfig.onConfirm || hideAlert}
+        onCancel={alertConfig.onCancel}
+        confirmText={alertConfig.confirmText}
+        cancelText={alertConfig.cancelText}
+        confirmStyle={alertConfig.confirmStyle}
       />
     </>
   );

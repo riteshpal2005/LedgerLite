@@ -129,8 +129,11 @@ export function AccountsSection() {
             {accounts.length > 1 && (
               <Pressable 
                 onPress={() => {
-                  initiateDelete(actionAccount!);
-                  setActionAccount(null);
+                  const targetAcc = actionAccount!;
+                  setActionAccount(null); // Dismiss first
+                  setTimeout(() => {
+                    initiateDelete(targetAcc); // Open delete modal after delay
+                  }, 300);
                 }}
                 className="flex-row items-center p-4 rounded-2xl active:bg-red-500/10"
               >

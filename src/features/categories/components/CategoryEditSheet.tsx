@@ -194,8 +194,12 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
         visible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onSuccess={() => {
+          // First dismiss the Alert/Popup
           setShowDeleteModal(false);
-          bottomSheetRef.current?.dismiss();
+          // Then dismiss the Options Modal/Sheet after a slight delay
+          setTimeout(() => {
+            bottomSheetRef.current?.dismiss();
+          }, 300);
         }}
         category={initialCategory || null}
         categories={categories}

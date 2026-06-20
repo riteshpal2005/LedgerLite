@@ -3,6 +3,8 @@ import { PreferencesSection } from "../../features/settings/components/Preferenc
 import { AccountsSection } from "../../features/settings/components/AccountsSection";
 import { DataManagementSection } from "../../features/settings/components/DataManagementSection";
 import { AdvancedSection } from "../../features/settings/components/AdvancedSection";
+import { AccountSection } from "../../features/settings/components/AccountSection";
+import { AboutSection } from "../../features/settings/components/AboutSection";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
@@ -12,6 +14,8 @@ export default function SettingsScreen() {
       <Text className="text-3xl font-bold text-primary mb-8">Settings</Text>
       
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+        
+        <AccountSection />
         
         <View className="mb-8">
           <Text className="text-secondary font-bold uppercase text-xs tracking-wider mb-2">Customization</Text>
@@ -33,6 +37,7 @@ export default function SettingsScreen() {
         <AccountsSection />
         <DataManagementSection />
         <AdvancedSection />
+        <AboutSection />
         <View className="h-12" />
       </ScrollView>
     </View>

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "217077896059",
+    "project_id": "ledgelite",
+    "storage_bucket": "ledgelite.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217077896059:android:111a66892172ce2f45e3de",
+        "android_client_info": {
+          "package_name": "dev.ritesh.ledgerlite"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "217077896059-92lsbn8fjr0m7f193n05tvt7jp0bsfra.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dev.ritesh.ledgerlite",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "217077896059-o4u6ri0he2rf5sh281l7muoil1mcr6g1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dev.ritesh.ledgerlite",
+            "certificate_hash": "fa81a2d8c88b58b09a5188b4c2597994b6a2bbb1"
+          }
+        },
+        {
+          "client_id": "217077896059-ts0uvihl29o6mr2kvm1paokd2vifuecq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKUApaiHyb-8CvxafIlUypHOLQlVEd_MQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "217077896059-ts0uvihl29o6mr2kvm1paokd2vifuecq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
