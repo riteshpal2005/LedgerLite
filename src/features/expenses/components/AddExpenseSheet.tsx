@@ -164,14 +164,17 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
               />
             </View>
             <View className="flex-1">
-              <View className="bg-surface rounded-2xl p-4 border border-bordercolor h-[72px] justify-center">
+              <Pressable 
+                onPress={() => setShowAccountPicker(true)} 
+                className="bg-surface rounded-2xl p-4 border border-bordercolor h-[72px] justify-center active:bg-black/5 dark:active:bg-white/5"
+              >
                 <Text className="text-secondary text-sm mb-1">Account</Text>
-                <Pressable onPress={() => setShowAccountPicker(true)} className="flex-row items-center justify-between">
+                <View className="flex-row items-center justify-between">
                   <Text className="text-primary font-bold text-lg flex-1" numberOfLines={1}>
                     {selectedAccount?.name || 'Select'}
                   </Text>
-                </Pressable>
-              </View>
+                </View>
+              </Pressable>
             </View>
           </View>
 

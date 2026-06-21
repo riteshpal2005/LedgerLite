@@ -10,9 +10,12 @@ interface CategoryPickerButtonProps {
 
 export function CategoryPickerButton({ selectedCategory, onPress }: CategoryPickerButtonProps) {
   return (
-    <View className="bg-surface rounded-2xl p-4 border border-bordercolor h-[72px] justify-center">
+    <Pressable 
+      onPress={onPress}
+      className="bg-surface rounded-2xl p-4 border border-bordercolor h-[72px] justify-center active:bg-black/5 dark:active:bg-white/5"
+    >
       <Text className="text-secondary text-sm mb-1">Category</Text>
-      <Pressable onPress={onPress} className="flex-row items-center">
+      <View className="flex-row items-center">
         {selectedCategory && (
           <View style={{ backgroundColor: selectedCategory.color }} className="w-6 h-6 rounded-full mr-2 items-center justify-center">
             <Ionicons name={selectedCategory.icon as any} size={12} color="white" />
@@ -21,7 +24,7 @@ export function CategoryPickerButton({ selectedCategory, onPress }: CategoryPick
         <Text className="text-primary text-lg font-semibold flex-1" numberOfLines={1}>
           {selectedCategory ? selectedCategory.name : 'Select a Category'}
         </Text>
-      </Pressable>
-    </View>
+      </View>
+    </Pressable>
   );
 }

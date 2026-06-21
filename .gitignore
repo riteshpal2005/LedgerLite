@@ -45,4 +45,6 @@ yarn-error.*
 *.md
 android/app/release.keystore
 release-keystore.base64.txt  
- *.apk
+*.apk
+!CHANGELOG.md
+!README.md

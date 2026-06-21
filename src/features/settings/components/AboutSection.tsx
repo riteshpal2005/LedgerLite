@@ -20,7 +20,7 @@ export function AboutSection() {
   };
 
   return (
-    <View className="mb-8">
+    <View className="mb-8 mt-6">
       <Text className="text-secondary font-bold uppercase text-xs tracking-wider mb-2">About & Legal</Text>
       
       <View className="bg-surface rounded-2xl border border-bordercolor overflow-hidden">
@@ -39,13 +39,19 @@ export function AboutSection() {
         </View>
 
         {/* Developer Credit */}
-        <View className="p-4 border-b border-bordercolor flex-row items-center justify-between bg-white/5">
+        <Pressable 
+          onPress={() => handleOpenURL(GITHUB_URL)}
+          className="p-4 border-b border-bordercolor flex-row items-center justify-between bg-white/5 active:bg-white/10"
+        >
           <View className="flex-row items-center">
             <Ionicons name="code-slash" size={20} color="#10b981" />
             <Text className="text-primary font-medium ml-3">Developer</Text>
           </View>
-          <Text className="text-secondary">Ritesh Pal</Text>
-        </View>
+          <View className="flex-row items-center">
+            <Text className="text-secondary mr-2">Ritesh Pal</Text>
+            <Ionicons name="open-outline" size={16} color="#71717a" />
+          </View>
+        </Pressable>
 
         {/* GitHub Link */}
         <Pressable 
