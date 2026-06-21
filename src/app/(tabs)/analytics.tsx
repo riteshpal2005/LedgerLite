@@ -9,7 +9,6 @@ export default function AnalyticsScreen() {
   const [spendingData, setSpendingData] = useState<CategorySpending[]>([]);
   const [totalSpent, setTotalSpent] = useState(0);
 
-  // Ref: analytics-1
   const [dateRange, setDateRange] = useState<{start: number, end: number} | null>(null);
 
   const { getExpensesByCategory } = useAnalyticsDatabase();
@@ -22,7 +21,6 @@ export default function AnalyticsScreen() {
     setTotalSpent(total);
   }, [dateRange]);
 
-  // Ref: analytics-2
   useFocusEffect(useCallback(() => {
     loadData();
   }, [loadData]));

@@ -82,7 +82,6 @@ export function RestoreRawJsonModal({ visible, onClose, onRestore }: RestoreRawJ
               </Pressable>
             </View>
 
-            {/* Hack: Absolute block that extends infinitely downwards to cover the see-through gap when keyboard pushes modal up */}
             <View style={{ position: 'absolute', top: '100%', left: 0, right: 0, height: 1000, backgroundColor: bottomSheetBackgroundColor }} />
           </Pressable>
         </KeyboardAvoidingView>

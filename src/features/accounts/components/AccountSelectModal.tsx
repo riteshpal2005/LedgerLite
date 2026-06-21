@@ -7,7 +7,7 @@ interface AccountSelectModalProps {
   visible: boolean;
   onClose: () => void;
   accounts: Account[];
-  onSelect: (id: number) => void;
+  onSelect: (id: string) => void;
 }
 
 export function AccountSelectModal({ visible, onClose, accounts, onSelect }: AccountSelectModalProps) {
@@ -72,7 +72,6 @@ export function AccountSelectModal({ visible, onClose, accounts, onSelect }: Acc
             </ScrollView>
           </View>
 
-          {/* Hack: Absolute block that extends infinitely downwards to cover the see-through gap */}
           <View style={{ position: 'absolute', top: '100%', left: 0, right: 0, height: 1000, backgroundColor: bottomSheetBackgroundColor }} />
         </Pressable>
       </Pressable>

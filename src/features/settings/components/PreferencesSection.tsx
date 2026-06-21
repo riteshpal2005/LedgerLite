@@ -13,8 +13,8 @@ export function PreferencesSection() {
 
   const CustomToggle = ({ value, onValueChange }: { value: boolean, onValueChange: (v: boolean) => void }) => {
     const getTrackColor = () => {
-      if (value) return '#2563eb'; // Blue
-      return activeThemeClass === '' ? '#000000' : '#3f3f46'; // Black in Light, Grey in Dark
+      if (value) return '#2563eb'; 
+      return activeThemeClass === '' ? '#000000' : '#3f3f46'; 
     };
 
     return (

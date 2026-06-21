@@ -5,7 +5,7 @@ const settingsSlice = createSlice({
   initialState: { 
     showIcons: true,
     hapticsEnabled: true,
-    defaultAccountId: null as number | null,
+    defaultAccountId: null as string | null,
     themeOption: 'dark' as 'light' | 'dark' | 'pitch-black' | 'system',
     exportDirectoryUri: null as string | null
   },

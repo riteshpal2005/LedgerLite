@@ -13,7 +13,8 @@ import { setAccounts, selectAccountsWithBalances } from "../../../core/store/acc
 import { useState } from "react";
 import { AccountSelectModal } from "../../accounts/components/AccountSelectModal";
 import { SkeletonExpenseRow } from "./SkeletonExpenseRow";
-import Animated from "react-native-reanimated";
+import { Heading } from "../../../shared/components/ui/Typography";
+import { ExpenseListItem } from "./ExpenseListItem";
 
 import { FilterType, FilterAccountId } from "./ExpenseSortFilter";
 
@@ -31,7 +32,7 @@ export default function ExpenseList({ searchQuery, sortMode, filterType, filterA
   const showIcons = useSelector((state: RootState) => state.settings.showIcons);
   const accounts = useSelector(selectAccountsWithBalances);
 
-  const [expenseToAssign, setExpenseToAssign] = useState<number | null>(null);
+  const [expenseToAssign, setExpenseToAssign] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useDispatch();
@@ -40,7 +41,6 @@ export default function ExpenseList({ searchQuery, sortMode, filterType, filterA
 
   useEffect(() => {
     const loadData = async () => {
-      // Add a slight delay to ensure the premium skeleton loader is visible on app boot
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       const expenseData = await getAllExpenses();
@@ -59,13 +59,10 @@ export default function ExpenseList({ searchQuery, sortMode, filterType, filterA
   }, []);
 
   const filteredExpenses = expenses.filter(expense => {
-    // 1. Type Filter
     if (filterType !== 'all' && expense.type !== filterType) return false;
 
-    // 2. Account Filter
     if (filterAccountId !== 'all' && expense.accountId !== filterAccountId) return false;
 
-    // 3. Search Filter
     if (!searchQuery) return true;
     const lowerQuery = searchQuery.toLowerCase();
     const matchesDesc = expense.description.toLowerCase().includes(lowerQuery);
@@ -85,10 +82,9 @@ export default function ExpenseList({ searchQuery, sortMode, filterType, filterA
     }
   });
 
-  const handleAssignAccount = async (accountId: number) => {
+  const handleAssignAccount = async (accountId: string) => {
     if (expenseToAssign) {
       await updateExpenseAccount(expenseToAssign, accountId);
-      // Refresh expenses
       const expenseData = await getAllExpenses();
       dispatch(setExpenses(expenseData));
     }
@@ -96,7 +92,7 @@ export default function ExpenseList({ searchQuery, sortMode, filterType, filterA
 
   return (
     <View className='flex-1'>
-      <Text className='text-xl font-bold text-primary mb-4'>Recent Expenses</Text>
+      <Heading className='text-xl mb-4'>Recent Expenses</Heading>
 
       {isLoading ? (
         <View className="flex-1">
@@ -115,54 +111,15 @@ export default function ExpenseList({ searchQuery, sortMode, filterType, filterA
             const isCredit = item.type === 'credit';
 
             return (
-              <Animated.View>
-                <Pressable
-                  onPress={() => onExpensePress && onExpensePress(item)}
-                  className='bg-surface p-4 rounded-xl mb-3 flex-row justify-between items-center border border-bordercolor active:opacity-80'
-                >
-
-                  <View className="flex-row items-center flex-1">
-                    {showIcons && category && (
-                      <View style={{ backgroundColor: category.color }} className="w-10 h-10 rounded-full mr-3 items-center justify-center">
-                        <Ionicons name={category.icon as any} size={20} color="white" />
-                      </View>
-                    )}
-
-                    <View className="flex-1 pr-2">
-                      <Text className='text-primary font-bold text-lg'>{category?.name || 'Unknown'}</Text>
-
-                      <View className="flex-row items-center mt-1">
-                        <Text className='text-secondary text-sm' numberOfLines={1}>{item.description}</Text>
-                        {account ? (
-                          <Text className="text-tertiary text-xs ml-2">• {account.name}</Text>
-                        ) : (
-                          <Pressable
-                            className="ml-2 bg-yellow-500/20 px-2 py-0.5 rounded-md border border-yellow-500/30"
-                            onPress={() => setExpenseToAssign(item.id)}
-                          >
-                            <Text className="text-yellow-500 text-xs font-bold">Assign Account</Text>
-                          </Pressable>
-                        )}
-                      </View>
-                    </View>
-                  </View>
-                  <View className="items-end">
-                    <Text className={`font-bold text-lg ${isCredit ? 'text-green-400' : 'text-red-400'}`}>
-                      {isCredit ? '+' : '-'}₹{item.amount.toFixed(2)}
-                    </Text>
-                    <Text className="text-tertiary text-xs mt-1">
-                      {new Date(item.date).toLocaleTimeString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        hour12: true,
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit'
-                      })}
-                    </Text>
-                  </View>
-                </Pressable>
-              </Animated.View>
+              <ExpenseListItem
+                item={item}
+                category={category}
+                account={account}
+                showIcons={showIcons}
+                isCredit={isCredit}
+                onPress={() => onExpensePress && onExpensePress(item)}
+                onAssignAccountPress={() => setExpenseToAssign(item.id)}
+              />
             )
           }}
         />

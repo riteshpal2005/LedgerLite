@@ -19,7 +19,7 @@ export function ColumnSelectionModal({ visible, onClose, onConfirm }: ColumnSele
   const toggleColumn = (col: ExportColumn) => {
     const newSet = new Set(selected);
     if (newSet.has(col)) {
-      if (newSet.size > 1) newSet.delete(col); // Prevent unchecking all
+      if (newSet.size > 1) newSet.delete(col); 
     } else {
       newSet.add(col);
     }

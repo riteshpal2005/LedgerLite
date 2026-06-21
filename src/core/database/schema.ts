@@ -3,59 +3,74 @@ import { SQLiteDatabase } from 'expo-sqlite';
 
 export type TransactionType = 'credit' | 'debit';
 
+export type SyncStatus = 'pending' | 'synced' | 'deleted';
+
 export interface Expense {
-  id: number;
+  id: string;
   amount: number;
   description: string;
   date: number;
   type: TransactionType;
-  categoryId: number;
+  categoryId: string;
   merchant?: string;
-  accountId?: number; // Ref: schema-2
+  accountId?: string;
+  sync_status: SyncStatus;
+  updated_at: number;
 }
 
 export interface Category {
-  id: number;
+  id: string;
   name: string;
   icon: string;
   color: string;
+  sync_status: SyncStatus;
+  updated_at: number;
 }
 
 export interface Account {
-  id: number;
+  id: string;
   name: string;
   type: 'Cash' | 'Bank' | 'Credit Card';
-  balance: number; // This acts as the Initial Balance in DB
-  currentBalance?: number; // Dynamically calculated Current Balance
+  balance: number;
+  currentBalance?: number;
+  sync_status: SyncStatus;
+  updated_at: number;
 }
 
 export const CREATE_CATEGORIES_TABLE = `
   CREATE TABLE IF NOT EXISTS categories (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     icon TEXT,
-    color TEXT
+    color TEXT,
+    sync_status TEXT DEFAULT 'pending',
+    updated_at INTEGER
   );
 `;
 
 export const CREATE_ACCOUNTS_TABLE = `
   CREATE TABLE IF NOT EXISTS accounts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     type TEXT NOT NULL,
-    balance REAL NOT NULL DEFAULT 0
+    balance REAL NOT NULL DEFAULT 0,
+    sync_status TEXT DEFAULT 'pending',
+    updated_at INTEGER
   );
 `;
 
 export const CREATE_EXPENSES_TABLE = `
   CREATE TABLE IF NOT EXISTS expenses (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id TEXT PRIMARY KEY,
     amount REAL NOT NULL,
     description TEXT,
     date INTEGER NOT NULL,
-    categoryId INTEGER NOT NULL,
+    categoryId TEXT NOT NULL,
     type TEXT NOT NULL,
-    merchant TEXT
+    merchant TEXT,
+    accountId TEXT,
+    sync_status TEXT DEFAULT 'pending',
+    updated_at INTEGER
   );
 `;
 
@@ -68,7 +83,6 @@ export const CREATE_EXPENSES_CATEGORY_INDEX = `
 `;
 
 export async function initializeDatabase(db: SQLiteDatabase) {
-  // Ref: schema-1
   await db.execAsync(CREATE_ACCOUNTS_TABLE);
   await db.execAsync(CREATE_CATEGORIES_TABLE);
   await db.execAsync(CREATE_EXPENSES_TABLE);
@@ -76,23 +90,17 @@ export async function initializeDatabase(db: SQLiteDatabase) {
   await db.execAsync(CREATE_EXPENSES_DATE_INDEX);
   await db.execAsync(CREATE_EXPENSES_CATEGORY_INDEX);
 
-  // Ref: schema-3
-  try {
-    await db.execAsync(`ALTER TABLE expenses ADD COLUMN accountId INTEGER;`);
-  } catch (error) {
-    // Column likely already exists, safe to ignore.
-  }
 
-  // Seed default categories
   const categoriesCount = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM categories');
   if (categoriesCount && categoriesCount.count === 0) {
+    const defaultTime = Date.now();
     await db.execAsync(`
-      INSERT INTO categories (name, icon, color) VALUES 
-      ('Food & Dining', 'restaurant', '#f43f5e'),
-      ('Shopping', 'cart', '#3b82f6'),
-      ('Transportation', 'car', '#eab308'),
-      ('Entertainment', 'film', '#a855f7'),
-      ('Bills & Utilities', 'flash', '#10b981');
+      INSERT INTO categories (id, name, icon, color, updated_at) VALUES 
+      ('cat-1', 'Food & Dining', 'restaurant', '#f43f5e', ${defaultTime}),
+      ('cat-2', 'Shopping', 'cart', '#3b82f6', ${defaultTime}),
+      ('cat-3', 'Transportation', 'car', '#eab308', ${defaultTime}),
+      ('cat-4', 'Entertainment', 'film', '#a855f7', ${defaultTime}),
+      ('cat-5', 'Bills & Utilities', 'flash', '#10b981', ${defaultTime});
     `);
   }
 }

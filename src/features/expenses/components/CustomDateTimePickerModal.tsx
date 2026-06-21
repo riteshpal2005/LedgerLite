@@ -12,10 +12,8 @@ interface CustomDateTimePickerModalProps {
 }
 
 export function CustomDateTimePickerModal({ visible, onClose, date, setDate, mode }: CustomDateTimePickerModalProps) {
-  // Calendar State
   const [currentMonth, setCurrentMonth] = useState(new Date(date.getFullYear(), date.getMonth(), 1));
   
-  // Time State
   const [hour, setHour] = useState(date.getHours() % 12 || 12);
   const [minute, setMinute] = useState(date.getMinutes());
   const [isPM, setIsPM] = useState(date.getHours() >= 12);
@@ -39,7 +37,6 @@ export function CustomDateTimePickerModal({ visible, onClose, date, setDate, mod
   useEffect(() => setHourStr(hour.toString().padStart(2, '0')), [hour]);
   useEffect(() => setMinuteStr(minute.toString().padStart(2, '0')), [minute]);
 
-  // Calendar Helpers
   const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -80,7 +77,7 @@ export function CustomDateTimePickerModal({ visible, onClose, date, setDate, mod
 
   const handleHourBlur = () => {
     let val = parseInt(hourStr, 10);
-    if (isNaN(val)) val = hour; // Revert if empty
+    if (isNaN(val)) val = hour; 
     if (val > 12) val = 12;
     if (val < 1) val = 1;
     setHour(val);
@@ -121,7 +118,6 @@ export function CustomDateTimePickerModal({ visible, onClose, date, setDate, mod
               
               {mode === 'date' ? (
                 <View>
-                  {/* Header */}
                   <View className="flex-row justify-between items-center mb-6">
                     <Pressable onPress={handlePrevMonth} className="p-2 bg-white/5 rounded-full border border-bordercolor">
                       <Ionicons name="chevron-back" size={24} color="#a1a1aa" />
@@ -134,14 +130,12 @@ export function CustomDateTimePickerModal({ visible, onClose, date, setDate, mod
                     </Pressable>
                   </View>
 
-                  {/* Days of Week */}
                   <View className="flex-row justify-around mb-4">
                     {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
                       <Text key={i} className="text-secondary font-bold w-10 text-center">{d}</Text>
                     ))}
                   </View>
 
-                  {/* Grid */}
                   <View className="flex-row flex-wrap justify-start">
                     {Array.from({ length: firstDayOfMonth }).map((_, i) => (
                       <View key={`empty-${i}`} className="w-[14.28%] h-12" />
@@ -178,7 +172,6 @@ export function CustomDateTimePickerModal({ visible, onClose, date, setDate, mod
                   <Text className="text-primary text-xl font-bold mb-8 text-center">Select Time</Text>
                   
                   <View className="flex-row justify-center items-center gap-4 mb-10">
-                    {/* Hour */}
                     <View className="items-center">
                       <Pressable onPress={() => adjustHour(1)} className="p-3 bg-white/5 rounded-xl mb-3 border border-bordercolor">
                         <Ionicons name="chevron-up" size={28} color="#3b82f6" />
@@ -200,7 +193,6 @@ export function CustomDateTimePickerModal({ visible, onClose, date, setDate, mod
 
                     <Text className="text-secondary text-4xl font-bold pb-2">:</Text>
 
-                    {/* Minute */}
                     <View className="items-center">
                       <Pressable onPress={() => adjustMinute(1)} className="p-3 bg-white/5 rounded-xl mb-3 border border-bordercolor">
                         <Ionicons name="chevron-up" size={28} color="#3b82f6" />
@@ -220,7 +212,6 @@ export function CustomDateTimePickerModal({ visible, onClose, date, setDate, mod
                       </Pressable>
                     </View>
 
-                    {/* AM/PM */}
                     <View className="ml-2 gap-3">
                       <Pressable 
                         onPress={() => setIsPM(false)}
@@ -245,7 +236,6 @@ export function CustomDateTimePickerModal({ visible, onClose, date, setDate, mod
 
             </View>
             
-            {/* Hack: Absolute block that extends infinitely downwards to cover the see-through gap */}
             <View style={{ position: 'absolute', top: '100%', left: 0, right: 0, height: 1000, backgroundColor: bottomSheetBackgroundColor }} />
           </Pressable>
         </KeyboardAvoidingView>

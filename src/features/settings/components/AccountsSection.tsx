@@ -25,7 +25,6 @@ export function AccountsSection() {
   
   const dispatch = useDispatch();
 
-  // Auto-assign default account if none exists or if the default was deleted
   useEffect(() => {
     if (accounts.length > 0) {
       const defaultExists = accounts.some(a => a.id === defaultAccountId);
@@ -130,9 +129,9 @@ export function AccountsSection() {
               <Pressable 
                 onPress={() => {
                   const targetAcc = actionAccount!;
-                  setActionAccount(null); // Dismiss first
+                  setActionAccount(null); 
                   setTimeout(() => {
-                    initiateDelete(targetAcc); // Open delete modal after delay
+                    initiateDelete(targetAcc); 
                   }, 300);
                 }}
                 className="flex-row items-center p-4 rounded-2xl active:bg-red-500/10"

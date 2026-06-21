@@ -26,7 +26,7 @@ export const accountSlice = createSlice({
         state.accounts[index] = action.payload;
       }
     },
-    removeAccountFromRedux: (state, action: PayloadAction<number>) => {
+    removeAccountFromRedux: (state, action: PayloadAction<string>) => {
       state.accounts = state.accounts.filter(acc => acc.id !== action.payload);
     }
   },
@@ -53,7 +53,7 @@ export const selectAccountsWithBalances = createSelector(
       
       return {
         ...account,
-        currentBalance: currentBalance // Set computed balance here, leaving account.balance intact
+        currentBalance: currentBalance 
       };
     });
   }

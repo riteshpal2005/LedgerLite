@@ -1,4 +1,7 @@
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { View, ScrollView, Pressable, Text } from "react-native";
+import { Heading, Label } from "../../shared/components/ui/Typography";
+import { Card } from "../../shared/components/ui/Card";
+import { IconWrapper } from "../../shared/components/ui/IconWrapper";
 import { PreferencesSection } from "../../features/settings/components/PreferencesSection";
 import { AccountsSection } from "../../features/settings/components/AccountsSection";
 import { DataManagementSection } from "../../features/settings/components/DataManagementSection";
@@ -11,25 +14,24 @@ import { router } from "expo-router";
 export default function SettingsScreen() {
   return (
     <View className="flex-1 bg-background p-6 pt-12">
-      <Text className="text-3xl font-bold text-primary mb-8">Settings</Text>
+      <Heading className="text-3xl mb-8">Settings</Heading>
       
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
         
         <AccountSection />
         
         <View className="mb-8">
-          <Text className="text-secondary font-bold uppercase text-xs tracking-wider mb-2">Customization</Text>
-          <Pressable 
-            onPress={() => router.push('/categories')}
-            className="bg-surface rounded-2xl p-4 border border-bordercolor flex-row justify-between items-center"
-          >
-            <View className="flex-row items-center">
-              <View className="bg-blue-500/20 w-10 h-10 rounded-full items-center justify-center mr-3">
-                <Ionicons name="pricetags" size={20} color="#3b82f6" />
+          <Label>Customization</Label>
+          <Pressable onPress={() => router.push('/categories')}>
+            <Card className="flex-row justify-between items-center active:opacity-80">
+              <View className="flex-row items-center">
+                <IconWrapper colorClass="bg-blue-500/20" className="mr-3">
+                  <Ionicons name="pricetags" size={20} color="#3b82f6" />
+                </IconWrapper>
+                <Text className="text-primary text-lg font-semibold">Manage Categories</Text>
               </View>
-              <Text className="text-primary text-lg font-semibold">Manage Categories</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#71717a" />
+              <Ionicons name="chevron-forward" size={20} color="#71717a" />
+            </Card>
           </Pressable>
         </View>
 

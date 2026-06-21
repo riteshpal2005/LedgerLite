@@ -2,13 +2,13 @@ import { View, Text, Pressable, Modal, ScrollView, Platform } from "react-native
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from '../../../core/theme/ThemeContext';
 
-type Category = { id: number; name: string; color: string; icon: string; };
+type Category = { id: string; name: string; color: string; icon: string; };
 
 interface CategorySelectModalProps {
   visible: boolean;
   onClose: () => void;
   categories: Category[];
-  onSelect: (id: number) => void;
+  onSelect: (id: string) => void;
 }
 
 export function CategorySelectModal({ visible, onClose, categories, onSelect }: CategorySelectModalProps) {
@@ -61,7 +61,6 @@ export function CategorySelectModal({ visible, onClose, categories, onSelect }: 
             </ScrollView>
           </View>
 
-          {/* Hack: Absolute block that extends infinitely downwards to cover the see-through gap */}
           <View style={{ position: 'absolute', top: '100%', left: 0, right: 0, height: 1000, backgroundColor: bottomSheetBackgroundColor }} />
         </Pressable>
       </Pressable>

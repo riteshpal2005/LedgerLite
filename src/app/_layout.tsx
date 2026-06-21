@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import * as FileSystem from 'expo-file-system/legacy';
 import { loadSettings } from "../core/store/settingsSlice";
 import { AuthProvider } from "../core/firebase/AuthContext";
+import { UpdateChecker } from "../shared/components/UpdateChecker";
 
 export default function RootLayout() {
   useEffect(() => {
@@ -26,7 +27,7 @@ export default function RootLayout() {
 
   return (
     <Provider store={store}>
-      <SQLiteProvider databaseName="ledgerlite.db" onInit={initializeDatabase}>
+      <SQLiteProvider databaseName="ledgerlite_v2.db" onInit={initializeDatabase}>
         <ThemeProvider>
           <GestureHandlerRootView style={{ flex: 1 }}>
             <BottomSheetModalProvider>
@@ -35,6 +36,7 @@ export default function RootLayout() {
                   <Stack.Screen name='(tabs)' />
                   <Stack.Screen name='(auth)' />
                 </Stack>
+                <UpdateChecker />
               </AuthProvider>
             </BottomSheetModalProvider>
           </GestureHandlerRootView>

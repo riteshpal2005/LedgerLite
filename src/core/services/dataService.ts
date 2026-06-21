@@ -64,7 +64,6 @@ export const exportData = async (
       if (permissions.granted) {
         let targetDirUri = permissions.directoryUri;
 
-        // If they didn't explicitly pick a folder named LedgerLite, try to create/use one inside their selection
         if (!decodeURIComponent(targetDirUri).endsWith('LedgerLite')) {
           let folderCreatedOrFound = false;
 
@@ -146,19 +145,16 @@ export const importData = async (
     const rawJson = XLSX.utils.sheet_to_json(worksheet) as any[];
 
     const importedExpenses: any[] = [];
-    const missingAccounts: string[] = [];
+    const missingAccounts: { name: string; initialBalance: number }[] = [];
 
     for (const row of rawJson) {
-      // Parse amount (remove currency symbols and commas)
       const rawAmountStr = String(row.Amount || '0').replace(/[^0-9.-]+/g, "");
       const parsedAmount = parseFloat(rawAmountStr) || 0;
 
-      // Find Category ID
       const categoryName = row.Category;
       const matchedCategory = categories.find(c => c.name === categoryName);
       const categoryId = matchedCategory ? matchedCategory.id : 1;
 
-      // Find Account ID
       const accountName = row.AccountName || row.Account;
       const matchedAccount = accounts.find(a => a.name === accountName);
       const accountId = matchedAccount ? matchedAccount.id : undefined;
@@ -179,13 +175,12 @@ export const importData = async (
         if (!isNaN(dateObj.getTime())) {
           parsedDate = dateObj.getTime();
         } else if (row.Date) {
-          // Fallback parsing for DD/MM/YYYY formats
           const dateParts = String(row.Date).split(/[-/]/);
           if (dateParts.length === 3) {
             const day = parseInt(dateParts[0]);
             const month = parseInt(dateParts[1]) - 1;
             let year = parseInt(dateParts[2]);
-            if (year < 100) year += 2000; // Handle 2-digit years
+            if (year < 100) year += 2000; 
 
             let hours = 0; let minutes = 0; let seconds = 0;
             if (row.Time) {
@@ -207,18 +202,17 @@ export const importData = async (
       const type = row.Type === 'Income' || row.Type === 'credit' ? 'credit' : 'debit';
       const description = row.Description || 'Imported Transaction';
 
-      // Check for duplicates
       const isDuplicate = existingExpenses.some(ex => {
         const timeDiff = Math.abs(ex.date - parsedDate);
         return ex.amount === parsedAmount &&
           ex.description === description &&
           ex.type === type &&
-          timeDiff < 60000; // within 1 minute
+          timeDiff < 60000; 
       });
 
       if (!isDuplicate) {
         importedExpenses.push({
-          id: Date.now() + Math.random(), // Temp ID, will be ignored by addExpense
+          id: Date.now() + Math.random(), 
           amount: parsedAmount,
           description,
           merchant: row.Merchant || null,
@@ -226,7 +220,7 @@ export const importData = async (
           type,
           categoryId,
           accountId,
-          _accountName: accountName // Keep this so we can assign the new ID later if missing
+          _accountName: accountName 
         });
       }
     }
@@ -300,7 +294,6 @@ export const exportSettingsJSON = async (
       }
     }
 
-    // Share fallback
     const fileUri = FileSystem.cacheDirectory + filename;
     await FileSystem.writeAsStringAsync(fileUri, jsonString, {
       encoding: 'utf8'

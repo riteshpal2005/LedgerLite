@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { View, Text, Pressable, TextInput, Alert, Platform } from 'react-native';
+import { Button } from '../../../shared/components/ui/Button';
+import { Heading, Label } from '../../../shared/components/ui/Typography';
+import { Card } from '../../../shared/components/ui/Card';
 import { useDispatch } from 'react-redux';
 import { useExpenseDatabase } from '../../../core/database/useExpenseDatabase';
 import { addAccountToRedux, updateAccountInRedux } from '../../../core/store/accountSlice';
@@ -23,7 +26,6 @@ export function AddAccountModal({ bottomSheetRef, initialAccount, initialName, o
   const { bottomSheetBackgroundColor, bottomSheetIndicatorColor, bottomSheetBorderColor } = useTheme();
 
   const handleSheetChanges = useCallback((index: number) => {
-    // Only load initial state when the sheet opens (index === 0)
     if (index === 0) {
       setName(initialAccount?.name || initialName || '');
       setBalance(initialAccount ? initialAccount.balance.toString() : '');
@@ -58,10 +60,10 @@ export function AddAccountModal({ bottomSheetRef, initialAccount, initialName, o
     try {
       if (initialAccount) {
         await updateAccount(initialAccount.id, newAccount);
-        dispatch(updateAccountInRedux({ ...newAccount, id: initialAccount.id }));
+        dispatch(updateAccountInRedux({ ...newAccount, id: initialAccount.id, sync_status: 'pending', updated_at: Date.now() }));
       } else {
         const id = await addAccount(newAccount);
-        const createdAccount = { ...newAccount, id };
+        const createdAccount: Account = { ...newAccount, id, sync_status: 'pending', updated_at: Date.now() };
         dispatch(addAccountToRedux(createdAccount));
         if (onAccountCreated) {
           onAccountCreated(createdAccount);
@@ -89,14 +91,12 @@ export function AddAccountModal({ bottomSheetRef, initialAccount, initialName, o
     >
       <BottomSheetView style={{ flex: 1, padding: 24 }}>
         <View className="flex-row justify-between items-center mb-6">
-          <Text className="text-2xl font-bold text-primary">{initialAccount ? 'Edit Account' : 'Add Account'}</Text>
-          <Pressable onPress={handleClose}>
-            <Text className="text-brand-primary font-bold text-lg">Cancel</Text>
-          </Pressable>
+          <Heading className="mb-0">{initialAccount ? 'Edit Account' : 'Add Account'}</Heading>
+          <Button title="Cancel" variant="ghost" size="sm" onPress={handleClose} />
         </View>
 
-        <View className='bg-surface rounded-2xl p-4 mb-4 border border-bordercolor'>
-          <Text className='text-secondary text-sm mb-2'>Account Name</Text>
+        <Card className="mb-4">
+          <Label>Account Name</Label>
           <BottomSheetTextInput
             value={name}
             onChangeText={setName}
@@ -104,10 +104,10 @@ export function AddAccountModal({ bottomSheetRef, initialAccount, initialName, o
             placeholderTextColor="#52525b"
             className="text-primary text-xl font-semibold p-0 m-0"
           />
-        </View>
+        </Card>
 
-        <View className='bg-surface rounded-2xl p-4 mb-4 border border-bordercolor'>
-          <Text className='text-secondary text-sm mb-2'>Initial Balance (₹)</Text>
+        <Card className="mb-4">
+          <Label>Initial Balance (₹)</Label>
           <BottomSheetTextInput
             value={balance}
             onChangeText={setBalance}
@@ -116,7 +116,7 @@ export function AddAccountModal({ bottomSheetRef, initialAccount, initialName, o
             keyboardType="decimal-pad"
             className="text-primary text-xl font-semibold p-0 m-0"
           />
-        </View>
+        </Card>
 
         <Text className='text-secondary text-sm mb-2 ml-1'>Account Type</Text>
         <View className="flex-row gap-2 mb-8">
@@ -135,9 +135,11 @@ export function AddAccountModal({ bottomSheetRef, initialAccount, initialName, o
           ))}
         </View>
 
-        <Pressable onPress={handleSave} className='bg-brand-primary rounded-xl p-4 mt-2 mb-8'>
-          <Text className='text-brand-primary-content font-bold text-center text-lg'>{initialAccount ? 'Save Changes' : 'Create Account'}</Text>
-        </Pressable>
+        <Button 
+          title={initialAccount ? 'Save Changes' : 'Create Account'}
+          onPress={handleSave}
+          className="mt-2 mb-8"
+        />
       </BottomSheetView>
     </BottomSheetModal>
   );

@@ -15,6 +15,7 @@ import { Expense } from '../../core/database/schema';
 import Constants from 'expo-constants';
 import { Alert } from 'react-native';
 import { CustomAlert } from '../../shared/components/CustomAlert';
+import { FAB } from '../../shared/components/ui/FAB';
 
 export default function Home() {
 
@@ -54,13 +55,12 @@ export default function Home() {
       addAccountSheetRef.current?.present();
       return;
     }
-    setSelectedExpenseToEdit(undefined); // Clear any edit state when adding new
+    setSelectedExpenseToEdit(undefined); 
     bottomSheetModalRef.current?.present();
   };
 
   const handleExpensePress = (expense: Expense) => {
     setSelectedExpenseToEdit(expense);
-    // Defer the bottom sheet animation so the state update and re-render don't cause frame drops
     setTimeout(() => {
       bottomSheetModalRef.current?.present();
     }, 0);
@@ -86,12 +86,10 @@ export default function Home() {
         filterAccountId={filterAccountId}
         onExpensePress={handleExpensePress} 
       />
-      <Pressable
+      <FAB 
+        icon={<Ionicons name="add" size={32} color={colors.brandPrimaryContent} />}
         onPress={handlePresentModalPress}
-        className="absolute bottom-6 right-6 w-16 h-16 bg-brand-primary rounded-full items-center justify-center shadow-lg elevation-5"
-      >
-        <Ionicons name="add" size={32} color={colors.brandPrimaryContent} />
-      </Pressable>
+      />
 
       <AddExpenseSheet bottomSheetRef={bottomSheetModalRef} initialExpense={selectedExpenseToEdit} />
       <AddAccountModal bottomSheetRef={addAccountSheetRef} />

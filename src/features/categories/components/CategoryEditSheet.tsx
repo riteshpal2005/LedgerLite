@@ -82,10 +82,10 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
 
     if (initialCategory) {
       await updateCategory(initialCategory.id, categoryData);
-      dispatch(updateCategoryAction({ ...categoryData, id: initialCategory.id }));
+      dispatch(updateCategoryAction({ ...categoryData, id: initialCategory.id, sync_status: 'pending', updated_at: Date.now() }));
     } else {
       const insertedId = await addCategory(categoryData);
-      dispatch(addCategoryAction({ ...categoryData, id: insertedId }));
+      dispatch(addCategoryAction({ ...categoryData, id: insertedId, sync_status: 'pending', updated_at: Date.now() }));
     }
     
     handleClose();
@@ -194,9 +194,7 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
         visible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onSuccess={() => {
-          // First dismiss the Alert/Popup
           setShowDeleteModal(false);
-          // Then dismiss the Options Modal/Sheet after a slight delay
           setTimeout(() => {
             bottomSheetRef.current?.dismiss();
           }, 300);

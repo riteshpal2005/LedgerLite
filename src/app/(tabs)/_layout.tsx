@@ -13,14 +13,14 @@ export default function TabLayout() {
   const { activeThemeClass } = useTheme();
 
   const getBackgroundColor = () => {
-    if (activeThemeClass === 'theme-pitch-black') return '#09090b'; // Use surface color
+    if (activeThemeClass === 'theme-pitch-black') return '#09090b'; 
     if (activeThemeClass === 'theme-dark') return '#18181b';
-    return '#f4f4f5'; // Light mode (dull white)
+    return '#f4f4f5'; 
   };
 
   const getTextColor = () => {
-    if (activeThemeClass === '') return '#000000'; // Light mode
-    return '#ffffff'; // Dark mode
+    if (activeThemeClass === '') return '#000000'; 
+    return '#ffffff'; 
   };
 
   return (

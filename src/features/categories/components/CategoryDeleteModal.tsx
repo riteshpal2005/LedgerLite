@@ -22,7 +22,7 @@ type ActionOption = 'delete' | 'reassign';
 
 export function CategoryDeleteModal({ visible, onClose, onSuccess, category, categories, linkedExpenseCount }: CategoryDeleteModalProps) {
   const [option, setOption] = useState<ActionOption>('delete');
-  const [selectedExistingCategoryId, setSelectedExistingCategoryId] = useState<number | null>(null);
+  const [selectedExistingCategoryId, setSelectedExistingCategoryId] = useState<string | null>(null);
   
   const { deleteCategory, deleteExpensesByCategory, reassignExpensesCategory, getAllExpenses } = useExpenseDatabase();
   const dispatch = useDispatch();
@@ -50,11 +50,9 @@ export function CategoryDeleteModal({ visible, onClose, onSuccess, category, cat
         }
       }
 
-      // Finally delete the category itself
       await deleteCategory(category.id);
       dispatch(removeCategory(category.id));
       
-      // Refresh expenses globally
       const updatedExpenses = await getAllExpenses();
       dispatch(setExpenses(updatedExpenses));
       
@@ -119,7 +117,6 @@ export function CategoryDeleteModal({ visible, onClose, onSuccess, category, cat
                   <Text className="text-status-danger opacity-80 text-sm mt-1">What would you like to do with them?</Text>
                 </View>
 
-                {/* Option 1 */}
                 <Pressable 
                   onPress={() => setOption('delete')}
                   className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === 'delete' ? 'bg-status-danger/20 border-status-danger' : 'bg-surface border-bordercolor'}`}
@@ -128,7 +125,6 @@ export function CategoryDeleteModal({ visible, onClose, onSuccess, category, cat
                   <Text className={`ml-3 font-semibold ${option === 'delete' ? 'text-status-danger' : 'text-primary'}`}>Delete all linked transactions</Text>
                 </Pressable>
 
-                {/* Option 2: Reassign */}
                 {otherCategories.length > 0 && (
                   <Pressable 
                     onPress={() => setOption('reassign')}

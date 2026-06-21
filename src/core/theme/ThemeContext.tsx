@@ -37,7 +37,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const effectiveTheme = themeOption === 'system' ? (systemColorScheme || 'dark') : themeOption;
     if (effectiveTheme === 'dark') return 'theme-dark';
     if (effectiveTheme === 'pitch-black') return 'theme-pitch-black';
-    return ''; // default light theme
+    return ''; 
   })();
 
   const bottomSheetBackgroundColor = activeThemeClass === 'theme-pitch-black' ? '#000000' : activeThemeClass === 'theme-dark' ? '#09090b' : '#f4f4f5';

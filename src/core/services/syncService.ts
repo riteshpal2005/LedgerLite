@@ -1,46 +1,115 @@
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "../firebase/config";
-import { Expense, Category, Account } from "../database/schema";
+import { collection, query, where, getDocs, writeBatch, doc } from 'firebase/firestore';
+import { db } from '../firebase/config';
+import { store } from '../store/store';
+import { useExpenseDatabase } from '../database/useExpenseDatabase';
+import { Expense, Category, Account } from '../database/schema';
 
-export interface CloudSnapshot {
-  timestamp: number;
-  expenses: Expense[];
-  categories: Category[];
-  accounts: Account[];
-  settings: any;
-}
+let isSyncing = false;
+let syncTimeout: NodeJS.Timeout | null = null;
 
 export const SyncService = {
-  /**
-   * Upload all local data to Firestore
-   */
-  async syncToCloud(userId: string, snapshot: CloudSnapshot) {
+  async pullFromFirebase(userId: string, dbActions: ReturnType<typeof useExpenseDatabase>) {
+    if (isSyncing) return;
+    isSyncing = true;
     try {
-      const docRef = doc(db, "users", userId, "data", "latest");
-      await setDoc(docRef, snapshot);
-      return { success: true, error: null };
-    } catch (error: any) {
-      console.error("Cloud Sync Error:", error);
-      return { success: false, error: error.message };
+      const userDocRef = doc(db, 'users', userId);
+      const collectionsToSync = ['expenses', 'categories', 'accounts'];
+      for (const col of collectionsToSync) {
+        const q = query(collection(userDocRef, col));
+        const snapshot = await getDocs(q);
+        for (const document of snapshot.docs) {
+          const data = document.data();
+          
+          const localData = { ...data, sync_status: 'synced' };
+          if (col === 'expenses') {
+            await dbActions.restoreExpense(localData as Expense);
+          } else if (col === 'categories') {
+            await dbActions.restoreCategory(localData as Category);
+          } else if (col === 'accounts') {
+            await dbActions.restoreAccount(localData as Account);
+          }
+        }
+      }
+      const expenses = await dbActions.getAllExpenses();
+      const categories = await dbActions.getAllCategories();
+      const accounts = await dbActions.getAllAccounts();
+      store.dispatch({ type: 'expenses/setExpenses', payload: expenses });
+      store.dispatch({ type: 'categories/setCategories', payload: categories });
+      store.dispatch({ type: 'accounts/setAccounts', payload: accounts });
+    } catch (error) {
+      console.error("Sync Pull Failed:", error);
+    } finally {
+      isSyncing = false;
     }
   },
-
-  /**
-   * Download the latest snapshot from Firestore
-   */
-  async restoreFromCloud(userId: string): Promise<{ snapshot: CloudSnapshot | null, error: string | null }> {
+  schedulePush(userId: string, dbActions: ReturnType<typeof useExpenseDatabase>) {
+    if (syncTimeout) {
+      clearTimeout(syncTimeout);
+    }
+    syncTimeout = setTimeout(async () => {
+      await this.pushToFirebase(userId, dbActions);
+    }, 3000);
+  },
+  async pushToFirebase(userId: string, dbActions: ReturnType<typeof useExpenseDatabase>) {
+    if (isSyncing) return;
+    isSyncing = true;
     try {
-      const docRef = doc(db, "users", userId, "data", "latest");
-      const docSnap = await getDoc(docRef);
-      
-      if (docSnap.exists()) {
-        return { snapshot: docSnap.data() as CloudSnapshot, error: null };
-      } else {
-        return { snapshot: null, error: "No cloud backup found for this account." };
+      const { getAllExpenses, getAllCategories, getAllAccounts } = dbActions;
+      const expenses = await getAllExpenses();
+      const categories = await getAllCategories();
+      const accounts = await getAllAccounts();
+      const pendingExpenses = expenses.filter(e => e.sync_status === 'pending' || e.sync_status === 'deleted');
+      const pendingCategories = categories.filter(c => c.sync_status === 'pending' || c.sync_status === 'deleted');
+      const pendingAccounts = accounts.filter(a => a.sync_status === 'pending' || a.sync_status === 'deleted');
+      if (pendingExpenses.length === 0 && pendingCategories.length === 0 && pendingAccounts.length === 0) {
+        isSyncing = false;
+        return;
       }
-    } catch (error: any) {
-      console.error("Cloud Restore Error:", error);
-      return { snapshot: null, error: error.message };
+      
+      const batch = writeBatch(db);
+      const userRef = doc(db, 'users', userId);
+      
+      for (const account of pendingAccounts) {
+        const docRef = doc(collection(userRef, 'accounts'), account.id.toString());
+        if (account.sync_status === 'deleted') {
+          batch.delete(docRef);
+        } else {
+          const { sync_status, ...remoteData } = account;
+          batch.set(docRef, remoteData, { merge: true });
+        }
+      }
+      for (const category of pendingCategories) {
+        const docRef = doc(collection(userRef, 'categories'), category.id.toString());
+        if (category.sync_status === 'deleted') {
+          batch.delete(docRef);
+        } else {
+          const { sync_status, ...remoteData } = category;
+          batch.set(docRef, remoteData, { merge: true });
+        }
+      }
+      for (const expense of pendingExpenses) {
+        const docRef = doc(collection(userRef, 'expenses'), expense.id.toString());
+        if (expense.sync_status === 'deleted') {
+          batch.delete(docRef);
+        } else {
+          const { sync_status, ...remoteData } = expense;
+          batch.set(docRef, remoteData, { merge: true });
+        }
+      }
+      await batch.commit();
+      for (const account of pendingAccounts) {
+        await dbActions.markAsSynced('accounts', account.id);
+      }
+      for (const category of pendingCategories) {
+        await dbActions.markAsSynced('categories', category.id);
+      }
+      for (const expense of pendingExpenses) {
+        await dbActions.markAsSynced('expenses', expense.id);
+      }
+    } catch (error) {
+      console.error("Sync Push Failed:", error);
+    } finally {
+      isSyncing = false;
     }
   }
 };

@@ -19,7 +19,7 @@ export default function BackdatedScreen() {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   const handlePresentModalPress = () => {
-    setSelectedExpenseToEdit(undefined); // Clear any edit state when adding new
+    setSelectedExpenseToEdit(undefined); 
     bottomSheetModalRef.current?.present();
   };
 

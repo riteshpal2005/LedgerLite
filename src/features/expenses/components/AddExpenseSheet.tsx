@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { View, Text, Pressable } from "react-native";
+import { Button } from "../../../shared/components/ui/Button";
+import { Heading } from "../../../shared/components/ui/Typography";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
@@ -30,7 +32,7 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
   const [date, setDate] = useState(new Date());
 
   const [type, setType] = useState<'debit' | 'credit'>('debit');
-  const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
+  const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -53,7 +55,6 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
   const [showAccountPicker, setShowAccountPicker] = useState(false);
   const selectedAccount = accounts.find(a => a.id === accountId) || accounts[0];
 
-  // Instantly load data when the user taps an existing transaction
   useEffect(() => {
     if (initialExpense) {
       setAmount(initialExpense.amount.toString());
@@ -75,10 +76,8 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
   }, [initialExpense, defaultAccountId]);
 
   const handleSheetChanges = useCallback((index: number) => {
-    // State is now managed instantly via useEffect when initialExpense changes
   }, []);
 
-  // Ref: AddExpenseSheet-10
   const snapPoints = useMemo(() => ['90%'], []);
 
   const handleClose = useCallback(() => {
@@ -99,10 +98,10 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
 
     if (initialExpense) {
       await updateExpenseFull(initialExpense.id, expenseData);
-      dispatch(updateExpenseAction({ ...expenseData, id: initialExpense.id }));
+      dispatch(updateExpenseAction({ ...expenseData, id: initialExpense.id, sync_status: 'pending', updated_at: Date.now() }));
     } else {
       const insertedId = await addExpense(expenseData);
-      dispatch(addExpenseToRedux({ ...expenseData, id: insertedId }));
+      dispatch(addExpenseToRedux({ ...expenseData, id: insertedId, sync_status: 'pending', updated_at: Date.now() }));
 
       if (isBackdatedMode && selectedAccount) {
         const amountAdjustment = type === 'debit' ? expenseData.amount : -expenseData.amount;
@@ -121,10 +120,8 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
     await deleteExpense(initialExpense.id);
     dispatch(deleteExpenseAction(initialExpense.id));
     
-    // First dismiss the Alert/Popup
     setShowDeleteModal(false);
     
-    // Then dismiss the Options Modal/Sheet after a slight delay for the animation
     setTimeout(() => {
       handleClose();
     }, 300);
@@ -143,19 +140,16 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
       handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
     >
       <BottomSheetView style={{ flex: 1, padding: 24 }}>
-        {/* Ref: AddExpenseSheet-1 */}
         <View className="flex-row justify-between items-center mb-6">
-          <Text className="text-2xl font-bold text-primary">{initialExpense ? 'Edit Transaction' : 'Add Expense'}</Text>
+          <Heading className="mb-0">{initialExpense ? 'Edit Transaction' : 'Add Expense'}</Heading>
           <Pressable onPress={handleClose}>
             <Text className="text-secondary font-bold text-lg">Cancel</Text>
           </Pressable>
         </View>
 
-        {/* Ref: AddExpenseSheet-2 */}
         <TransactionTypeToggle type={type} setType={setType} />
 
         <BottomSheetScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-          {/* Ref: AddExpenseSheet-3 */}
           <View className="flex-row gap-4 mb-4">
             <View className="flex-1">
               <CategoryPickerButton
@@ -178,7 +172,6 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
             </View>
           </View>
 
-          {/* Ref: AddExpenseSheet-4 */}
           <BottomSheetFormField
             label="Amount"
             value={amount}
@@ -188,7 +181,6 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
             inputClassName="text-primary text-4xl font-semibold"
           />
 
-          {/* Ref: AddExpenseSheet-5 */}
           <View className="flex-row gap-4 mb-4">
             <View className="flex-1">
               <BottomSheetFormField
@@ -210,25 +202,27 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
             </View>
           </View>
 
-          {/* Ref: AddExpenseSheet-6 */}
           <DateTimePickerSection date={date} setDate={setDate} />
 
-          {/* Ref: AddExpenseSheet-7 */}
-          <Pressable onPress={handleSave} className='bg-brand-primary rounded-xl p-4 mb-4 mt-4'>
-            <Text className='text-brand-primary-content font-bold text-center text-lg'>{initialExpense ? 'Save Changes' : 'Save Transaction'}</Text>
-          </Pressable>
+          <Button 
+            title={initialExpense ? 'Save Changes' : 'Save Transaction'}
+            onPress={handleSave}
+            className="mb-4 mt-4"
+          />
 
           {initialExpense && (
-            <Pressable onPress={() => setShowDeleteModal(true)} className='bg-status-danger/10 border border-status-danger/20 rounded-xl p-4 mb-8'>
-              <Text className='text-status-danger font-bold text-center text-lg'>Delete Transaction</Text>
-            </Pressable>
+            <Button 
+              title="Delete Transaction"
+              variant="danger"
+              onPress={() => setShowDeleteModal(true)}
+              className="mb-8"
+            />
           )}
         </BottomSheetScrollView>
       </BottomSheetView>
 
 
 
-      {/* Ref: AddExpenseSheet-8 */}
       <CategorySelectModal
         visible={showCategoryPicker}
         onClose={() => setShowCategoryPicker(false)}

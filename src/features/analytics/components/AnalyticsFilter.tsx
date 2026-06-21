@@ -67,12 +67,10 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
     onDateRangeChange(result.startDate, result.endDate);
   };
 
-  // Ref: AnalyticsFilter-1
   useEffect(() => {
     updateRange(filter, customStart, customEnd);
   }, []);
 
-  // Ref: AnalyticsFilter-2
   useEffect(() => {
     if (filter === 'custom') {
       updateRange('custom', customStart, customEnd);
@@ -89,7 +87,6 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
 
   return (
     <View className="mb-8 z-50">
-      {/* Ref: AnalyticsFilter-3 */}
       <Pressable
         onPress={() => setDropdownVisible(true)}
         className="flex-row items-center justify-between bg-surface border border-bordercolor rounded-2xl p-4 shadow-sm"
@@ -98,7 +95,6 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
         <Ionicons name="chevron-down" size={20} color="#a1a1aa" />
       </Pressable>
 
-      {/* Ref: AnalyticsFilter-4 */}
       <Modal visible={dropdownVisible} transparent animationType="fade">
         <Pressable 
           className="flex-1 bg-black/50 justify-center items-center p-6"
@@ -120,7 +116,6 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
         </Pressable>
       </Modal>
 
-      {/* Ref: AnalyticsFilter-5 */}
       {filter === 'custom' && (
         <View className="flex-row justify-between mt-4 gap-4">
           <View className="flex-1 bg-surface rounded-2xl p-4 border border-bordercolor">

@@ -35,10 +35,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const inAuthGroup = segments[0] === '(auth)';
 
     if (!user && !inAuthGroup) {
-      // Redirect to login if unauthenticated and trying to access main app
       router.replace('/(auth)/login');
     } else if (user && inAuthGroup) {
-      // Redirect away from login if authenticated
       router.replace('/(tabs)');
     }
   }, [user, isLoading, segments]);

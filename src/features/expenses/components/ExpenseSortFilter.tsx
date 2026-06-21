@@ -7,7 +7,7 @@ import { selectAccountsWithBalances } from "../../../core/store/accountSlice";
 import { useTheme } from "../../../core/theme/ThemeContext";
 export type SortMode = 'newest' | 'oldest' | 'highest' | 'lowest';
 export type FilterType = 'all' | 'debit' | 'credit';
-export type FilterAccountId = number | 'all';
+export type FilterAccountId = string | 'all';
 
 interface ExpenseSortFilterProps {
   sortMode: SortMode;
@@ -18,7 +18,6 @@ interface ExpenseSortFilterProps {
   setFilterAccountId: (id: FilterAccountId) => void;
 }
 
-// Ref: ExpenseSortFilter-1
 export function ExpenseSortFilter({
   sortMode, setSortMode,
   filterType, setFilterType,
@@ -31,7 +30,6 @@ export function ExpenseSortFilter({
 
   const openSheet = () => bottomSheetRef.current?.present();
 
-  // Ref: ExpenseSortFilter-2
   const snapPoints = useMemo(() => ['65%'], []);
   const renderBackdrop = useCallback(
     (props: any) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
@@ -51,8 +49,6 @@ export function ExpenseSortFilter({
 
   return (
     <View className="relative z-50 ml-3">
-      {/* Trigger Button */}
-      {/* Ref: ExpenseSortFilter-3 */}
       <Pressable
         onPress={openSheet}
         className={`h-[46px] px-3 rounded-2xl flex-row items-center justify-center border ${hasActiveFilters ? 'bg-blue-500/10 border-blue-500/30' : 'bg-surface border-bordercolor'}`}
@@ -61,7 +57,6 @@ export function ExpenseSortFilter({
         <Text className={`text-xs font-bold ml-1.5 ${hasActiveFilters ? 'text-blue-500' : 'text-primary'}`}>Filter & Sort</Text>
       </Pressable>
 
-      {/* Ref: ExpenseSortFilter-4 */}
       <BottomSheetModal
         ref={bottomSheetRef}
         index={0}
@@ -84,7 +79,6 @@ export function ExpenseSortFilter({
             )}
           </View>
 
-          {/* Sort Section */}
           <Text className="text-secondary text-sm font-bold mb-3">SORT BY</Text>
           <View className="flex-row flex-wrap gap-2 mb-6">
             {(['newest', 'oldest', 'highest', 'lowest'] as SortMode[]).map((mode) => (
@@ -98,7 +92,6 @@ export function ExpenseSortFilter({
             ))}
           </View>
 
-          {/* Type Section */}
           <Text className="text-secondary text-sm font-bold mb-3">TRANSACTION TYPE</Text>
           <View className="flex-row flex-wrap gap-2 mb-6">
             {[
@@ -116,7 +109,6 @@ export function ExpenseSortFilter({
             ))}
           </View>
 
-          {/* Account Section */}
           <Text className="text-secondary text-sm font-bold mb-3">ACCOUNT</Text>
           <View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingRight: 20 }}>

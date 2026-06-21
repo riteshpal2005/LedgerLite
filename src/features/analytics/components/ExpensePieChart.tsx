@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
 import { useTheme } from "../../../core/theme/ThemeContext";
 
-// Utility math for SVG pie slices
 function polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number) {
   const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
   return {
@@ -35,8 +34,8 @@ export function ExpensePieChart({ spendingData }: ExpensePieChartProps) {
   const { activeThemeClass } = useTheme();
 
   const getBorderColor = () => {
-    if (activeThemeClass === 'theme-dark' || activeThemeClass === 'theme-pitch-black') return '#d4d4d8'; // Light silver/grey
-    return '#71717a'; // Pure white borders in light mode
+    if (activeThemeClass === 'theme-dark' || activeThemeClass === 'theme-pitch-black') return '#d4d4d8'; 
+    return '#71717a'; 
   };
 
   const totalPopulation = spendingData.reduce((sum, item) => sum + item.totalSpent, 0);
@@ -70,17 +69,15 @@ export function ExpensePieChart({ spendingData }: ExpensePieChartProps) {
   const chartSize = 180;
   const center = chartSize / 2;
   const strokeW = 1;
-  const radius = center - strokeW; // Prevent stroke clipping
+  const radius = center - strokeW; 
 
   return (
     <View className="bg-surface rounded-3xl border border-bordercolor overflow-hidden items-center justify-center p-6 mb-8">
       <View className="flex-row items-center w-full justify-between">
-        {/* Custom SVG Pie Chart */}
         <View style={{ width: chartSize, height: chartSize }}>
           <Svg width={chartSize} height={chartSize} viewBox={`0 0 ${chartSize} ${chartSize}`}>
             <G>
               {chartData.map((slice, index) => {
-                // If there's only one slice taking up 100%, draw a full circle to prevent SVG rendering glitches
                 if (slice.endAngle - slice.startAngle === 360) {
                   return <Path key={index} d={`M ${center}, ${center} m -${radius}, 0 a ${radius},${radius} 0 1,0 ${radius * 2},0 a ${radius},${radius} 0 1,0 -${radius * 2},0`} fill={slice.color} stroke={getBorderColor()} strokeWidth={strokeW} />;
                 }
@@ -99,7 +96,6 @@ export function ExpensePieChart({ spendingData }: ExpensePieChartProps) {
           </Svg>
         </View>
 
-        {/* Custom Legend */}
         <View className="flex-1 ml-6 justify-center">
           {chartData.map((item, idx) => (
             <View key={idx} className="flex-row items-center mb-3">

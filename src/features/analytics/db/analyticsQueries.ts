@@ -1,7 +1,7 @@
 import { useSQLiteContext } from "expo-sqlite";
 
 export type CategorySpending = {
-  categoryId: number;
+  categoryId: string;
   totalSpent: number;
 };
 
@@ -9,7 +9,6 @@ export function useAnalyticsDatabase() {
   const db = useSQLiteContext();
 
   const getExpensesByCategory = async (startDate: number, endDate: number) => {
-    // Ref: analyticsQueries-1
     const result = await db.getAllAsync<CategorySpending>(
       `SELECT categoryId, SUM(amount) as totalSpent 
        FROM expenses 

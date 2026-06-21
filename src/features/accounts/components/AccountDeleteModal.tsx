@@ -21,7 +21,7 @@ type ActionOption = 'delete' | 'reassign';
 
 export function AccountDeleteModal({ visible, onClose, account, accounts, linkedExpenseCount }: AccountDeleteModalProps) {
   const [option, setOption] = useState<ActionOption>('delete');
-  const [selectedExistingAccountId, setSelectedExistingAccountId] = useState<number | null>(null);
+  const [selectedExistingAccountId, setSelectedExistingAccountId] = useState<string | null>(null);
   
   const { deleteAccount, deleteExpensesByAccount, reassignExpenses, getAllExpenses } = useExpenseDatabase();
   const dispatch = useDispatch();
@@ -49,11 +49,9 @@ export function AccountDeleteModal({ visible, onClose, account, accounts, linked
         }
       }
 
-      // Finally delete the account itself
       await deleteAccount(account.id);
       dispatch(removeAccountFromRedux(account.id));
       
-      // Refresh expenses globally
       const updatedExpenses = await getAllExpenses();
       dispatch(setExpenses(updatedExpenses));
       
@@ -114,7 +112,6 @@ export function AccountDeleteModal({ visible, onClose, account, accounts, linked
                   <Text className="text-status-danger opacity-80 text-sm mt-1">What would you like to do with them?</Text>
                 </View>
 
-                {/* Option 1 */}
                 <Pressable 
                   onPress={() => setOption('delete')}
                   className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === 'delete' ? 'bg-status-danger/20 border-status-danger' : 'bg-surface border-bordercolor'}`}
@@ -123,7 +120,6 @@ export function AccountDeleteModal({ visible, onClose, account, accounts, linked
                   <Text className={`ml-3 font-semibold ${option === 'delete' ? 'text-status-danger' : 'text-primary'}`}>Delete all linked transactions</Text>
                 </Pressable>
 
-                {/* Option 2: Reassign */}
                 {otherAccounts.length > 0 && (
                   <Pressable 
                     onPress={() => setOption('reassign')}

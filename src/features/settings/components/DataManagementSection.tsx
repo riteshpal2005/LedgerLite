@@ -23,7 +23,7 @@ import { CustomAlert } from "../../../shared/components/CustomAlert";
 export function DataManagementSection() {
   const dispatch = useDispatch();
   const { user } = useAuth();
-  const { getAllExpenses, addExpense, getAllCategories, restoreCategory, getAllAccounts, addAccount, restoreAccount, deleteExpense, deleteAccount, deleteCategory } = useExpenseDatabase();
+  const { getAllExpenses, addExpense, getAllCategories, restoreCategory, getAllAccounts, addAccount, restoreAccount, restoreExpense, markAsSynced, deleteExpense, deleteAccount, deleteCategory } = useExpenseDatabase();
 
   const [isSyncing, setIsSyncing] = useState(false);
   const [pdfModalVisible, setPdfModalVisible] = useState(false);
@@ -35,7 +35,6 @@ export function DataManagementSection() {
   const [pendingImportExpenses, setPendingImportExpenses] = useState<any[]>([]);
   const [accountMappingModalVisible, setAccountMappingModalVisible] = useState(false);
 
-  // Global Custom Alert State
   const [alertConfig, setAlertConfig] = useState<{
     visible: boolean;
     title: string;
@@ -91,13 +90,11 @@ export function DataManagementSection() {
         settings
       };
 
-      const { success, error } = await SyncService.syncToCloud(user.uid, snapshot);
-      if (success) {
-        triggerHaptic.success();
-        showAlert("Success", "Data successfully synced to Firestore!");
-      } else {
-        showAlert("Sync Failed", error || "Unknown error");
-      }
+      await SyncService.pushToFirebase(user.uid, {
+        getAllExpenses, getAllAccounts, getAllCategories, markAsSynced
+      } as any);
+      triggerHaptic.success();
+      showAlert("Success", "Data successfully synced to Firestore!");
     } catch (e: any) {
       showAlert("Error", e.message);
     } finally {
@@ -115,56 +112,25 @@ export function DataManagementSection() {
         hideAlert();
         setIsSyncing(true);
         try {
-          const { snapshot, error } = await SyncService.restoreFromCloud(user.uid);
-          if (error) return showAlert("Error", error);
-          if (!snapshot) return showAlert("Error", "No cloud backup found.");
-
-          // We do NOT wipe local data anymore. We merge it!
+          await SyncService.pullFromFirebase(user.uid, {
+            getAllExpenses, getAllAccounts, getAllCategories,
+            restoreExpense, restoreCategory, restoreAccount
+          } as any);
           
-          // 1. Restore settings (Redux merges automatically)
-          if (snapshot.settings) dispatch(loadSettings(snapshot.settings));
+          // Re-fetch since it's updated in DB
+          const newExpenses = await getAllExpenses();
+          dispatch(setExpenses(newExpenses));
+          const newCategories = await getAllCategories();
+          dispatch(setCategories(newCategories));
+          const newAccounts = await getAllAccounts();
+          dispatch(setAccounts(newAccounts));
+          
+          triggerHaptic.success();
+          showAlert("Success", "Data merged from cloud successfully.");
 
-          // 2. Restore Categories (INSERT OR REPLACE)
-          if (snapshot.categories) {
-            for (const cat of snapshot.categories) await restoreCategory(cat);
-            dispatch(setCategories(await getAllCategories()));
-          }
-
-          // 3. Restore Accounts (INSERT OR REPLACE)
-          if (snapshot.accounts) {
-            for (const acc of snapshot.accounts) await restoreAccount(acc);
-            dispatch(setAccounts(await getAllAccounts()));
-          }
-
-          // 4. Smart Merge Expenses
-          if (snapshot.expenses) {
-            const oldExpenses = await getAllExpenses();
-            let addedCount = 0;
-            
-            for (const exp of snapshot.expenses) {
-              // Deduplication logic: Check if an expense with the same amount, description, type, and approximate date already exists locally
-              const isDuplicate = oldExpenses.some(localExp => {
-                const timeDiff = Math.abs(localExp.date - exp.date);
-                return localExp.amount === exp.amount &&
-                       localExp.description === exp.description &&
-                       localExp.type === exp.type &&
-                       timeDiff < 60000; // Within 1 minute buffer
-              });
-
-              if (!isDuplicate) {
-                // addExpense generates a fresh new ID, so it won't conflict with local IDs
-                await addExpense(exp);
-                addedCount++;
-              }
-            }
-            dispatch(setExpenses(await getAllExpenses()));
-            
-            triggerHaptic.success();
-            showAlert("Success", `Data merged! Added ${addedCount} new transactions from the cloud.`);
-          } else {
-            triggerHaptic.success();
-            showAlert("Success", "Settings and Categories merged from the cloud.");
-          }
+          
+          // Settings sync handled via regular redux persist or separate function
+          // Categories, accounts, expenses are fully synced via SQLite hooks.
 
         } catch (e: any) {
           showAlert("Error", e.message);
@@ -263,7 +229,6 @@ export function DataManagementSection() {
     const importResult = await importData(categories, accounts, expenses);
     if (importResult) {
       if (importResult.missingAccounts && importResult.missingAccounts.length > 0) {
-        // Pause import, show bulk account creation modal
         setMissingAccountsForImport(importResult.missingAccounts);
         setPendingImportExpenses(importResult.expenses);
         setAccountMappingModalVisible(true);
@@ -277,25 +242,24 @@ export function DataManagementSection() {
   const handleConfirmBulkMapping = async (mappings: AccountMapping[]) => {
     setAccountMappingModalVisible(false);
     
-    // Create all mapped accounts in SQLite sequentially
     const newlyCreatedAccounts: Account[] = [];
     for (const mapping of mappings) {
-      const id = await addAccount({
-        name: mapping.name,
-        type: mapping.type,
-        balance: mapping.balance
-      });
-      newlyCreatedAccounts.push({ ...mapping, id });
+      const newAccount: Omit<Account, "id"> = { 
+        name: mapping.name, 
+        type: mapping.type, 
+        balance: mapping.balance, 
+        sync_status: 'pending', 
+        updated_at: Date.now() 
+      };
+      const id = await addAccount(newAccount);
+      newlyCreatedAccounts.push({ ...newAccount, id });
     }
 
-    // Sync to Redux
     const updatedAccounts = await getAllAccounts();
     dispatch(setAccounts(updatedAccounts));
 
-    // Finalize import with the new mapping cache
     await finalizeImport(pendingImportExpenses, newlyCreatedAccounts);
     
-    // Cleanup state
     setMissingAccountsForImport([]);
     setPendingImportExpenses([]);
   };
@@ -305,7 +269,6 @@ export function DataManagementSection() {
     for (const expense of expensesToImport) {
       const { id, _accountName, ...expenseData } = expense;
 
-      // If this expense had a missing account, try to resolve it from the newlyCreatedAccounts
       if (_accountName && !expenseData.accountId) {
         const mappedAccount = newlyCreatedAccounts.find(a => a.name === _accountName);
         if (mappedAccount) {

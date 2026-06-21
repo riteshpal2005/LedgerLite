@@ -34,7 +34,6 @@ export default function RegisterScreen() {
     if (error) {
       Alert.alert('Registration Failed', error);
     }
-    // If successful, the AuthContext listener will automatically redirect to (tabs)
   };
 
   return (

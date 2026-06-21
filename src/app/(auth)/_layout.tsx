@@ -9,7 +9,7 @@ export default function AuthLayout() {
     <Stack 
       screenOptions={{ 
         headerShown: false,
-        contentStyle: { backgroundColor: isDark ? '#111827' : '#f9fafb' }, // matches bg-gray-900 / bg-gray-50
+        contentStyle: { backgroundColor: isDark ? '#111827' : '#f9fafb' }, 
         animation: 'slide_from_right'
       }}
     >

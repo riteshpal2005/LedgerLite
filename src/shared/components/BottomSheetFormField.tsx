@@ -3,8 +3,8 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 
 interface BottomSheetFormFieldProps extends TextInputProps {
   label: string;
-  className?: string; // Ref: BottomSheetFormField-1
-  inputClassName?: string; // Ref: BottomSheetFormField-2
+  className?: string; 
+  inputClassName?: string; 
 }
 
 export function BottomSheetFormField({

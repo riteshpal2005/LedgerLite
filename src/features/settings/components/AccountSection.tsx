@@ -26,7 +26,6 @@ export function AccountSection() {
 
   const hideAlert = () => setAlertConfig(prev => ({ ...prev, visible: false }));
 
-  // If the user is not logged in, we don't show the Account section
   if (!user) return null;
 
   const handleLogout = () => {
