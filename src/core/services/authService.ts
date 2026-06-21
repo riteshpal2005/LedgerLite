@@ -11,12 +11,32 @@ GoogleSignin.configure({
 });
 
 export const AuthService = {
+  mapAuthError(error: any) {
+    const code = error.code || '';
+    switch (code) {
+      case 'auth/invalid-credential':
+      case 'auth/user-not-found':
+      case 'auth/wrong-password':
+        return 'Invalid email address or password.';
+      case 'auth/email-already-in-use':
+        return 'An account already exists with this email address.';
+      case 'auth/weak-password':
+        return 'The password provided is too weak. Please use a stronger password.';
+      case 'auth/invalid-email':
+        return 'The email address is not valid.';
+      case 'auth/network-request-failed':
+        return 'A network error occurred. Please check your internet connection.';
+      default:
+        return error.message || 'An unknown error occurred. Please try again.';
+    }
+  },
+
   async registerWithEmail(email: string, password: string) {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       return { user: userCredential.user, error: null };
     } catch (error: any) {
-      return { user: null, error: error.message };
+      return { user: null, error: this.mapAuthError(error) };
     }
   },
   async signInWithEmail(email: string, password: string) {
@@ -24,7 +44,7 @@ export const AuthService = {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       return { user: userCredential.user, error: null };
     } catch (error: any) {
-      return { user: null, error: error.message };
+      return { user: null, error: this.mapAuthError(error) };
     }
   },
   async logout() {
@@ -36,7 +56,7 @@ export const AuthService = {
       }
       return { error: null };
     } catch (error: any) {
-      return { error: error.message };
+      return { error: this.mapAuthError(error) };
     }
   },
   async signInWithGoogle() {

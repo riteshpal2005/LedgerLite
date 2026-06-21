@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { Link } from 'expo-router';
 import { AuthService } from '../../core/services/authService';
 import { useTheme } from '../../core/theme/ThemeContext';
@@ -9,18 +9,35 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Linking from 'expo-linking';
 import { AuthInput } from '../../shared/components/ui/AuthInput';
 import { AuthButton } from '../../shared/components/ui/AuthButton';
+import { useAlert, CustomAlert } from '../../shared/components/CustomAlert';
 
 export default function LoginScreen() {
   const { activeThemeClass } = useTheme();
   const isDark = activeThemeClass !== '';
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const { showAlert, hideAlert, alertConfig } = useAlert();
+
+  const validateEmail = (text: string) => {
+    setEmail(text);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (text.length > 0 && !emailRegex.test(text)) {
+      setEmailError('Please enter a valid email address');
+    } else {
+      setEmailError('');
+    }
+  };
 
   const handleEmailLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password.');
+      showAlert('Error', 'Please enter both email and password.');
+      return;
+    }
+    if (emailError) {
+      showAlert('Error', 'Please fix the email address before continuing.');
       return;
     }
     setIsLoading(true);
@@ -28,7 +45,7 @@ export default function LoginScreen() {
     setIsLoading(false);
 
     if (error) {
-      Alert.alert('Login Failed', error);
+      showAlert('Login Failed', error);
     }
   };
 
@@ -38,16 +55,19 @@ export default function LoginScreen() {
     setIsGoogleLoading(false);
 
     if (error) {
-      Alert.alert('Google Sign-In Failed', error);
+      showAlert('Google Sign-In Failed', error);
     }
   };
 
   return (
     <SafeAreaView className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <View className="flex-1 justify-center px-6">
-        <Animated.View entering={FadeInDown.duration(600).springify()} className="items-center mb-10">
-          <View className="w-20 h-20 bg-blue-600 rounded-3xl items-center justify-center mb-4 shadow-lg shadow-blue-500/30">
-            <Ionicons name="wallet" size={40} color="white" />
+        <Animated.View entering={FadeInDown.duration(600).springify()} className="items-center mb-10 mt-10">
+          <View className="w-24 h-24 rounded-3xl items-center justify-center mb-4 shadow-lg shadow-blue-500/30 overflow-hidden bg-white">
+            <Image 
+              source={require('../../../assets/icon.png')} 
+              style={{ width: '100%', height: '100%', resizeMode: 'cover' }} 
+            />
           </View>
           <Text className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
             Welcome Back
@@ -61,7 +81,8 @@ export default function LoginScreen() {
           <AuthInput
             label="Email Address"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={validateEmail}
+            error={emailError}
             autoCapitalize="none"
             keyboardType="email-address"
             placeholder="you@example.com"
@@ -134,6 +155,17 @@ export default function LoginScreen() {
           </View>
         </Animated.View>
       </View>
+
+      <CustomAlert 
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onConfirm={alertConfig.onConfirm || hideAlert}
+        onCancel={alertConfig.onCancel}
+        confirmText={alertConfig.confirmText}
+        cancelText={alertConfig.cancelText}
+        confirmStyle={alertConfig.confirmStyle}
+      />
     </SafeAreaView>
   );
 }

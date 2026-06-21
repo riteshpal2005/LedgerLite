@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, Modal } from 'react-native';
 import { useTheme } from '../../core/theme/ThemeContext';
 
@@ -66,4 +66,46 @@ export function CustomAlert({
       </Pressable>
     </Modal>
   );
+}
+
+export function useAlert() {
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    onConfirm?: () => void;
+    onCancel?: () => void;
+    confirmText?: string;
+    cancelText?: string;
+    confirmStyle?: 'default' | 'danger';
+  }>({
+    visible: false,
+    title: '',
+    message: ''
+  });
+
+  const showAlert = (
+    title: string,
+    message: string,
+    onConfirm?: () => void,
+    onCancel?: () => void,
+    confirmText?: string,
+    cancelText?: string,
+    confirmStyle?: 'default' | 'danger'
+  ) => {
+    setAlertConfig({
+      visible: true,
+      title,
+      message,
+      onConfirm,
+      onCancel,
+      confirmText,
+      cancelText,
+      confirmStyle
+    });
+  };
+
+  const hideAlert = () => setAlertConfig(prev => ({ ...prev, visible: false }));
+
+  return { showAlert, hideAlert, alertConfig };
 }

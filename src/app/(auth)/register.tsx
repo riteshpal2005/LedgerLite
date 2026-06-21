@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { AuthService } from '../../core/services/authService';
 import { useTheme } from '../../core/theme/ThemeContext';
@@ -9,23 +9,40 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Linking from 'expo-linking';
 import { AuthInput } from '../../shared/components/ui/AuthInput';
 import { AuthButton } from '../../shared/components/ui/AuthButton';
+import { useAlert, CustomAlert } from '../../shared/components/CustomAlert';
 
 export default function RegisterScreen() {
   const { activeThemeClass } = useTheme();
   const isDark = activeThemeClass !== '';
   const router = useRouter();
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { showAlert, hideAlert, alertConfig } = useAlert();
+
+  const validateEmail = (text: string) => {
+    setEmail(text);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (text.length > 0 && !emailRegex.test(text)) {
+      setEmailError('Please enter a valid email address');
+    } else {
+      setEmailError('');
+    }
+  };
 
   const handleRegister = async () => {
     if (!email || !password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill out all fields.');
+      showAlert('Error', 'Please fill out all fields.');
+      return;
+    }
+    if (emailError) {
+      showAlert('Error', 'Please fix the email address before continuing.');
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match.');
+      showAlert('Error', 'Passwords do not match.');
       return;
     }
 
@@ -34,7 +51,7 @@ export default function RegisterScreen() {
     setIsLoading(false);
 
     if (error) {
-      Alert.alert('Registration Failed', error);
+      showAlert('Registration Failed', error);
     }
   };
 
@@ -64,7 +81,8 @@ export default function RegisterScreen() {
           <AuthInput
             label="Email Address"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={validateEmail}
+            error={emailError}
             autoCapitalize="none"
             keyboardType="email-address"
             placeholder="you@example.com"
@@ -128,6 +146,16 @@ export default function RegisterScreen() {
         </Animated.View>
 
       </View>
+      <CustomAlert 
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onConfirm={alertConfig.onConfirm || hideAlert}
+        onCancel={alertConfig.onCancel}
+        confirmText={alertConfig.confirmText}
+        cancelText={alertConfig.cancelText}
+        confirmStyle={alertConfig.confirmStyle}
+      />
     </SafeAreaView>
   );
 }

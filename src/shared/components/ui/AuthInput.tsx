@@ -6,9 +6,10 @@ import { useTheme } from '../../../core/theme/ThemeContext';
 interface AuthInputProps extends TextInputProps {
   label: string;
   isPassword?: boolean;
+  error?: string;
 }
 
-export function AuthInput({ label, isPassword = false, ...props }: AuthInputProps) {
+export function AuthInput({ label, isPassword = false, error, ...props }: AuthInputProps) {
   const { activeThemeClass } = useTheme();
   const isDark = activeThemeClass !== '';
   const [showPassword, setShowPassword] = useState(false);
@@ -23,10 +24,12 @@ export function AuthInput({ label, isPassword = false, ...props }: AuthInputProp
           {...props}
           secureTextEntry={isPassword && !showPassword}
           className={`w-full h-14 px-4 rounded-2xl border ${
-            isDark 
-              ? 'bg-gray-800 border-gray-700 text-white' 
-              : 'bg-white border-gray-200 text-gray-900'
-          } ${isPassword ? 'pr-12' : ''}`}
+            error 
+              ? 'border-red-500 bg-red-500/5' 
+              : isDark 
+                ? 'bg-gray-800 border-gray-700 text-white' 
+                : 'bg-white border-gray-200 text-gray-900'
+          } ${isPassword ? 'pr-12' : ''} ${error ? (isDark ? 'text-white' : 'text-gray-900') : ''}`}
           placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
         />
         {isPassword && (
@@ -43,6 +46,9 @@ export function AuthInput({ label, isPassword = false, ...props }: AuthInputProp
           </TouchableOpacity>
         )}
       </View>
+      {error ? (
+        <Text className="text-red-500 text-xs mt-1.5 ml-1 font-medium">{error}</Text>
+      ) : null}
     </View>
   );
 }

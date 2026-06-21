@@ -18,7 +18,7 @@ import { Account } from "../../../core/database/schema";
 import { useState } from "react";
 import { ColumnSelectionModal, ExportColumn } from "./ColumnSelectionModal";
 import { triggerHaptic } from "../../../core/utils/haptics";
-import { CustomAlert } from "../../../shared/components/CustomAlert";
+import { CustomAlert, useAlert } from "../../../shared/components/CustomAlert";
 
 export function DataManagementSection() {
   const dispatch = useDispatch();
@@ -36,43 +36,7 @@ export function DataManagementSection() {
   const [pendingImportExpenses, setPendingImportExpenses] = useState<any[]>([]);
   const [accountMappingModalVisible, setAccountMappingModalVisible] = useState(false);
 
-  const [alertConfig, setAlertConfig] = useState<{
-    visible: boolean;
-    title: string;
-    message: string;
-    onConfirm?: () => void;
-    onCancel?: () => void;
-    confirmText?: string;
-    cancelText?: string;
-    confirmStyle?: 'default' | 'danger';
-  }>({
-    visible: false,
-    title: '',
-    message: ''
-  });
-
-  const showAlert = (
-    title: string,
-    message: string,
-    onConfirm?: () => void,
-    onCancel?: () => void,
-    confirmText?: string,
-    cancelText?: string,
-    confirmStyle?: 'default' | 'danger'
-  ) => {
-    setAlertConfig({
-      visible: true,
-      title,
-      message,
-      onConfirm: onConfirm || hideAlert,
-      onCancel,
-      confirmText: confirmText || 'OK',
-      cancelText,
-      confirmStyle: confirmStyle || 'default'
-    });
-  };
-
-  const hideAlert = () => setAlertConfig(prev => ({ ...prev, visible: false }));
+  const { showAlert, hideAlert, alertConfig } = useAlert();
 
   const handleSyncToCloud = async () => {
     if (!user) return showAlert("Error", "You must be logged in to sync to the cloud.");
