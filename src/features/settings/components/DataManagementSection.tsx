@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Platform, Alert } from "react-native";
+import { View, Text, Pressable, Platform } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { setExpenses } from "../../../core/store/expenseSlice";
 import { RootState, store } from "../../../core/store/store";
@@ -25,6 +25,7 @@ export function DataManagementSection() {
   const { user } = useAuth();
   const { getAllExpenses, addExpense, getAllCategories, restoreCategory, getAllAccounts, addAccount, restoreAccount, restoreExpense, markAsSynced, deleteExpense, deleteAccount, deleteCategory } = useExpenseDatabase();
 
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [pdfModalVisible, setPdfModalVisible] = useState(false);
   const [pdfAction, setPdfAction] = useState<'save' | 'share' | null>(null);
@@ -319,48 +320,56 @@ export function DataManagementSection() {
     <>
       <Text className="text-tertiary font-bold mb-2 mt-8 uppercase text-xs tracking-wider">Data Management</Text>
       <View className="bg-surface rounded-2xl p-4 border border-bordercolor" style={{ zIndex: 10 }}>
-        <View style={{ zIndex: 30 }}>
+        <View style={{ zIndex: 50, elevation: 50 }}>
           <ExportActionRow
             title="Export to PDF"
             iconName="document-text"
             iconColor="#ef4444"
+            expanded={openMenuId === 'pdf'}
+            onToggle={() => setOpenMenuId(openMenuId === 'pdf' ? null : 'pdf')}
             onSave={() => initiateExportPDF('save')}
             onShare={() => initiateExportPDF('share')}
           />
         </View>
 
-        <View style={{ zIndex: 20 }}>
+        <View style={{ zIndex: 40, elevation: 40 }}>
           <ExportActionRow
             title="Export to Excel"
             iconName="download-outline"
             iconColor="#2563eb"
+            expanded={openMenuId === 'excel'}
+            onToggle={() => setOpenMenuId(openMenuId === 'excel' ? null : 'excel')}
             onSave={() => handleExportExcel('save')}
             onShare={() => handleExportExcel('share')}
           />
         </View>
 
-        <View style={{ zIndex: 10 }}>
+        <View style={{ zIndex: 30, elevation: 30 }}>
           <ExportActionRow
             title="Export to CSV"
             iconName="document-text-outline"
             iconColor="#2563eb"
+            expanded={openMenuId === 'csv'}
+            onToggle={() => setOpenMenuId(openMenuId === 'csv' ? null : 'csv')}
             onSave={() => handleExportCSV('save')}
             onShare={() => handleExportCSV('share')}
           />
         </View>
 
-        <Pressable className="flex-row justify-between items-center py-2" onPress={handleImport}>
-          <View className="flex-row items-center">
-            <Ionicons name="push-outline" size={24} color="#10b981" />
-            <Text className="text-primary text-lg font-semibold ml-3">Import Data</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={20} color="#52525b" />
-        </Pressable>
-        <View className="h-[1px] bg-bordercolor my-2" />
+        <View style={{ zIndex: 20, elevation: 20 }}>
+          <Pressable className="flex-row justify-between items-center py-2" onPress={handleImport}>
+            <View className="flex-row items-center">
+              <Ionicons name="push-outline" size={24} color="#10b981" />
+              <Text className="text-primary text-lg font-semibold ml-3">Import Data</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#52525b" />
+          </Pressable>
+          <View className="h-[1px] bg-bordercolor my-2" />
+        </View>
 
         {user && (
           <>
-            <View style={{ zIndex: 6 }}>
+            <View style={{ zIndex: 19, elevation: 19 }}>
               <Pressable 
                 className="flex-row justify-between items-center py-2" 
                 onPress={handleSyncToCloud}
@@ -373,9 +382,11 @@ export function DataManagementSection() {
                 <Ionicons name="chevron-forward" size={20} color="#52525b" />
               </Pressable>
             </View>
-            <View className="h-[1px] bg-bordercolor my-2" />
+            <View style={{ zIndex: 18, elevation: 18 }}>
+              <View className="h-[1px] bg-bordercolor my-2" />
+            </View>
 
-            <View style={{ zIndex: 5 }}>
+            <View style={{ zIndex: 17, elevation: 17 }}>
               <Pressable 
                 className="flex-row justify-between items-center py-2" 
                 onPress={handleRestoreFromCloud}
@@ -388,26 +399,32 @@ export function DataManagementSection() {
                 <Ionicons name="chevron-forward" size={20} color="#52525b" />
               </Pressable>
             </View>
-            <View className="h-[1px] bg-bordercolor my-2" />
+            <View style={{ zIndex: 16, elevation: 16 }}>
+              <View className="h-[1px] bg-bordercolor my-2" />
+            </View>
           </>
         )}
 
-        <View style={{ zIndex: 4 }}>
+        <View style={{ zIndex: 15, elevation: 15 }}>
           <ExportActionRow
             title="Backup Settings (JSON)"
             iconName="settings-outline"
             iconColor="#a855f7"
+            expanded={openMenuId === 'backup'}
+            onToggle={() => setOpenMenuId(openMenuId === 'backup' ? null : 'backup')}
             onSave={() => handleExportSettings('save')}
             onShare={() => handleExportSettings('share')}
             onCopy={() => handleExportSettings('copy')}
           />
         </View>
 
-        <View style={{ zIndex: 4 }}>
+        <View style={{ zIndex: 10, elevation: 10 }}>
           <ImportActionRow
             title="Restore Settings (JSON)"
             iconName="refresh-circle-outline"
             iconColor="#a855f7"
+            expanded={openMenuId === 'restore'}
+            onToggle={() => setOpenMenuId(openMenuId === 'restore' ? null : 'restore')}
             onFilePicker={handleImportSettingsFromFile}
             onRawJson={() => setRawJsonModalVisible(true)}
             isLast={true}

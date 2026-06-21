@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Category } from "../core/database/schema";
 import { router } from "expo-router";
 import { CategoryEditSheet } from "../features/categories/components/CategoryEditSheet";
+import { CategoryGrid } from "../features/categories/components/CategoryGrid";
 import { useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -39,23 +40,7 @@ export default function CategoriesScreen() {
         <Text className="text-2xl font-bold text-primary">Categories</Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 24 }} showsVerticalScrollIndicator={false}>
-        <View className="flex-row flex-wrap gap-y-6">
-          {categories.map((category) => (
-            <Pressable 
-              key={category.id} 
-              onPress={() => handleCategoryPress(category)}
-              className="w-1/4 items-center mb-2"
-            >
-              <View style={{ backgroundColor: category.color }} className="w-14 h-14 rounded-full items-center justify-center mb-2 shadow-sm">
-                <Ionicons name={category.icon as any} size={28} color="white" />
-              </View>
-              <Text className="text-primary text-xs font-semibold text-center" numberOfLines={1}>{category.name}</Text>
-            </Pressable>
-          ))}
-        </View>
-        <View className="h-24" />
-      </ScrollView>
+      <CategoryGrid categories={categories} onCategoryPress={handleCategoryPress} />
 
       <Pressable
         onPress={handleAddPress}

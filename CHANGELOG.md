@@ -1,19 +1,21 @@
-# v1.3.0
+# v1.3.1
 
-## Cloud Sync & Authentication (Offline-First)
-* **Firebase Integration:** Built a robust Firebase backend integration (`config.ts`, `AuthContext.tsx`) enabling full cloud synchronization.
-* **Authentication Flows:** Added secure Email/Password and Google OAuth login/registration screens with router-level authentication guards.
-* **Dual Sync Engine:** Implemented a conflict-free, offline-first sync engine (`syncService.ts`) that queues local operations and pushes them in batches when the network is available.
-* **Cloud Backup & Restore:** Users can now manually backup their entire financial history to Firestore and restore it seamlessly on new devices.
+### Features
+- **Cloud Sync:** Implemented comprehensive offline-first sync engine using Firebase Firestore.
+- **Authentication:** Added Firebase Auth (Email/Password & Google Sign-In) to support user accounts.
+- **UUID Migration:** Upgraded local SQLite database schema to use universally unique identifiers (UUID strings) instead of auto-incrementing integers, enabling safe multi-device synchronization.
+- **Atomic UI Components:** Introduced new reusable atomic UI components (`AuthInput`, `AuthButton`, `CategoryGrid`, `TotalSpentCard`, `ManageCategoriesCard`) for cleaner screen architecture.
+- **Password Toggle:** Added an interactive "eye" toggle icon to all password fields for better UX during authentication.
 
-## Database & Architecture Overhaul
-* **UUID Migration:** Completely migrated the SQLite database schema from auto-incremented integers to robust string UUIDs (`id TEXT`) to prevent primary key collisions during multi-device sync.
-* **Sync States:** Introduced `sync_status` (`pending`, `synced`, `deleted`) and `updated_at` tracking on all SQLite records to intelligently manage differential syncs.
-* **Redux Refactor:** Extensively updated Redux slices and components to strongly enforce `string` type IDs across the entire application hierarchy.
+### Bug Fixes
+- **Firebase Persistence:** Fixed a critical startup crash caused by an invalid React Native Metro resolution path for `@firebase/auth` persistence.
+- **Z-Index Stacking:** Fixed a UI layering bug in the Data Management section where dropdown menus were rendering beneath adjacent rows.
+- **ABI Emulator Support:** Made the `arm64-v8a` split compilation flag strictly conditional for CI environments to prevent crashes on local `x86_64` emulators.
 
-## UI Components & Polish
-* **Atomic Design System:** Abstracted out reusable foundational UI components to improve consistency and maintainability across the app.
-* **Data Management UI:** Overhauled the Data Management section in settings to gracefully handle the new cloud sync workflows alongside existing local exports.
+### Build & Architecture
+- **CI/CD Optimization:** Updated GitHub Actions release workflow to use Node 20, explicitly build `arm64-v8a` APKs natively, and dynamically rename output to `LedgerLite-v1.3.1.apk`.
+- **UI Refactoring:** Removed heavy inline UI logic from core Expo Router screens (`src/app/`), offloading them to modular feature components.
+- **Code Cleanup:** Stripped all arbitrary inline code comments across the `src/` directory to enforce clean code architecture and external reference documentation.
 
-
-
+### UI/UX Polish
+- **Accordion Menus:** Converted Export and Import settings rows into an accordion pattern, ensuring only one dropdown menu can be expanded at a time.

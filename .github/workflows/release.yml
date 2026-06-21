@@ -19,7 +19,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20
           cache: 'npm'
 
       - name: Install dependencies
@@ -43,35 +43,30 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x android/gradlew
 
-      - name: Build Release Bundle and APK
+      - name: Build Release APK
         working-directory: android
         env:
           KEYSTORE_FILE: release.keystore
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew bundleRelease assembleRelease
+        run: ./gradlew assembleRelease -PbuildArm64Only
 
       - name: Rename Artifacts
         run: |
-          mv android/app/build/outputs/apk/release/app-arm64-v8a-release.apk LedgerLite-${{ github.ref_name }}-arm64-v8a.apk
-          mv android/app/build/outputs/bundle/release/app-release.aab LedgerLite-${{ github.ref_name }}.aab
+          mv android/app/build/outputs/apk/release/app-arm64-v8a-release.apk LedgerLite-${{ github.ref_name }}.apk
 
-      - name: Upload Artifacts
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LedgerLite-${{ github.ref_name }}-Artifacts
-          path: |
-            LedgerLite-${{ github.ref_name }}-arm64-v8a.apk
-            LedgerLite-${{ github.ref_name }}.aab
+          name: LedgerLite-${{ github.ref_name }}-APK
+          path: LedgerLite-${{ github.ref_name }}.apk
           retention-days: 7
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            LedgerLite-${{ github.ref_name }}-arm64-v8a.apk
-            LedgerLite-${{ github.ref_name }}.aab
+          files: LedgerLite-${{ github.ref_name }}.apk
           name: LedgerLite ${{ github.ref_name }}
           body_path: CHANGELOG.md
           draft: false

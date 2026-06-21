@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useAnalyticsDatabase, CategorySpending } from "../../features/analytics/db/analyticsQueries";
 import { AnalyticsFilter } from "../../features/analytics/components/AnalyticsFilter";
 import { ExpensePieChart } from "../../features/analytics/components/ExpensePieChart";
+import { TotalSpentCard } from "../../features/analytics/components/TotalSpentCard";
 
 export default function AnalyticsScreen() {
   const [spendingData, setSpendingData] = useState<CategorySpending[]>([]);
@@ -37,10 +38,7 @@ export default function AnalyticsScreen() {
         onDateRangeChange={(start, end) => setDateRange({start, end})} 
       />
 
-      <View className="bg-blue-600 rounded-3xl p-6 mb-8 shadow-lg">
-        <Text className="text-blue-200 text-lg font-semibold mb-2">Total Spent (Filtered)</Text>
-        <Text className="text-white text-5xl font-bold">₹{totalSpent.toFixed(2)}</Text>
-      </View>
+      <TotalSpentCard totalSpent={totalSpent} />
       
       <Text className="text-xl font-bold text-primary mb-4">Spending by Category</Text>
       <ExpensePieChart spendingData={spendingData} />

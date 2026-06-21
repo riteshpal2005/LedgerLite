@@ -93,17 +93,19 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.3.0"
+        versionName "1.3.1"
 
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
 
-    splits {
-        abi {
-            reset()
-            enable true
-            universalApk false
-            include "arm64-v8a"
+    if (project.hasProperty("buildArm64Only")) {
+        splits {
+            abi {
+                reset()
+                enable true
+                universalApk false
+                include "arm64-v8a"
+            }
         }
     }
 

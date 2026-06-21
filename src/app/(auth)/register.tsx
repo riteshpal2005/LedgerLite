@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { AuthService } from '../../core/services/authService';
 import { useTheme } from '../../core/theme/ThemeContext';
@@ -7,6 +7,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Linking from 'expo-linking';
+import { AuthInput } from '../../shared/components/ui/AuthInput';
+import { AuthButton } from '../../shared/components/ui/AuthButton';
 
 export default function RegisterScreen() {
   const { activeThemeClass } = useTheme();
@@ -59,75 +61,38 @@ export default function RegisterScreen() {
         </Animated.View>
 
         <Animated.View entering={FadeInDown.delay(200).duration(600).springify()} className="space-y-4">
-          <View>
-            <Text className={`text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-              Email Address
-            </Text>
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              className={`w-full h-14 px-4 rounded-2xl border ${
-                isDark 
-                  ? 'bg-gray-800 border-gray-700 text-white' 
-                  : 'bg-white border-gray-200 text-gray-900'
-              }`}
-              placeholder="you@example.com"
-              placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-            />
-          </View>
+          <AuthInput
+            label="Email Address"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            placeholder="you@example.com"
+          />
 
-          <View>
-            <Text className={`text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-              Password
-            </Text>
-            <TextInput
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              className={`w-full h-14 px-4 rounded-2xl border ${
-                isDark 
-                  ? 'bg-gray-800 border-gray-700 text-white' 
-                  : 'bg-white border-gray-200 text-gray-900'
-              }`}
-              placeholder="••••••••"
-              placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-            />
-          </View>
+          <AuthInput
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            isPassword={true}
+            placeholder="••••••••"
+          />
 
-          <View>
-            <Text className={`text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-              Confirm Password
-            </Text>
-            <TextInput
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-              className={`w-full h-14 px-4 rounded-2xl border ${
-                isDark 
-                  ? 'bg-gray-800 border-gray-700 text-white' 
-                  : 'bg-white border-gray-200 text-gray-900'
-              }`}
-              placeholder="••••••••"
-              placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-            />
-          </View>
+          <AuthInput
+            label="Confirm Password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            isPassword={true}
+            placeholder="••••••••"
+          />
 
-          <TouchableOpacity
+          <AuthButton
+            label="Sign Up"
             onPress={handleRegister}
             disabled={isLoading}
-            activeOpacity={0.8}
-            className={`w-full h-14 rounded-2xl items-center justify-center mt-6 shadow-lg ${
-              isLoading ? 'bg-blue-400 shadow-transparent' : 'bg-blue-600 shadow-blue-600/30'
-            }`}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text className="text-white font-semibold text-lg">Sign Up</Text>
-            )}
-          </TouchableOpacity>
+            isLoading={isLoading}
+            className="mt-6"
+          />
         </Animated.View>
 
         <Animated.View entering={FadeInDown.delay(300).duration(600).springify()}>

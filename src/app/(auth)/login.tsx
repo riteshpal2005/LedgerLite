@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Link } from 'expo-router';
 import { AuthService } from '../../core/services/authService';
 import { useTheme } from '../../core/theme/ThemeContext';
@@ -7,6 +7,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Linking from 'expo-linking';
+import { AuthInput } from '../../shared/components/ui/AuthInput';
+import { AuthButton } from '../../shared/components/ui/AuthButton';
 
 export default function LoginScreen() {
   const { activeThemeClass } = useTheme();
@@ -56,57 +58,30 @@ export default function LoginScreen() {
         </Animated.View>
 
         <Animated.View entering={FadeInDown.delay(100).duration(600).springify()} className="space-y-4">
-          <View>
-            <Text className={`text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-              Email Address
-            </Text>
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              className={`w-full h-14 px-4 rounded-2xl border ${
-                isDark 
-                  ? 'bg-gray-800 border-gray-700 text-white' 
-                  : 'bg-white border-gray-200 text-gray-900'
-              }`}
-              placeholder="you@example.com"
-              placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-            />
-          </View>
+          <AuthInput
+            label="Email Address"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            placeholder="you@example.com"
+          />
 
-          <View>
-            <Text className={`text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-              Password
-            </Text>
-            <TextInput
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              className={`w-full h-14 px-4 rounded-2xl border ${
-                isDark 
-                  ? 'bg-gray-800 border-gray-700 text-white' 
-                  : 'bg-white border-gray-200 text-gray-900'
-              }`}
-              placeholder="••••••••"
-              placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-            />
-          </View>
+          <AuthInput
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            isPassword={true}
+            placeholder="••••••••"
+          />
 
-          <TouchableOpacity
+          <AuthButton
+            label="Sign In"
             onPress={handleEmailLogin}
             disabled={isLoading || isGoogleLoading}
-            activeOpacity={0.8}
-            className={`w-full h-14 rounded-2xl items-center justify-center mt-4 shadow-lg ${
-              isLoading ? 'bg-blue-400 shadow-transparent' : 'bg-blue-600 shadow-blue-600/30'
-            }`}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text className="text-white font-semibold text-lg">Sign In</Text>
-            )}
-          </TouchableOpacity>
+            isLoading={isLoading}
+            className="mt-4"
+          />
         </Animated.View>
 
         <Animated.View entering={FadeInDown.delay(200).duration(600).springify()}>
@@ -118,25 +93,15 @@ export default function LoginScreen() {
             <View className={`flex-1 h-px ${isDark ? 'bg-gray-800' : 'bg-gray-200'}`} />
           </View>
 
-          <TouchableOpacity
+          <AuthButton
+            label="Sign in with Google"
+            variant="outline"
+            icon="logo-google"
             onPress={handleGoogleLogin}
             disabled={isLoading || isGoogleLoading}
-            activeOpacity={0.8}
-            className={`w-full h-14 rounded-2xl flex-row items-center justify-center border ${
-              isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200 shadow-sm'
-            }`}
-          >
-            {isGoogleLoading ? (
-              <ActivityIndicator color={isDark ? 'white' : 'black'} />
-            ) : (
-              <>
-                <Ionicons name="logo-google" size={22} color={isDark ? 'white' : 'black'} />
-                <Text className={`font-semibold text-lg ml-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  Sign in with Google
-                </Text>
-              </>
-            )}
-          </TouchableOpacity>
+            isLoading={isGoogleLoading}
+            isDark={isDark}
+          />
 
           <View className="flex-row justify-center mt-10">
             <Text className={`text-base ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
