@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Linking from 'expo-linking';
+import Constants from 'expo-constants';
 
 // TODO: Replace these with your actual GitHub username and Hosted Policy URLs
 const GITHUB_URL = "https://github.com/riteshpal2005/LedgerLite";
@@ -22,9 +23,9 @@ export function AboutSection() {
   return (
     <View className="mb-8 mt-6">
       <Text className="text-secondary font-bold uppercase text-xs tracking-wider mb-2">About & Legal</Text>
-      
+
       <View className="bg-surface rounded-2xl border border-bordercolor overflow-hidden">
-        
+
         {/* App Info */}
         <View className="p-4 border-b border-bordercolor flex-row items-center justify-between">
           <View className="flex-row items-center">
@@ -33,13 +34,13 @@ export function AboutSection() {
             </View>
             <View>
               <Text className="text-primary text-lg font-bold">LedgerLite</Text>
-              <Text className="text-secondary text-xs">v1.2.0 • Offline-First Finance</Text>
+              <Text className="text-secondary text-xs">v{Constants.expoConfig?.version || '1.0.0'} • Offline-First Finance</Text>
             </View>
           </View>
         </View>
 
         {/* Developer Credit */}
-        <Pressable 
+        <Pressable
           onPress={() => handleOpenURL(GITHUB_URL)}
           className="p-4 border-b border-bordercolor flex-row items-center justify-between bg-white/5 active:bg-white/10"
         >
@@ -54,7 +55,7 @@ export function AboutSection() {
         </Pressable>
 
         {/* GitHub Link */}
-        <Pressable 
+        <Pressable
           onPress={() => handleOpenURL(GITHUB_URL)}
           className="p-4 border-b border-bordercolor flex-row items-center justify-between active:bg-white/10"
         >
@@ -66,7 +67,7 @@ export function AboutSection() {
         </Pressable>
 
         {/* Privacy Policy */}
-        <Pressable 
+        <Pressable
           onPress={() => handleOpenURL(PRIVACY_POLICY_URL)}
           className="p-4 border-b border-bordercolor flex-row items-center justify-between active:bg-white/10"
         >
@@ -78,7 +79,7 @@ export function AboutSection() {
         </Pressable>
 
         {/* Terms of Service */}
-        <Pressable 
+        <Pressable
           onPress={() => handleOpenURL(TOS_URL)}
           className="p-4 flex-row items-center justify-between active:bg-white/10"
         >
