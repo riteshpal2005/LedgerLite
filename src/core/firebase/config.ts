@@ -1,7 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { initializeAuth } from 'firebase/auth';
-// TODO: @ts-ignore - Types are missing but the RN bundle exports it
-const { getReactNativePersistence } = require('@firebase/auth');
+// @ts-ignore
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
