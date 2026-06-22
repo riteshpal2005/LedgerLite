@@ -17,8 +17,8 @@ export function CategoryGrid({ categories, onCategoryPress }: CategoryGridProps)
             onPress={() => onCategoryPress(category)}
             className="w-1/4 items-center mb-2"
           >
-            <View style={{ backgroundColor: category.color }} className="w-14 h-14 rounded-full items-center justify-center mb-2 shadow-sm">
-              <Ionicons name={category.icon as any} size={28} color="white" />
+            <View style={{ backgroundColor: category.color || '#3b82f6' }} className="w-14 h-14 rounded-full items-center justify-center mb-2 shadow-sm">
+              <Ionicons name={(category.icon as any) || 'pricetag'} size={28} color="white" />
             </View>
             <Text className="text-primary text-xs font-semibold text-center" numberOfLines={1}>{category.name}</Text>
           </Pressable>

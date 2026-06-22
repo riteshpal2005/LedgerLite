@@ -7,7 +7,7 @@ export function AdvancedSection() {
     <>
       <Text className="text-tertiary font-bold mb-2 mt-8 uppercase text-xs tracking-wider">Advanced</Text>
       <View className="bg-surface rounded-2xl p-4 border border-bordercolor">
-        <Pressable 
+        <Pressable
           onPress={() => router.push('/backdated')}
           className="flex-row justify-between items-center py-2"
         >

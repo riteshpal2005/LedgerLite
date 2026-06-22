@@ -35,6 +35,8 @@ export default function RootLayout() {
                 <Stack screenOptions={{ headerShown: false }}>
                   <Stack.Screen name='(tabs)' />
                   <Stack.Screen name='(auth)' />
+                  <Stack.Screen name='categories' />
+                  <Stack.Screen name='backdated' />
                 </Stack>
                 <UpdateChecker />
               </AuthProvider>

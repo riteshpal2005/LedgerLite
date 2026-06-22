@@ -111,8 +111,8 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
           </View>
 
           <View className="items-center mb-6">
-            <View style={{ backgroundColor: color }} className="w-20 h-20 rounded-full items-center justify-center mb-2 shadow-sm">
-              <Ionicons name={icon as any} size={40} color="white" />
+            <View style={{ backgroundColor: color || '#3b82f6' }} className="w-20 h-20 rounded-full items-center justify-center mb-2 shadow-sm">
+              <Ionicons name={(icon as any) || 'pricetag'} size={40} color="white" />
             </View>
             <Text className="text-secondary text-sm">Preview</Text>
           </View>

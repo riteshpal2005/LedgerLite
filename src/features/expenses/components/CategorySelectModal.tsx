@@ -52,8 +52,8 @@ export function CategorySelectModal({ visible, onClose, categories, onSelect }: 
                   }}
                   className="flex-row items-center bg-surface p-4 rounded-2xl mb-3 border border-bordercolor"
                 >
-                  <View style={{ backgroundColor: cat.color }} className="w-10 h-10 rounded-full mr-4 items-center justify-center">
-                    <Ionicons name={cat.icon as any} size={20} color="white" />
+                  <View style={{ backgroundColor: cat.color || '#3b82f6' }} className="w-10 h-10 rounded-full mr-4 items-center justify-center">
+                    <Ionicons name={(cat.icon as any) || 'pricetag'} size={20} color="white" />
                   </View>
                   <Text className="text-primary text-xl font-semibold">{cat.name}</Text>
                 </Pressable>

@@ -263,6 +263,10 @@ export function DataManagementSection() {
       }
       if (importedData.categories && Array.isArray(importedData.categories)) {
         for (const cat of importedData.categories) {
+          // Map old numeric IDs (1, 2, 3) to new prefixed IDs (cat-1, cat-2, cat-3)
+          if (!isNaN(Number(cat.id)) && !String(cat.id).startsWith('cat-')) {
+            cat.id = `cat-${cat.id}`;
+          }
           await restoreCategory(cat);
         }
         const updatedCategories = await getAllCategories();

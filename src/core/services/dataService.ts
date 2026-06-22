@@ -153,7 +153,7 @@ export const importData = async (
 
       const categoryName = row.Category;
       const matchedCategory = categories.find(c => c.name === categoryName);
-      const categoryId = matchedCategory ? matchedCategory.id : 1;
+      const categoryId = matchedCategory ? matchedCategory.id : 'cat-1';
 
       const accountName = row.AccountName || row.Account;
       const matchedAccount = accounts.find(a => a.name === accountName);
