@@ -26,10 +26,18 @@ export function AddAccountModal({ bottomSheetRef, initialAccount, initialName, o
   const { bottomSheetBackgroundColor, bottomSheetIndicatorColor, bottomSheetBorderColor } = useTheme();
 
   const handleSheetChanges = useCallback((index: number) => {
-    if (index === 0) {
-      setName(initialAccount?.name || initialName || '');
-      setBalance(initialAccount ? initialAccount.balance.toString() : '');
-      setType(initialAccount?.type || 'Cash');
+    if (index === -1) {
+      if (!initialAccount) {
+        setName('');
+        setBalance('');
+        setType('Cash');
+      }
+    } else if (index === 0) {
+      if (initialAccount || initialName) {
+        setName(initialAccount?.name || initialName || '');
+        setBalance(initialAccount ? initialAccount.balance.toString() : '');
+        setType(initialAccount?.type || 'Cash');
+      }
     }
   }, [initialAccount, initialName]);
 

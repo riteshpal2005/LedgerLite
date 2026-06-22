@@ -76,7 +76,18 @@ export function AddExpenseSheet({ bottomSheetRef, initialExpense, isBackdatedMod
   }, [initialExpense, defaultAccountId]);
 
   const handleSheetChanges = useCallback((index: number) => {
-  }, []);
+    if (index === -1) {
+      if (!initialExpense) {
+        setAmount('');
+        setDescription('');
+        setMerchant('');
+        setDate(new Date());
+        setType('debit');
+        setCategoryId(undefined);
+        if (defaultAccountId) setAccountId(defaultAccountId);
+      }
+    }
+  }, [initialExpense, defaultAccountId]);
 
   const snapPoints = useMemo(() => ['90%'], []);
 

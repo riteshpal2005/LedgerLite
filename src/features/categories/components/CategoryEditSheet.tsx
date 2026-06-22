@@ -62,6 +62,16 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
 
   const snapPoints = useMemo(() => ['75%', '90%'], []);
 
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === -1) {
+      if (!initialCategory) {
+        setName('');
+        setColor(PRESET_COLORS[0]);
+        setIcon(PRESET_ICONS[0]);
+      }
+    }
+  }, [initialCategory]);
+
   const renderBackdrop = useCallback(
     (props: any) => React.createElement(BottomSheetBackdrop, { ...props, disappearsOnIndex: -1, appearsOnIndex: 0, opacity: 0.5 }),
     []
@@ -96,6 +106,7 @@ export function CategoryEditSheet({ bottomSheetRef, initialCategory }: CategoryE
       ref={bottomSheetRef}
       index={0}
       snapPoints={snapPoints}
+      onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: bottomSheetBackgroundColor, borderWidth: 1, borderColor: bottomSheetBorderColor }}
       handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
