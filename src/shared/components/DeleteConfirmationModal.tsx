@@ -1,5 +1,5 @@
-import React from 'react';
-import { CustomAlert } from './CustomAlert';
+import React from "react";
+import { CustomAlert } from "./CustomAlert";
 
 interface DeleteConfirmationModalProps {
   visible: boolean;
@@ -9,12 +9,12 @@ interface DeleteConfirmationModalProps {
   message?: string;
 }
 
-export function DeleteConfirmationModal({ 
-  visible, 
-  onConfirm, 
+export function DeleteConfirmationModal({
+  visible,
+  onConfirm,
   onCancel,
   title = "Delete Transaction",
-  message = "Are you sure you want to delete this transaction? This action cannot be undone."
+  message = "Are you sure you want to delete this transaction? This action cannot be undone.",
 }: DeleteConfirmationModalProps) {
   return (
     <CustomAlert

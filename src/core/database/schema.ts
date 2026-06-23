@@ -1,9 +1,8 @@
-import { SQLiteDatabase } from 'expo-sqlite';
+import { SQLiteDatabase } from "expo-sqlite";
 
+export type TransactionType = "credit" | "debit";
 
-export type TransactionType = 'credit' | 'debit';
-
-export type SyncStatus = 'pending' | 'synced' | 'deleted';
+export type SyncStatus = "pending" | "synced" | "deleted";
 
 export interface Expense {
   id: string;
@@ -30,7 +29,7 @@ export interface Category {
 export interface Account {
   id: string;
   name: string;
-  type: 'Cash' | 'Bank' | 'Credit Card';
+  type: "Cash" | "Bank" | "Credit Card";
   balance: number;
   currentBalance?: number;
   sync_status: SyncStatus;
@@ -90,12 +89,13 @@ export async function initializeDatabase(db: SQLiteDatabase) {
   await db.execAsync(CREATE_EXPENSES_DATE_INDEX);
   await db.execAsync(CREATE_EXPENSES_CATEGORY_INDEX);
 
-
-  const categoriesCount = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM categories');
+  const categoriesCount = await db.getFirstAsync<{ count: number }>(
+    "SELECT COUNT(*) as count FROM categories",
+  );
   if (categoriesCount && categoriesCount.count === 0) {
     const defaultTime = Date.now();
     await db.execAsync(`
-      INSERT INTO categories (id, name, icon, color, updated_at) VALUES 
+      INSERT OR IGNORE INTO categories (id, name, icon, color, updated_at) VALUES 
       ('cat-1', 'Food & Dining', 'restaurant', '#f43f5e', ${defaultTime}),
       ('cat-2', 'Shopping', 'cart', '#3b82f6', ${defaultTime}),
       ('cat-3', 'Transportation', 'car', '#eab308', ${defaultTime}),

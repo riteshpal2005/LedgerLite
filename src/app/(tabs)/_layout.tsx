@@ -1,8 +1,13 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 import { withLayoutContext } from "expo-router";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '../../core/theme/ThemeContext';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "../../core/theme/ThemeContext";
+import { useEffect } from "react";
+import { useAuth } from "../../core/firebase/AuthContext";
+import { useExpenseDatabase } from "../../core/database/useExpenseDatabase";
+import { SyncService } from "../../core/services/syncService";
+import { MigrationService } from "../../core/services/migrationService";
 
 const { Navigator } = createMaterialTopTabNavigator();
 
@@ -12,20 +17,34 @@ export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const { activeThemeClass } = useTheme();
 
+  const { user } = useAuth();
+  const dbActions = useExpenseDatabase();
+
+  useEffect(() => {
+    if (user) {
+      (async () => {
+        // Ref: _layout-1
+        await MigrationService.migrateGuestDataToUser(user.uid, dbActions);
+        // Ref: _layout-2
+        await SyncService.syncAll(user.uid, dbActions);
+      })();
+    }
+  }, [user]);
+
   const getBackgroundColor = () => {
-    if (activeThemeClass === 'theme-pitch-black') return '#09090b'; 
-    if (activeThemeClass === 'theme-dark') return '#18181b';
-    return '#f4f4f5'; 
-  };
+    if (activeThemeClass === "theme-pitch-black") return "#09090b";
+    if (activeThemeClass === "theme-dark") return "#18181b";
+    return "#f4f4f5";
+  }; // Ref: _layout-3
 
   const getTextColor = () => {
-    if (activeThemeClass === '') return '#000000'; 
-    return '#ffffff'; 
+    if (activeThemeClass === "") return "#000000";
+    return "#ffffff";
   };
 
   return (
     <MaterialTabs
-      tabBarPosition='bottom'
+      tabBarPosition="bottom"
       screenOptions={{
         swipeEnabled: true,
         tabBarStyle: {
@@ -34,40 +53,46 @@ export default function TabLayout() {
           height: 60 + insets.bottom,
           paddingBottom: insets.bottom,
         },
-        tabBarActiveTintColor: '#2563eb',
-        tabBarInactiveTintColor: '#a1a1aa',
+        tabBarActiveTintColor: "#2563eb",
+        tabBarInactiveTintColor: "#a1a1aa",
         tabBarIndicatorStyle: {
-          backgroundColor: '#2563eb',
+          backgroundColor: "#2563eb",
           height: 3,
         },
         tabBarShowIcon: true,
         tabBarLabelStyle: {
           fontSize: 10,
-          fontWeight: 'bold'
+          fontWeight: "bold",
         },
       }}
     >
       <MaterialTabs.Screen
-        name='index'
+        name="index"
         options={{
-          title: 'Expenses',
-          tabBarIcon: ({ color }: { color: string }) => <Ionicons name='cash-outline' size={24} color={color} />
+          title: "Expenses",
+          tabBarIcon: ({ color }: { color: string }) => (
+            <Ionicons name="cash-outline" size={24} color={color} />
+          ),
         }}
       />
       <MaterialTabs.Screen
-        name='analytics'
+        name="analytics"
         options={{
-          title: 'Analytics',
-          tabBarIcon: ({ color }: { color: string }) => <Ionicons name='pie-chart' size={24} color={color} />
+          title: "Analytics",
+          tabBarIcon: ({ color }: { color: string }) => (
+            <Ionicons name="pie-chart" size={24} color={color} />
+          ),
         }}
       />
       <MaterialTabs.Screen
-        name='settings'
+        name="settings"
         options={{
-          title: 'Settings',
-          tabBarIcon: ({ color }: { color: string }) => <Ionicons name='settings' size={24} color={color} />
+          title: "Settings",
+          tabBarIcon: ({ color }: { color: string }) => (
+            <Ionicons name="settings" size={24} color={color} />
+          ),
         }}
       />
     </MaterialTabs>
-  )
+  );
 }

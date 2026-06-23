@@ -1,14 +1,37 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { View, Text, Pressable, TextInput, Alert, Platform } from 'react-native';
-import { Button } from '../../../shared/components/ui/Button';
-import { Heading, Label } from '../../../shared/components/ui/Typography';
-import { Card } from '../../../shared/components/ui/Card';
-import { useDispatch } from 'react-redux';
-import { useExpenseDatabase } from '../../../core/database/useExpenseDatabase';
-import { addAccountToRedux, updateAccountInRedux } from '../../../core/store/accountSlice';
-import { Account } from '../../../core/database/schema';
-import { BottomSheetModal, BottomSheetView, BottomSheetTextInput, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
-import { useTheme } from '../../../core/theme/ThemeContext';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
+import {
+  View,
+  Text,
+  Pressable,
+  TextInput,
+  Alert,
+  Platform,
+} from "react-native";
+import { Button } from "../../../shared/components/ui/Button";
+import { Heading, Label } from "../../../shared/components/ui/Typography";
+import { Card } from "../../../shared/components/ui/Card";
+import { useDispatch } from "react-redux";
+import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
+import {
+  addAccountToRedux,
+  updateAccountInRedux,
+} from "../../../core/store/accountSlice";
+import { Account } from "../../../core/database/schema";
+import {
+  BottomSheetModal,
+  BottomSheetView,
+  BottomSheetTextInput,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
+import { useTheme } from "../../../core/theme/ThemeContext";
+import { useAuth } from "../../../core/firebase/AuthContext";
+import { SyncService } from "../../../core/services/syncService";
 
 interface AddAccountModalProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
@@ -17,45 +40,68 @@ interface AddAccountModalProps {
   onAccountCreated?: (account: Account) => void;
 }
 
-export function AddAccountModal({ bottomSheetRef, initialAccount, initialName, onAccountCreated }: AddAccountModalProps) {
-  const [name, setName] = useState('');
-  const [balance, setBalance] = useState('');
-  const [type, setType] = useState<'Cash' | 'Bank' | 'Credit Card'>('Cash');
+export function AddAccountModal({
+  bottomSheetRef,
+  initialAccount,
+  initialName,
+  onAccountCreated,
+}: AddAccountModalProps) {
+  const [name, setName] = useState("");
+  const [balance, setBalance] = useState("");
+  const [type, setType] = useState<"Cash" | "Bank" | "Credit Card">("Cash");
+  const [formKey, setFormKey] = useState(0);
 
-  const snapPoints = useMemo(() => ['70%'], []);
-  const { bottomSheetBackgroundColor, bottomSheetIndicatorColor, bottomSheetBorderColor } = useTheme();
+  const snapPoints = useMemo(() => ["70%"], []);
+  const {
+    bottomSheetBackgroundColor,
+    bottomSheetIndicatorColor,
+    bottomSheetBorderColor,
+  } = useTheme();
 
-  const handleSheetChanges = useCallback((index: number) => {
-    if (index === -1) {
-      if (!initialAccount) {
-        setName('');
-        setBalance('');
-        setType('Cash');
+  const handleSheetChanges = useCallback(
+    (index: number) => {
+      if (index === -1) {
+        if (!initialAccount) {
+          setName("");
+          setBalance("");
+          setType("Cash");
+        }
+        setFormKey((prev) => prev + 1);
+      } else if (index === 0) {
+        if (initialAccount || initialName) {
+          setName(initialAccount?.name || initialName || "");
+          setBalance(initialAccount ? initialAccount.balance.toString() : "");
+          setType(initialAccount?.type || "Cash");
+          setFormKey((prev) => prev + 1);
+        }
       }
-    } else if (index === 0) {
-      if (initialAccount || initialName) {
-        setName(initialAccount?.name || initialName || '');
-        setBalance(initialAccount ? initialAccount.balance.toString() : '');
-        setType(initialAccount?.type || 'Cash');
-      }
-    }
-  }, [initialAccount, initialName]);
+    },
+    [initialAccount, initialName],
+  );
 
   const handleClose = () => {
     bottomSheetRef.current?.dismiss();
   };
 
   const renderBackdrop = useCallback(
-    (props: any) => React.createElement(BottomSheetBackdrop, { ...props, disappearsOnIndex: -1, appearsOnIndex: 0, opacity: 0.5 }),
-    []
+    (props: any) =>
+      React.createElement(BottomSheetBackdrop, {
+        ...props,
+        disappearsOnIndex: -1,
+        appearsOnIndex: 0,
+        opacity: 0.5,
+      }),
+    [],
   );
 
   const dispatch = useDispatch();
-  const { addAccount, updateAccount } = useExpenseDatabase();
+  const dbActions = useExpenseDatabase();
+  const { addAccount, updateAccount } = dbActions;
+  const { user } = useAuth();
 
   const handleSave = async () => {
     if (!name.trim()) {
-      Alert.alert('Validation', 'Account name is required.');
+      Alert.alert("Validation", "Account name is required.");
       return;
     }
 
@@ -68,20 +114,36 @@ export function AddAccountModal({ bottomSheetRef, initialAccount, initialName, o
     try {
       if (initialAccount) {
         await updateAccount(initialAccount.id, newAccount);
-        dispatch(updateAccountInRedux({ ...newAccount, id: initialAccount.id, sync_status: 'pending', updated_at: Date.now() }));
+        dispatch(
+          updateAccountInRedux({
+            ...newAccount,
+            id: initialAccount.id,
+            sync_status: "pending",
+            updated_at: Date.now(),
+          }),
+        );
       } else {
         const id = await addAccount(newAccount);
-        const createdAccount: Account = { ...newAccount, id, sync_status: 'pending', updated_at: Date.now() };
+        const createdAccount: Account = {
+          ...newAccount,
+          id,
+          sync_status: "pending",
+          updated_at: Date.now(),
+        };
         dispatch(addAccountToRedux(createdAccount));
         if (onAccountCreated) {
           onAccountCreated(createdAccount);
         }
       }
-      
+
+      if (user) {
+        SyncService.schedulePush(user.uid, dbActions);
+      }
+
       handleClose();
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Failed to save account.');
+      Alert.alert("Error", "Failed to save account.");
     }
   };
 
@@ -92,21 +154,33 @@ export function AddAccountModal({ bottomSheetRef, initialAccount, initialName, o
       snapPoints={snapPoints}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: bottomSheetBackgroundColor, borderWidth: 1, borderColor: bottomSheetBorderColor }}
+      backgroundStyle={{
+        backgroundColor: bottomSheetBackgroundColor,
+        borderWidth: 1,
+        borderColor: bottomSheetBorderColor,
+      }}
       handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
       keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
     >
       <BottomSheetView style={{ flex: 1, padding: 24 }}>
         <View className="flex-row justify-between items-center mb-6">
-          <Heading className="mb-0">{initialAccount ? 'Edit Account' : 'Add Account'}</Heading>
-          <Button title="Cancel" variant="ghost" size="sm" onPress={handleClose} />
+          <Heading className="mb-0">
+            {initialAccount ? "Edit Account" : "Add Account"}
+          </Heading>
+          <Button
+            title="Cancel"
+            variant="ghost"
+            size="sm"
+            onPress={handleClose}
+          />
         </View>
 
         <Card className="mb-4">
           <Label>Account Name</Label>
           <BottomSheetTextInput
-            value={name}
+            key={`name-${formKey}`}
+            defaultValue={name}
             onChangeText={setName}
             placeholder="e.g., Chase Checking"
             placeholderTextColor="#52525b"
@@ -117,7 +191,8 @@ export function AddAccountModal({ bottomSheetRef, initialAccount, initialName, o
         <Card className="mb-4">
           <Label>Initial Balance (₹)</Label>
           <BottomSheetTextInput
-            value={balance}
+            key={`bal-${formKey}`}
+            defaultValue={balance}
             onChangeText={setBalance}
             placeholder="0.00"
             placeholderTextColor="#52525b"
@@ -126,25 +201,29 @@ export function AddAccountModal({ bottomSheetRef, initialAccount, initialName, o
           />
         </Card>
 
-        <Text className='text-secondary text-sm mb-2 ml-1'>Account Type</Text>
+        <Text className="text-secondary text-sm mb-2 ml-1">Account Type</Text>
         <View className="flex-row gap-2 mb-8">
-          {['Cash', 'Bank', 'Credit Card'].map((t) => (
+          {["Cash", "Bank", "Credit Card"].map((t) => (
             <Pressable
               key={t}
               onPress={() => setType(t as any)}
               className={`flex-1 p-3 rounded-xl border ${
-                type === t ? 'bg-brand-primary border-brand-primary' : 'bg-surface border-bordercolor'
+                type === t
+                  ? "bg-brand-primary border-brand-primary"
+                  : "bg-surface border-bordercolor"
               }`}
             >
-              <Text className={`text-center font-bold ${type === t ? 'text-brand-primary-content' : 'text-secondary'}`}>
+              <Text
+                className={`text-center font-bold ${type === t ? "text-brand-primary-content" : "text-secondary"}`}
+              >
                 {t}
               </Text>
             </Pressable>
           ))}
         </View>
 
-        <Button 
-          title={initialAccount ? 'Save Changes' : 'Create Account'}
+        <Button
+          title={initialAccount ? "Save Changes" : "Create Account"}
           onPress={handleSave}
           className="mt-2 mb-8"
         />

@@ -1,13 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const settingsSlice = createSlice({
-  name: 'settings',
-  initialState: { 
+  name: "settings",
+  initialState: {
     showIcons: true,
     hapticsEnabled: true,
     defaultAccountId: null as string | null,
-    themeOption: 'dark' as 'light' | 'dark' | 'pitch-black' | 'system',
-    exportDirectoryUri: null as string | null
+    themeOption: "dark" as "light" | "dark" | "pitch-black" | "system",
+    exportDirectoryUri: null as string | null,
+    hasCompletedOnboarding: false,
+    isGlobalSyncing: false,
   },
   reducers: {
     toggleShowIcons: (state) => {
@@ -27,9 +29,24 @@ const settingsSlice = createSlice({
     },
     setExportDirectoryUri: (state, action) => {
       state.exportDirectoryUri = action.payload;
-    }
-  }
+    },
+    completeOnboarding: (state) => {
+      state.hasCompletedOnboarding = true;
+    },
+    setIsGlobalSyncing: (state, action) => {
+      state.isGlobalSyncing = action.payload;
+    },
+  },
 });
 
-export const { toggleShowIcons, toggleHaptics, setDefaultAccount, loadSettings, setThemeOptionRedux, setExportDirectoryUri } = settingsSlice.actions;
+export const {
+  toggleShowIcons,
+  toggleHaptics,
+  setDefaultAccount,
+  loadSettings,
+  setThemeOptionRedux,
+  setExportDirectoryUri,
+  completeOnboarding,
+  setIsGlobalSyncing,
+} = settingsSlice.actions;
 export default settingsSlice.reducer;

@@ -1,6 +1,6 @@
 import { View, Text, Pressable, ScrollView, Alert, Modal } from "react-native";
 import { useState, useEffect } from "react";
-import { useTheme } from '../../../core/theme/ThemeContext';
+import { useTheme } from "../../../core/theme/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { Account } from "../../../core/database/schema";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
@@ -17,22 +17,38 @@ interface AccountDeleteModalProps {
   linkedExpenseCount: number;
 }
 
-type ActionOption = 'delete' | 'reassign';
+type ActionOption = "delete" | "reassign";
 
-export function AccountDeleteModal({ visible, onClose, account, accounts, linkedExpenseCount }: AccountDeleteModalProps) {
-  const [option, setOption] = useState<ActionOption>('delete');
-  const [selectedExistingAccountId, setSelectedExistingAccountId] = useState<string | null>(null);
-  
-  const { deleteAccount, deleteExpensesByAccount, reassignExpenses, getAllExpenses } = useExpenseDatabase();
+export function AccountDeleteModal({
+  visible,
+  onClose,
+  account,
+  accounts,
+  linkedExpenseCount,
+}: AccountDeleteModalProps) {
+  const [option, setOption] = useState<ActionOption>("delete");
+  const [selectedExistingAccountId, setSelectedExistingAccountId] = useState<
+    string | null
+  >(null);
+
+  const {
+    deleteAccount,
+    deleteExpensesByAccount,
+    reassignExpenses,
+    getAllExpenses,
+  } = useExpenseDatabase();
   const dispatch = useDispatch();
 
-  const { bottomSheetBackgroundColor, bottomSheetBorderColor, colors } = useTheme();
+  const { bottomSheetBackgroundColor, bottomSheetBorderColor, colors } =
+    useTheme();
 
   useEffect(() => {
     if (visible) {
-      setOption('delete');
-      const otherAccounts = accounts.filter(a => a.id !== account?.id);
-      setSelectedExistingAccountId(otherAccounts.length > 0 ? otherAccounts[0].id : null);
+      setOption("delete");
+      const otherAccounts = accounts.filter((a) => a.id !== account?.id);
+      setSelectedExistingAccountId(
+        otherAccounts.length > 0 ? otherAccounts[0].id : null,
+      );
     }
   }, [visible, account]);
 
@@ -41,9 +57,9 @@ export function AccountDeleteModal({ visible, onClose, account, accounts, linked
 
     try {
       if (linkedExpenseCount > 0) {
-        if (option === 'delete') {
+        if (option === "delete") {
           await deleteExpensesByAccount(account.id);
-        } else if (option === 'reassign') {
+        } else if (option === "reassign") {
           if (!selectedExistingAccountId) return;
           await reassignExpenses(account.id, selectedExistingAccountId);
         }
@@ -51,10 +67,10 @@ export function AccountDeleteModal({ visible, onClose, account, accounts, linked
 
       await deleteAccount(account.id);
       dispatch(removeAccountFromRedux(account.id));
-      
+
       const updatedExpenses = await getAllExpenses();
       dispatch(setExpenses(updatedExpenses));
-      
+
       onClose();
     } catch (error) {
       console.error(error);
@@ -62,7 +78,7 @@ export function AccountDeleteModal({ visible, onClose, account, accounts, linked
     }
   };
 
-  const otherAccounts = accounts.filter(a => a.id !== account?.id);
+  const otherAccounts = accounts.filter((a) => a.id !== account?.id);
 
   if (accounts.length <= 1) {
     return (
@@ -84,62 +100,115 @@ export function AccountDeleteModal({ visible, onClose, account, accounts, linked
       onRequestClose={onClose}
       statusBarTranslucent={true}
     >
-      <Pressable 
-        style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }} 
+      <Pressable
+        style={{
+          flex: 1,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          justifyContent: "flex-end",
+        }}
         onPress={onClose}
       >
-        <Pressable 
-          style={{ 
-            backgroundColor: bottomSheetBackgroundColor, 
-            borderTopWidth: 1, 
+        <Pressable
+          style={{
+            backgroundColor: bottomSheetBackgroundColor,
+            borderTopWidth: 1,
             borderColor: bottomSheetBorderColor,
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
-            maxHeight: '80%'
-          }} 
+            maxHeight: "80%",
+          }}
           onPress={(e) => e.stopPropagation()}
         >
           <View style={{ padding: 24 }}>
-            <Text className="text-primary text-xl font-bold mb-2">Delete Account</Text>
+            <Text className="text-primary text-xl font-bold mb-2">
+              Delete Account
+            </Text>
             <Text className="text-secondary mb-6">
-              You are about to delete <Text className="font-bold text-primary">{account?.name}</Text>.
+              You are about to delete{" "}
+              <Text className="font-bold text-primary">{account?.name}</Text>.
             </Text>
 
             {linkedExpenseCount > 0 && (
               <ScrollView className="mb-6" showsVerticalScrollIndicator={false}>
                 <View className="bg-status-danger/10 p-3 rounded-xl border border-status-danger/30 mb-6">
-                  <Text className="text-status-danger font-bold">Warning: {linkedExpenseCount} linked transactions found.</Text>
-                  <Text className="text-status-danger opacity-80 text-sm mt-1">What would you like to do with them?</Text>
+                  <Text className="text-status-danger font-bold">
+                    Warning: {linkedExpenseCount} linked transactions found.
+                  </Text>
+                  <Text className="text-status-danger opacity-80 text-sm mt-1">
+                    What would you like to do with them?
+                  </Text>
                 </View>
 
-                <Pressable 
-                  onPress={() => setOption('delete')}
-                  className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === 'delete' ? 'bg-status-danger/20 border-status-danger' : 'bg-surface border-bordercolor'}`}
+                <Pressable
+                  onPress={() => setOption("delete")}
+                  className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === "delete" ? "bg-status-danger/20 border-status-danger" : "bg-surface border-bordercolor"}`}
                 >
-                  <Ionicons name={option === 'delete' ? "radio-button-on" : "radio-button-off"} size={24} color={option === 'delete' ? colors.statusDanger : "#71717a"} />
-                  <Text className={`ml-3 font-semibold ${option === 'delete' ? 'text-status-danger' : 'text-primary'}`}>Delete all linked transactions</Text>
+                  <Ionicons
+                    name={
+                      option === "delete"
+                        ? "radio-button-on"
+                        : "radio-button-off"
+                    }
+                    size={24}
+                    color={
+                      option === "delete" ? colors.statusDanger : "#71717a"
+                    }
+                  />
+                  <Text
+                    className={`ml-3 font-semibold ${option === "delete" ? "text-status-danger" : "text-primary"}`}
+                  >
+                    Delete all linked transactions
+                  </Text>
                 </Pressable>
 
                 {otherAccounts.length > 0 && (
-                  <Pressable 
-                    onPress={() => setOption('reassign')}
-                    className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === 'reassign' ? 'bg-status-success/20 border-status-success' : 'bg-surface border-bordercolor'}`}
+                  <Pressable
+                    onPress={() => setOption("reassign")}
+                    className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === "reassign" ? "bg-status-success/20 border-status-success" : "bg-surface border-bordercolor"}`}
                   >
-                    <Ionicons name={option === 'reassign' ? "radio-button-on" : "radio-button-off"} size={24} color={option === 'reassign' ? colors.statusSuccess : "#71717a"} />
-                    <Text className={`ml-3 font-semibold ${option === 'reassign' ? 'text-status-success' : 'text-primary'}`}>Move to existing account</Text>
+                    <Ionicons
+                      name={
+                        option === "reassign"
+                          ? "radio-button-on"
+                          : "radio-button-off"
+                      }
+                      size={24}
+                      color={
+                        option === "reassign" ? colors.statusSuccess : "#71717a"
+                      }
+                    />
+                    <Text
+                      className={`ml-3 font-semibold ${option === "reassign" ? "text-status-success" : "text-primary"}`}
+                    >
+                      Move to existing account
+                    </Text>
                   </Pressable>
                 )}
 
-                {option === 'reassign' && otherAccounts.length > 0 && (
+                {option === "reassign" && otherAccounts.length > 0 && (
                   <View className="bg-surface p-2 rounded-xl border border-status-success/30 mb-3 ml-6">
                     {otherAccounts.map((acc, index) => (
                       <Pressable
                         key={acc.id}
                         onPress={() => setSelectedExistingAccountId(acc.id)}
-                        className={`p-3 flex-row justify-between items-center ${index < otherAccounts.length - 1 ? 'border-b border-bordercolor' : ''}`}
+                        className={`p-3 flex-row justify-between items-center ${index < otherAccounts.length - 1 ? "border-b border-bordercolor" : ""}`}
                       >
-                        <Text className={selectedExistingAccountId === acc.id ? 'text-status-success font-bold' : 'text-primary'}>{acc.name}</Text>
-                        {selectedExistingAccountId === acc.id && <Ionicons name="checkmark" size={20} color={colors.statusSuccess} />}
+                        <Text
+                          className={
+                            selectedExistingAccountId === acc.id
+                              ? "text-status-success font-bold"
+                              : "text-primary"
+                          }
+                        >
+                          {acc.name}
+                        </Text>
+                        {selectedExistingAccountId === acc.id && (
+                          <Ionicons
+                            name="checkmark"
+                            size={20}
+                            color={colors.statusSuccess}
+                          />
+                        )}
                       </Pressable>
                     ))}
                   </View>
@@ -148,11 +217,19 @@ export function AccountDeleteModal({ visible, onClose, account, accounts, linked
             )}
 
             <View className="flex-row justify-end gap-4 mt-2 mb-2">
-              <Pressable onPress={onClose} className="px-5 py-3 rounded-xl bg-surface border border-bordercolor">
+              <Pressable
+                onPress={onClose}
+                className="px-5 py-3 rounded-xl bg-surface border border-bordercolor"
+              >
                 <Text className="text-primary font-bold">Cancel</Text>
               </Pressable>
-              <Pressable onPress={handleConfirm} className="px-5 py-3 rounded-xl bg-status-danger">
-                <Text className="text-status-danger-content font-bold">Confirm Delete</Text>
+              <Pressable
+                onPress={handleConfirm}
+                className="px-5 py-3 rounded-xl bg-status-danger"
+              >
+                <Text className="text-status-danger-content font-bold">
+                  Confirm Delete
+                </Text>
               </Pressable>
             </View>
           </View>

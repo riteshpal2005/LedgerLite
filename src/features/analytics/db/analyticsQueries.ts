@@ -15,7 +15,7 @@ export function useAnalyticsDatabase() {
        WHERE type = 'debit' AND date >= ? AND date <= ? 
        GROUP BY categoryId
        ORDER BY totalSpent DESC`,
-      [startDate, endDate]
+      [startDate, endDate],
     );
     return result;
   };

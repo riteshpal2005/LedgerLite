@@ -1,39 +1,63 @@
-import { Text, View, Pressable, BackHandler } from 'react-native';
-import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../core/store/store';
-import { useFocusEffect } from 'expo-router';
-import ExpenseList from '../../features/expenses/components/ExpenseList';
-import { ExpenseSearchBar } from '../../features/expenses/components/ExpenseSearchBar';
-import { ExpenseSortFilter, SortMode, FilterType, FilterAccountId } from '../../features/expenses/components/ExpenseSortFilter';
-import { AddExpenseSheet } from '../../features/expenses/components/AddExpenseSheet';
-import { AddAccountModal } from '../../features/accounts/components/AddAccountModal';
-import { Ionicons } from '@expo/vector-icons';
-import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
-import { useTheme } from '../../core/theme/ThemeContext';
-import { Expense } from '../../core/database/schema';
-import Constants from 'expo-constants';
-import { Alert } from 'react-native';
-import { CustomAlert } from '../../shared/components/CustomAlert';
-import { FAB } from '../../shared/components/ui/FAB';
+import { Text, View, Pressable, BackHandler } from "react-native";
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useMemo,
+  useEffect,
+} from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../core/store/store";
+import { useFocusEffect } from "expo-router";
+import ExpenseList from "../../features/expenses/components/ExpenseList";
+import { ExpenseSearchBar } from "../../features/expenses/components/ExpenseSearchBar";
+import {
+  ExpenseSortFilter,
+  SortMode,
+  FilterType,
+  FilterAccountId,
+} from "../../features/expenses/components/ExpenseSortFilter";
+import { AddExpenseSheet } from "../../features/expenses/components/AddExpenseSheet";
+import { AddAccountModal } from "../../features/accounts/components/AddAccountModal";
+import { Ionicons } from "@expo/vector-icons";
+import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import { useTheme } from "../../core/theme/ThemeContext";
+import { Expense } from "../../core/database/schema";
+import Constants from "expo-constants";
+import { Alert } from "react-native";
+import { CustomAlert } from "../../shared/components/CustomAlert";
+import { FAB } from "../../shared/components/ui/FAB";
 
 export default function Home() {
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortMode, setSortMode] = useState<SortMode>('newest');
-  const [filterType, setFilterType] = useState<FilterType>('all');
-  const [filterAccountId, setFilterAccountId] = useState<FilterAccountId>('all');
-  const [selectedExpenseToEdit, setSelectedExpenseToEdit] = useState<Expense | undefined>(undefined);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortMode, setSortMode] = useState<SortMode>("newest");
+  const [filterType, setFilterType] = useState<FilterType>("all");
+  const [filterAccountId, setFilterAccountId] =
+    useState<FilterAccountId>("all");
+  const [selectedExpenseToEdit, setSelectedExpenseToEdit] = useState<
+    Expense | undefined
+  >(undefined);
   const [showExitModal, setShowExitModal] = useState(false);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const addAccountSheetRef = useRef<BottomSheetModal>(null);
 
-  const { bottomSheetBackgroundColor, bottomSheetIndicatorColor, bottomSheetBorderColor, colors } = useTheme();
+  const {
+    bottomSheetBackgroundColor,
+    bottomSheetIndicatorColor,
+    bottomSheetBorderColor,
+    colors,
+  } = useTheme();
 
   const renderBackdrop = useCallback(
-    (props: any) => React.createElement(BottomSheetBackdrop, { ...props, disappearsOnIndex: -1, appearsOnIndex: 0, opacity: 0.5 }),
-    []
+    (props: any) =>
+      React.createElement(BottomSheetBackdrop, {
+        ...props,
+        disappearsOnIndex: -1,
+        appearsOnIndex: 0,
+        opacity: 0.5,
+      }),
+    [],
   );
 
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
@@ -45,9 +69,12 @@ export default function Home() {
         return true;
       };
 
-      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
       return () => subscription.remove();
-    }, [])
+    }, []),
   );
 
   const handlePresentModalPress = () => {
@@ -55,7 +82,7 @@ export default function Home() {
       addAccountSheetRef.current?.present();
       return;
     }
-    setSelectedExpenseToEdit(undefined); 
+    setSelectedExpenseToEdit(undefined);
     bottomSheetModalRef.current?.present();
   };
 
@@ -67,11 +94,14 @@ export default function Home() {
   };
 
   return (
-    <View className='flex-1 bg-background p-6 pt-12'>
+    <View className="flex-1 bg-background p-6 pt-12">
       <View className="flex-row items-center mb-6 mt-2 z-50 relative">
-        <ExpenseSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-        <ExpenseSortFilter 
-          sortMode={sortMode} 
+        <ExpenseSearchBar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+        <ExpenseSortFilter
+          sortMode={sortMode}
           setSortMode={setSortMode}
           filterType={filterType}
           setFilterType={setFilterType}
@@ -79,22 +109,27 @@ export default function Home() {
           setFilterAccountId={setFilterAccountId}
         />
       </View>
-      <ExpenseList 
-        searchQuery={searchQuery} 
-        sortMode={sortMode} 
+      <ExpenseList
+        searchQuery={searchQuery}
+        sortMode={sortMode}
         filterType={filterType}
         filterAccountId={filterAccountId}
-        onExpensePress={handleExpensePress} 
+        onExpensePress={handleExpensePress}
       />
-      <FAB 
-        icon={<Ionicons name="add" size={32} color={colors.brandPrimaryContent} />}
+      <FAB
+        icon={
+          <Ionicons name="add" size={32} color={colors.brandPrimaryContent} />
+        }
         onPress={handlePresentModalPress}
       />
 
-      <AddExpenseSheet bottomSheetRef={bottomSheetModalRef} initialExpense={selectedExpenseToEdit} />
+      <AddExpenseSheet
+        bottomSheetRef={bottomSheetModalRef}
+        initialExpense={selectedExpenseToEdit}
+      />
       <AddAccountModal bottomSheetRef={addAccountSheetRef} />
 
-      <CustomAlert 
+      <CustomAlert
         visible={showExitModal}
         title="Exit App"
         message="Are you sure you want to exit LedgerLite?"
@@ -103,9 +138,12 @@ export default function Home() {
         confirmStyle="danger"
         onCancel={() => setShowExitModal(false)}
         onConfirm={() => {
-          if (Constants.appOwnership === 'expo') {
+          if (Constants.appOwnership === "expo") {
             setShowExitModal(false);
-            Alert.alert("Expo Go", "App exit is disabled inside the Expo Go sandbox. In a production APK, this will close the app.");
+            Alert.alert(
+              "Expo Go",
+              "App exit is disabled inside the Expo Go sandbox. In a production APK, this will close the app.",
+            );
           } else {
             BackHandler.exitApp();
           }

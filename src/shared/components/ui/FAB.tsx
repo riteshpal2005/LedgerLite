@@ -1,24 +1,27 @@
-import React from 'react';
-import { Pressable } from 'react-native';
-import Animated, { useAnimatedStyle, withSpring, useSharedValue } from 'react-native-reanimated';
+import React from "react";
+import { Pressable } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  withSpring,
+  useSharedValue,
+} from "react-native-reanimated";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface FABProps extends React.ComponentProps<typeof Pressable> {
   icon: React.ReactNode;
-  position?: 'bottom-right' | 'bottom-left' | 'bottom-center';
+  position?: "bottom-right" | "bottom-left" | "bottom-center";
   className?: string;
 }
 
 export function FAB({
   icon,
-  position = 'bottom-right',
-  className = '',
+  position = "bottom-right",
+  className = "",
   onPressIn,
   onPressOut,
   ...props
 }: FABProps) {
-  
   const scale = useSharedValue(1);
 
   const handlePressIn = (e: any) => {
@@ -32,15 +35,19 @@ export function FAB({
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }]
+    transform: [{ scale: scale.value }],
   }));
 
   const getPositionStyles = () => {
     switch (position) {
-      case 'bottom-right': return 'absolute bottom-6 right-6';
-      case 'bottom-left': return 'absolute bottom-6 left-6';
-      case 'bottom-center': return 'absolute bottom-6 self-center';
-      default: return 'absolute bottom-6 right-6';
+      case "bottom-right":
+        return "absolute bottom-6 right-6";
+      case "bottom-left":
+        return "absolute bottom-6 left-6";
+      case "bottom-center":
+        return "absolute bottom-6 self-center";
+      default:
+        return "absolute bottom-6 right-6";
     }
   };
 

@@ -1,16 +1,16 @@
-import { Stack } from 'expo-router';
-import { useTheme } from '../../core/theme/ThemeContext';
+import { Stack } from "expo-router";
+import { useTheme } from "../../core/theme/ThemeContext";
 
 export default function AuthLayout() {
   const { activeThemeClass } = useTheme();
-  const isDark = activeThemeClass !== '';
+  const isDark = activeThemeClass !== "";
 
   return (
-    <Stack 
-      screenOptions={{ 
+    <Stack
+      screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: isDark ? '#111827' : '#f9fafb' }, 
-        animation: 'slide_from_right'
+        contentStyle: { backgroundColor: isDark ? "#111827" : "#f9fafb" },
+        animation: "slide_from_right",
       }}
     >
       <Stack.Screen name="login" />

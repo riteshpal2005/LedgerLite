@@ -48,3 +48,4 @@ release-keystore.base64.txt
 *.apk
 !CHANGELOG.md
 !README.md
+/scripts

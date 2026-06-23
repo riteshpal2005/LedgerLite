@@ -6,7 +6,10 @@ interface ExpenseSearchBarProps {
   setSearchQuery: (query: string) => void;
 }
 
-export function ExpenseSearchBar({ searchQuery, setSearchQuery }: ExpenseSearchBarProps) {
+export function ExpenseSearchBar({
+  searchQuery,
+  setSearchQuery,
+}: ExpenseSearchBarProps) {
   return (
     <View className="flex-1 flex-row items-center bg-surface rounded-2xl px-4 h-[46px] border border-bordercolor">
       <Ionicons name="search" size={20} color="#71717a" />
@@ -18,7 +21,7 @@ export function ExpenseSearchBar({ searchQuery, setSearchQuery }: ExpenseSearchB
         className="flex-1 text-primary text-base ml-3"
       />
       {searchQuery.length > 0 && (
-        <Pressable onPress={() => setSearchQuery('')}>
+        <Pressable onPress={() => setSearchQuery("")}>
           <Ionicons name="close-circle" size={20} color="#71717a" />
         </Pressable>
       )}

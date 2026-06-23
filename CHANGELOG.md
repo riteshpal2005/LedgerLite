@@ -1,35 +1,19 @@
-# 1.3.2
+# 2.0.0
 
 ### Core Architecture & Features
-- **Cloud Sync:** Implemented comprehensive offline-first sync engine using Firebase Firestore.
-- **Authentication:** Added Firebase Auth (Email/Password & Google Sign-In) to support user accounts.
-- **Database Architecture:** Implemented local SQLiteProvider with robust schema migrations for accounts, categories, and expenses. Upgraded to universally unique identifiers (UUID strings) to enable safe multi-device synchronization.
-- **UI/UX Architecture:** Built scalable, persistent semantic multi-theming engine via Context and Redux.
-- **Atomic UI Components:** Introduced modern reusable atomic UI components (`AuthInput`, `AuthButton`, `CategoryGrid`, `TotalSpentCard`, `ManageCategoriesCard`) for cleaner screen architecture.
+- **Cloud Sync:** Implemented a robust offline-first sync engine using Firebase Firestore.
+- **Authentication:** Added Firebase Auth (Email/Password & Google Sign-In) to support user accounts and strict data isolation.
+- **Database Architecture:** Upgraded legacy SQLite database to utilize universally unique identifiers (UUID strings) to enable conflict-free multi-device synchronization. Added a Migration Service to safely migrate data.
+- **Enterprise Code Quality:** Extracted all inline explanatory comments to a global `CODE_COMMENTS.md` file using a Reference ID architecture. Stripped all debugging logs and enforced strict formatting via Prettier.
 
-### Expense & Data Management
-- **Account Management:** Designed intuitive account row UX using action sheets, implemented full CRUD edit capabilities, and added an auto-default assignment engine.
-- **Advanced Filtering:** Implemented robust advanced filter and sort bottom sheet with strict typing.
-- **Time-Travel Sandbox:** Developed a dedicated time-travel sandbox screen for backdated transactions.
-- **Data Export Engine:** Built a dynamic PDF export engine with custom column selection, HTML escaping, and native Rupee formatting. Included Excel (XLSX) and CSV portability engines.
-- **Password Toggle:** Added an interactive "eye" toggle icon to all password fields for better UX during authentication.
-- **Real-time Account Balances:** Implemented real-time dynamic balance calculations across all accounts.
+### UI/UX Polish & Flow Restructuring
+- **Onboarding Experience:** Redesigned the onboarding screen with a premium blue theme, custom arrow-head chevrons, and improved thumb-zone reachability.
+- **State Logic Fixes:** Restructured navigation state to ensure users who abort authentication are properly routed back to onboarding on cold boots unless they explicitly "Start as Guest".
+- **Authentication UI:** Completely overhauled the Login and Sign-Up screens. Replaced the generic app icon with a dynamically scaled, tinted floating logo. Shifted forms downward for ergonomic one-handed use (Thumb-zone optimization).
+- **Custom Splash Screen:** Overhauled the custom splash screen to use a 1000ms holding delay. Implemented a massive high-resolution logo bypass and created a natural "scale-down and fade-out" exit animation. 
 
-### UI/UX Polish & Analytics
-- **Live Authentication Validation:** Implemented real-time regex email validation in the Login and Register screens.
-- **Visual Error States:** Added beautiful red error states (borders, backgrounds, and helper text) for invalid inputs.
-- **Friendly Error Parsing:** Intercept cryptic Firebase error codes and translate them into human-readable strings displayed via a custom `CustomAlert` modal.
-- **App Logo Integration:** Implemented the actual LedgerLite application logo natively into the app layout.
-- **Analytics Dashboard:** Integrated dynamic Redux data into a pie chart with precise date range filtering and SQLite aggregations.
-
-### Stability & Bug Fixes
-- **Hermes Release Crash:** Fixed a fatal crash in Release mode caused by Hermes failing to resolve dynamic CommonJS requires for `@firebase/auth`.
-- **Z-Index Stacking:** Fixed UI layering bugs in the Data Management section where dropdown menus were rendering beneath adjacent rows.
-- **NativeWind Compatibility:** Resolved various NativeWind crashes and optimized FlashList performance to prevent memory leaks.
-- **Accordion Menus:** Converted settings rows into an accordion pattern to ensure only one dropdown menu expands at a time.
-- **State Hydration:** Resolved Redux memoization warnings and migrated settings persistence to the FileSystem.
-
-### Build & CI/CD
-- **Automated Pipelines:** Configured automated GitHub Actions release pipelines for automated Android APK generation.
-- **Optimized Artifacts:** Configured workflow to use Node 20, explicitly build lightweight `arm64-v8a` APKs natively, and dynamically rename output to match the release tag (`LedgerLite-v1.3.2.apk`).
-- **Emulator Support:** Made ABI architecture splits strictly conditional for CI environments to prevent crashes on local `x86_64` emulator testing.
+### Expenses & Analytics
+- **Analytics Dashboard:** Implemented a highly optimized `react-native-chart-kit` Pie Chart. Added a 200ms skeleton loading delay exclusively for cold boots to guarantee a smooth transition effect.
+- **Add Expense Modal:** Fixed Bottom Sheet layout overlap issues. Enabled `interactive` keyboard behavior to prevent the keyboard from pushing the "Save Transaction" button out of reach.
+- **List Iteration Refactor:** Updated the Expense List item layout. Formatted the timestamp to strict `HH:mm` format and flex-shrunk text containers to prevent long descriptions from causing the account badge to overflow.
+- **Guest Database Retention:** Improved the Migration Service to safely retain the `ledgerlite_guest.db` after a successful cloud registration, preserving the offline-only sandbox.

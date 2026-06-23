@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, onAuthStateChanged } from 'firebase/auth';
-import { auth } from './config';
-import { useRouter, useSegments } from 'expo-router';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { User, onAuthStateChanged } from "firebase/auth";
+import { auth } from "./config";
 
 type AuthContextType = {
   user: User | null;
@@ -18,8 +17,6 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const segments = useSegments();
-  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -28,18 +25,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
     return unsubscribe;
   }, []);
-
-  useEffect(() => {
-    if (isLoading) return;
-
-    const inAuthGroup = segments[0] === '(auth)';
-
-    if (!user && !inAuthGroup) {
-      router.replace('/(auth)/login');
-    } else if (user && inAuthGroup) {
-      router.replace('/(tabs)');
-    }
-  }, [user, isLoading, segments]);
 
   return (
     <AuthContext.Provider value={{ user, isLoading }}>

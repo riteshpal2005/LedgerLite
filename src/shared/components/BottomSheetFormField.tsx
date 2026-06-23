@@ -1,10 +1,10 @@
 import { View, Text, TextInputProps } from "react-native";
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 
 interface BottomSheetFormFieldProps extends TextInputProps {
   label: string;
-  className?: string; 
-  inputClassName?: string; 
+  className?: string;
+  inputClassName?: string;
 }
 
 export function BottomSheetFormField({
@@ -20,7 +20,10 @@ export function BottomSheetFormField({
         placeholderTextColor="#52525b"
         className={inputClassName}
         {...textInputProps}
-        style={[{ paddingVertical: 0, includeFontPadding: false }, textInputProps.style]}
+        style={[
+          { paddingVertical: 0, includeFontPadding: false },
+          textInputProps.style,
+        ]}
       />
     </View>
   );

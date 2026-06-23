@@ -8,6 +8,7 @@ import { DataManagementSection } from "../../features/settings/components/DataMa
 import { AdvancedSection } from "../../features/settings/components/AdvancedSection";
 import { AccountSection } from "../../features/settings/components/AccountSection";
 import { AboutSection } from "../../features/settings/components/AboutSection";
+import { HelpSection } from "../../features/settings/components/HelpSection";
 import { ManageCategoriesCard } from "../../features/categories/components/ManageCategoriesCard";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -16,16 +17,16 @@ export default function SettingsScreen() {
   return (
     <View className="flex-1 bg-background p-6 pt-12">
       <Heading className="text-3xl mb-8">Settings</Heading>
-      
+
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
-        
         <AccountSection />
-        
+
         <ManageCategoriesCard />
 
         <PreferencesSection />
         <AccountsSection />
         <DataManagementSection />
+        <HelpSection />
         <AdvancedSection />
         <AboutSection />
         <View className="h-12" />

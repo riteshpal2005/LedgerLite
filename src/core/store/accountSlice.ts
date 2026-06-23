@@ -11,7 +11,7 @@ const initialState: AccountState = {
 };
 
 export const accountSlice = createSlice({
-  name: 'accounts',
+  name: "accounts",
   initialState,
   reducers: {
     setAccounts: (state, action: PayloadAction<Account[]>) => {
@@ -21,42 +21,53 @@ export const accountSlice = createSlice({
       state.accounts.push(action.payload);
     },
     updateAccountInRedux: (state, action: PayloadAction<Account>) => {
-      const index = state.accounts.findIndex(acc => acc.id === action.payload.id);
+      const index = state.accounts.findIndex(
+        (acc) => acc.id === action.payload.id,
+      );
       if (index !== -1) {
         state.accounts[index] = action.payload;
       }
     },
     removeAccountFromRedux: (state, action: PayloadAction<string>) => {
-      state.accounts = state.accounts.filter(acc => acc.id !== action.payload);
-    }
+      state.accounts = state.accounts.filter(
+        (acc) => acc.id !== action.payload,
+      );
+    },
   },
 });
 
-export const { setAccounts, addAccountToRedux, updateAccountInRedux, removeAccountFromRedux } = accountSlice.actions;
+export const {
+  setAccounts,
+  addAccountToRedux,
+  updateAccountInRedux,
+  removeAccountFromRedux,
+} = accountSlice.actions;
 
 export const selectAccountsWithBalances = createSelector(
   (state: RootState) => state.accounts.accounts,
   (state: RootState) => state.expenses.expenses,
   (accounts, expenses) => {
-    return accounts.map(account => {
-      const accountTransactions = expenses.filter(e => e.accountId === account.id);
-      
+    return accounts.map((account) => {
+      const accountTransactions = expenses.filter(
+        (e) => e.accountId === account.id,
+      );
+
       const totalIncome = accountTransactions
-        .filter(e => e.type === 'credit')
+        .filter((e) => e.type === "credit")
         .reduce((sum, e) => sum + e.amount, 0);
-        
+
       const totalExpense = accountTransactions
-        .filter(e => e.type === 'debit')
+        .filter((e) => e.type === "debit")
         .reduce((sum, e) => sum + e.amount, 0);
-        
+
       const currentBalance = account.balance + totalIncome - totalExpense;
-      
+
       return {
         ...account,
-        currentBalance: currentBalance 
+        currentBalance: currentBalance,
       };
     });
-  }
+  },
 );
 
 export default accountSlice.reducer;

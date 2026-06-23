@@ -1,135 +1,166 @@
-import * as FileSystem from 'expo-file-system/legacy';
-import * as Sharing from 'expo-sharing';
-import * as DocumentPicker from 'expo-document-picker';
-import * as Print from 'expo-print';
-import * as XLSX from 'xlsx';
-import * as Clipboard from 'expo-clipboard';
-import { Expense, Account, Category } from '../database/schema';
-import { Platform } from 'react-native';
+import * as FileSystem from "expo-file-system/legacy";
+import * as Sharing from "expo-sharing";
+import * as DocumentPicker from "expo-document-picker";
+import * as Print from "expo-print";
+import * as XLSX from "xlsx";
+import * as Clipboard from "expo-clipboard";
+import { Expense, Account, Category } from "../database/schema";
+import { Platform } from "react-native";
 
-export type ExportColumn = 'Date' | 'Time' | 'Type' | 'Category' | 'Amount' | 'Description' | 'Merchant' | 'Account' | 'AccountInitialBalance';
+export type ExportColumn =
+  | "Date"
+  | "Time"
+  | "Type"
+  | "Category"
+  | "Amount"
+  | "Description"
+  | "Merchant"
+  | "Account"
+  | "AccountInitialBalance";
 
 export const exportData = async (
   expenses: Expense[],
   accounts: Account[],
   categories: Category[],
-  format: 'csv' | 'xlsx',
-  action: 'save' | 'share' = 'share',
-  savedDirectoryUri?: string | null
+  format: "csv" | "xlsx",
+  action: "save" | "share" = "share",
+  savedDirectoryUri?: string | null,
 ): Promise<string | undefined> => {
   try {
-    const formattedData = expenses.map(e => {
-      const account = accounts.find(a => a.id === e.accountId);
-      const category = categories.find(c => c.id === e.categoryId);
+    const formattedData = expenses.map((e) => {
+      const account = accounts.find((a) => a.id === e.accountId);
+      const category = categories.find((c) => c.id === e.categoryId);
       return {
-        Date: new Date(e.date).toLocaleDateString().replace(/\u202F/g, ' '),
-        Time: new Date(e.date).toLocaleTimeString().replace(/\u202F/g, ' '),
-        Type: e.type === 'credit' ? 'Income' : 'Expense',
-        Category: category ? category.name : 'Unknown',
-        Amount: `₹${e.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        Date: new Date(e.date).toLocaleDateString().replace(/\u202F/g, " "),
+        Time: new Date(e.date).toLocaleTimeString().replace(/\u202F/g, " "),
+        Type: e.type === "credit" ? "Income" : "Expense",
+        Category: category ? category.name : "Unknown",
+        Amount: `₹${e.amount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         Description: e.description,
-        Merchant: e.merchant || '',
-        AccountName: account ? account.name : 'Unassigned',
-        AccountType: account ? account.type : 'N/A',
+        Merchant: e.merchant || "",
+        AccountName: account ? account.name : "Unassigned",
+        AccountType: account ? account.type : "N/A",
         AccountInitialBalance: account ? account.balance : 0,
-        _RawDateUnix: e.date
+        _RawDateUnix: e.date,
       };
     });
 
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Expenses');
-    const fileBase64 = XLSX.write(workbook, { type: 'base64', bookType: format });
-    const mimeType = format === 'csv' ? 'text/csv' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Expenses");
+    const fileBase64 = XLSX.write(workbook, {
+      type: "base64",
+      bookType: format,
+    });
+    const mimeType =
+      format === "csv"
+        ? "text/csv"
+        : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     const filename = `LedgerLite_Export_${Date.now()}.${format}`;
 
-    if (action === 'save' && Platform.OS === 'android') {
+    if (action === "save" && Platform.OS === "android") {
       if (savedDirectoryUri) {
         try {
-          const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
-            savedDirectoryUri,
-            filename,
-            mimeType
-          );
-          await FileSystem.writeAsStringAsync(safUri, fileBase64, { encoding: 'base64' });
+          const safUri =
+            await FileSystem.StorageAccessFramework.createFileAsync(
+              savedDirectoryUri,
+              filename,
+              mimeType,
+            );
+          await FileSystem.writeAsStringAsync(safUri, fileBase64, {
+            encoding: "base64",
+          });
           return savedDirectoryUri;
-        } catch (e) {
-          console.log("Silent save failed, requesting permissions again");
-        }
+        } catch (e) {}
       }
 
-      const initialUri = 'content://com.android.externalstorage.documents/tree/primary%3ADocuments';
-      const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(initialUri);
+      const initialUri =
+        "content://com.android.externalstorage.documents/tree/primary%3ADocuments";
+      const permissions =
+        await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
+          initialUri,
+        );
 
       if (permissions.granted) {
         let targetDirUri = permissions.directoryUri;
 
-        if (!decodeURIComponent(targetDirUri).endsWith('LedgerLite')) {
+        if (!decodeURIComponent(targetDirUri).endsWith("LedgerLite")) {
           let folderCreatedOrFound = false;
 
           try {
-            const files = await FileSystem.StorageAccessFramework.readDirectoryAsync(permissions.directoryUri);
-            const existingLedgerLite = files.find(f => decodeURIComponent(f).endsWith('/LedgerLite') || decodeURIComponent(f).endsWith(':LedgerLite'));
+            const files =
+              await FileSystem.StorageAccessFramework.readDirectoryAsync(
+                permissions.directoryUri,
+              );
+            const existingLedgerLite = files.find(
+              (f) =>
+                decodeURIComponent(f).endsWith("/LedgerLite") ||
+                decodeURIComponent(f).endsWith(":LedgerLite"),
+            );
             if (existingLedgerLite) {
               targetDirUri = existingLedgerLite;
               folderCreatedOrFound = true;
             }
-          } catch (e) {
-            console.log("Could not read directory for LedgerLite search", e);
-          }
+          } catch (e) {}
 
           if (!folderCreatedOrFound) {
             try {
-              targetDirUri = await FileSystem.StorageAccessFramework.makeDirectoryAsync(permissions.directoryUri, 'LedgerLite');
-            } catch (e) {
-              console.log("Could not create LedgerLite subfolder", e);
-            }
+              targetDirUri =
+                await FileSystem.StorageAccessFramework.makeDirectoryAsync(
+                  permissions.directoryUri,
+                  "LedgerLite",
+                );
+            } catch (e) {}
           }
         }
 
         const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
           targetDirUri,
           filename,
-          mimeType
+          mimeType,
         );
-        await FileSystem.writeAsStringAsync(safUri, fileBase64, { encoding: 'base64' });
+        await FileSystem.writeAsStringAsync(safUri, fileBase64, {
+          encoding: "base64",
+        });
         return targetDirUri;
       }
     }
 
     const fileUri = FileSystem.cacheDirectory + filename;
     await FileSystem.writeAsStringAsync(fileUri, fileBase64, {
-      encoding: 'base64'
+      encoding: "base64",
     });
 
     await Sharing.shareAsync(fileUri, {
       mimeType: mimeType,
-      dialogTitle: 'Export LedgerLite Data'
+      dialogTitle: "Export LedgerLite Data",
     });
 
     return undefined;
-
   } catch (error) {
     console.error("Export Error: ", error);
     return undefined;
   }
-}
+};
 
 export const importData = async (
   categories: Category[],
   accounts: Account[],
-  existingExpenses: Expense[]
-): Promise<{ expenses: any[], missingAccounts: { name: string; initialBalance: number }[] } | null> => {
+  existingExpenses: Expense[],
+): Promise<{
+  expenses: any[];
+  missingAccounts: { name: string; initialBalance: number }[];
+} | null> => {
   try {
     const result = await DocumentPicker.getDocumentAsync({
       type: [
-        'text/csv',
-        'text/comma-separated-values',
-        'application/csv',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.ms-excel'
+        "text/csv",
+        "text/comma-separated-values",
+        "application/csv",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-excel",
       ],
-      copyToCacheDirectory: true
+      copyToCacheDirectory: true,
     });
 
     if (result.canceled || !result.assets || result.assets.length === 0) {
@@ -137,8 +168,10 @@ export const importData = async (
     }
 
     const fileUri = result.assets[0].uri;
-    const fileBase64 = await FileSystem.readAsStringAsync(fileUri, { encoding: 'base64' });
-    const workbook = XLSX.read(fileBase64, { type: 'base64' });
+    const fileBase64 = await FileSystem.readAsStringAsync(fileUri, {
+      encoding: "base64",
+    });
+    const workbook = XLSX.read(fileBase64, { type: "base64" });
     const firstSheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[firstSheetName];
 
@@ -148,20 +181,23 @@ export const importData = async (
     const missingAccounts: { name: string; initialBalance: number }[] = [];
 
     for (const row of rawJson) {
-      const rawAmountStr = String(row.Amount || '0').replace(/[^0-9.-]+/g, "");
+      const rawAmountStr = String(row.Amount || "0").replace(/[^0-9.-]+/g, "");
       const parsedAmount = parseFloat(rawAmountStr) || 0;
 
       const categoryName = row.Category;
-      const matchedCategory = categories.find(c => c.name === categoryName);
-      const categoryId = matchedCategory ? matchedCategory.id : 'cat-1';
+      const matchedCategory = categories.find((c) => c.name === categoryName);
+      const categoryId = matchedCategory ? matchedCategory.id : "cat-1";
 
       const accountName = row.AccountName || row.Account;
-      const matchedAccount = accounts.find(a => a.name === accountName);
+      const matchedAccount = accounts.find((a) => a.name === accountName);
       const accountId = matchedAccount ? matchedAccount.id : undefined;
 
-      if (!matchedAccount && accountName && accountName !== 'Unassigned') {
-        if (!missingAccounts.find(m => m.name === accountName)) {
-          const initialBalance = parseFloat(String(row.AccountInitialBalance).replace(/[^0-9.-]+/g, "")) || 0;
+      if (!matchedAccount && accountName && accountName !== "Unassigned") {
+        if (!missingAccounts.find((m) => m.name === accountName)) {
+          const initialBalance =
+            parseFloat(
+              String(row.AccountInitialBalance).replace(/[^0-9.-]+/g, ""),
+            ) || 0;
           missingAccounts.push({ name: accountName, initialBalance });
         }
       }
@@ -180,39 +216,53 @@ export const importData = async (
             const day = parseInt(dateParts[0]);
             const month = parseInt(dateParts[1]) - 1;
             let year = parseInt(dateParts[2]);
-            if (year < 100) year += 2000; 
+            if (year < 100) year += 2000;
 
-            let hours = 0; let minutes = 0; let seconds = 0;
+            let hours = 0;
+            let minutes = 0;
+            let seconds = 0;
             if (row.Time) {
-              const timeParts = String(row.Time).match(/(\d+):(\d+)(?::(\d+))?\s*(AM|PM)?/i);
+              const timeParts = String(row.Time).match(
+                /(\d+):(\d+)(?::(\d+))?\s*(AM|PM)?/i,
+              );
               if (timeParts) {
                 hours = parseInt(timeParts[1]);
                 minutes = parseInt(timeParts[2]);
                 seconds = timeParts[3] ? parseInt(timeParts[3]) : 0;
-                const ampm = timeParts[4] ? timeParts[4].toUpperCase() : '';
-                if (ampm === 'PM' && hours < 12) hours += 12;
-                if (ampm === 'AM' && hours === 12) hours = 0;
+                const ampm = timeParts[4] ? timeParts[4].toUpperCase() : "";
+                if (ampm === "PM" && hours < 12) hours += 12;
+                if (ampm === "AM" && hours === 12) hours = 0;
               }
             }
-            const fallbackDate = new Date(year, month, day, hours, minutes, seconds).getTime();
+            const fallbackDate = new Date(
+              year,
+              month,
+              day,
+              hours,
+              minutes,
+              seconds,
+            ).getTime();
             if (!isNaN(fallbackDate)) parsedDate = fallbackDate;
           }
         }
       }
-      const type = row.Type === 'Income' || row.Type === 'credit' ? 'credit' : 'debit';
-      const description = row.Description || 'Imported Transaction';
+      const type =
+        row.Type === "Income" || row.Type === "credit" ? "credit" : "debit";
+      const description = row.Description || "Imported Transaction";
 
-      const isDuplicate = existingExpenses.some(ex => {
+      const isDuplicate = existingExpenses.some((ex) => {
         const timeDiff = Math.abs(ex.date - parsedDate);
-        return ex.amount === parsedAmount &&
+        return (
+          ex.amount === parsedAmount &&
           ex.description === description &&
           ex.type === type &&
-          timeDiff < 60000; 
+          timeDiff < 60000
+        );
       });
 
       if (!isDuplicate) {
         importedExpenses.push({
-          id: Date.now() + Math.random(), 
+          id: Date.now() + Math.random(),
           amount: parsedAmount,
           description,
           merchant: row.Merchant || null,
@@ -220,13 +270,12 @@ export const importData = async (
           type,
           categoryId,
           accountId,
-          _accountName: accountName 
+          _accountName: accountName,
         });
       }
     }
 
     return { expenses: importedExpenses, missingAccounts };
-
   } catch (error) {
     console.error("Import Error: ", error);
     return null;
@@ -235,73 +284,93 @@ export const importData = async (
 
 export const exportSettingsJSON = async (
   settingsData: any,
-  action: 'save' | 'share' | 'copy' = 'share',
-  savedDirectoryUri?: string | null
+  action: "save" | "share" | "copy" = "share",
+  savedDirectoryUri?: string | null,
 ): Promise<string | undefined> => {
   try {
     const jsonString = JSON.stringify(settingsData, null, 2);
 
-    if (action === 'copy') {
+    if (action === "copy") {
       await Clipboard.setStringAsync(jsonString);
       return undefined;
     }
 
     const filename = `LedgerLite_Settings_${Date.now()}.json`;
-    const mimeType = 'application/json';
+    const mimeType = "application/json";
 
-    if (action === 'save' && Platform.OS === 'android') {
+    if (action === "save" && Platform.OS === "android") {
       if (savedDirectoryUri) {
         try {
-          const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
-            savedDirectoryUri,
-            filename,
-            mimeType
-          );
-          await FileSystem.writeAsStringAsync(safUri, jsonString, { encoding: 'utf8' });
+          const safUri =
+            await FileSystem.StorageAccessFramework.createFileAsync(
+              savedDirectoryUri,
+              filename,
+              mimeType,
+            );
+          await FileSystem.writeAsStringAsync(safUri, jsonString, {
+            encoding: "utf8",
+          });
           return savedDirectoryUri;
-        } catch (e) {
-          console.log("Silent save failed, requesting permissions again");
-        }
+        } catch (e) {}
       }
 
-      const initialUri = 'content://com.android.externalstorage.documents/tree/primary%3ADocuments';
-      const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(initialUri);
+      const initialUri =
+        "content://com.android.externalstorage.documents/tree/primary%3ADocuments";
+      const permissions =
+        await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
+          initialUri,
+        );
 
       if (permissions.granted) {
         let targetDirUri = permissions.directoryUri;
-        if (!decodeURIComponent(targetDirUri).endsWith('LedgerLite')) {
+        if (!decodeURIComponent(targetDirUri).endsWith("LedgerLite")) {
           let folderCreatedOrFound = false;
           try {
-            const files = await FileSystem.StorageAccessFramework.readDirectoryAsync(permissions.directoryUri);
-            const existingLedgerLite = files.find(f => decodeURIComponent(f).endsWith('/LedgerLite') || decodeURIComponent(f).endsWith(':LedgerLite'));
+            const files =
+              await FileSystem.StorageAccessFramework.readDirectoryAsync(
+                permissions.directoryUri,
+              );
+            const existingLedgerLite = files.find(
+              (f) =>
+                decodeURIComponent(f).endsWith("/LedgerLite") ||
+                decodeURIComponent(f).endsWith(":LedgerLite"),
+            );
             if (existingLedgerLite) {
               targetDirUri = existingLedgerLite;
               folderCreatedOrFound = true;
             }
-          } catch (e) { }
+          } catch (e) {}
           if (!folderCreatedOrFound) {
-            try { targetDirUri = await FileSystem.StorageAccessFramework.makeDirectoryAsync(permissions.directoryUri, 'LedgerLite'); } catch (e) { }
+            try {
+              targetDirUri =
+                await FileSystem.StorageAccessFramework.makeDirectoryAsync(
+                  permissions.directoryUri,
+                  "LedgerLite",
+                );
+            } catch (e) {}
           }
         }
 
         const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
           targetDirUri,
           filename,
-          mimeType
+          mimeType,
         );
-        await FileSystem.writeAsStringAsync(safUri, jsonString, { encoding: 'utf8' });
+        await FileSystem.writeAsStringAsync(safUri, jsonString, {
+          encoding: "utf8",
+        });
         return targetDirUri;
       }
     }
 
     const fileUri = FileSystem.cacheDirectory + filename;
     await FileSystem.writeAsStringAsync(fileUri, jsonString, {
-      encoding: 'utf8'
+      encoding: "utf8",
     });
 
     await Sharing.shareAsync(fileUri, {
       mimeType: mimeType,
-      dialogTitle: 'Export LedgerLite Settings'
+      dialogTitle: "Export LedgerLite Settings",
     });
 
     return undefined;
@@ -313,8 +382,8 @@ export const exportSettingsJSON = async (
 export const importSettingsJSON = async () => {
   try {
     const result = await DocumentPicker.getDocumentAsync({
-      type: 'application/json',
-      copyToCacheDirectory: true
+      type: "application/json",
+      copyToCacheDirectory: true,
     });
 
     if (result.canceled || !result.assets || result.assets.length === 0) {
@@ -322,10 +391,11 @@ export const importSettingsJSON = async () => {
     }
 
     const fileUri = result.assets[0].uri;
-    const fileContent = await FileSystem.readAsStringAsync(fileUri, { encoding: 'utf8' });
+    const fileContent = await FileSystem.readAsStringAsync(fileUri, {
+      encoding: "utf8",
+    });
     const parsedData = JSON.parse(fileContent);
     return parsedData;
-
   } catch (error) {
     console.error("Settings Import Error: ", error);
     return null;
@@ -337,41 +407,47 @@ export const exportToPDF = async (
   accounts: Account[],
   categories: Category[],
   selectedColumns: ExportColumn[],
-  action: 'save' | 'share' = 'share',
-  savedDirectoryUri?: string | null
+  action: "save" | "share" = "share",
+  savedDirectoryUri?: string | null,
 ): Promise<string | undefined> => {
   try {
     const escapeHTML = (str: any) => {
-      if (str === null || str === undefined) return '';
+      if (str === null || str === undefined) return "";
       return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     };
 
-    const formattedData = expenses.map(e => {
-      const account = accounts.find(a => a.id === e.accountId);
-      const category = categories.find(c => c.id === e.categoryId);
+    const formattedData = expenses.map((e) => {
+      const account = accounts.find((a) => a.id === e.accountId);
+      const category = categories.find((c) => c.id === e.categoryId);
       return {
-        Date: new Date(e.date).toLocaleDateString().replace(/\u202F/g, ' '),
-        Time: new Date(e.date).toLocaleTimeString().replace(/\u202F/g, ' '),
-        Type: e.type === 'credit' ? 'Income' : 'Expense',
-        Category: category ? category.name : 'Unknown',
-        Amount: `₹${e.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        Date: new Date(e.date).toLocaleDateString().replace(/\u202F/g, " "),
+        Time: new Date(e.date).toLocaleTimeString().replace(/\u202F/g, " "),
+        Type: e.type === "credit" ? "Income" : "Expense",
+        Category: category ? category.name : "Unknown",
+        Amount: `₹${e.amount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         Description: e.description,
-        Merchant: e.merchant || '',
-        Account: account ? account.name : 'Unassigned',
-        AccountInitialBalance: account ? account.balance : 0
+        Merchant: e.merchant || "",
+        Account: account ? account.name : "Unassigned",
+        AccountInitialBalance: account ? account.balance : 0,
       };
     });
 
-    const thHeaders = selectedColumns.map(col => `<th>${escapeHTML(col)}</th>`).join('');
-    const trRows = formattedData.map(row => {
-      const tdCells = selectedColumns.map(col => `<td>${escapeHTML((row as any)[col])}</td>`).join('');
-      return `<tr>${tdCells}</tr>`;
-    }).join('');
+    const thHeaders = selectedColumns
+      .map((col) => `<th>${escapeHTML(col)}</th>`)
+      .join("");
+    const trRows = formattedData
+      .map((row) => {
+        const tdCells = selectedColumns
+          .map((col) => `<td>${escapeHTML((row as any)[col])}</td>`)
+          .join("");
+        return `<tr>${tdCells}</tr>`;
+      })
+      .join("");
 
     const html = `
       <!DOCTYPE html>
@@ -397,39 +473,58 @@ export const exportToPDF = async (
 
     const { uri } = await Print.printToFileAsync({
       html,
-      width: 612, // US Letter width in points
-      height: 792 // US Letter height in points
+      width: 612, // Ref: dataService-1
+      height: 792, // Ref: dataService-2
     });
 
-    // Wait 1.5s to absolutely guarantee the Android OS has flushed the PDF disk buffer
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Ref: dataService-3
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const filename = `LedgerLite_Report_${Date.now()}.pdf`;
-    const mimeType = 'application/pdf';
+    const mimeType = "application/pdf";
 
-    if (action === 'save' && Platform.OS === 'android') {
-      const fileBase64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
+    if (action === "save" && Platform.OS === "android") {
+      const fileBase64 = await FileSystem.readAsStringAsync(uri, {
+        encoding: "base64",
+      });
       let targetDirUri = savedDirectoryUri || undefined;
 
       if (!targetDirUri) {
-        const initialUri = 'content://com.android.externalstorage.documents/tree/primary%3ADocuments';
-        const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(initialUri);
+        const initialUri =
+          "content://com.android.externalstorage.documents/tree/primary%3ADocuments";
+        const permissions =
+          await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
+            initialUri,
+          );
 
         if (permissions.granted) {
           targetDirUri = permissions.directoryUri;
-          if (!decodeURIComponent(targetDirUri).endsWith('LedgerLite')) {
+          if (!decodeURIComponent(targetDirUri).endsWith("LedgerLite")) {
             let folderCreatedOrFound = false;
             try {
-              const files = await FileSystem.StorageAccessFramework.readDirectoryAsync(permissions.directoryUri);
-              const existingLedgerLite = files.find(f => decodeURIComponent(f).endsWith('/LedgerLite') || decodeURIComponent(f).endsWith(':LedgerLite'));
+              const files =
+                await FileSystem.StorageAccessFramework.readDirectoryAsync(
+                  permissions.directoryUri,
+                );
+              const existingLedgerLite = files.find(
+                (f) =>
+                  decodeURIComponent(f).endsWith("/LedgerLite") ||
+                  decodeURIComponent(f).endsWith(":LedgerLite"),
+              );
               if (existingLedgerLite) {
                 targetDirUri = existingLedgerLite;
                 folderCreatedOrFound = true;
               }
-            } catch (e) { }
+            } catch (e) {}
 
             if (!folderCreatedOrFound) {
-              try { targetDirUri = await FileSystem.StorageAccessFramework.makeDirectoryAsync(permissions.directoryUri, 'LedgerLite'); } catch (e) { }
+              try {
+                targetDirUri =
+                  await FileSystem.StorageAccessFramework.makeDirectoryAsync(
+                    permissions.directoryUri,
+                    "LedgerLite",
+                  );
+              } catch (e) {}
             }
           }
         }
@@ -437,21 +532,25 @@ export const exportToPDF = async (
 
       if (targetDirUri) {
         try {
-          const safUri = await FileSystem.StorageAccessFramework.createFileAsync(targetDirUri, filename, mimeType);
-          await FileSystem.writeAsStringAsync(safUri, fileBase64, { encoding: 'base64' });
+          const safUri =
+            await FileSystem.StorageAccessFramework.createFileAsync(
+              targetDirUri,
+              filename,
+              mimeType,
+            );
+          await FileSystem.writeAsStringAsync(safUri, fileBase64, {
+            encoding: "base64",
+          });
           return targetDirUri;
-        } catch (e) {
-          console.log("PDF save failed", e);
-        }
+        } catch (e) {}
       }
     }
 
-    // iOS or Share Flow (Just share the URI generated directly by expo-print)
-    await Sharing.shareAsync(uri, { mimeType, dialogTitle: 'Export PDF' });
+    // Ref: dataService-4
+    await Sharing.shareAsync(uri, { mimeType, dialogTitle: "Export PDF" });
     return undefined;
-
   } catch (error) {
     console.error("PDF Export Error: ", error);
     return undefined;
   }
-}
+};

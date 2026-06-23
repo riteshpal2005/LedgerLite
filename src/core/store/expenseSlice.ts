@@ -10,7 +10,7 @@ const initialState: ExpenseState = {
 };
 
 export const expenseSlice = createSlice({
-  name: 'expenses',
+  name: "expenses",
   initialState,
   reducers: {
     setExpenses: (state, action: PayloadAction<Expense[]>) => {
@@ -22,17 +22,22 @@ export const expenseSlice = createSlice({
     },
 
     updateExpenseAction: (state, action: PayloadAction<Expense>) => {
-      const index = state.expenses.findIndex(e => e.id === action.payload.id);
+      const index = state.expenses.findIndex((e) => e.id === action.payload.id);
       if (index !== -1) {
         state.expenses[index] = action.payload;
       }
     },
 
     deleteExpenseAction: (state, action: PayloadAction<string>) => {
-      state.expenses = state.expenses.filter(e => e.id !== action.payload);
-    }
+      state.expenses = state.expenses.filter((e) => e.id !== action.payload);
+    },
   },
 });
 
-export const { setExpenses, addExpense, updateExpenseAction, deleteExpenseAction } = expenseSlice.actions;
+export const {
+  setExpenses,
+  addExpense,
+  updateExpenseAction,
+  deleteExpenseAction,
+} = expenseSlice.actions;
 export default expenseSlice.reducer;
