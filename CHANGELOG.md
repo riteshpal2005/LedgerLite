@@ -1,6 +1,5 @@
-# 2.0.1
+# 2.0.2
 
-### Android System Integration & App Updates
-- **In-App Updater UX:** Integrated Android's Storage Access Framework (SAF) into the update engine. Downloaded APKs are now explicitly saved to a user-selected public directory (e.g., `Downloads`) before triggering the installation.
-- **Package Installer Intent Fix:** Added `FLAG_ACTIVITY_NEW_TASK` to the `expo-intent-launcher` to resolve an issue where the native package installer popup was being blocked on Android 11+.
-- **Native Splash Screen Fix:** Added explicit `android.splash.backgroundColor` configuration to `app.json` to eliminate the white flash caused by the default Android 12+ Splash Screen API during cold boots.
+### Refactoring & Architecture
+- **Native Splash Screen Optimization:** Removed custom Javascript-based artificial splash screen (`CustomSplashScreen.tsx`) in favor of utilizing the native Android 12+ API entirely. Configured the `expo-splash-screen` plugin correctly in `app.json` to handle the native logo and background color.
+- **Hydration State Binding:** Refactored `_layout.tsx` to directly bind the native `SplashScreen.hideAsync()` call to the app's SQLite and Firebase Auth hydration states, preventing double-splashes.

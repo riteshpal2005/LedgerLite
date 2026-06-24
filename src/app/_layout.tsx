@@ -25,7 +25,6 @@ import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
 } from "react-native-reanimated";
-import { CustomSplashScreen } from "../shared/components/CustomSplashScreen";
 
 // Ref: _layout-1
 configureReanimatedLogger({
@@ -79,29 +78,6 @@ function useProtectedRoute(
   ]);
 }
 
-function AuthSplashWrapper({
-  children,
-  isSettingsLoaded,
-}: {
-  children: React.ReactNode;
-  isSettingsLoaded: boolean;
-}) {
-  const { isLoading } = useAuth();
-  const [splashAnimationComplete, setSplashAnimationComplete] = useState(false);
-
-  return (
-    <>
-      {children}
-      {!splashAnimationComplete && (
-        <CustomSplashScreen
-          isReady={isSettingsLoaded && !isLoading}
-          onAnimationComplete={() => setSplashAnimationComplete(true)}
-        />
-      )}
-    </>
-  );
-}
-
 export default function RootLayout() {
   const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
 
@@ -134,18 +110,16 @@ export default function RootLayout() {
   return (
     <Provider store={store}>
       <AuthProvider>
-        <AuthSplashWrapper isSettingsLoaded={isSettingsLoaded}>
-          <DatabaseProvider>
-            <ThemeProvider>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <BottomSheetModalProvider>
-                  <RootLayoutNav isSettingsLoaded={isSettingsLoaded} />
-                  <UpdateChecker />
-                </BottomSheetModalProvider>
-              </GestureHandlerRootView>
-            </ThemeProvider>
-          </DatabaseProvider>
-        </AuthSplashWrapper>
+        <DatabaseProvider>
+          <ThemeProvider>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <BottomSheetModalProvider>
+                <RootLayoutNav isSettingsLoaded={isSettingsLoaded} />
+                <UpdateChecker />
+              </BottomSheetModalProvider>
+            </GestureHandlerRootView>
+          </ThemeProvider>
+        </DatabaseProvider>
       </AuthProvider>
     </Provider>
   );
@@ -158,6 +132,12 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
   );
 
   useProtectedRoute(user, isLoading, hasCompletedOnboarding, isSettingsLoaded);
+
+  useEffect(() => {
+    if (isSettingsLoaded && !isLoading) {
+      SplashScreen.hideAsync().catch(console.warn);
+    }
+  }, [isSettingsLoaded, isLoading]);
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
