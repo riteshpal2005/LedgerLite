@@ -81,7 +81,7 @@ export function UpdateChecker() {
         const contentUri = await FileSystem.getContentUriAsync(uri);
         await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
           data: contentUri,
-          flags: 1 | 268435456, // FLAG_GRANT_READ_URI_PERMISSION | FLAG_ACTIVITY_NEW_TASK
+          flags: 1 | 268435456, // Ref: UpdateChecker-1
           type: "application/vnd.android.package-archive",
         });
         setVisible(false);
@@ -107,7 +107,7 @@ export function UpdateChecker() {
         );
 
       if (!permissions.granted) {
-        return; // User cancelled permission, we can't save to Downloads
+        return; // Ref: UpdateChecker-2
       }
 
       setDownloadStatus("DOWNLOADING");
@@ -133,7 +133,7 @@ export function UpdateChecker() {
       if (result?.uri) {
         setDownloadStatus("INSTALLING");
 
-        // Read downloaded file as base64 and write it to the Downloads folder via SAF
+        // Ref: UpdateChecker-3
         const base64 = await FileSystem.readAsStringAsync(result.uri, {
           encoding: "base64",
         });
@@ -150,10 +150,10 @@ export function UpdateChecker() {
 
         setDownloadStatus("READY_TO_INSTALL");
 
-        // Use the SAF content URI directly for the installer
+        // Ref: UpdateChecker-4
         await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
           data: safUri,
-          flags: 1 | 268435456, // FLAG_GRANT_READ_URI_PERMISSION | FLAG_ACTIVITY_NEW_TASK
+          flags: 1 | 268435456, // Ref: UpdateChecker-5
           type: "application/vnd.android.package-archive",
         });
 

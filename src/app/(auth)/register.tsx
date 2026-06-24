@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { AuthService } from "../../core/services/authService";
@@ -22,6 +22,7 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const isSubmitting = useRef(false);
   const { showAlert, hideAlert, alertConfig } = useAlert();
   const dispatch = useDispatch();
 
@@ -36,6 +37,8 @@ export default function RegisterScreen() {
   };
 
   const handleRegister = async () => {
+    if (isSubmitting.current) return;
+
     if (!email || !password || !confirmPassword) {
       showAlert("Error", "Please fill out all fields.");
       return;
@@ -49,9 +52,13 @@ export default function RegisterScreen() {
       return;
     }
 
+    isSubmitting.current = true;
     setIsLoading(true);
+    
     const { error } = await AuthService.registerWithEmail(email, password);
+    
     setIsLoading(false);
+    isSubmitting.current = false;
 
     if (error) {
       showAlert("Registration Failed", error);

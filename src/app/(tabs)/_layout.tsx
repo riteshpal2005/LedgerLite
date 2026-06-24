@@ -3,11 +3,14 @@ import { withLayoutContext } from "expo-router";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../core/theme/ThemeContext";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useEffect } from "react";
 import { useAuth } from "../../core/firebase/AuthContext";
 import { useExpenseDatabase } from "../../core/database/useExpenseDatabase";
 import { SyncService } from "../../core/services/syncService";
 import { MigrationService } from "../../core/services/migrationService";
+
+const syncedSessions = new Set<string>();
 
 const { Navigator } = createMaterialTopTabNavigator();
 
@@ -21,7 +24,8 @@ export default function TabLayout() {
   const dbActions = useExpenseDatabase();
 
   useEffect(() => {
-    if (user) {
+    if (user && !syncedSessions.has(user.uid)) {
+      syncedSessions.add(user.uid);
       (async () => {
         // Ref: _layout-1
         await MigrationService.migrateGuestDataToUser(user.uid, dbActions);

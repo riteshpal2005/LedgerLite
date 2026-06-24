@@ -70,22 +70,41 @@ export default function AnalyticsScreen() {
 
   const { getExpensesByCategory } = useAnalyticsDatabase();
 
+  const prevDateRangeStr = useRef<string | null>(null);
+
   const loadData = useCallback(async () => {
     if (!dateRange) return;
 
-    setIsLoading(true);
+    const currentRangeStr = JSON.stringify(dateRange);
+    const isDateChange = prevDateRangeStr.current !== null && prevDateRangeStr.current !== currentRangeStr;
+    const shouldShowSkeleton = isFirstLoad.current || isDateChange;
 
-    // Ref: analytics-2
-    if (isFirstLoad.current) {
-      await new Promise((resolve) => setTimeout(resolve, 200));
-      isFirstLoad.current = false;
+    if (shouldShowSkeleton) {
+      setIsLoading(true);
+      setSpendingData([]); // Ref: analytics-1
     }
 
+    // Ref: analytics-2
     const data = await getExpensesByCategory(dateRange.start, dateRange.end);
-    setSpendingData(data);
     const total = data.reduce((sum, item) => sum + item.totalSpent, 0);
+    
+    // Ref: analytics-3
     setTotalSpent(total);
-    setIsLoading(false);
+
+    if (shouldShowSkeleton) {
+      // Ref: analytics-4
+      setTimeout(() => {
+        setSpendingData(data);
+        setIsLoading(false);
+        isFirstLoad.current = false;
+        prevDateRangeStr.current = currentRangeStr;
+      }, 600);
+    } else {
+      // Ref: analytics-5
+      setSpendingData(data);
+      setIsLoading(false);
+      prevDateRangeStr.current = currentRangeStr;
+    }
   }, [dateRange]);
 
   useFocusEffect(

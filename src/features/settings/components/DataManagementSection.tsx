@@ -169,18 +169,38 @@ export function DataManagementSection() {
     setPdfModalVisible(true);
   };
 
-  const handleConfirmPDF = async (selectedColumns: ExportColumn[]) => {
+  const handleConfirmPDF = async (
+    selectedColumns: ExportColumn[],
+    startDate: Date,
+    endDate: Date,
+    includePieChart: boolean,
+  ) => {
     if (!pdfAction) return;
     if (selectedColumns.length === 0)
       return showAlert("Error", "Please select at least one column.");
 
     const expenses = await getAllExpenses();
+    
+    // Ref: DataManagementSection-1
+    const startMs = startDate.getTime();
+    const endMs = endDate.getTime();
+    const filteredExpenses = expenses.filter(
+      (e) => e.date >= startMs && e.date <= endMs
+    );
+
+    if (filteredExpenses.length === 0) {
+      return showAlert("No Data", "There are no expenses in the selected date range.");
+    }
+
     const state = store.getState();
     const newDirUri = await exportToPDF(
-      expenses,
+      filteredExpenses,
       state.accounts.accounts,
       state.categories.categories,
       selectedColumns,
+      startDate,
+      endDate,
+      includePieChart,
       pdfAction,
       state.settings.exportDirectoryUri,
     );

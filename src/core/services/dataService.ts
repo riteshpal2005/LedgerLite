@@ -407,6 +407,9 @@ export const exportToPDF = async (
   accounts: Account[],
   categories: Category[],
   selectedColumns: ExportColumn[],
+  startDate: Date,
+  endDate: Date,
+  includePieChart: boolean,
   action: "save" | "share" = "share",
   savedDirectoryUri?: string | null,
 ): Promise<string | undefined> => {
@@ -449,20 +452,76 @@ export const exportToPDF = async (
       })
       .join("");
 
+    let pieChartHtml = "";
+    if (includePieChart) {
+      // Ref: dataService-1
+      const categoryTotals: Record<string, number> = {};
+      let totalDebit = 0;
+      expenses.forEach((e) => {
+        if (e.type === "debit") {
+          const catName = categories.find((c) => c.id === e.categoryId)?.name || "Unknown";
+          categoryTotals[catName] = (categoryTotals[catName] || 0) + e.amount;
+          totalDebit += e.amount;
+        }
+      });
+
+      if (totalDebit > 0) {
+        // Ref: dataService-2
+        const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899", "#14b8a6", "#6366f1"];
+        let cumulativePercentage = 0;
+        const gradientStops: string[] = [];
+        const legendItems: string[] = [];
+        let colorIndex = 0;
+
+        Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]).forEach(([name, amount]) => {
+          const percentage = (amount / totalDebit) * 100;
+          const color = colors[colorIndex % colors.length];
+          gradientStops.push(`${color} ${cumulativePercentage}% ${cumulativePercentage + percentage}%`);
+          legendItems.push(`
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: ${color};"></div>
+              <span>${escapeHTML(name)} (₹${amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })})</span>
+            </div>
+          `);
+          cumulativePercentage += percentage;
+          colorIndex++;
+        });
+
+        pieChartHtml = `
+          <div class="pie-chart-section">
+            <div class="pie-chart" style="background: conic-gradient(${gradientStops.join(", ")});"></div>
+            <div class="pie-legend">
+              ${legendItems.join("")}
+            </div>
+          </div>
+        `;
+      }
+    }
+
     const html = `
       <!DOCTYPE html>
       <html>
         <head>
+          <meta charset="utf-8">
           <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            h1 { text-align: center; color: #333; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-            th { background-color: #eee; }
+            body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+            h1 { text-align: center; color: #111; margin-bottom: 5px; }
+            h3 { text-align: center; color: #666; margin-top: 0; font-weight: normal; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+            th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+            th { background-color: #f4f4f5; color: #111; font-weight: bold; }
+            tr:nth-child(even) { background-color: #fafafa; }
+            .pie-chart-section { display: flex; align-items: center; justify-content: center; margin: 30px 0; gap: 40px; }
+            .pie-chart { width: 250px; height: 250px; border-radius: 50%; border: 1px solid #ddd; }
+            .pie-legend { display: flex; flex-direction: column; gap: 8px; }
+            .legend-item { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+            .legend-color { width: 16px; height: 16px; border-radius: 4px; border: 1px solid #ddd; }
           </style>
         </head>
         <body>
           <h1>LedgerLite Report</h1>
+          <h3>Report Period: ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}</h3>
+          ${pieChartHtml}
           <table>
             <thead><tr>${thHeaders}</tr></thead>
             <tbody>${trRows}</tbody>
@@ -547,7 +606,15 @@ export const exportToPDF = async (
     }
 
     // Ref: dataService-4
-    await Sharing.shareAsync(uri, { mimeType, dialogTitle: "Export PDF" });
+    if (action === "share") {
+      // Ref: dataService-3
+      const documentUri = FileSystem.documentDirectory + filename;
+      await FileSystem.copyAsync({
+        from: uri,
+        to: documentUri
+      });
+      await Sharing.shareAsync(documentUri, { mimeType, dialogTitle: "Export PDF", UTI: "com.adobe.pdf" });
+    }
     return undefined;
   } catch (error) {
     console.error("PDF Export Error: ", error);

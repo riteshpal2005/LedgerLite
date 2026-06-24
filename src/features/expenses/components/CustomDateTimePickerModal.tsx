@@ -30,13 +30,12 @@ export function CustomDateTimePickerModal({
     new Date(date.getFullYear(), date.getMonth(), 1),
   );
 
-  const [hour, setHour] = useState(date.getHours() % 12 || 12);
-  const [minute, setMinute] = useState(date.getMinutes());
   const [isPM, setIsPM] = useState(date.getHours() >= 12);
-
-  const [hourStr, setHourStr] = useState(hour.toString().padStart(2, "0"));
+  const [hourStr, setHourStr] = useState(
+    String(date.getHours() % 12 || 12).padStart(2, "0")
+  );
   const [minuteStr, setMinuteStr] = useState(
-    minute.toString().padStart(2, "0"),
+    String(date.getMinutes()).padStart(2, "0")
   );
 
   const minuteInputRef = useRef<TextInput>(null);
@@ -48,14 +47,11 @@ export function CustomDateTimePickerModal({
       setCurrentMonth(new Date(date.getFullYear(), date.getMonth(), 1));
       const h = date.getHours() % 12 || 12;
       const m = date.getMinutes();
-      setHour(h);
-      setMinute(m);
+      setHourStr(String(h).padStart(2, "0"));
+      setMinuteStr(String(m).padStart(2, "0"));
       setIsPM(date.getHours() >= 12);
     }
   }, [visible, date]);
-
-  useEffect(() => setHourStr(hour.toString().padStart(2, "0")), [hour]);
-  useEffect(() => setMinuteStr(minute.toString().padStart(2, "0")), [minute]);
 
   const daysInMonth = new Date(
     currentMonth.getFullYear(),
@@ -103,44 +99,56 @@ export function CustomDateTimePickerModal({
   };
 
   const handleTimeSave = () => {
+    let finalHour = parseInt(hourStr, 10);
+    if (isNaN(finalHour)) finalHour = 12;
+    if (finalHour > 12) finalHour = 12;
+    if (finalHour < 1) finalHour = 1;
+
+    let finalMinute = parseInt(minuteStr, 10);
+    if (isNaN(finalMinute)) finalMinute = 0;
+    if (finalMinute > 59) finalMinute = 59;
+    if (finalMinute < 0) finalMinute = 0;
+
     const newDate = new Date(date);
-    let hours24 = hour;
-    if (isPM && hour < 12) hours24 += 12;
-    if (!isPM && hour === 12) hours24 = 0;
-    newDate.setHours(hours24, minute, 0, 0);
+    let hours24 = finalHour;
+    if (isPM && finalHour < 12) hours24 += 12;
+    if (!isPM && finalHour === 12) hours24 = 0;
+    newDate.setHours(hours24, finalMinute, 0, 0);
     setDate(newDate);
     onClose();
   };
 
   const adjustHour = (delta: number) => {
-    let newHour = hour + delta;
+    let current = parseInt(hourStr, 10);
+    if (isNaN(current)) current = 12;
+    let newHour = current + delta;
     if (newHour > 12) newHour = 1;
     if (newHour < 1) newHour = 12;
-    setHour(newHour);
+    setHourStr(String(newHour).padStart(2, "0"));
   };
 
   const adjustMinute = (delta: number) => {
-    let newMinute = minute + delta;
+    let current = parseInt(minuteStr, 10);
+    if (isNaN(current)) current = 0;
+    let newMinute = current + delta;
     if (newMinute > 59) newMinute = 0;
     if (newMinute < 0) newMinute = 59;
-    setMinute(newMinute);
+    setMinuteStr(String(newMinute).padStart(2, "0"));
   };
 
   const handleHourBlur = () => {
     let val = parseInt(hourStr, 10);
-    if (isNaN(val)) val = hour;
+    if (isNaN(val)) val = 12;
     if (val > 12) val = 12;
     if (val < 1) val = 1;
-    setHour(val);
     setHourStr(val.toString().padStart(2, "0"));
   };
 
   const handleMinuteBlur = () => {
     let val = parseInt(minuteStr, 10);
-    if (isNaN(val)) val = minute;
+    if (isNaN(val)) val = 0;
     if (val > 59) val = 59;
     if (val < 0) val = 0;
-    setMinute(val);
     setMinuteStr(val.toString().padStart(2, "0"));
   };
 
@@ -266,6 +274,7 @@ export function CustomDateTimePickerModal({
                           onBlur={handleHourBlur}
                           keyboardType="number-pad"
                           returnKeyType="next"
+                          blurOnSubmit={false}
                           onSubmitEditing={() =>
                             minuteInputRef.current?.focus()
                           }

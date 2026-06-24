@@ -17,6 +17,8 @@ import { setIsGlobalSyncing } from "../store/settingsSlice";
 
 let isSyncing = false;
 let syncTimeout: NodeJS.Timeout | null = null;
+let lastSyncTime = 0;
+const SYNC_COOLDOWN_MS = 10000; // Ref: syncService-1
 
 export const SyncService = {
   async pullFromFirebase(
@@ -166,12 +168,19 @@ export const SyncService = {
     userId: string,
     dbActions: ReturnType<typeof useExpenseDatabase>,
   ) {
+    const now = Date.now();
+    if (now - lastSyncTime < SYNC_COOLDOWN_MS) {
+
+      return;
+    }
+
     store.dispatch(setIsGlobalSyncing(true));
     try {
       // Ref: syncService-3
       await this.pushToFirebase(userId, dbActions);
       // Ref: syncService-4
       await this.pullFromFirebase(userId, dbActions);
+      lastSyncTime = Date.now();
     } finally {
       store.dispatch(setIsGlobalSyncing(false));
     }

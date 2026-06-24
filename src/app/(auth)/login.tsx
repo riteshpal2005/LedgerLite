@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { Link } from "expo-router";
 import { AuthService } from "../../core/services/authService";
@@ -21,6 +21,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const isSubmitting = useRef(false);
   const { showAlert, hideAlert, alertConfig } = useAlert();
   const dispatch = useDispatch();
 
@@ -35,6 +36,8 @@ export default function LoginScreen() {
   };
 
   const handleEmailLogin = async () => {
+    if (isSubmitting.current) return;
+    
     if (!email || !password) {
       showAlert("Error", "Please enter both email and password.");
       return;
@@ -43,9 +46,14 @@ export default function LoginScreen() {
       showAlert("Error", "Please fix the email address before continuing.");
       return;
     }
+
+    isSubmitting.current = true;
     setIsLoading(true);
+    
     const { error } = await AuthService.signInWithEmail(email, password);
+    
     setIsLoading(false);
+    isSubmitting.current = false;
 
     if (error) {
       showAlert("Login Failed", error);
@@ -55,9 +63,15 @@ export default function LoginScreen() {
   };
 
   const handleGoogleLogin = async () => {
+    if (isSubmitting.current) return;
+    
+    isSubmitting.current = true;
     setIsGoogleLoading(true);
+    
     const { error } = await AuthService.signInWithGoogle();
+    
     setIsGoogleLoading(false);
+    isSubmitting.current = false;
 
     if (error) {
       showAlert("Google Sign-In Failed", error);
