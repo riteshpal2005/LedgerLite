@@ -81,7 +81,7 @@ export function UpdateChecker() {
         const contentUri = await FileSystem.getContentUriAsync(uri);
         await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
           data: contentUri,
-          flags: 1,
+          flags: 1 | 268435456, // FLAG_GRANT_READ_URI_PERMISSION | FLAG_ACTIVITY_NEW_TASK
           type: "application/vnd.android.package-archive",
         });
         setVisible(false);
@@ -98,22 +98,28 @@ export function UpdateChecker() {
   const handleUpdate = useCallback(async () => {
     if (!updateInfo?.downloadUrl) return;
 
-    const apkUri =
-      FileSystem.documentDirectory +
-      `LedgerLite-Update-${updateInfo.latestVersion}.apk`;
-
-    if (downloadStatus === "READY_TO_INSTALL") {
-      await installApk(apkUri);
-      return;
-    }
-
-    setDownloadStatus("DOWNLOADING");
-    setDownloadProgress(0);
-
     try {
+      const initialUri =
+        "content://com.android.externalstorage.documents/tree/primary%3ADownloads";
+      const permissions =
+        await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
+          initialUri,
+        );
+
+      if (!permissions.granted) {
+        return; // User cancelled permission, we can't save to Downloads
+      }
+
+      setDownloadStatus("DOWNLOADING");
+      setDownloadProgress(0);
+
+      const tempUri =
+        FileSystem.cacheDirectory +
+        `LedgerLite-Update-${updateInfo.latestVersion}.apk`;
+
       const downloadResumable = FileSystem.createDownloadResumable(
         updateInfo.downloadUrl,
-        apkUri,
+        tempUri,
         {},
         (progress) => {
           const percentage =
@@ -125,15 +131,40 @@ export function UpdateChecker() {
       const result = await downloadResumable.downloadAsync();
 
       if (result?.uri) {
+        setDownloadStatus("INSTALLING");
+
+        // Read downloaded file as base64 and write it to the Downloads folder via SAF
+        const base64 = await FileSystem.readAsStringAsync(result.uri, {
+          encoding: "base64",
+        });
+
+        const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
+          permissions.directoryUri,
+          `LedgerLite-v${updateInfo.latestVersion}.apk`,
+          "application/vnd.android.package-archive",
+        );
+
+        await FileSystem.writeAsStringAsync(safUri, base64, {
+          encoding: "base64",
+        });
+
         setDownloadStatus("READY_TO_INSTALL");
-        await installApk(result.uri);
+
+        // Use the SAF content URI directly for the installer
+        await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
+          data: safUri,
+          flags: 1 | 268435456, // FLAG_GRANT_READ_URI_PERMISSION | FLAG_ACTIVITY_NEW_TASK
+          type: "application/vnd.android.package-archive",
+        });
+
+        setVisible(false);
       }
     } catch (error) {
       console.error("Failed to download update:", error);
       setDownloadStatus("IDLE");
       Linking.openURL(updateInfo.downloadUrl);
     }
-  }, [updateInfo, downloadStatus, installApk]);
+  }, [updateInfo]);
 
   const getButtonText = useCallback(() => {
     switch (downloadStatus) {
