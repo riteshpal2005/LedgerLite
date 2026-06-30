@@ -268,7 +268,9 @@ export function DataManagementSection() {
     expensesToImport: any[],
     newlyCreatedAccounts: Account[],
   ) => {
-    const { status } = await Notifications.requestPermissionsAsync().catch(() => ({ status: "denied" }));
+    const status = await Notifications.requestPermissionsAsync()
+      .then((res) => res.status)
+      .catch(() => "denied");
     const hasPermission = status === "granted";
 
     const totalCount = expensesToImport.length;

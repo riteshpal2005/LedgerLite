@@ -18,6 +18,7 @@ import * as FileSystem from "expo-file-system/legacy";
 import { loadSettings } from "../core/store/settingsSlice";
 import { storage } from "../core/utils/storage";
 import { AuthProvider, useAuth } from "../core/firebase/AuthContext";
+import * as SplashScreen from "expo-splash-screen";
 import * as Notifications from "expo-notifications";
 import { useState } from "react";
 
@@ -26,6 +27,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: false,
     shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
