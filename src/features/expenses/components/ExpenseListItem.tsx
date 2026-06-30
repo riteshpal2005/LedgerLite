@@ -56,14 +56,18 @@ export function ExpenseListItem({
                 {item.description}
               </Text>
               {account ? (
-                <View className="ml-2 bg-white/5 px-2 py-0.5 rounded-md border border-white/10 flex-shrink-0 flex-row items-center">
-                  <Text className="text-tertiary text-xs" numberOfLines={1}>
-                    {account.name}
-                  </Text>
-                  {item.balance_after !== undefined && item.balance_after !== null && (
-                    <Text className="text-tertiary/75 text-[10px] ml-1.5 font-medium">
-                      (Bal: ₹{item.balance_after.toFixed(2)})
+                <View className="flex-row items-center ml-2">
+                  <View className="bg-white/5 px-2 py-0.5 rounded-md border border-white/10 mr-1.5 flex-shrink-1">
+                    <Text className="text-tertiary text-xs" numberOfLines={1}>
+                      {account.name}
                     </Text>
+                  </View>
+                  {item.balance_after !== undefined && item.balance_after !== null && (
+                    <View className="bg-blue-500/10 dark:bg-blue-400/10 px-2 py-0.5 rounded-md border border-blue-500/20 dark:border-blue-400/20 flex-shrink-0">
+                      <Text className="text-blue-600 dark:text-blue-400 text-[10px] font-bold" numberOfLines={1}>
+                        Bal: ₹{item.balance_after.toFixed(2)}
+                      </Text>
+                    </View>
                   )}
                 </View>
               ) : (
