@@ -173,6 +173,8 @@ const parseDateTime = (dateVal: any, timeVal: any): number => {
   let minutes = 0;
   let seconds = 0;
 
+  let activeTimeVal = timeVal;
+
   if (typeof dateVal === "number" && dateVal > 25569) {
     const datePart = Math.floor(dateVal);
     const timePart = dateVal - datePart;
@@ -193,6 +195,11 @@ const parseDateTime = (dateVal: any, timeVal: any): number => {
     }
   } else {
     const dateStr = String(dateVal).trim();
+    const timeMatch = dateStr.match(/(?:\s+|T)(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?/i);
+    if (!activeTimeVal && timeMatch) {
+      activeTimeVal = timeMatch[0].trim();
+    }
+
     const ymdMatch = dateStr.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
     const dmyMatch = dateStr.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
 
@@ -214,14 +221,14 @@ const parseDateTime = (dateVal: any, timeVal: any): number => {
     }
   }
 
-  if (timeVal) {
-    if (typeof timeVal === "number" && timeVal >= 0 && timeVal < 1) {
-      const totalSeconds = Math.round(timeVal * 86400);
+  if (activeTimeVal) {
+    if (typeof activeTimeVal === "number" && activeTimeVal >= 0 && activeTimeVal < 1) {
+      const totalSeconds = Math.round(activeTimeVal * 86400);
       hours = Math.floor(totalSeconds / 3600);
       minutes = Math.floor((totalSeconds % 3600) / 60);
       seconds = totalSeconds % 60;
     } else {
-      const parsedTime = parseTimeString(String(timeVal));
+      const parsedTime = parseTimeString(String(activeTimeVal));
       hours = parsedTime.hours;
       minutes = parsedTime.minutes;
       seconds = parsedTime.seconds;
