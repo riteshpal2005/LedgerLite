@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { View, Text, Pressable, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { CustomDateTimePickerModal } from "../../expenses/components/CustomDateTimePickerModal";
 
 export type FilterType = "day" | "week" | "month" | "current_month" | "custom";
 
@@ -220,29 +220,21 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
         </View>
       )}
 
-      {showStartPicker && (
-        <DateTimePicker
-          value={customStart}
-          mode="date"
-          display="default"
-          onChange={(event, date) => {
-            setShowStartPicker(false);
-            if (date) setCustomStart(date);
-          }}
-        />
-      )}
+      <CustomDateTimePickerModal
+        visible={showStartPicker}
+        mode="date"
+        date={customStart}
+        setDate={setCustomStart}
+        onClose={() => setShowStartPicker(false)}
+      />
 
-      {showEndPicker && (
-        <DateTimePicker
-          value={customEnd}
-          mode="date"
-          display="default"
-          onChange={(event, date) => {
-            setShowEndPicker(false);
-            if (date) setCustomEnd(date);
-          }}
-        />
-      )}
+      <CustomDateTimePickerModal
+        visible={showEndPicker}
+        mode="date"
+        date={customEnd}
+        setDate={setCustomEnd}
+        onClose={() => setShowEndPicker(false)}
+      />
     </View>
   );
 }
