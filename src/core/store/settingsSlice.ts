@@ -10,6 +10,7 @@ const settingsSlice = createSlice({
     exportDirectoryUri: null as string | null,
     hasCompletedOnboarding: false,
     isGlobalSyncing: false,
+    importProgress: 0,
   },
   reducers: {
     toggleShowIcons: (state) => {
@@ -36,6 +37,9 @@ const settingsSlice = createSlice({
     setIsGlobalSyncing: (state, action) => {
       state.isGlobalSyncing = action.payload;
     },
+    setImportProgress: (state, action) => {
+      state.importProgress = action.payload;
+    },
   },
 });
 
@@ -48,5 +52,6 @@ export const {
   setExportDirectoryUri,
   completeOnboarding,
   setIsGlobalSyncing,
+  setImportProgress,
 } = settingsSlice.actions;
 export default settingsSlice.reducer;

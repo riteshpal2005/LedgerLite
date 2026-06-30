@@ -93,6 +93,10 @@ export default function Home() {
     }, 0);
   };
 
+  const importProgress = useSelector(
+    (state: RootState) => state.settings.importProgress || 0
+  );
+
   return (
     <View className="flex-1 bg-background p-6 pt-12">
       <View className="flex-row items-center mb-6 mt-2 z-50 relative">
@@ -109,6 +113,24 @@ export default function Home() {
           setFilterAccountId={setFilterAccountId}
         />
       </View>
+      {importProgress > 0 && (
+        <View className="mb-4 bg-surface rounded-2xl p-4 border border-bordercolor">
+          <View className="flex-row justify-between items-center mb-2">
+            <Text className="text-primary font-semibold text-sm">
+              Importing Transactions...
+            </Text>
+            <Text className="text-secondary font-bold text-xs">
+              {importProgress}%
+            </Text>
+          </View>
+          <View className="h-2 w-full bg-bordercolor rounded-full overflow-hidden">
+            <View
+              className="h-full bg-blue-500 rounded-full"
+              style={{ width: `${importProgress}%` }}
+            />
+          </View>
+        </View>
+      )}
       <ExpenseList
         searchQuery={searchQuery}
         sortMode={sortMode}

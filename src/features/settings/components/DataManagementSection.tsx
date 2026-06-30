@@ -5,6 +5,7 @@ import { RootState, store } from "../../../core/store/store";
 import {
   setExportDirectoryUri,
   loadSettings,
+  setImportProgress,
 } from "../../../core/store/settingsSlice";
 import { setCategories } from "../../../core/store/categorySlice";
 import { setAccounts } from "../../../core/store/accountSlice";
@@ -22,6 +23,7 @@ import { useAuth } from "../../../core/firebase/AuthContext";
 import { ExportActionRow } from "./ExportActionRow";
 import { ImportActionRow } from "./ImportActionRow";
 import { RestoreRawJsonModal } from "./RestoreRawJsonModal";
+import * as Notifications from "expo-notifications";
 import {
   BulkAccountMappingModal,
   AccountMapping,
@@ -266,10 +268,37 @@ export function DataManagementSection() {
     expensesToImport: any[],
     newlyCreatedAccounts: Account[],
   ) => {
-    let addedCount = 0;
+    const { status } = await Notifications.requestPermissionsAsync().catch(() => ({ status: "denied" }));
+    const hasPermission = status === "granted";
+
+    const totalCount = expensesToImport.length;
+    if (totalCount === 0) {
+      triggerHaptic.light();
+      showAlert(
+        "Notice",
+        "No new transactions were found to import (all were duplicates).",
+      );
+      return;
+    }
+
+    dispatch(setImportProgress(1));
+
+    if (hasPermission) {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Importing Transactions",
+          body: `Starting import of ${totalCount} transactions...`,
+        },
+        trigger: null,
+      }).catch(console.error);
+    }
+
+    const chunkSize = 200;
+    let processedCount = 0;
+    const mappedExpenses: any[] = [];
+
     for (const expense of expensesToImport) {
       const { id, _accountName, ...expenseData } = expense;
-
       if (_accountName && !expenseData.accountId) {
         const mappedAccount = newlyCreatedAccounts.find(
           (a) => a.name === _accountName,
@@ -278,26 +307,61 @@ export function DataManagementSection() {
           expenseData.accountId = mappedAccount.id;
         }
       }
-
-      await addExpense(expenseData);
-      addedCount++;
+      mappedExpenses.push(expenseData);
     }
 
-    if (addedCount > 0) {
-      const updatedExpenses = await getAllExpenses();
-      dispatch(setExpenses(updatedExpenses));
-      triggerHaptic.success();
-      showAlert(
-        "Success",
-        `Imported ${addedCount} new transactions successfully.`,
-      );
-    } else {
-      triggerHaptic.light();
-      showAlert(
-        "Notice",
-        "No new transactions were found to import (all were duplicates).",
-      );
-    }
+    const processNextChunk = async (index: number) => {
+      const chunk = mappedExpenses.slice(index, index + chunkSize);
+      if (chunk.length > 0) {
+        await dbActions.addExpensesBatch(chunk);
+        processedCount += chunk.length;
+
+        const progressPercent = Math.min(
+          Math.round((processedCount / totalCount) * 100),
+          99
+        );
+        dispatch(setImportProgress(progressPercent));
+
+        if (hasPermission && (progressPercent === 25 || progressPercent === 50 || progressPercent === 75)) {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: "Importing Transactions",
+              body: `${processedCount} / ${totalCount} transactions imported (${progressPercent}%)...`,
+            },
+            trigger: null,
+          }).catch(console.error);
+        }
+
+        setTimeout(() => processNextChunk(index + chunkSize), 50);
+      } else {
+        dispatch(setImportProgress(0));
+
+        const updatedExpenses = await getAllExpenses();
+        dispatch(setExpenses(updatedExpenses));
+
+        const updatedAccounts = await getAllAccounts();
+        dispatch(setAccounts(updatedAccounts));
+
+        triggerHaptic.success();
+
+        if (hasPermission) {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: "Import Complete!",
+              body: `Successfully imported ${totalCount} transactions.`,
+            },
+            trigger: null,
+          }).catch(console.error);
+        }
+
+        showAlert(
+          "Success",
+          `Imported ${totalCount} new transactions successfully.`,
+        );
+      }
+    };
+
+    processNextChunk(0);
   };
 
   const processRestoration = async (importedData: any) => {

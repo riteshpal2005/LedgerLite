@@ -49,6 +49,7 @@ export default function ExpenseList({
 
   const [expenseToAssign, setExpenseToAssign] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [displayLimit, setDisplayLimit] = useState(20);
 
   const dispatch = useDispatch();
 
@@ -138,7 +139,7 @@ export default function ExpenseList({
     <View className="flex-1">
       <Heading className="text-xl mb-4">Recent Expenses</Heading>
 
-      {isLoading || isGlobalSyncing ? (
+      {isLoading ? (
         <View className="flex-1">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <SkeletonExpenseRow key={i} />
@@ -147,8 +148,10 @@ export default function ExpenseList({
       ) : (
         <Animated.View entering={FadeIn.duration(400)} className="flex-1">
           <FlashList
-            data={sortedExpenses}
+            data={sortedExpenses.slice(0, displayLimit)}
             showsVerticalScrollIndicator={false}
+            onEndReached={() => setDisplayLimit((prev) => prev + 20)}
+            onEndReachedThreshold={0.5}
             ListEmptyComponent={
               <Text className="text-tertiary text-center mt-10">
                 No expenses yet. Add one above!

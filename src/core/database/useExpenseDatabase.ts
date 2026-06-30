@@ -145,6 +145,58 @@ export function useExpenseDatabase() {
     return id;
   };
 
+  const addExpensesBatch = async (
+    expensesList: Omit<Expense, "id" | "sync_status" | "updated_at">[]
+  ) => {
+    await db.withTransactionAsync(async () => {
+      const affectedAccounts = new Set<string>();
+      const accountMinDates: Record<string, number> = {};
+      const accountMinRowids: Record<string, number> = {};
+
+      for (const expense of expensesList) {
+        const id = Crypto.randomUUID();
+        const updated_at = Date.now();
+        await db.runAsync(
+          "INSERT INTO expenses (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+          [
+            id,
+            expense.amount,
+            expense.description,
+            expense.date,
+            expense.categoryId,
+            expense.type,
+            expense.merchant || null,
+            expense.accountId || null,
+            null,
+            "pending",
+            updated_at,
+          ]
+        );
+
+        if (expense.accountId) {
+          affectedAccounts.add(expense.accountId);
+          const currentMinDate = accountMinDates[expense.accountId] ?? Infinity;
+          if (expense.date < currentMinDate) {
+            accountMinDates[expense.accountId] = expense.date;
+            const newRow = await db.getFirstAsync<{ rowid: number }>(
+              "SELECT rowid FROM expenses WHERE id = ?",
+              [id]
+            );
+            if (newRow) {
+              accountMinRowids[expense.accountId] = newRow.rowid;
+            }
+          }
+        }
+      }
+
+      for (const accountId of affectedAccounts) {
+        const minDate = accountMinDates[accountId];
+        const minRowid = accountMinRowids[accountId] || 0;
+        await propagateForward(accountId, minDate, minRowid);
+      }
+    });
+  };
+
   const getAllAccounts = async () => {
     const result = await db.getAllAsync<Account>("SELECT * FROM accounts");
     return result;
@@ -380,6 +432,7 @@ export function useExpenseDatabase() {
 
   return {
     addExpense,
+    addExpensesBatch,
     getAllExpenses,
     getTotalSpent,
     getAllCategories,
