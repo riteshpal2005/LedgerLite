@@ -27,6 +27,7 @@ import { Expense } from "../../../core/database/schema";
 import {
   updateExpenseAction,
   deleteExpenseAction,
+  setExpenses,
 } from "../../../core/store/expenseSlice";
 import { DeleteConfirmationModal } from "../../../shared/components/DeleteConfirmationModal";
 import { useTheme } from "../../../core/theme/ThemeContext";
@@ -63,6 +64,7 @@ export function AddExpenseSheet({
     deleteExpense,
     adjustAccountBalance,
     getAllAccounts,
+    getAllExpenses,
   } = dbActions;
   const categories = useSelector(
     (state: RootState) => state.categories.categories,
@@ -157,34 +159,21 @@ export function AddExpenseSheet({
 
     if (initialExpense) {
       await updateExpenseFull(initialExpense.id, expenseData);
-      dispatch(
-        updateExpenseAction({
-          ...expenseData,
-          id: initialExpense.id,
-          sync_status: "pending",
-          updated_at: Date.now(),
-        }),
-      );
     } else {
-      const insertedId = await addExpense(expenseData);
-      dispatch(
-        addExpenseToRedux({
-          ...expenseData,
-          id: insertedId,
-          sync_status: "pending",
-          updated_at: Date.now(),
-        }),
-      );
+      await addExpense(expenseData);
 
       if (isBackdatedMode && selectedAccount) {
         const amountAdjustment =
           type === "debit" ? expenseData.amount : -expenseData.amount;
         await adjustAccountBalance(selectedAccount.id, amountAdjustment);
-
-        const updatedAccounts = await getAllAccounts();
-        dispatch(setAccounts(updatedAccounts));
       }
     }
+
+    const updatedExpenses = await getAllExpenses();
+    dispatch(setExpenses(updatedExpenses));
+
+    const updatedAccounts = await getAllAccounts();
+    dispatch(setAccounts(updatedAccounts));
 
     if (user) {
       SyncService.schedulePush(user.uid, dbActions);
@@ -196,7 +185,12 @@ export function AddExpenseSheet({
   const handleDelete = async () => {
     if (!initialExpense) return;
     await deleteExpense(initialExpense.id);
-    dispatch(deleteExpenseAction(initialExpense.id));
+
+    const updatedExpenses = await getAllExpenses();
+    dispatch(setExpenses(updatedExpenses));
+
+    const updatedAccounts = await getAllAccounts();
+    dispatch(setAccounts(updatedAccounts));
 
     if (user) {
       SyncService.schedulePush(user.uid, dbActions);

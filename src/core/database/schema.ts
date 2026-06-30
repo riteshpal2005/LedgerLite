@@ -13,6 +13,7 @@ export interface Expense {
   categoryId: string;
   merchant?: string;
   accountId?: string;
+  balance_after?: number;
   sync_status: SyncStatus;
   updated_at: number;
 }
@@ -68,6 +69,7 @@ export const CREATE_EXPENSES_TABLE = `
     type TEXT NOT NULL,
     merchant TEXT,
     accountId TEXT,
+    balance_after REAL,
     sync_status TEXT DEFAULT 'pending',
     updated_at INTEGER
   );
@@ -88,6 +90,42 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
   await db.execAsync(CREATE_EXPENSES_DATE_INDEX);
   await db.execAsync(CREATE_EXPENSES_CATEGORY_INDEX);
+
+  try {
+    await db.execAsync("ALTER TABLE expenses ADD COLUMN balance_after REAL;");
+  } catch (e) {
+  }
+
+  const needsCalculation = await db.getFirstAsync<{ count: number }>(
+    "SELECT COUNT(*) as count FROM expenses WHERE balance_after IS NULL AND accountId IS NOT NULL AND sync_status != 'deleted'"
+  );
+
+  if (needsCalculation && needsCalculation.count > 0) {
+    const accounts = await db.getAllAsync<{ id: string; balance: number }>(
+      "SELECT id, balance FROM accounts"
+    );
+
+    for (const account of accounts) {
+      const accountExpenses = await db.getAllAsync<{ id: string; amount: number; type: string }>(
+        "SELECT id, amount, type FROM expenses WHERE accountId = ? AND sync_status != 'deleted' ORDER BY date ASC, id ASC",
+        [account.id]
+      );
+
+      let runningBalance = account.balance;
+      for (const expense of accountExpenses) {
+        if (expense.type === "credit") {
+          runningBalance += expense.amount;
+        } else if (expense.type === "debit") {
+          runningBalance -= expense.amount;
+        }
+
+        await db.runAsync(
+          "UPDATE expenses SET balance_after = ?, sync_status = ?, updated_at = ? WHERE id = ?",
+          [runningBalance, "pending", Date.now(), expense.id]
+        );
+      }
+    }
+  }
 
   const categoriesCount = await db.getFirstAsync<{ count: number }>(
     "SELECT COUNT(*) as count FROM categories",

@@ -56,10 +56,15 @@ export function ExpenseListItem({
                 {item.description}
               </Text>
               {account ? (
-                <View className="ml-2 bg-white/5 px-2 py-0.5 rounded-md border border-white/10 flex-shrink-0">
+                <View className="ml-2 bg-white/5 px-2 py-0.5 rounded-md border border-white/10 flex-shrink-0 flex-row items-center">
                   <Text className="text-tertiary text-xs" numberOfLines={1}>
                     {account.name}
                   </Text>
+                  {item.balance_after !== undefined && item.balance_after !== null && (
+                    <Text className="text-tertiary/75 text-[10px] ml-1.5 font-medium">
+                      (Bal: ₹{item.balance_after.toFixed(2)})
+                    </Text>
+                  )}
                 </View>
               ) : (
                 <Pressable
@@ -81,13 +86,18 @@ export function ExpenseListItem({
             {isCredit ? "+" : "-"}₹{item.amount.toFixed(2)}
           </Text>
           <Text className="text-tertiary text-xs mt-1">
-            {new Date(item.date).toLocaleTimeString("en-US", {
-              month: "short",
-              day: "numeric",
-              hour12: true,
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            {(() => {
+              const d = new Date(item.date);
+              let hours = d.getHours();
+              const minutes = String(d.getMinutes()).padStart(2, "0");
+              const ampm = hours >= 12 ? "PM" : "AM";
+              hours = hours % 12;
+              hours = hours ? hours : 12;
+              const day = d.getDate();
+              const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+              const monthStr = months[d.getMonth()];
+              return `${hours}:${minutes} ${ampm}, ${day} ${monthStr}`;
+            })()}
           </Text>
         </View>
       </Pressable>

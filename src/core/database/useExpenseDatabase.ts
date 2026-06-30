@@ -5,6 +5,35 @@ import { Expense, Category, Account } from "./schema";
 export function useExpenseDatabase() {
   const db = useSQLiteContext();
 
+  const recalculateBalancesForAccount = async (accountId: string) => {
+    const account = await db.getFirstAsync<{ balance: number }>(
+      "SELECT balance FROM accounts WHERE id = ?",
+      [accountId]
+    );
+    if (!account) return;
+
+    const accountExpenses = await db.getAllAsync<{ id: string; amount: number; type: string; balance_after?: number }>(
+      "SELECT id, amount, type, balance_after FROM expenses WHERE accountId = ? AND sync_status != 'deleted' ORDER BY date ASC, id ASC",
+      [accountId]
+    );
+
+    let runningBalance = account.balance;
+    for (const expense of accountExpenses) {
+      if (expense.type === "credit") {
+        runningBalance += expense.amount;
+      } else if (expense.type === "debit") {
+        runningBalance -= expense.amount;
+      }
+
+      if (expense.balance_after !== runningBalance) {
+        await db.runAsync(
+          "UPDATE expenses SET balance_after = ?, sync_status = ?, updated_at = ? WHERE id = ?",
+          [runningBalance, "pending", Date.now(), expense.id]
+        );
+      }
+    }
+  };
+
   const getAllExpenses = async () => {
     const result = await db.getAllAsync<Expense>(
       "SELECT * FROM expenses ORDER BY date DESC",
@@ -67,7 +96,7 @@ export function useExpenseDatabase() {
     const id = Crypto.randomUUID();
     const updated_at = Date.now();
     await db.runAsync(
-      "INSERT INTO expenses (id, amount, description, date, categoryId, type, merchant, accountId, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO expenses (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         id,
         expense.amount,
@@ -77,10 +106,14 @@ export function useExpenseDatabase() {
         expense.type,
         expense.merchant || null,
         expense.accountId || null,
+        null,
         "pending",
         updated_at,
       ],
     );
+    if (expense.accountId) {
+      await recalculateBalancesForAccount(expense.accountId);
+    }
     return id;
   };
 
@@ -130,19 +163,34 @@ export function useExpenseDatabase() {
       "UPDATE accounts SET balance = balance + ?, sync_status = ?, updated_at = ? WHERE id = ?",
       [amount, "pending", Date.now(), accountId],
     );
+    await recalculateBalancesForAccount(accountId);
   };
 
   const updateExpenseAccount = async (expenseId: string, accountId: string) => {
+    const oldExpense = await db.getFirstAsync<{ accountId: string }>(
+      "SELECT accountId FROM expenses WHERE id = ?",
+      [expenseId]
+    );
     await db.runAsync(
       "UPDATE expenses SET accountId = ?, sync_status = ?, updated_at = ? WHERE id = ?",
       [accountId, "pending", Date.now(), expenseId],
     );
+    if (accountId) {
+      await recalculateBalancesForAccount(accountId);
+    }
+    if (oldExpense?.accountId && oldExpense.accountId !== accountId) {
+      await recalculateBalancesForAccount(oldExpense.accountId);
+    }
   };
 
   const updateExpenseFull = async (
     id: string,
     expense: Omit<Expense, "id" | "sync_status" | "updated_at">,
   ) => {
+    const oldExpense = await db.getFirstAsync<{ accountId: string }>(
+      "SELECT accountId FROM expenses WHERE id = ?",
+      [id]
+    );
     await db.runAsync(
       "UPDATE expenses SET amount = ?, description = ?, date = ?, categoryId = ?, type = ?, merchant = ?, accountId = ?, sync_status = ?, updated_at = ? WHERE id = ?",
       [
@@ -158,11 +206,17 @@ export function useExpenseDatabase() {
         id,
       ],
     );
+    if (expense.accountId) {
+      await recalculateBalancesForAccount(expense.accountId);
+    }
+    if (oldExpense?.accountId && oldExpense.accountId !== expense.accountId) {
+      await recalculateBalancesForAccount(oldExpense.accountId);
+    }
   };
 
   const restoreExpense = async (expense: Expense) => {
     await db.runAsync(
-      "INSERT OR REPLACE INTO expenses (id, amount, description, date, categoryId, type, merchant, accountId, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT OR REPLACE INTO expenses (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         expense.id,
         expense.amount,
@@ -172,6 +226,7 @@ export function useExpenseDatabase() {
         expense.type,
         expense.merchant || null,
         expense.accountId || null,
+        expense.balance_after || null,
         expense.sync_status,
         expense.updated_at,
       ],
@@ -203,10 +258,17 @@ export function useExpenseDatabase() {
   };
 
   const deleteExpense = async (id: string) => {
+    const expense = await db.getFirstAsync<{ accountId: string }>(
+      "SELECT accountId FROM expenses WHERE id = ?",
+      [id]
+    );
     await db.runAsync(
       "UPDATE expenses SET sync_status = ?, updated_at = ? WHERE id = ?",
       ["deleted", Date.now(), id],
     );
+    if (expense?.accountId) {
+      await recalculateBalancesForAccount(expense.accountId);
+    }
   };
 
   const deleteAccount = async (id: string) => {
@@ -221,6 +283,7 @@ export function useExpenseDatabase() {
       "UPDATE expenses SET sync_status = ?, updated_at = ? WHERE accountId = ?",
       ["deleted", Date.now(), accountId],
     );
+    await recalculateBalancesForAccount(accountId);
   };
 
   const reassignExpenses = async (
@@ -231,6 +294,8 @@ export function useExpenseDatabase() {
       "UPDATE expenses SET accountId = ?, sync_status = ?, updated_at = ? WHERE accountId = ?",
       [newAccountId, "pending", Date.now(), oldAccountId],
     );
+    await recalculateBalancesForAccount(oldAccountId);
+    await recalculateBalancesForAccount(newAccountId);
   };
 
   const deleteCategory = async (id: string) => {
