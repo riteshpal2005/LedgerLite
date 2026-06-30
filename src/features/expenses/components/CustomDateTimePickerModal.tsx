@@ -38,7 +38,10 @@ export function CustomDateTimePickerModal({
     String(date.getMinutes()).padStart(2, "0")
   );
 
+  const hourInputRef = useRef<TextInput>(null);
   const minuteInputRef = useRef<TextInput>(null);
+  const [hourSelection, setHourSelection] = useState<{ start: number; end: number } | undefined>(undefined);
+  const [minuteSelection, setMinuteSelection] = useState<{ start: number; end: number } | undefined>(undefined);
 
   const { bottomSheetBackgroundColor, bottomSheetBorderColor } = useTheme();
 
@@ -265,12 +268,25 @@ export function CustomDateTimePickerModal({
                       >
                         <Ionicons name="chevron-up" size={28} color="#3b82f6" />
                       </Pressable>
-                      <View className="bg-background w-24 h-20 justify-center items-center rounded-2xl border border-bordercolor">
+                      <Pressable
+                        onPress={() => hourInputRef.current?.focus()}
+                        className="bg-background w-24 h-20 justify-center items-center rounded-2xl border border-bordercolor"
+                      >
                         <TextInput
+                          ref={hourInputRef}
                           value={hourStr}
-                          onChangeText={(t) =>
-                            setHourStr(t.replace(/[^0-9]/g, ""))
-                          }
+                          onChangeText={(t) => {
+                            const clean = t.replace(/[^0-9]/g, "");
+                            setHourStr(clean);
+                            if (clean.length === 2 || (clean.length === 1 && parseInt(clean, 10) >= 2)) {
+                              minuteInputRef.current?.focus();
+                            }
+                          }}
+                          onFocus={() => {
+                            setHourSelection({ start: hourStr.length, end: hourStr.length });
+                            setTimeout(() => setHourSelection(undefined), 100);
+                          }}
+                          selection={hourSelection}
                           onBlur={handleHourBlur}
                           keyboardType="number-pad"
                           returnKeyType="next"
@@ -281,7 +297,7 @@ export function CustomDateTimePickerModal({
                           maxLength={2}
                           className="text-primary text-4xl font-bold text-center p-0 m-0 w-full"
                         />
-                      </View>
+                      </Pressable>
                       <Pressable
                         onPress={() => adjustHour(-1)}
                         className="p-3 bg-white/5 rounded-xl mt-3 border border-bordercolor"
@@ -305,13 +321,26 @@ export function CustomDateTimePickerModal({
                       >
                         <Ionicons name="chevron-up" size={28} color="#3b82f6" />
                       </Pressable>
-                      <View className="bg-background w-24 h-20 justify-center items-center rounded-2xl border border-bordercolor">
+                      <Pressable
+                        onPress={() => minuteInputRef.current?.focus()}
+                        className="bg-background w-24 h-20 justify-center items-center rounded-2xl border border-bordercolor"
+                      >
                         <TextInput
                           ref={minuteInputRef}
                           value={minuteStr}
                           onChangeText={(t) =>
                             setMinuteStr(t.replace(/[^0-9]/g, ""))
                           }
+                          onFocus={() => {
+                            setMinuteSelection({ start: minuteStr.length, end: minuteStr.length });
+                            setTimeout(() => setMinuteSelection(undefined), 100);
+                          }}
+                          selection={minuteSelection}
+                          onKeyPress={({ nativeEvent }) => {
+                            if (nativeEvent.key === "Backspace" && (minuteStr === "" || minuteStr === "00")) {
+                              hourInputRef.current?.focus();
+                            }
+                          }}
                           onBlur={handleMinuteBlur}
                           keyboardType="number-pad"
                           returnKeyType="done"
@@ -319,7 +348,7 @@ export function CustomDateTimePickerModal({
                           maxLength={2}
                           className="text-primary text-4xl font-bold text-center p-0 m-0 w-full"
                         />
-                      </View>
+                      </Pressable>
                       <Pressable
                         onPress={() => adjustMinute(-1)}
                         className="p-3 bg-white/5 rounded-xl mt-3 border border-bordercolor"
