@@ -150,7 +150,11 @@ export default function ExpenseList({
           <FlashList
             data={sortedExpenses.slice(0, displayLimit)}
             showsVerticalScrollIndicator={false}
-            onEndReached={() => setDisplayLimit((prev) => prev + 20)}
+            onEndReached={() => {
+              if (displayLimit < sortedExpenses.length) {
+                setDisplayLimit((prev) => prev + 20);
+              }
+            }}
             onEndReachedThreshold={0.5}
             ListEmptyComponent={
               <Text className="text-tertiary text-center mt-10">
