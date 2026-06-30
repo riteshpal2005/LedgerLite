@@ -4,11 +4,17 @@ import {
   signOut,
 } from "firebase/auth";
 import { auth } from "../firebase/config";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import Constants, { ExecutionEnvironment } from "expo-constants";
 
-GoogleSignin.configure({
-  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-});
+const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+
+let GoogleSignin: any;
+if (!isExpoGo) {
+  GoogleSignin = require("@react-native-google-signin/google-signin").GoogleSignin;
+  GoogleSignin.configure({
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+  });
+}
 
 export const AuthService = {
   mapAuthError(error: any) {
@@ -58,15 +64,27 @@ export const AuthService = {
   async logout() {
     try {
       await signOut(auth);
-      try {
-        await GoogleSignin.signOut();
-      } catch (e) {}
+      if (!isExpoGo && GoogleSignin) {
+        try {
+          await GoogleSignin.signOut();
+        } catch (e) {}
+      }
       return { error: null };
     } catch (error: any) {
       return { error: this.mapAuthError(error) };
     }
   },
   async signInWithGoogle() {
+    if (isExpoGo) {
+      try {
+        const { signInAnonymously } = await import("firebase/auth");
+        const userCredential = await signInAnonymously(auth);
+        return { user: userCredential.user, error: null };
+      } catch (error: any) {
+        return { user: null, error: error.message };
+      }
+    }
+
     try {
       await GoogleSignin.hasPlayServices();
       const signInResult = await GoogleSignin.signIn();
