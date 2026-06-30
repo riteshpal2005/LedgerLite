@@ -23,7 +23,7 @@ import { useAuth } from "../../../core/firebase/AuthContext";
 import { ExportActionRow } from "./ExportActionRow";
 import { ImportActionRow } from "./ImportActionRow";
 import { RestoreRawJsonModal } from "./RestoreRawJsonModal";
-import * as Notifications from "expo-notifications";
+import { isExpoGo } from "../../../core/utils/storage";
 import {
   BulkAccountMappingModal,
   AccountMapping,
@@ -268,10 +268,20 @@ export function DataManagementSection() {
     expensesToImport: any[],
     newlyCreatedAccounts: Account[],
   ) => {
-    const status = await Notifications.requestPermissionsAsync()
-      .then((res: any) => res.status)
-      .catch(() => "denied");
-    const hasPermission = status === "granted";
+    let hasPermission = false;
+    let Notifications: any = null;
+
+    if (!isExpoGo) {
+      try {
+        Notifications = require("expo-notifications");
+        const status = await Notifications.requestPermissionsAsync()
+          .then((res: any) => res.status)
+          .catch(() => "denied");
+        hasPermission = status === "granted";
+      } catch (e) {
+        console.error("Notifications initialization error: ", e);
+      }
+    }
 
     const totalCount = expensesToImport.length;
     if (totalCount === 0) {
@@ -285,7 +295,7 @@ export function DataManagementSection() {
 
     dispatch(setImportProgress(1));
 
-    if (hasPermission) {
+    if (hasPermission && Notifications) {
       await Notifications.scheduleNotificationAsync({
         content: {
           title: "Importing Transactions",
@@ -324,7 +334,7 @@ export function DataManagementSection() {
         );
         dispatch(setImportProgress(progressPercent));
 
-        if (hasPermission && (progressPercent === 25 || progressPercent === 50 || progressPercent === 75)) {
+        if (hasPermission && Notifications && (progressPercent === 25 || progressPercent === 50 || progressPercent === 75)) {
           await Notifications.scheduleNotificationAsync({
             content: {
               title: "Importing Transactions",
@@ -346,7 +356,7 @@ export function DataManagementSection() {
 
         triggerHaptic.success();
 
-        if (hasPermission) {
+        if (hasPermission && Notifications) {
           await Notifications.scheduleNotificationAsync({
             content: {
               title: "Import Complete!",

@@ -19,18 +19,23 @@ import { loadSettings } from "../core/store/settingsSlice";
 import { storage } from "../core/utils/storage";
 import { AuthProvider, useAuth } from "../core/firebase/AuthContext";
 import * as SplashScreen from "expo-splash-screen";
-import * as Notifications from "expo-notifications";
 import { useState } from "react";
+import Constants, { ExecutionEnvironment } from "expo-constants";
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+
+if (!isExpoGo) {
+  const Notifications = require("expo-notifications");
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+}
 
 SplashScreen.preventAutoHideAsync();
 import { UpdateChecker } from "../shared/components/UpdateChecker";
