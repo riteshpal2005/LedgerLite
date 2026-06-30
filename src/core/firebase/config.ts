@@ -2,7 +2,6 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 // @ts-ignore
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -14,10 +13,24 @@ const firebaseConfig = {
   measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
+import { storage } from "../utils/storage";
+
+const storageAdapter = {
+  getItem: async (key: string) => {
+    return await storage.getItem(key);
+  },
+  setItem: async (key: string, value: string) => {
+    await storage.setItem(key, value);
+  },
+  removeItem: async (key: string) => {
+    await storage.removeItem(key);
+  },
+};
+
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),
+  persistence: getReactNativePersistence(storageAdapter),
 });
 
 const db = getFirestore(app);

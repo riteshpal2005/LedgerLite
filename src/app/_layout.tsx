@@ -16,6 +16,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useEffect } from "react";
 import * as FileSystem from "expo-file-system/legacy";
 import { loadSettings } from "../core/store/settingsSlice";
+import { storage } from "../core/utils/storage";
 import { AuthProvider, useAuth } from "../core/firebase/AuthContext";
 import * as SplashScreen from "expo-splash-screen";
 import { useState } from "react";
@@ -82,27 +83,29 @@ export default function RootLayout() {
   const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
 
   useEffect(() => {
-    const fileUri = FileSystem.documentDirectory + "ledgerLite_settings.json";
-    FileSystem.getInfoAsync(fileUri)
-      .then((info) => {
-        if (info.exists) {
-          FileSystem.readAsStringAsync(fileUri)
-            .then((data) => {
-              store.dispatch(loadSettings(JSON.parse(data)));
-              setIsSettingsLoaded(true);
-            })
-            .catch((e) => {
-              console.error(e);
-              setIsSettingsLoaded(true);
-            });
+    const loadAppPref = async () => {
+      try {
+        const fileUri = FileSystem.documentDirectory + "ledgerLite_settings.json";
+        const fileInfo = await FileSystem.getInfoAsync(fileUri);
+        if (fileInfo.exists) {
+          const fileData = await FileSystem.readAsStringAsync(fileUri);
+          const parsed = JSON.parse(fileData);
+          await storage.setItem("ledgerLite_settings", fileData);
+          store.dispatch(loadSettings(parsed));
+          await FileSystem.deleteAsync(fileUri).catch(console.warn);
         } else {
-          setIsSettingsLoaded(true);
+          const data = await storage.getItem("ledgerLite_settings");
+          if (data) {
+            store.dispatch(loadSettings(JSON.parse(data)));
+          }
         }
-      })
-      .catch((e) => {
+      } catch (e) {
         console.error(e);
+      } finally {
         setIsSettingsLoaded(true);
-      });
+      }
+    };
+    loadAppPref();
   }, []);
 
   if (!isSettingsLoaded) return null;
