@@ -269,7 +269,7 @@ export function DataManagementSection() {
     newlyCreatedAccounts: Account[],
   ) => {
     const status = await Notifications.requestPermissionsAsync()
-      .then((res) => res.status)
+      .then((res: any) => res.status)
       .catch(() => "denied");
     const hasPermission = status === "granted";
 
