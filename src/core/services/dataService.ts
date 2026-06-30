@@ -143,6 +143,94 @@ export const exportData = async (
   }
 };
 
+const parseTimeString = (timeStr: string) => {
+  let hours = 0;
+  let minutes = 0;
+  let seconds = 0;
+
+  const timeParts = timeStr.trim().match(
+    /^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?/i
+  );
+  if (timeParts) {
+    hours = parseInt(timeParts[1]);
+    minutes = parseInt(timeParts[2]);
+    seconds = timeParts[3] ? parseInt(timeParts[3]) : 0;
+    const ampm = timeParts[4] ? timeParts[4].toUpperCase() : "";
+    if (ampm === "PM" && hours < 12) hours += 12;
+    if (ampm === "AM" && hours === 12) hours = 0;
+  }
+
+  return { hours, minutes, seconds };
+};
+
+const parseDateTime = (dateVal: any, timeVal: any): number => {
+  if (!dateVal) return Date.now();
+
+  let year = new Date().getFullYear();
+  let month = new Date().getMonth();
+  let day = new Date().getDate();
+  let hours = 0;
+  let minutes = 0;
+  let seconds = 0;
+
+  if (typeof dateVal === "number" && dateVal > 25569) {
+    const datePart = Math.floor(dateVal);
+    const timePart = dateVal - datePart;
+
+    const dateObj = new Date((datePart - 25569) * 86400 * 1000);
+    const timezoneOffset = dateObj.getTimezoneOffset() * 60 * 1000;
+    const localDate = new Date(dateObj.getTime() + timezoneOffset);
+
+    year = localDate.getFullYear();
+    month = localDate.getMonth();
+    day = localDate.getDate();
+
+    if (timePart > 0) {
+      const totalSeconds = Math.round(timePart * 86400);
+      hours = Math.floor(totalSeconds / 3600);
+      minutes = Math.floor((totalSeconds % 3600) / 60);
+      seconds = totalSeconds % 60;
+    }
+  } else {
+    const dateStr = String(dateVal).trim();
+    const ymdMatch = dateStr.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+    const dmyMatch = dateStr.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+
+    if (ymdMatch) {
+      year = parseInt(ymdMatch[1]);
+      month = parseInt(ymdMatch[2]) - 1;
+      day = parseInt(ymdMatch[3]);
+    } else if (dmyMatch) {
+      day = parseInt(dmyMatch[1]);
+      month = parseInt(dmyMatch[2]) - 1;
+      year = parseInt(dmyMatch[3]);
+    } else {
+      const parsed = new Date(dateStr);
+      if (!isNaN(parsed.getTime())) {
+        year = parsed.getFullYear();
+        month = parsed.getMonth();
+        day = parsed.getDate();
+      }
+    }
+  }
+
+  if (timeVal) {
+    if (typeof timeVal === "number" && timeVal >= 0 && timeVal < 1) {
+      const totalSeconds = Math.round(timeVal * 86400);
+      hours = Math.floor(totalSeconds / 3600);
+      minutes = Math.floor((totalSeconds % 3600) / 60);
+      seconds = totalSeconds % 60;
+    } else {
+      const parsedTime = parseTimeString(String(timeVal));
+      hours = parsedTime.hours;
+      minutes = parsedTime.minutes;
+      seconds = parsedTime.seconds;
+    }
+  }
+
+  return new Date(year, month, day, hours, minutes, seconds).getTime();
+};
+
 export const importData = async (
   categories: Category[],
   accounts: Account[],
@@ -206,45 +294,7 @@ export const importData = async (
       if (row._RawDateUnix) {
         parsedDate = parseInt(row._RawDateUnix);
       } else {
-        const dateStr = `${row.Date} ${row.Time}`;
-        const dateObj = new Date(dateStr);
-        if (!isNaN(dateObj.getTime())) {
-          parsedDate = dateObj.getTime();
-        } else if (row.Date) {
-          const dateParts = String(row.Date).split(/[-/]/);
-          if (dateParts.length === 3) {
-            const day = parseInt(dateParts[0]);
-            const month = parseInt(dateParts[1]) - 1;
-            let year = parseInt(dateParts[2]);
-            if (year < 100) year += 2000;
-
-            let hours = 0;
-            let minutes = 0;
-            let seconds = 0;
-            if (row.Time) {
-              const timeParts = String(row.Time).match(
-                /(\d+):(\d+)(?::(\d+))?\s*(AM|PM)?/i,
-              );
-              if (timeParts) {
-                hours = parseInt(timeParts[1]);
-                minutes = parseInt(timeParts[2]);
-                seconds = timeParts[3] ? parseInt(timeParts[3]) : 0;
-                const ampm = timeParts[4] ? timeParts[4].toUpperCase() : "";
-                if (ampm === "PM" && hours < 12) hours += 12;
-                if (ampm === "AM" && hours === 12) hours = 0;
-              }
-            }
-            const fallbackDate = new Date(
-              year,
-              month,
-              day,
-              hours,
-              minutes,
-              seconds,
-            ).getTime();
-            if (!isNaN(fallbackDate)) parsedDate = fallbackDate;
-          }
-        }
+        parsedDate = parseDateTime(row.Date, row.Time);
       }
       const type =
         row.Type === "Income" || row.Type === "credit" ? "credit" : "debit";
