@@ -91,23 +91,24 @@ export async function initializeDatabase(db: SQLiteDatabase) {
   await db.execAsync(CREATE_EXPENSES_DATE_INDEX);
   await db.execAsync(CREATE_EXPENSES_CATEGORY_INDEX);
 
-  try {
-    await db.execAsync("ALTER TABLE expenses ADD COLUMN balance_after REAL;");
-  } catch (e) {
-  }
-
-  const needsCalculation = await db.getFirstAsync<{ count: number }>(
-    "SELECT COUNT(*) as count FROM expenses WHERE balance_after IS NULL AND accountId IS NOT NULL AND sync_status != 'deleted'"
+  const versionResult = await db.getFirstAsync<{ user_version: number }>(
+    "PRAGMA user_version"
   );
+  const version = versionResult?.user_version || 0;
 
-  if (needsCalculation && needsCalculation.count > 0) {
+  if (version < 2) {
+    try {
+      await db.execAsync("ALTER TABLE expenses ADD COLUMN balance_after REAL;");
+    } catch (e) {
+    }
+
     const accounts = await db.getAllAsync<{ id: string; balance: number }>(
       "SELECT id, balance FROM accounts"
     );
 
     for (const account of accounts) {
       const accountExpenses = await db.getAllAsync<{ id: string; amount: number; type: string }>(
-        "SELECT id, amount, type FROM expenses WHERE accountId = ? AND sync_status != 'deleted' ORDER BY date ASC, id ASC",
+        "SELECT id, amount, type FROM expenses WHERE accountId = ? AND sync_status != 'deleted' ORDER BY date ASC, rowid ASC",
         [account.id]
       );
 
@@ -125,6 +126,8 @@ export async function initializeDatabase(db: SQLiteDatabase) {
         );
       }
     }
+
+    await db.execAsync("PRAGMA user_version = 2;");
   }
 
   const categoriesCount = await db.getFirstAsync<{ count: number }>(
