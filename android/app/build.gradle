@@ -93,7 +93,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "2.1.0"
+        versionName "2.0.1"
 
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
@@ -122,6 +122,11 @@ android {
                 storePassword System.getenv("KEYSTORE_PASSWORD")
                 keyAlias System.getenv("KEY_ALIAS")
                 keyPassword System.getenv("KEY_PASSWORD")
+            } else {
+                storeFile file('release.keystore')
+                storePassword 'ledgerlite123'
+                keyAlias 'ledgerlite'
+                keyPassword 'ledgerlite123'
             }
         }
     }
