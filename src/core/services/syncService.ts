@@ -14,6 +14,7 @@ import { setExpenses } from "../store/expenseSlice";
 import { setCategories } from "../store/categorySlice";
 import { setAccounts } from "../store/accountSlice";
 import { setIsGlobalSyncing } from "../store/settingsSlice";
+import { parseDateTime } from "./dataService";
 
 let isSyncing = false;
 let syncTimeout: NodeJS.Timeout | null = null;
@@ -42,7 +43,11 @@ export const SyncService = {
           if (!document.id) continue; // Ref: syncService-1
 
           if (col === "expenses") {
-            await dbActions.restoreExpense(localData as Expense);
+            const expense = { ...localData } as any;
+            if (expense.date !== undefined && expense.date !== null) {
+              expense.date = parseDateTime(expense.date, null);
+            }
+            await dbActions.restoreExpense(expense as Expense);
           } else if (col === "categories") {
             await dbActions.restoreCategory(localData as Category);
           } else if (col === "accounts") {
@@ -82,8 +87,7 @@ export const SyncService = {
     userId: string,
     dbActions: ReturnType<typeof useExpenseDatabase>,
   ) {
-    if (isSyncing) return;
-    isSyncing = true;
+    return;
 
     try {
       const { getAllExpenses, getAllCategories, getAllAccounts } = dbActions;

@@ -178,6 +178,9 @@ export const parseTimeString = (timeStr: string) => {
 
 export const parseDateTime = (dateVal: any, timeVal: any): number => {
   if (!dateVal) return Date.now();
+  if (typeof dateVal === "number" && dateVal > 100000000) {
+    return dateVal < 10000000000 ? dateVal * 1000 : dateVal;
+  }
 
   let year = new Date().getFullYear();
   let month = new Date().getMonth();
