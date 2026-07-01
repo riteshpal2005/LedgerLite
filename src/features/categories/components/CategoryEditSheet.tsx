@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect, useCallback } from "react";
-import { View, Text, Pressable, ScrollView } from "react-native";
+import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
+import { View, Text, Pressable, ScrollView, PanResponder, Modal } from "react-native";
 import {
   BottomSheetModal,
   BottomSheetView,
@@ -143,6 +143,60 @@ export function CategoryEditSheet({
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [formKey, setFormKey] = useState(0);
+
+  const [previewIcon, setPreviewIcon] = useState<string | null>(null);
+  const layoutsRef = useRef<Record<string, { x: number; y: number; w: number; h: number }>>({});
+  const hoveredIconRef = useRef<string | null>(null);
+  const previewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const findAndSetHoveredIcon = (x: number, y: number) => {
+    for (const [iconName, rect] of Object.entries(layoutsRef.current)) {
+      if (x >= rect.x && x <= rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h) {
+        if (hoveredIconRef.current !== iconName) {
+          hoveredIconRef.current = iconName;
+          if (previewIcon) {
+            setPreviewIcon(iconName);
+          }
+        }
+        return;
+      }
+    }
+  };
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (evt) => {
+        const { locationX, locationY } = evt.nativeEvent;
+        findAndSetHoveredIcon(locationX, locationY);
+
+        if (previewTimeoutRef.current) clearTimeout(previewTimeoutRef.current);
+        previewTimeoutRef.current = setTimeout(() => {
+          if (hoveredIconRef.current) {
+            setPreviewIcon(hoveredIconRef.current);
+          }
+        }, 300);
+      },
+      onPanResponderMove: (evt) => {
+        const { locationX, locationY } = evt.nativeEvent;
+        findAndSetHoveredIcon(locationX, locationY);
+      },
+      onPanResponderRelease: () => {
+        if (previewTimeoutRef.current) clearTimeout(previewTimeoutRef.current);
+        if (hoveredIconRef.current) {
+          setIcon(hoveredIconRef.current);
+        }
+        setPreviewIcon(null);
+        hoveredIconRef.current = null;
+      },
+      onPanResponderTerminate: () => {
+        if (previewTimeoutRef.current) clearTimeout(previewTimeoutRef.current);
+        setPreviewIcon(null);
+        hoveredIconRef.current = null;
+      },
+    })
+  ).current;
 
   const dispatch = useDispatch();
   const categories = useSelector(
@@ -363,11 +417,17 @@ export function CategoryEditSheet({
               Selected: {icon.replace("mdi-", "").replace("-outline", "").replace("-", " ")}
             </Text>
           </View>
-          <View className="flex-row flex-wrap gap-3 mb-8">
+          <View
+            {...panResponder.panHandlers}
+            className="flex-row flex-wrap gap-3 mb-8"
+          >
             {PRESET_ICONS.map((i) => (
-              <Pressable
+              <View
                 key={i}
-                onPress={() => setIcon(i)}
+                onLayout={(e) => {
+                  const { x, y, width, height } = e.nativeEvent.layout;
+                  layoutsRef.current[i] = { x, y, w: width, h: height };
+                }}
                 className={`w-14 h-14 rounded-2xl items-center justify-center border ${icon === i ? "bg-brand-primary border-brand-primary" : "bg-surface border-bordercolor"}`}
               >
                 <CategoryIcon
@@ -375,7 +435,7 @@ export function CategoryEditSheet({
                   size={28}
                   color={icon === i ? colors.brandPrimaryContent : "#71717a"}
                 />
-              </Pressable>
+              </View>
             ))}
           </View>
 
@@ -418,6 +478,25 @@ export function CategoryEditSheet({
         categories={categories}
         linkedExpenseCount={linkedExpenseCount}
       />
+
+      <Modal visible={previewIcon !== null} transparent animationType="fade">
+        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "center", alignItems: "center" }}>
+          <View className="bg-surface p-6 rounded-3xl border border-bordercolor items-center justify-center w-64 shadow-2xl">
+            <Text className="text-secondary text-base font-bold mb-4 uppercase tracking-wider">
+              {previewIcon ? previewIcon.replace("mdi-", "").replace("-outline", "").replace("-", " ") : ""}
+            </Text>
+            <View
+              style={{ backgroundColor: color || "#3b82f6" }}
+              className="w-32 h-32 rounded-full items-center justify-center shadow-lg animate-scale-in"
+            >
+              <CategoryIcon name={previewIcon || ""} size={64} color="white" />
+            </View>
+            <Text className="text-tertiary text-xs mt-4 font-semibold">
+              Release to Select
+            </Text>
+          </View>
+        </View>
+      </Modal>
     </BottomSheetModal>
   );
 }

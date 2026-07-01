@@ -130,20 +130,22 @@ export async function initializeDatabase(db: SQLiteDatabase) {
     await db.execAsync("PRAGMA user_version = 2;");
   }
 
-  const categoriesCount = await db.getFirstAsync<{ count: number }>(
-    "SELECT COUNT(*) as count FROM categories",
-  );
-  if (categoriesCount && categoriesCount.count === 0) {
-    const defaultTime = Date.now();
-    await db.execAsync(`
-      INSERT OR IGNORE INTO categories (id, name, icon, color, updated_at) VALUES 
-      ('cat-1', 'Food & Dining', 'restaurant', '#f43f5e', ${defaultTime}),
-      ('cat-2', 'Shopping', 'cart', '#3b82f6', ${defaultTime}),
-      ('cat-3', 'Transportation', 'car', '#eab308', ${defaultTime}),
-      ('cat-4', 'Entertainment', 'film', '#a855f7', ${defaultTime}),
-      ('cat-5', 'Bills & Utilities', 'flash', '#10b981', ${defaultTime}),
-      ('cat-6', 'Self Transfer', 'wallet', '#6366f1', ${defaultTime}),
-      ('cat-7', 'Withdraw', 'mdi-cash-multiple', '#10b981', ${defaultTime});
-    `);
-  }
+  const defaultTime = Date.now();
+  await db.execAsync(`
+    INSERT OR REPLACE INTO categories (id, name, icon, color, updated_at) VALUES 
+    ('cat-1', 'Food & Dining', 'restaurant', '#f43f5e', ${defaultTime}),
+    ('cat-2', 'Shopping', 'mdi-shopping', '#3b82f6', ${defaultTime}),
+    ('cat-3', 'Transportation', 'bus', '#eab308', ${defaultTime}),
+    ('cat-4', 'Entertainment', 'tv', '#a855f7', ${defaultTime}),
+    ('cat-5', 'Bills', 'mdi-file-document-outline', '#10b981', ${defaultTime}),
+    ('cat-6', 'Self Transfer', 'wallet', '#6366f1', ${defaultTime}),
+    ('cat-7', 'Withdraw', 'mdi-cash-multiple', '#10b981', ${defaultTime}),
+    ('cat-8', 'Medicine', 'mdi-pill', '#ec4899', ${defaultTime}),
+    ('cat-9', 'Grocery', 'basket', '#f97316', ${defaultTime}),
+    ('cat-10', 'Salary', 'cash', '#22c55e', ${defaultTime}),
+    ('cat-11', 'Revenue', 'mdi-trending-up', '#06b6d4', ${defaultTime}),
+    ('cat-12', 'Allowance', 'mdi-hand-coin', '#eab308', ${defaultTime}),
+    ('cat-13', 'Friend', 'mdi-handshake', '#6366f1', ${defaultTime}),
+    ('cat-14', 'Utilities', 'mdi-sim', '#06b6d4', ${defaultTime});
+  `);
 }
