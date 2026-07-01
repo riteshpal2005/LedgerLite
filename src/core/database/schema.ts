@@ -141,7 +141,9 @@ export async function initializeDatabase(db: SQLiteDatabase) {
       ('cat-2', 'Shopping', 'cart', '#3b82f6', ${defaultTime}),
       ('cat-3', 'Transportation', 'car', '#eab308', ${defaultTime}),
       ('cat-4', 'Entertainment', 'film', '#a855f7', ${defaultTime}),
-      ('cat-5', 'Bills & Utilities', 'flash', '#10b981', ${defaultTime});
+      ('cat-5', 'Bills & Utilities', 'flash', '#10b981', ${defaultTime}),
+      ('cat-6', 'Self Transfer', 'wallet', '#6366f1', ${defaultTime}),
+      ('cat-7', 'Withdraw', 'mdi-cash-multiple', '#10b981', ${defaultTime});
     `);
   }
 }

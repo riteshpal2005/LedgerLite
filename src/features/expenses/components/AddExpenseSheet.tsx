@@ -56,6 +56,9 @@ export function AddExpenseSheet({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [formKey, setFormKey] = useState(0);
 
+  const [destinationAccountId, setDestinationAccountId] = useState<string | undefined>(undefined);
+  const [showDestinationPicker, setShowDestinationPicker] = useState(false);
+
   const dispatch = useDispatch();
   const dbActions = useExpenseDatabase();
   const {
@@ -109,6 +112,7 @@ export function AddExpenseSheet({
       setType(initialExpense.type);
       setCategoryId(initialExpense.categoryId);
       if (initialExpense.accountId) setAccountId(initialExpense.accountId);
+      setDestinationAccountId(undefined);
     } else {
       setAmount("");
       setDescription("");
@@ -117,6 +121,7 @@ export function AddExpenseSheet({
       setType("debit");
       setCategoryId(undefined);
       if (defaultAccountId) setAccountId(defaultAccountId);
+      setDestinationAccountId(undefined);
     }
     setFormKey((prev) => prev + 1);
   }, [initialExpense, defaultAccountId]);
@@ -132,6 +137,7 @@ export function AddExpenseSheet({
           setType("debit");
           setCategoryId(undefined);
           if (defaultAccountId) setAccountId(defaultAccountId);
+          setDestinationAccountId(undefined);
           setFormKey((prev) => prev + 1);
         }
       }
@@ -145,8 +151,27 @@ export function AddExpenseSheet({
     bottomSheetRef.current?.dismiss();
   }, []);
 
+  const handleCategorySelect = (id: string) => {
+    setCategoryId(id);
+    const cat = categories.find((c) => c.id === id);
+    if (cat && cat.name === "Self Transfer") {
+      const activeId = selectedAccount?.id || defaultAccountId;
+      const otherAccounts = accounts.filter((a) => a.id !== activeId);
+      if (otherAccounts.length === 1) {
+        setDestinationAccountId(otherAccounts[0].id);
+      } else if (otherAccounts.length > 1) {
+        setShowDestinationPicker(true);
+      }
+    } else {
+      setDestinationAccountId(undefined);
+    }
+  };
+
   const handleSave = async () => {
     if (!amount || !description || categoryId === undefined) return;
+    const selfTransferCatId = categories.find((c) => c.name === "Self Transfer")?.id;
+    const isSelfTransfer = categoryId === selfTransferCatId && destinationAccountId !== undefined;
+
     const expenseData = {
       amount: parseFloat(amount),
       description: description,
@@ -174,11 +199,36 @@ export function AddExpenseSheet({
         await adjustAccountBalance(selectedAccount.id, adjustment);
       }
     } else {
-      await addExpense(expenseData);
-      if (isBackdatedMode && selectedAccount) {
-        const amountAdjustment =
-          type === "debit" ? expenseData.amount : -expenseData.amount;
-        await adjustAccountBalance(selectedAccount.id, amountAdjustment);
+      if (isSelfTransfer && destinationAccountId) {
+        const destAccount = accounts.find((a) => a.id === destinationAccountId);
+        const leg1Data = {
+          ...expenseData,
+          type: "debit" as const,
+          description: `${description} (To ${destAccount?.name || "Other Account"})`,
+        };
+        await addExpense(leg1Data);
+        if (isBackdatedMode && selectedAccount) {
+          await adjustAccountBalance(selectedAccount.id, leg1Data.amount);
+        }
+
+        const leg2Data = {
+          ...expenseData,
+          type: "credit" as const,
+          accountId: destinationAccountId,
+          description: `${description} (From ${selectedAccount?.name || "Other Account"})`,
+          date: date.getTime() + 1,
+        };
+        await addExpense(leg2Data);
+        if (isBackdatedMode) {
+          await adjustAccountBalance(destinationAccountId, -leg2Data.amount);
+        }
+      } else {
+        await addExpense(expenseData);
+        if (isBackdatedMode && selectedAccount) {
+          const amountAdjustment =
+            type === "debit" ? expenseData.amount : -expenseData.amount;
+          await adjustAccountBalance(selectedAccount.id, amountAdjustment);
+        }
       }
     }
 
@@ -268,7 +318,9 @@ export function AddExpenseSheet({
                 onPress={() => setShowAccountPicker(true)}
                 className="bg-surface rounded-2xl p-4 border border-bordercolor h-[72px] justify-center active:bg-black/5 dark:active:bg-white/5"
               >
-                <Text className="text-secondary text-sm mb-1">Account</Text>
+                <Text className="text-secondary text-sm mb-1">
+                  {selectedCategory?.name === "Self Transfer" ? "From Account" : "Account"}
+                </Text>
                 <View className="flex-row items-center justify-between">
                   <Text
                     className="text-primary font-bold text-lg flex-1"
@@ -280,6 +332,25 @@ export function AddExpenseSheet({
               </Pressable>
             </View>
           </View>
+
+          {selectedCategory?.name === "Self Transfer" && (
+            <View className="mb-4">
+              <Pressable
+                onPress={() => setShowDestinationPicker(true)}
+                className="bg-surface rounded-2xl p-4 border border-bordercolor h-[72px] justify-center active:bg-black/5 dark:active:bg-white/5"
+              >
+                <Text className="text-secondary text-sm mb-1">To Account</Text>
+                <View className="flex-row items-center justify-between">
+                  <Text
+                    className="text-primary font-bold text-lg flex-1"
+                    numberOfLines={1}
+                  >
+                    {accounts.find((a) => a.id === destinationAccountId)?.name || "Select Destination"}
+                  </Text>
+                </View>
+              </Pressable>
+            </View>
+          )}
 
           <BottomSheetFormField
             key={`amount-${formKey}`}
@@ -337,7 +408,7 @@ export function AddExpenseSheet({
         visible={showCategoryPicker}
         onClose={() => setShowCategoryPicker(false)}
         categories={categories as any[]}
-        onSelect={setCategoryId}
+        onSelect={handleCategorySelect}
       />
 
       <AccountSelectModal
@@ -345,6 +416,16 @@ export function AddExpenseSheet({
         onClose={() => setShowAccountPicker(false)}
         accounts={accounts}
         onSelect={setAccountId}
+      />
+
+      <AccountSelectModal
+        visible={showDestinationPicker}
+        onClose={() => setShowDestinationPicker(false)}
+        accounts={accounts.filter((a) => a.id !== (selectedAccount?.id || defaultAccountId))}
+        onSelect={(id) => {
+          setDestinationAccountId(id);
+          setShowDestinationPicker(false);
+        }}
       />
 
       <DeleteConfirmationModal

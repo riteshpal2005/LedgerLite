@@ -344,6 +344,7 @@ export const importData = async (
 
     const importedExpenses: any[] = [];
     const missingAccounts: { name: string; initialBalance: number }[] = [];
+    const pairedIds = new Set<string>();
 
     for (const row of rawJson) {
       const amountVal = getRowValue(row, ["Amount", "amount", "value", "sum"]);
@@ -389,7 +390,8 @@ export const importData = async (
 
       const merchantVal = getRowValue(row, ["Merchant", "merchant", "payee", "shop"]);
 
-      const isDuplicate = existingExpenses.some((ex) => {
+      const matchedExisting = existingExpenses.find((ex) => {
+        if (pairedIds.has(ex.id)) return false;
         const timeDiff = Math.abs(ex.date - parsedDate);
         return (
           ex.amount === parsedAmount &&
@@ -399,9 +401,11 @@ export const importData = async (
         );
       });
 
-      if (!isDuplicate) {
+      if (matchedExisting) {
+        pairedIds.add(matchedExisting.id);
+      } else {
         importedExpenses.push({
-          id: Date.now() + Math.random(),
+          id: String(Date.now() + Math.random()),
           amount: parsedAmount,
           description,
           merchant: merchantVal || null,

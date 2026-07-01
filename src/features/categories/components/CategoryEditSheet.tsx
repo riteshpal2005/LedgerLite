@@ -52,14 +52,25 @@ const PRESET_COLORS = [
 
 const PRESET_ICONS = [
   "cart",
+  "basket",
+  "pricetag",
+  "pricetags",
   "fast-food",
   "restaurant",
   "cafe",
   "home",
+  "key",
   "car",
   "bus",
   "airplane",
+  "train",
+  "subway",
+  "boat",
+  "bicycle",
   "medical",
+  "medkit",
+  "thermometer",
+  "bandage",
   "fitness",
   "barbell",
   "briefcase",
@@ -76,17 +87,11 @@ const PRESET_ICONS = [
   "shirt",
   "book",
   "school",
-  "train",
-  "bicycle",
   "build",
   "construct",
-  "medkit",
-  "subway",
-  "boat",
   "water",
   "flash",
   "flame",
-  "basket",
   "bed",
   "beer",
   "wine",
@@ -95,18 +100,36 @@ const PRESET_ICONS = [
   "cut",
   "flower",
   "hammer",
-  "bandage",
-  "thermometer",
   "color-palette",
   "musical-notes",
   "planet",
   "star",
   "umbrella",
+  "wifi",
+  "people",
+  "people-outline",
+  "happy",
   "mdi-pill",
+  "mdi-syringe",
+  "mdi-bottle-tonic-plus",
+  "mdi-piggy-bank",
+  "mdi-hand-coin",
+  "mdi-cash-multiple",
+  "mdi-cash-fast",
+  "mdi-sim",
+  "mdi-router-wireless",
+  "mdi-gas-station",
+  "mdi-power-plug",
+  "mdi-file-document-outline",
+  "mdi-account-group",
+  "mdi-account-multiple",
+  "mdi-handshake",
+  "mdi-shopping",
+  "mdi-hangar",
   "mdi-mouse",
   "mdi-keyboard",
   "mdi-controller-classic",
-  "mdi-food-apple",
+  "mdi-food-apple"
 ];
 
 export function CategoryEditSheet({
@@ -331,9 +354,14 @@ export function CategoryEditSheet({
             </View>
           )}
 
-          <Text className="text-secondary font-bold mb-3 uppercase text-xs tracking-wider">
-            Icon
-          </Text>
+          <View className="flex-row justify-between items-center mb-3">
+            <Text className="text-secondary font-bold uppercase text-xs tracking-wider">
+              Icon
+            </Text>
+            <Text className="text-tertiary text-xs font-semibold">
+              Selected: {icon.replace("mdi-", "").replace("-outline", "").replace("-", " ")}
+            </Text>
+          </View>
           <View className="flex-row flex-wrap gap-3 mb-8">
             {PRESET_ICONS.map((i) => (
               <Pressable

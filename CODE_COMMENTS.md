@@ -332,7 +332,15 @@ FLAG_GRANT_READ_URI_PERMISSION | FLAG_ACTIVITY_NEW_TASK
 ### `src/features/expenses/components/DateTimePickerSection.tsx` (Time field display)
 - **DateTimePickerSection-2**: Passes `hour12: !use24HourFormat` to `toLocaleTimeString` to dynamically display selected time in 12h/24h format on expense forms.
 
+### `src/core/database/schema.ts` (Seeded transfer categories)
+- **schema-2**: Seeds default categories including `'Self Transfer'` and `'Withdraw'` on clean database setups.
 
+### `src/features/categories/components/CategoryEditSheet.tsx` (Rich icons & tooltip display)
+- **CategoryEditSheet-1**: Renders a text label tooltip displaying the formatted name of the selected category icon next to the Icon grid header.
 
+### `src/features/expenses/components/AddExpenseSheet.tsx` (Self Transfer dual-leg creation)
+- **AddExpenseSheet-2**: Intercepts category selection and dynamically prompts the user to select a destination bank account (or auto-selects if exactly 2 accounts exist) when the category is `'Self Transfer'`.
+- **AddExpenseSheet-3**: Writes two synchronized transaction legs (a debit leg on the source account and a credit leg on the destination account) when saving a `'Self Transfer'` transaction.
 
-
+### `src/core/services/dataService.ts` (CSV matching duplicates)
+- **dataService-4**: Uses an unpaired matching set (`pairedIds`) to correctly identify and allow importing identical transactions (e.g. multiple matching items in the CSV source) without skipping them.
