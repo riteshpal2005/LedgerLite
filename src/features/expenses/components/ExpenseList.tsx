@@ -151,8 +151,9 @@ export default function ExpenseList({
             data={sortedExpenses.slice(0, displayLimit)}
             showsVerticalScrollIndicator={false}
             onEndReached={() => {
-              if (displayLimit < sortedExpenses.length) {
-                setDisplayLimit((prev) => prev + 20);
+              const maxLimit = 500;
+              if (displayLimit < sortedExpenses.length && displayLimit < maxLimit) {
+                setDisplayLimit((prev) => Math.min(prev + 50, maxLimit));
               }
             }}
             onEndReachedThreshold={0.5}
