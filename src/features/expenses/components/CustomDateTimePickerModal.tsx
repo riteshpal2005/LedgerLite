@@ -35,12 +35,65 @@ export function CustomDateTimePickerModal({
   const [hourStr, setHourStr] = useState("12");
   const [minuteStr, setMinuteStr] = useState("00");
 
+  const [hourDummy, setHourDummy] = useState("XX");
+  const [minuteDummy, setMinuteDummy] = useState("XX");
+  const [focusedField, setFocusedField] = useState<"hour" | "minute" | null>(null);
+
   const hourInputRef = useRef<TextInput>(null);
   const minuteInputRef = useRef<TextInput>(null);
-  const [hourSelection, setHourSelection] = useState<{ start: number; end: number } | undefined>(undefined);
-  const [minuteSelection, setMinuteSelection] = useState<{ start: number; end: number } | undefined>(undefined);
 
   const { bottomSheetBackgroundColor, bottomSheetBorderColor } = useTheme();
+
+  const handleHourInput = (text: string) => {
+    setHourDummy("XX");
+    if (text.length < 2) {
+      if (hourStr !== "00") {
+        const newVal = "0" + hourStr.charAt(0);
+        setHourStr(newVal);
+      }
+      return;
+    }
+
+    const digit = text.replace(/[^0-9]/g, "").slice(-1);
+    if (digit) {
+      const newVal = hourStr === "00" ? "0" + digit : hourStr.charAt(1) + digit;
+      const val = parseInt(newVal, 10);
+      const maxHour = is24Hour ? 23 : 12;
+      const minHour = is24Hour ? 0 : 1;
+
+      if (val >= minHour && val <= maxHour) {
+        setHourStr(newVal);
+        const shouldAutoForward = is24Hour
+          ? (hourStr !== "00" || val >= 3)
+          : (hourStr !== "00" || val >= 2);
+        if (shouldAutoForward) {
+          minuteInputRef.current?.focus();
+        }
+      }
+    }
+  };
+
+  const handleMinuteInput = (text: string) => {
+    setMinuteDummy("XX");
+    if (text.length < 2) {
+      if (minuteStr === "00") {
+        hourInputRef.current?.focus();
+      } else {
+        const newVal = "0" + minuteStr.charAt(0);
+        setMinuteStr(newVal);
+      }
+      return;
+    }
+
+    const digit = text.replace(/[^0-9]/g, "").slice(-1);
+    if (digit) {
+      const newVal = minuteStr === "00" ? "0" + digit : minuteStr.charAt(1) + digit;
+      const val = parseInt(newVal, 10);
+      if (val >= 0 && val <= 59) {
+        setMinuteStr(newVal);
+      }
+    }
+  };
 
   useEffect(() => {
     if (visible) {
@@ -279,55 +332,31 @@ export function CustomDateTimePickerModal({
                       >
                         <Ionicons name="chevron-up" size={28} color="#3b82f6" />
                       </Pressable>
+
+                      <TextInput
+                        ref={hourInputRef}
+                        value={hourDummy}
+                        onChangeText={handleHourInput}
+                        onFocus={() => {
+                          setFocusedField("hour");
+                          setHourStr("00");
+                        }}
+                        onBlur={() => setFocusedField(null)}
+                        keyboardType="number-pad"
+                        style={{ position: "absolute", width: 1, height: 1, opacity: 0 }}
+                      />
+
                       <Pressable
                         onPress={() => hourInputRef.current?.focus()}
-                        className="bg-background w-24 h-20 justify-center items-center rounded-2xl border border-bordercolor"
+                        className={`bg-background w-24 h-20 justify-center items-center rounded-2xl border ${
+                          focusedField === "hour" ? "border-blue-500 bg-blue-500/5" : "border-bordercolor"
+                        }`}
                       >
-                        <TextInput
-                          ref={hourInputRef}
-                          value={hourStr}
-                          onChangeText={(t) => {
-                            const clean = t.replace(/[^0-9]/g, "");
-                            if (clean === "") {
-                              setHourStr("00");
-                              return;
-                            }
-                            if (clean.length < hourStr.length) {
-                              setHourStr(clean.padStart(2, "0"));
-                              return;
-                            }
-                            const digit = clean.slice(-1);
-                            const newVal = hourStr === "00" ? "0" + digit : hourStr.charAt(1) + digit;
-                            const val = parseInt(newVal, 10);
-                            const maxHour = is24Hour ? 23 : 12;
-                            const minHour = is24Hour ? 0 : 1;
-                            if (val >= minHour && val <= maxHour) {
-                              setHourStr(newVal);
-                              const shouldAutoForward = is24Hour
-                                ? (hourStr !== "00" || val >= 3)
-                                : (hourStr !== "00" || val >= 2);
-                              if (shouldAutoForward) {
-                                minuteInputRef.current?.focus();
-                              }
-                            }
-                          }}
-                          onFocus={() => {
-                            setHourStr("00");
-                            setHourSelection({ start: 2, end: 2 });
-                            setTimeout(() => setHourSelection(undefined), 100);
-                          }}
-                          selection={hourSelection}
-                          onBlur={handleHourBlur}
-                          keyboardType="number-pad"
-                          returnKeyType="next"
-                          blurOnSubmit={false}
-                          onSubmitEditing={() =>
-                            minuteInputRef.current?.focus()
-                          }
-                          maxLength={3}
-                          className="text-primary text-4xl font-bold text-center p-0 m-0 w-full"
-                        />
+                        <Text className="text-primary text-4xl font-bold text-center">
+                          {hourStr}
+                        </Text>
                       </Pressable>
+
                       <Pressable
                         onPress={() => adjustHour(-1)}
                         className="p-3 bg-white/5 rounded-xl mt-3 border border-bordercolor"
@@ -351,49 +380,31 @@ export function CustomDateTimePickerModal({
                       >
                         <Ionicons name="chevron-up" size={28} color="#3b82f6" />
                       </Pressable>
+
+                      <TextInput
+                        ref={minuteInputRef}
+                        value={minuteDummy}
+                        onChangeText={handleMinuteInput}
+                        onFocus={() => {
+                          setFocusedField("minute");
+                          setMinuteStr("00");
+                        }}
+                        onBlur={() => setFocusedField(null)}
+                        keyboardType="number-pad"
+                        style={{ position: "absolute", width: 1, height: 1, opacity: 0 }}
+                      />
+
                       <Pressable
                         onPress={() => minuteInputRef.current?.focus()}
-                        className="bg-background w-24 h-20 justify-center items-center rounded-2xl border border-bordercolor"
+                        className={`bg-background w-24 h-20 justify-center items-center rounded-2xl border ${
+                          focusedField === "minute" ? "border-blue-500 bg-blue-500/5" : "border-bordercolor"
+                        }`}
                       >
-                        <TextInput
-                          ref={minuteInputRef}
-                          value={minuteStr}
-                          onChangeText={(t) => {
-                            const clean = t.replace(/[^0-9]/g, "");
-                            if (clean === "") {
-                              setMinuteStr("00");
-                              return;
-                            }
-                            if (clean.length < minuteStr.length) {
-                              setMinuteStr(clean.padStart(2, "0"));
-                              return;
-                            }
-                            const digit = clean.slice(-1);
-                            const newVal = minuteStr === "00" ? "0" + digit : minuteStr.charAt(1) + digit;
-                            const val = parseInt(newVal, 10);
-                            if (val >= 0 && val <= 59) {
-                              setMinuteStr(newVal);
-                            }
-                          }}
-                          onFocus={() => {
-                            setMinuteStr("00");
-                            setMinuteSelection({ start: 2, end: 2 });
-                            setTimeout(() => setMinuteSelection(undefined), 100);
-                          }}
-                          selection={minuteSelection}
-                          onKeyPress={({ nativeEvent }) => {
-                            if (nativeEvent.key === "Backspace" && (minuteStr === "" || minuteStr === "00")) {
-                              hourInputRef.current?.focus();
-                            }
-                          }}
-                          onBlur={handleMinuteBlur}
-                          keyboardType="number-pad"
-                          returnKeyType="done"
-                          onSubmitEditing={handleTimeSave}
-                          maxLength={3}
-                          className="text-primary text-4xl font-bold text-center p-0 m-0 w-full"
-                        />
+                        <Text className="text-primary text-4xl font-bold text-center">
+                          {minuteStr}
+                        </Text>
                       </Pressable>
+
                       <Pressable
                         onPress={() => adjustMinute(-1)}
                         className="p-3 bg-white/5 rounded-xl mt-3 border border-bordercolor"
