@@ -156,6 +156,14 @@ const getRowValue = (row: any, keys: string[]): any => {
   return undefined;
 };
 
+const getSystemDateFormat = (): "MDY" | "DMY" | "YMD" => {
+  const testDate = new Date(2026, 11, 25);
+  const formatted = testDate.toLocaleDateString();
+  if (formatted.startsWith("2026")) return "YMD";
+  if (formatted.startsWith("25")) return "DMY";
+  return "MDY";
+};
+
 export const parseTimeString = (timeStr: string) => {
   let hours = 0;
   let minutes = 0;
@@ -228,9 +236,27 @@ export const parseDateTime = (dateVal: any, timeVal: any): number => {
       month = parseInt(ymdMatch[2]) - 1;
       day = parseInt(ymdMatch[3]);
     } else if (dmyMatch) {
-      day = parseInt(dmyMatch[1]);
-      month = parseInt(dmyMatch[2]) - 1;
-      year = parseInt(dmyMatch[3]);
+      const p1 = parseInt(dmyMatch[1]);
+      const p2 = parseInt(dmyMatch[2]);
+      const p3 = parseInt(dmyMatch[3]);
+
+      if (p1 > 12) {
+        day = p1;
+        month = p2 - 1;
+      } else if (p2 > 12) {
+        month = p1 - 1;
+        day = p2;
+      } else {
+        const format = getSystemDateFormat();
+        if (format === "MDY") {
+          month = p1 - 1;
+          day = p2;
+        } else {
+          day = p1;
+          month = p2 - 1;
+        }
+      }
+      year = p3;
     } else {
       const parsed = new Date(dateStr);
       if (!isNaN(parsed.getTime())) {
@@ -310,7 +336,7 @@ export const importData = async (
     const fileBase64 = await FileSystem.readAsStringAsync(fileUri, {
       encoding: "base64",
     });
-    const workbook = XLSX.read(fileBase64, { type: "base64" });
+    const workbook = XLSX.read(fileBase64, { type: "base64", cellDates: true });
     const firstSheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[firstSheetName];
 
