@@ -133,12 +133,12 @@ export async function initializeDatabase(db: SQLiteDatabase) {
   const defaultTime = Date.now();
   await db.execAsync(`
     INSERT OR REPLACE INTO categories (id, name, icon, color, updated_at) VALUES 
-    ('cat-1', 'Food & Dining', 'restaurant', '#f43f5e', ${defaultTime}),
+    ('cat-1', 'Food & Dining', 'fast-food', '#f43f5e', ${defaultTime}),
     ('cat-2', 'Shopping', 'mdi-shopping', '#3b82f6', ${defaultTime}),
     ('cat-3', 'Transportation', 'bus', '#eab308', ${defaultTime}),
     ('cat-4', 'Entertainment', 'tv', '#a855f7', ${defaultTime}),
     ('cat-5', 'Bills', 'mdi-file-document-outline', '#10b981', ${defaultTime}),
-    ('cat-6', 'Self Transfer', 'wallet', '#6366f1', ${defaultTime}),
+    ('cat-6', 'Self Transfer', 'mdi-bank-transfer', '#6366f1', ${defaultTime}),
     ('cat-7', 'Withdraw', 'mdi-cash-multiple', '#10b981', ${defaultTime}),
     ('cat-8', 'Medicine', 'mdi-pill', '#ec4899', ${defaultTime}),
     ('cat-9', 'Grocery', 'basket', '#f97316', ${defaultTime}),

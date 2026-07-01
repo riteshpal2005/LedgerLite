@@ -127,6 +127,7 @@ const PRESET_ICONS = [
   "mdi-shopping",
   "mdi-hanger",
   "mdi-needle",
+  "mdi-bank-transfer",
   "mdi-mouse",
   "mdi-keyboard",
   "mdi-controller-classic",
