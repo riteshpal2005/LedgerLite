@@ -1,6 +1,4 @@
-# Changelog
-
-## [2.1.0] - 2026-07-01
+# 2.1.0
 
 ### Features
 - **Incremental Running Balance Timeline:** Added `balance_after` tracking inside the database schema and created a chronological propagation engine (`propagateForward`) using SQLite ordering. All transaction insertions, edits, deletions, and account transfers automatically recalculate balances forward on the timeline.

@@ -50,4 +50,30 @@ describe("dataService parseDateTime", () => {
       expect(timestamps[i]).toBeGreaterThan(timestamps[i + 1]);
     }
   });
+
+  it("should parse Excel numeric serial values for Date and Time", () => {
+    const excelSerialDate = 46202.9923611111; // 2026-06-29 23:49:00 UTC
+    const timestamp = parseDateTime(excelSerialDate, undefined);
+    const dateObj = new Date(timestamp);
+
+    expect(dateObj.getFullYear()).toBe(2026);
+    expect(dateObj.getMonth()).toBe(5); // June
+    expect(dateObj.getDate()).toBe(29);
+    expect(dateObj.getHours()).toBe(23);
+    expect(dateObj.getMinutes()).toBe(49);
+  });
+
+  it("should handle locale-aware day/month parsing and unambiguous date orders", () => {
+    const DMYDate = parseDateTime("15/07/2026", "11:49 PM");
+    const DMYObj = new Date(DMYDate);
+    expect(DMYObj.getFullYear()).toBe(2026);
+    expect(DMYObj.getMonth()).toBe(6); // July
+    expect(DMYObj.getDate()).toBe(15);
+
+    const MDYDate = parseDateTime("07/15/2026", "11:49 PM");
+    const MDYObj = new Date(MDYDate);
+    expect(MDYObj.getFullYear()).toBe(2026);
+    expect(MDYObj.getMonth()).toBe(6); // July
+    expect(MDYObj.getDate()).toBe(15);
+  });
 });

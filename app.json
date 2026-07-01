@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "LedgerLite Dev",
+    "name": "LedgerLite",
     "slug": "ledgerlite",
-    "version": "2.0.3",
+    "version": "2.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "ledgerlite",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "dev.ritesh.ledgerlite.dev",
+      "bundleIdentifier": "dev.ritesh.ledgerlite",
       "infoPlist": {
         "CADisableMinimumFrameDurationOnPhone": true
       }
