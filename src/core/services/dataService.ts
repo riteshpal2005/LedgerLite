@@ -143,6 +143,19 @@ export const exportData = async (
   }
 };
 
+const getRowValue = (row: any, keys: string[]): any => {
+  if (!row) return undefined;
+  const rowKeys = Object.keys(row);
+  for (const k of keys) {
+    if (row[k] !== undefined) return row[k];
+    const matchedKey = rowKeys.find(
+      (rk) => rk.toLowerCase().trim() === k.toLowerCase().trim()
+    );
+    if (matchedKey !== undefined) return row[matchedKey];
+  }
+  return undefined;
+};
+
 const parseTimeString = (timeStr: string) => {
   let hours = 0;
   let minutes = 0;
@@ -175,17 +188,21 @@ const parseDateTime = (dateVal: any, timeVal: any): number => {
 
   let activeTimeVal = timeVal;
 
-  if (typeof dateVal === "number" && dateVal > 25569) {
+  if (dateVal instanceof Date) {
+    year = dateVal.getUTCFullYear();
+    month = dateVal.getUTCMonth();
+    day = dateVal.getUTCDate();
+    hours = dateVal.getUTCHours();
+    minutes = dateVal.getUTCMinutes();
+    seconds = dateVal.getUTCSeconds();
+  } else if (typeof dateVal === "number" && dateVal > 25569) {
     const datePart = Math.floor(dateVal);
     const timePart = dateVal - datePart;
 
     const dateObj = new Date((datePart - 25569) * 86400 * 1000);
-    const timezoneOffset = dateObj.getTimezoneOffset() * 60 * 1000;
-    const localDate = new Date(dateObj.getTime() + timezoneOffset);
-
-    year = localDate.getFullYear();
-    month = localDate.getMonth();
-    day = localDate.getDate();
+    year = dateObj.getUTCFullYear();
+    month = dateObj.getUTCMonth();
+    day = dateObj.getUTCDate();
 
     if (timePart > 0) {
       const totalSeconds = Math.round(timePart * 86400);
@@ -214,9 +231,21 @@ const parseDateTime = (dateVal: any, timeVal: any): number => {
     } else {
       const parsed = new Date(dateStr);
       if (!isNaN(parsed.getTime())) {
-        year = parsed.getFullYear();
-        month = parsed.getMonth();
-        day = parsed.getDate();
+        if (dateStr.includes("T") || dateStr.includes("Z") || dateStr.includes("GMT")) {
+          year = parsed.getUTCFullYear();
+          month = parsed.getUTCMonth();
+          day = parsed.getUTCDate();
+          hours = parsed.getUTCHours();
+          minutes = parsed.getUTCMinutes();
+          seconds = parsed.getUTCSeconds();
+        } else {
+          year = parsed.getFullYear();
+          month = parsed.getMonth();
+          day = parsed.getDate();
+          hours = parsed.getHours();
+          minutes = parsed.getMinutes();
+          seconds = parsed.getSeconds();
+        }
       }
     }
   }
@@ -227,11 +256,23 @@ const parseDateTime = (dateVal: any, timeVal: any): number => {
       hours = Math.floor(totalSeconds / 3600);
       minutes = Math.floor((totalSeconds % 3600) / 60);
       seconds = totalSeconds % 60;
+    } else if (activeTimeVal instanceof Date) {
+      hours = activeTimeVal.getUTCHours();
+      minutes = activeTimeVal.getUTCMinutes();
+      seconds = activeTimeVal.getUTCSeconds();
     } else {
-      const parsedTime = parseTimeString(String(activeTimeVal));
-      hours = parsedTime.hours;
-      minutes = parsedTime.minutes;
-      seconds = parsedTime.seconds;
+      const dateParsed = new Date(activeTimeVal);
+      const activeStr = String(activeTimeVal);
+      if (!isNaN(dateParsed.getTime()) && (activeStr.includes("T") || activeStr.includes("GMT") || activeStr.includes("Z"))) {
+        hours = dateParsed.getUTCHours();
+        minutes = dateParsed.getUTCMinutes();
+        seconds = dateParsed.getUTCSeconds();
+      } else {
+        const parsedTime = parseTimeString(activeStr);
+        hours = parsedTime.hours;
+        minutes = parsedTime.minutes;
+        seconds = parsedTime.seconds;
+      }
     }
   }
 
@@ -276,36 +317,47 @@ export const importData = async (
     const missingAccounts: { name: string; initialBalance: number }[] = [];
 
     for (const row of rawJson) {
-      const rawAmountStr = String(row.Amount || "0").replace(/[^0-9.-]+/g, "");
+      const amountVal = getRowValue(row, ["Amount", "amount", "value", "sum"]);
+      const rawAmountStr = String(amountVal || "0").replace(/[^0-9.-]+/g, "");
       const parsedAmount = parseFloat(rawAmountStr) || 0;
 
-      const categoryName = row.Category;
+      const categoryName = getRowValue(row, ["Category", "category", "group"]);
       const matchedCategory = categories.find((c) => c.name === categoryName);
       const categoryId = matchedCategory ? matchedCategory.id : "cat-1";
 
-      const accountName = row.AccountName || row.Account;
+      const accountName = getRowValue(row, ["AccountName", "Account", "account_name", "accountName", "account"]);
       const matchedAccount = accounts.find((a) => a.name === accountName);
       const accountId = matchedAccount ? matchedAccount.id : undefined;
 
       if (!matchedAccount && accountName && accountName !== "Unassigned") {
         if (!missingAccounts.find((m) => m.name === accountName)) {
+          const balanceVal = getRowValue(row, ["AccountInitialBalance", "initial_balance", "initialBalance", "balance"]);
           const initialBalance =
             parseFloat(
-              String(row.AccountInitialBalance).replace(/[^0-9.-]+/g, ""),
+              String(balanceVal || "0").replace(/[^0-9.-]+/g, ""),
             ) || 0;
           missingAccounts.push({ name: accountName, initialBalance });
         }
       }
 
+      const rawUnixVal = getRowValue(row, ["_RawDateUnix", "raw_date_unix", "rawDateUnix"]);
       let parsedDate = Date.now();
-      if (row._RawDateUnix) {
-        parsedDate = parseInt(row._RawDateUnix);
+      if (rawUnixVal) {
+        parsedDate = parseInt(String(rawUnixVal));
       } else {
-        parsedDate = parseDateTime(row.Date, row.Time);
+        const dateVal = getRowValue(row, ["Date", "date", "date_time", "datetime", "timestamp"]);
+        const timeVal = getRowValue(row, ["Time", "time"]);
+        parsedDate = parseDateTime(dateVal, timeVal);
       }
+
+      const typeVal = getRowValue(row, ["Type", "type", "transaction_type", "transactionType"]);
       const type =
-        row.Type === "Income" || row.Type === "credit" ? "credit" : "debit";
-      const description = row.Description || "Imported Transaction";
+        typeVal === "Income" || typeVal === "credit" || typeVal === "income" ? "credit" : "debit";
+
+      const descVal = getRowValue(row, ["Description", "description", "details", "memo", "note"]);
+      const description = descVal || "Imported Transaction";
+
+      const merchantVal = getRowValue(row, ["Merchant", "merchant", "payee", "shop"]);
 
       const isDuplicate = existingExpenses.some((ex) => {
         const timeDiff = Math.abs(ex.date - parsedDate);
@@ -322,7 +374,7 @@ export const importData = async (
           id: Date.now() + Math.random(),
           amount: parsedAmount,
           description,
-          merchant: row.Merchant || null,
+          merchant: merchantVal || null,
           date: parsedDate,
           type,
           categoryId,
