@@ -30,13 +30,10 @@ export function CustomDateTimePickerModal({
     new Date(date.getFullYear(), date.getMonth(), 1),
   );
 
+  const [is24Hour, setIs24Hour] = useState(false);
   const [isPM, setIsPM] = useState(date.getHours() >= 12);
-  const [hourStr, setHourStr] = useState(
-    String(date.getHours() % 12 || 12).padStart(2, "0")
-  );
-  const [minuteStr, setMinuteStr] = useState(
-    String(date.getMinutes()).padStart(2, "0")
-  );
+  const [hourStr, setHourStr] = useState("12");
+  const [minuteStr, setMinuteStr] = useState("00");
 
   const hourInputRef = useRef<TextInput>(null);
   const minuteInputRef = useRef<TextInput>(null);
@@ -48,11 +45,17 @@ export function CustomDateTimePickerModal({
   useEffect(() => {
     if (visible) {
       setCurrentMonth(new Date(date.getFullYear(), date.getMonth(), 1));
-      const h = date.getHours() % 12 || 12;
+      const check24 = !/am|pm/i.test(new Date(2026, 0, 1, 13, 0, 0).toLocaleTimeString());
+      setIs24Hour(check24);
+
+      let h = date.getHours();
+      if (!check24) {
+        setIsPM(h >= 12);
+        h = h % 12 || 12;
+      }
       const m = date.getMinutes();
       setHourStr(String(h).padStart(2, "0"));
       setMinuteStr(String(m).padStart(2, "0"));
-      setIsPM(date.getHours() >= 12);
     }
   }, [visible, date]);
 
@@ -103,9 +106,11 @@ export function CustomDateTimePickerModal({
 
   const handleTimeSave = () => {
     let finalHour = parseInt(hourStr, 10);
-    if (isNaN(finalHour)) finalHour = 12;
-    if (finalHour > 12) finalHour = 12;
-    if (finalHour < 1) finalHour = 1;
+    const maxHour = is24Hour ? 23 : 12;
+    const minHour = is24Hour ? 0 : 1;
+    if (isNaN(finalHour)) finalHour = minHour;
+    if (finalHour > maxHour) finalHour = maxHour;
+    if (finalHour < minHour) finalHour = minHour;
 
     let finalMinute = parseInt(minuteStr, 10);
     if (isNaN(finalMinute)) finalMinute = 0;
@@ -114,8 +119,10 @@ export function CustomDateTimePickerModal({
 
     const newDate = new Date(date);
     let hours24 = finalHour;
-    if (isPM && finalHour < 12) hours24 += 12;
-    if (!isPM && finalHour === 12) hours24 = 0;
+    if (!is24Hour) {
+      if (isPM && finalHour < 12) hours24 += 12;
+      if (!isPM && finalHour === 12) hours24 = 0;
+    }
     newDate.setHours(hours24, finalMinute, 0, 0);
     setDate(newDate);
     onClose();
@@ -123,10 +130,12 @@ export function CustomDateTimePickerModal({
 
   const adjustHour = (delta: number) => {
     let current = parseInt(hourStr, 10);
-    if (isNaN(current)) current = 12;
+    const maxHour = is24Hour ? 23 : 12;
+    const minHour = is24Hour ? 0 : 1;
+    if (isNaN(current)) current = minHour;
     let newHour = current + delta;
-    if (newHour > 12) newHour = 1;
-    if (newHour < 1) newHour = 12;
+    if (newHour > maxHour) newHour = minHour;
+    if (newHour < minHour) newHour = maxHour;
     setHourStr(String(newHour).padStart(2, "0"));
   };
 
@@ -141,9 +150,11 @@ export function CustomDateTimePickerModal({
 
   const handleHourBlur = () => {
     let val = parseInt(hourStr, 10);
-    if (isNaN(val)) val = 12;
-    if (val > 12) val = 12;
-    if (val < 1) val = 1;
+    const maxHour = is24Hour ? 23 : 12;
+    const minHour = is24Hour ? 0 : 1;
+    if (isNaN(val)) val = minHour;
+    if (val > maxHour) val = maxHour;
+    if (val < minHour) val = minHour;
     setHourStr(val.toString().padStart(2, "0"));
   };
 
@@ -277,13 +288,32 @@ export function CustomDateTimePickerModal({
                           value={hourStr}
                           onChangeText={(t) => {
                             const clean = t.replace(/[^0-9]/g, "");
-                            setHourStr(clean);
-                            if (clean.length === 2 || (clean.length === 1 && parseInt(clean, 10) >= 2)) {
-                              minuteInputRef.current?.focus();
+                            if (clean === "") {
+                              setHourStr("00");
+                              return;
+                            }
+                            if (clean.length < hourStr.length) {
+                              setHourStr(clean.padStart(2, "0"));
+                              return;
+                            }
+                            const digit = clean.slice(-1);
+                            const newVal = hourStr === "00" ? "0" + digit : hourStr.charAt(1) + digit;
+                            const val = parseInt(newVal, 10);
+                            const maxHour = is24Hour ? 23 : 12;
+                            const minHour = is24Hour ? 0 : 1;
+                            if (val >= minHour && val <= maxHour) {
+                              setHourStr(newVal);
+                              const shouldAutoForward = is24Hour
+                                ? (hourStr !== "00" || val >= 3)
+                                : (hourStr !== "00" || val >= 2);
+                              if (shouldAutoForward) {
+                                minuteInputRef.current?.focus();
+                              }
                             }
                           }}
                           onFocus={() => {
-                            setHourSelection({ start: hourStr.length, end: hourStr.length });
+                            setHourStr("00");
+                            setHourSelection({ start: 2, end: 2 });
                             setTimeout(() => setHourSelection(undefined), 100);
                           }}
                           selection={hourSelection}
@@ -294,7 +324,7 @@ export function CustomDateTimePickerModal({
                           onSubmitEditing={() =>
                             minuteInputRef.current?.focus()
                           }
-                          maxLength={2}
+                          maxLength={3}
                           className="text-primary text-4xl font-bold text-center p-0 m-0 w-full"
                         />
                       </Pressable>
@@ -309,11 +339,11 @@ export function CustomDateTimePickerModal({
                         />
                       </Pressable>
                     </View>
-
+ 
                     <Text className="text-secondary text-4xl font-bold pb-2">
                       :
                     </Text>
-
+ 
                     <View className="items-center">
                       <Pressable
                         onPress={() => adjustMinute(1)}
@@ -328,11 +358,26 @@ export function CustomDateTimePickerModal({
                         <TextInput
                           ref={minuteInputRef}
                           value={minuteStr}
-                          onChangeText={(t) =>
-                            setMinuteStr(t.replace(/[^0-9]/g, ""))
-                          }
+                          onChangeText={(t) => {
+                            const clean = t.replace(/[^0-9]/g, "");
+                            if (clean === "") {
+                              setMinuteStr("00");
+                              return;
+                            }
+                            if (clean.length < minuteStr.length) {
+                              setMinuteStr(clean.padStart(2, "0"));
+                              return;
+                            }
+                            const digit = clean.slice(-1);
+                            const newVal = minuteStr === "00" ? "0" + digit : minuteStr.charAt(1) + digit;
+                            const val = parseInt(newVal, 10);
+                            if (val >= 0 && val <= 59) {
+                              setMinuteStr(newVal);
+                            }
+                          }}
                           onFocus={() => {
-                            setMinuteSelection({ start: minuteStr.length, end: minuteStr.length });
+                            setMinuteStr("00");
+                            setMinuteSelection({ start: 2, end: 2 });
                             setTimeout(() => setMinuteSelection(undefined), 100);
                           }}
                           selection={minuteSelection}
@@ -345,7 +390,7 @@ export function CustomDateTimePickerModal({
                           keyboardType="number-pad"
                           returnKeyType="done"
                           onSubmitEditing={handleTimeSave}
-                          maxLength={2}
+                          maxLength={3}
                           className="text-primary text-4xl font-bold text-center p-0 m-0 w-full"
                         />
                       </Pressable>
@@ -360,29 +405,31 @@ export function CustomDateTimePickerModal({
                         />
                       </Pressable>
                     </View>
-
-                    <View className="ml-2 gap-3">
-                      <Pressable
-                        onPress={() => setIsPM(false)}
-                        className={`px-4 py-3 rounded-xl border ${!isPM ? "bg-brand-primary border-brand-primary" : "bg-surface border-bordercolor"}`}
-                      >
-                        <Text
-                          className={`font-bold ${!isPM ? "text-brand-primary-content" : "text-secondary"}`}
+ 
+                    {!is24Hour && (
+                      <View className="ml-2 gap-3">
+                        <Pressable
+                          onPress={() => setIsPM(false)}
+                          className={`px-4 py-3 rounded-xl border ${!isPM ? "bg-brand-primary border-brand-primary" : "bg-surface border-bordercolor"}`}
                         >
-                          AM
-                        </Text>
-                      </Pressable>
-                      <Pressable
-                        onPress={() => setIsPM(true)}
-                        className={`px-4 py-3 rounded-xl border ${isPM ? "bg-brand-primary border-brand-primary" : "bg-surface border-bordercolor"}`}
-                      >
-                        <Text
-                          className={`font-bold ${isPM ? "text-brand-primary-content" : "text-secondary"}`}
+                          <Text
+                            className={`font-bold ${!isPM ? "text-brand-primary-content" : "text-secondary"}`}
+                          >
+                            AM
+                          </Text>
+                        </Pressable>
+                        <Pressable
+                          onPress={() => setIsPM(true)}
+                          className={`px-4 py-3 rounded-xl border ${isPM ? "bg-brand-primary border-brand-primary" : "bg-surface border-bordercolor"}`}
                         >
-                          PM
-                        </Text>
-                      </Pressable>
-                    </View>
+                          <Text
+                            className={`font-bold ${isPM ? "text-brand-primary-content" : "text-secondary"}`}
+                          >
+                            PM
+                          </Text>
+                        </Pressable>
+                      </View>
+                    )}
                   </View>
 
                   <Pressable
