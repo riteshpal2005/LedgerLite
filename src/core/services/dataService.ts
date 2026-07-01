@@ -360,7 +360,7 @@ export const importData = async (
                (name1.includes("food") && name2.includes("food")) ||
                (name1.includes("dining") && name2.includes("drink"));
       });
-      const categoryId = matchedCategory ? matchedCategory.id : undefined;
+      const categoryId = matchedCategory ? matchedCategory.id : "unmapped";
 
       const accountName = getRowValue(row, ["AccountName", "Account", "account_name", "accountName", "account"]);
       const matchedAccount = accounts.find((a) => a.name === accountName);
