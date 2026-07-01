@@ -62,7 +62,6 @@ export function AddExpenseSheet({
     addExpense,
     updateExpenseFull,
     deleteExpense,
-    adjustAccountBalance,
     getAllAccounts,
     getAllExpenses,
   } = dbActions;
@@ -161,12 +160,6 @@ export function AddExpenseSheet({
       await updateExpenseFull(initialExpense.id, expenseData);
     } else {
       await addExpense(expenseData);
-
-      if (isBackdatedMode && selectedAccount) {
-        const amountAdjustment =
-          type === "debit" ? expenseData.amount : -expenseData.amount;
-        await adjustAccountBalance(selectedAccount.id, amountAdjustment);
-      }
     }
 
     const updatedExpenses = await getAllExpenses();
