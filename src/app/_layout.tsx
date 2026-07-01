@@ -139,18 +139,18 @@ export default function RootLayout() {
 
   return (
     <Provider store={store}>
-      <AuthProvider>
-        <DatabaseProvider>
-          <ThemeProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <DatabaseProvider>
             <GestureHandlerRootView style={{ flex: 1 }}>
               <BottomSheetModalProvider>
                 <RootLayoutNav isSettingsLoaded={isSettingsLoaded} />
                 <UpdateChecker />
               </BottomSheetModalProvider>
             </GestureHandlerRootView>
-          </ThemeProvider>
-        </DatabaseProvider>
-      </AuthProvider>
+          </DatabaseProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </Provider>
   );
 }
