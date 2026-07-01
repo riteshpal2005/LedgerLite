@@ -1,15 +1,23 @@
-# 2.0.3
+# Changelog
+
+## [2.1.0] - 2026-07-01
 
 ### Features
-- **PDF Export with Visualizations:** Implemented HTML-to-PDF export functionality that generates a comprehensive expense report with date filtering and a dynamically rendered CSS pie chart of category spending.
-- **Improved Analytics Loading:** Decoupled SQLite data fetching in the Analytics tab. The "Total Spent" metric now renders instantly on tab switch, while the category Pie Chart utilizes a high-quality 600ms skeleton loader when date filters are explicitly changed or on cold boot.
-
-### Security & Performance
-- **Firebase Sync Rate Limiting:** Implemented a strict 10-second cooldown in `SyncService` to prevent aggressive sync attempts from abusing Firestore quotas.
-- **Multiple Sign-in Prevention:** Hardened the Login and Register screens using synchronous `useRef` locks to completely block multiple parallel Firebase Auth requests caused by rapid button tapping.
-- **Hot-Reload Sync Optimization:** Decoupled the background sync engine from the React component lifecycle in the root layout. It now correctly respects the JavaScript memory boundary to ensure cloud syncs only fire on a true application cold-boot, preventing redundant network requests during Metro fast-refresh.
+- **Incremental Running Balance Timeline:** Added `balance_after` tracking inside the database schema and created a chronological propagation engine (`propagateForward`) using SQLite ordering. All transaction insertions, edits, deletions, and account transfers automatically recalculate balances forward on the timeline.
+- **Redesigned Balance Chip:** Integrated a dedicated, styled light-blue chip in the expense history list next to the bank/account name chip to display the running balance clearly.
+- **Global 24-Hour Time Preference:** Added a toggle switch in Settings -> Preferences to switch between 12-hour (AM/PM) and 24-hour time format, dynamically formatting time in pickers, form fields, and historical list item timestamps.
+- **Custom Time Picker Digit Shifting:** Re-engineered the time inputs to support calculator-style digit-shifting (entering numbers from right-to-left) with strict validation boundaries matching 12h/24h formats.
+- **Clipboard Backup Restoration:** Added a clipboard **Paste** action shortcut icon in the Restore Raw JSON modal top header for one-click backup restoration.
+- **Custom Date Picker in Analytics:** Switched native datetimepicker components with the custom project date modal to preserve visual theme consistency.
+- **Hybrid Persistent Storage:** Migrated key configurations to MMKV for standalone/production builds, falling back to AsyncStorage in Expo Go environments. Implemented an auto-migration script on application boot.
+- **Dev-Client Target Configuration:** Reconfigured package name identifiers to `dev.ritesh.ledgerlite.dev` and created EAS build profiles for Android APK targets to allow side-by-side installations of developer and production clients.
+- **Async Batch Imports & Pagination:** Integrated SQLite batch transactions, chunked batch file uploads, progress bars, background push notifications, and list infinite scroll pagination to handle thousands of historical records smoothly.
 
 ### Bug Fixes
-- **Time Picker Keyboard Jitter:** Fixed a critical UX bug in the `CustomDateTimePickerModal` where transitioning from the 'hour' to 'minute' input field would cause the software keyboard to abruptly dismiss and reappear.
-- **Modal Gesture Conflicts:** Reverted experimental swipe-to-close PanResponder behaviors in `ColumnSelectionModal` that were conflicting with internal ScrollView responders and causing UI freezes on Android.
-
+- **Excel Timestamp Rounding Corruption:** Swapped parsing priority to read readable Date and Time string columns first, falling back to Unix millisecond timestamps only if missing. This completely avoids precision loss and duplicate checks from Excel scientific notation rounding.
+- **Timezone-Shift Import Errors:** ReplacedHermes' fragile native `new Date()` parsing with UTC component extraction (`getUTCHours()`, `getUTCDate()`, etc.) to prevent GMT offsets from shifting transaction times.
+- **Time Picker Layout Jitter:** Replaced visible text input fields with invisible keystroke routers to completely eliminate cursor blinking, font sizing changes, and keyboard jitter during typing.
+- **Infinite Scrolling Loops:** Added upper boundary checks to the list's `onEndReached` callback to prevent rendering trigger loops on small datasets.
+- **Backdated Initial Balance Calculation:** Fixed the backdated ledger mode to accurately offset the account's initial starting balance across Add, Edit, and Delete actions, keeping the current balance correct.
+- **Firebase Sync Date Parser:** Refactored pull parsing to format dates timezone-safely using local parse engines and added temporary cloud push guards.
+- **Expo Go Safe Notifications:** Decoupled expo-notifications into dynamic imports to prevent native crash warnings in clean SDK clients.
