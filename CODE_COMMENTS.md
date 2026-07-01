@@ -344,6 +344,14 @@ FLAG_GRANT_READ_URI_PERMISSION | FLAG_ACTIVITY_NEW_TASK
 
 ### `src/core/services/dataService.ts` (CSV matching duplicates)
 - **dataService-4**: Uses an unpaired matching set (`pairedIds`) to correctly identify and allow importing identical transactions (e.g. multiple matching items in the CSV source) without skipping them.
+- **dataService-7**: Loosely matches spelling variations of categories (e.g., matching "Food and Drinks" to "Food & Dining") and defaults unmapped rows to "cat-1".
 
 ### `src/features/expenses/components/ExpenseListItem.tsx` (Missing category placeholder)
 - **ExpenseListItem-5**: Renders a gray circle containing a question mark if the category associated with a transaction is missing or not present in the database.
+
+### `src/core/database/useExpenseDatabase.ts` (Self Transfer pairing corrections)
+- **useExpenseDatabase-9**: `deleteExpense` automatically deletes the partner leg when deleting a Self Transfer transaction.
+- **useExpenseDatabase-10**: `repairSelfTransfers` matches paired Self Transfer transaction coordinates and sequences them chronologically so that Debit occurs first and Credit occurs later (shifted +1ms).
+
+### `src/app/_layout.tsx` (Auto repair wrapper)
+- **_layout-6**: `DatabaseRepairWrapper` runs the database repair routine on boot to clean up and sequence any existing Self Transfer transactions chronologically.

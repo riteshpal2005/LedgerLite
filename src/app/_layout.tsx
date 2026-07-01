@@ -50,6 +50,16 @@ configureReanimatedLogger({
   strict: false,
 });
 
+import { useExpenseDatabase } from "../core/database/useExpenseDatabase";
+
+function DatabaseRepairWrapper({ children }: { children: React.ReactNode }) {
+  const { repairSelfTransfers } = useExpenseDatabase();
+  useEffect(() => {
+    repairSelfTransfers().catch(console.error);
+  }, []);
+  return <>{children}</>;
+}
+
 function DatabaseProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const dbName = user ? `ledgerlite_${user.uid}.db` : "ledgerlite_guest.db";
@@ -60,7 +70,7 @@ function DatabaseProvider({ children }: { children: React.ReactNode }) {
       databaseName={dbName}
       onInit={initializeDatabase}
     >
-      {children}
+      <DatabaseRepairWrapper>{children}</DatabaseRepairWrapper>
     </SQLiteProvider>
   );
 }

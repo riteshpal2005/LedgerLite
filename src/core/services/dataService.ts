@@ -352,7 +352,14 @@ export const importData = async (
       const parsedAmount = parseFloat(rawAmountStr) || 0;
 
       const categoryName = getRowValue(row, ["Category", "category", "group"]);
-      const matchedCategory = categories.find((c) => c.name === categoryName);
+      const matchedCategory = categories.find((c) => {
+        if (!categoryName) return false;
+        const name1 = c.name.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const name2 = String(categoryName).toLowerCase().replace(/[^a-z0-9]/g, "");
+        return name1 === name2 || 
+               (name1.includes("food") && name2.includes("food")) ||
+               (name1.includes("dining") && name2.includes("drink"));
+      });
       const categoryId = matchedCategory ? matchedCategory.id : "cat-1";
 
       const accountName = getRowValue(row, ["AccountName", "Account", "account_name", "accountName", "account"]);

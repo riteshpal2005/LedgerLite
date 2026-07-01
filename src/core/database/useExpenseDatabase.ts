@@ -365,17 +365,102 @@ export function useExpenseDatabase() {
     await db.runAsync(`DELETE FROM accounts WHERE id IS NULL`);
   };
 
+
+
   const deleteExpense = async (id: string) => {
-    const expense = await db.getFirstAsync<{ rowid: number; accountId: string; date: number }>(
-      "SELECT rowid, accountId, date FROM expenses WHERE id = ?",
+    const expense = await db.getFirstAsync<{ rowid: number; accountId: string; date: number; categoryId: string; amount: number; type: string; description: string }>(
+      "SELECT rowid, accountId, date, categoryId, amount, type, description FROM expenses WHERE id = ?",
       [id]
     );
+    if (!expense) return;
+
     await db.runAsync(
       "UPDATE expenses SET sync_status = ?, updated_at = ? WHERE id = ?",
       ["deleted", Date.now(), id],
     );
-    if (expense?.accountId) {
+    if (expense.accountId) {
       await propagateForward(expense.accountId, expense.date, expense.rowid);
+    }
+
+    const selfTransferCat = await db.getFirstAsync<{ id: string }>(
+      "SELECT id FROM categories WHERE name = 'Self Transfer'"
+    );
+    if (selfTransferCat && expense.categoryId === selfTransferCat.id) {
+      const oppositeType = expense.type === "debit" ? "credit" : "debit";
+      const partner = await db.getFirstAsync<{ id: string; rowid: number; accountId: string; date: number }>(
+        `SELECT id, rowid, accountId, date FROM expenses 
+         WHERE categoryId = ? AND type = ? AND amount = ? 
+           AND abs(date - ?) <= 1000 AND sync_status != 'deleted' AND id != ?`,
+        [expense.categoryId, oppositeType, expense.amount, expense.date, id]
+      );
+      if (partner) {
+        await db.runAsync(
+          "UPDATE expenses SET sync_status = ?, updated_at = ? WHERE id = ?",
+          ["deleted", Date.now(), partner.id],
+        );
+        if (partner.accountId) {
+          await propagateForward(partner.accountId, partner.date, partner.rowid);
+        }
+      }
+    }
+  };
+
+  const repairSelfTransfers = async () => {
+    const selfTransferCat = await db.getFirstAsync<{ id: string }>(
+      "SELECT id FROM categories WHERE name = 'Self Transfer'"
+    );
+    if (!selfTransferCat) return;
+
+    const txs = await db.getAllAsync<{ id: string; amount: number; type: string; date: number; accountId: string }>(
+      "SELECT id, amount, type, date, accountId FROM expenses WHERE categoryId = ? AND sync_status != 'deleted' ORDER BY date ASC, rowid ASC",
+      [selfTransferCat.id]
+    );
+
+    const paired = new Set<string>();
+    const affectedAccounts = new Set<string>();
+
+    for (let i = 0; i < txs.length; i++) {
+      const tx1 = txs[i];
+      if (paired.has(tx1.id)) continue;
+
+      for (let j = i + 1; j < txs.length; j++) {
+        const tx2 = txs[j];
+        if (paired.has(tx2.id)) continue;
+
+        const isOpposite = tx1.type !== tx2.type;
+        const isSameAmount = tx1.amount === tx2.amount;
+        const isSameTime = Math.abs(tx1.date - tx2.date) <= 1000;
+
+        if (isOpposite && isSameAmount && isSameTime) {
+          paired.add(tx1.id);
+          paired.add(tx2.id);
+
+          const debitTx = tx1.type === "debit" ? tx1 : tx2;
+          const creditTx = tx1.type === "credit" ? tx1 : tx2;
+
+          const baseDate = Math.min(tx1.date, tx2.date);
+          const newDebitDate = baseDate;
+          const newCreditDate = baseDate + 1;
+
+          if (debitTx.date !== newDebitDate || creditTx.date !== newCreditDate) {
+            await db.runAsync(
+              "UPDATE expenses SET date = ?, sync_status = 'pending', updated_at = ? WHERE id = ?",
+              [newDebitDate, Date.now(), debitTx.id]
+            );
+            await db.runAsync(
+              "UPDATE expenses SET date = ?, sync_status = 'pending', updated_at = ? WHERE id = ?",
+              [newCreditDate, Date.now(), creditTx.id]
+            );
+            if (debitTx.accountId) affectedAccounts.add(debitTx.accountId);
+            if (creditTx.accountId) affectedAccounts.add(creditTx.accountId);
+          }
+          break;
+        }
+      }
+    }
+
+    for (const accId of affectedAccounts) {
+      await propagateForward(accId, 0);
     }
   };
 
@@ -449,12 +534,13 @@ export function useExpenseDatabase() {
     adjustAccountBalance,
     updateExpenseAccount,
     updateExpenseFull,
-    deleteExpense,
-    deleteAccount,
-    deleteExpensesByAccount,
-    reassignExpenses,
-    restoreExpense,
-    markAsSynced,
-    deleteCorruptedData,
-  };
-}
+     deleteExpense,
+     repairSelfTransfers,
+     deleteAccount,
+     deleteExpensesByAccount,
+     reassignExpenses,
+     restoreExpense,
+     markAsSynced,
+     deleteCorruptedData,
+   };
+ }
