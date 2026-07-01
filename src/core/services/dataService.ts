@@ -156,7 +156,7 @@ const getRowValue = (row: any, keys: string[]): any => {
   return undefined;
 };
 
-const parseTimeString = (timeStr: string) => {
+export const parseTimeString = (timeStr: string) => {
   let hours = 0;
   let minutes = 0;
   let seconds = 0;
@@ -176,7 +176,7 @@ const parseTimeString = (timeStr: string) => {
   return { hours, minutes, seconds };
 };
 
-const parseDateTime = (dateVal: any, timeVal: any): number => {
+export const parseDateTime = (dateVal: any, timeVal: any): number => {
   if (!dateVal) return Date.now();
 
   let year = new Date().getFullYear();
