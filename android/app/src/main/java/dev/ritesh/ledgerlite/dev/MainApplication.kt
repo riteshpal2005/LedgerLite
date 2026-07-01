@@ -1,4 +1,4 @@
-package dev.ritesh.ledgerlite
+package dev.ritesh.ledgerlite.dev
 
 import android.app.Application
 import android.content.res.Configuration
