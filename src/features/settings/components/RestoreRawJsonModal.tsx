@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useTheme } from "../../../core/theme/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
 
 interface RestoreRawJsonModalProps {
   visible: boolean;
@@ -25,6 +26,19 @@ export function RestoreRawJsonModal({
 }: RestoreRawJsonModalProps) {
   const [jsonText, setJsonText] = useState("");
   const { bottomSheetBorderColor, bottomSheetBackgroundColor } = useTheme();
+
+  const handlePaste = async () => {
+    try {
+      const text = await Clipboard.getStringAsync();
+      if (text) {
+        setJsonText(text);
+      } else {
+        Alert.alert("Clipboard Empty", "No text found in clipboard.");
+      }
+    } catch (e) {
+      Alert.alert("Clipboard Error", "Could not read from clipboard.");
+    }
+  };
 
   const handleRestore = () => {
     if (!jsonText.trim()) {
@@ -77,9 +91,15 @@ export function RestoreRawJsonModal({
                 <Text className="text-primary text-xl font-bold">
                   Paste Raw JSON
                 </Text>
-                <Pressable onPress={onClose}>
-                  <Ionicons name="close" size={24} color="#a1a1aa" />
-                </Pressable>
+                <View className="flex-row items-center gap-4">
+                  <Pressable onPress={handlePaste} className="flex-row items-center gap-1 bg-surface border border-bordercolor px-3 py-1.5 rounded-lg active:opacity-70">
+                    <Ionicons name="clipboard-outline" size={16} color="#3b82f6" />
+                    <Text className="text-blue-500 font-semibold text-xs">Paste</Text>
+                  </Pressable>
+                  <Pressable onPress={onClose}>
+                    <Ionicons name="close" size={24} color="#a1a1aa" />
+                  </Pressable>
+                </View>
               </View>
 
               <Text className="text-secondary text-sm mb-4">
