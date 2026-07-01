@@ -369,14 +369,15 @@ export const importData = async (
         }
       }
 
+      const dateVal = getRowValue(row, ["Date", "date", "date_time", "datetime", "timestamp"]);
+      const timeVal = getRowValue(row, ["Time", "time"]);
       const rawUnixVal = getRowValue(row, ["_RawDateUnix", "raw_date_unix", "rawDateUnix"]);
       let parsedDate = Date.now();
-      if (rawUnixVal) {
-        parsedDate = parseInt(String(rawUnixVal));
-      } else {
-        const dateVal = getRowValue(row, ["Date", "date", "date_time", "datetime", "timestamp"]);
-        const timeVal = getRowValue(row, ["Time", "time"]);
+
+      if (dateVal) {
         parsedDate = parseDateTime(dateVal, timeVal);
+      } else if (rawUnixVal) {
+        parsedDate = parseInt(String(rawUnixVal));
       }
 
       const typeVal = getRowValue(row, ["Type", "type", "transaction_type", "transactionType"]);
