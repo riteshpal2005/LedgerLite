@@ -1,4 +1,4 @@
-package dev.ritesh.ledgerlite.dev
+package dev.ritesh.ledgerlite
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
