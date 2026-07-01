@@ -11,6 +11,7 @@ const settingsSlice = createSlice({
     hasCompletedOnboarding: false,
     isGlobalSyncing: false,
     importProgress: 0,
+    use24HourFormat: false,
   },
   reducers: {
     toggleShowIcons: (state) => {
@@ -18,6 +19,9 @@ const settingsSlice = createSlice({
     },
     toggleHaptics: (state) => {
       state.hapticsEnabled = !state.hapticsEnabled;
+    },
+    toggle24HourFormat: (state) => {
+      state.use24HourFormat = !state.use24HourFormat;
     },
     setDefaultAccount: (state, action) => {
       state.defaultAccountId = action.payload;
@@ -46,6 +50,7 @@ const settingsSlice = createSlice({
 export const {
   toggleShowIcons,
   toggleHaptics,
+  toggle24HourFormat,
   setDefaultAccount,
   loadSettings,
   setThemeOptionRedux,

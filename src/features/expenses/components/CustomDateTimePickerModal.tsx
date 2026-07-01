@@ -11,6 +11,9 @@ import {
 import { useTheme } from "../../../core/theme/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 
+import { useSelector } from "react-redux";
+import { RootState } from "../../../core/store/store";
+
 interface CustomDateTimePickerModalProps {
   visible: boolean;
   onClose: () => void;
@@ -30,7 +33,9 @@ export function CustomDateTimePickerModal({
     new Date(date.getFullYear(), date.getMonth(), 1),
   );
 
-  const [is24Hour, setIs24Hour] = useState(false);
+  const is24Hour = useSelector(
+    (state: RootState) => state.settings.use24HourFormat || false
+  );
   const [isPM, setIsPM] = useState(date.getHours() >= 12);
   const [hourStr, setHourStr] = useState("12");
   const [minuteStr, setMinuteStr] = useState("00");
@@ -98,11 +103,9 @@ export function CustomDateTimePickerModal({
   useEffect(() => {
     if (visible) {
       setCurrentMonth(new Date(date.getFullYear(), date.getMonth(), 1));
-      const check24 = !/am|pm/i.test(new Date(2026, 0, 1, 13, 0, 0).toLocaleTimeString());
-      setIs24Hour(check24);
 
       let h = date.getHours();
-      if (!check24) {
+      if (!is24Hour) {
         setIsPM(h >= 12);
         h = h % 12 || 12;
       }
@@ -110,7 +113,7 @@ export function CustomDateTimePickerModal({
       setHourStr(String(h).padStart(2, "0"));
       setMinuteStr(String(m).padStart(2, "0"));
     }
-  }, [visible, date]);
+  }, [visible, date, is24Hour]);
 
   const daysInMonth = new Date(
     currentMonth.getFullYear(),

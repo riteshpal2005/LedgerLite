@@ -4,6 +4,9 @@ import Animated from "react-native-reanimated";
 import { Expense } from "../../../core/database/schema";
 import { CategoryIcon } from "../../../shared/components/ui/CategoryIcon";
 
+import { useSelector } from "react-redux";
+import { RootState } from "../../../core/store/store";
+
 interface ExpenseListItemProps {
   item: Expense;
   category: any;
@@ -23,6 +26,9 @@ export function ExpenseListItem({
   onPress,
   onAssignAccountPress,
 }: ExpenseListItemProps) {
+  const use24HourFormat = useSelector(
+    (state: RootState) => state.settings.use24HourFormat || false
+  );
   return (
     <Animated.View>
       <Pressable
@@ -92,15 +98,21 @@ export function ExpenseListItem({
           <Text className="text-tertiary text-xs mt-1">
             {(() => {
               const d = new Date(item.date);
-              let hours = d.getHours();
               const minutes = String(d.getMinutes()).padStart(2, "0");
-              const ampm = hours >= 12 ? "PM" : "AM";
-              hours = hours % 12;
-              hours = hours ? hours : 12;
               const day = d.getDate();
               const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
               const monthStr = months[d.getMonth()];
-              return `${hours}:${minutes} ${ampm}, ${day} ${monthStr}`;
+
+              if (use24HourFormat) {
+                const hourStr = String(d.getHours()).padStart(2, "0");
+                return `${hourStr}:${minutes}, ${day} ${monthStr}`;
+              } else {
+                let hours = d.getHours();
+                const ampm = hours >= 12 ? "PM" : "AM";
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                return `${hours}:${minutes} ${ampm}, ${day} ${monthStr}`;
+              }
             })()}
           </Text>
         </View>

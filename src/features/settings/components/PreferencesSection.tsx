@@ -4,6 +4,7 @@ import { RootState } from "../../../core/store/store";
 import {
   toggleShowIcons,
   toggleHaptics,
+  toggle24HourFormat,
 } from "../../../core/store/settingsSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme, ThemeOption } from "../../../core/theme/ThemeContext";
@@ -12,6 +13,9 @@ export function PreferencesSection() {
   const showIcons = useSelector((state: RootState) => state.settings.showIcons);
   const hapticsEnabled = useSelector(
     (state: RootState) => state.settings.hapticsEnabled,
+  );
+  const use24HourFormat = useSelector(
+    (state: RootState) => state.settings.use24HourFormat || false,
   );
   const dispatch = useDispatch();
   const { themeOption, setThemeOption, activeThemeClass } = useTheme();
@@ -102,7 +106,7 @@ export function PreferencesSection() {
           />
         </View>
 
-        <View className="flex-row justify-between items-center">
+        <View className="flex-row justify-between items-center mb-4">
           <View className="flex-row items-center">
             <Ionicons name="radio" size={24} color="#71717a" />
             <Text className="text-primary text-lg font-semibold ml-3">
@@ -113,6 +117,23 @@ export function PreferencesSection() {
             value={hapticsEnabled}
             onValueChange={() => {
               dispatch(toggleHaptics());
+            }}
+          />
+        </View>
+
+        <View className="h-[1px] bg-bordercolor mb-4" />
+
+        <View className="flex-row justify-between items-center">
+          <View className="flex-row items-center">
+            <Ionicons name="time" size={24} color="#71717a" />
+            <Text className="text-primary text-lg font-semibold ml-3">
+              24-Hour Time Format
+            </Text>
+          </View>
+          <CustomToggle
+            value={use24HourFormat}
+            onValueChange={() => {
+              dispatch(toggle24HourFormat());
             }}
           />
         </View>

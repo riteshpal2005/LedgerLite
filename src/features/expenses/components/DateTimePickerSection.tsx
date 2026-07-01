@@ -3,6 +3,9 @@ import { View, Text, Pressable } from "react-native";
 import { CustomDateTimePickerModal } from "./CustomDateTimePickerModal";
 import { Ionicons } from "@expo/vector-icons";
 
+import { useSelector } from "react-redux";
+import { RootState } from "../../../core/store/store";
+
 interface DateTimePickerSectionProps {
   date: Date;
   setDate: (date: Date) => void;
@@ -15,11 +18,15 @@ export function DateTimePickerSection({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
+  const use24HourFormat = useSelector(
+    (state: RootState) => state.settings.use24HourFormat || false
+  );
+
   const dateStr = date.toLocaleDateString();
   const timeStr = date.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
-    hour12: true,
+    hour12: !use24HourFormat,
   });
 
   return (
