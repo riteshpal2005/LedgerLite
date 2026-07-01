@@ -36,16 +36,20 @@ export function ExpenseListItem({
         className="bg-surface p-4 rounded-xl mb-3 flex-row justify-between items-center border border-bordercolor active:opacity-80"
       >
         <View className="flex-row items-center flex-1">
-          {showIcons && category && (
+          {showIcons && (
             <View
-              style={{ backgroundColor: category?.color || "#3b82f6" }}
+              style={{ backgroundColor: category?.color || "#71717a" }}
               className="w-10 h-10 rounded-full mr-4 items-center justify-center"
             >
-              <CategoryIcon
-                name={category?.icon as any}
-                size={20}
-                color="white"
-              />
+              {category ? (
+                <CategoryIcon
+                  name={category?.icon as any}
+                  size={20}
+                  color="white"
+                />
+              ) : (
+                <Text className="text-white font-bold text-lg">?</Text>
+              )}
             </View>
           )}
 

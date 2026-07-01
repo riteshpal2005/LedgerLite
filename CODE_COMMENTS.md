@@ -344,3 +344,6 @@ FLAG_GRANT_READ_URI_PERMISSION | FLAG_ACTIVITY_NEW_TASK
 
 ### `src/core/services/dataService.ts` (CSV matching duplicates)
 - **dataService-4**: Uses an unpaired matching set (`pairedIds`) to correctly identify and allow importing identical transactions (e.g. multiple matching items in the CSV source) without skipping them.
+
+### `src/features/expenses/components/ExpenseListItem.tsx` (Missing category placeholder)
+- **ExpenseListItem-5**: Renders a gray circle containing a question mark if the category associated with a transaction is missing or not present in the database.
