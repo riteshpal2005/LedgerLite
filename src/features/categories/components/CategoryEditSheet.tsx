@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
-import { View, Text, Pressable, ScrollView, Modal } from "react-native";
+import { View, Text, Pressable, ScrollView, Modal, PanResponder } from "react-native";
 import {
   BottomSheetModal,
   BottomSheetView,
@@ -146,69 +146,101 @@ export function CategoryEditSheet({
   const [formKey, setFormKey] = useState(0);
 
   const [previewIcon, setPreviewIcon] = useState<string | null>(null);
+
   const layoutsRef = useRef<Record<string, { x: number; y: number; w: number; h: number }>>({});
-  const hoveredIconRef = useRef<string | null>(null);
-  const previewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<View>(null);
-  const [parentPage, setParentPage] = useState<{ x: number; y: number } | null>(null);
+  const containerPageRef = useRef<{ x: number; y: number } | null>(null);
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isPreviewActiveRef = useRef(false);
+  const hoveredIconRef = useRef<string | null>(null);
+  const touchStartIconRef = useRef<string | null>(null);
 
-  const findAndSetHoveredIcon = (x: number, y: number) => {
-    for (const [iconName, rect] of Object.entries(layoutsRef.current)) {
-      if (x >= rect.x && x <= rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h) {
-        if (hoveredIconRef.current !== iconName) {
-          hoveredIconRef.current = iconName;
-          setPreviewIcon(iconName);
-        }
-        return;
+
+  const iconAtPagePointRef = useRef((pageX: number, pageY: number): string | null => {
+    const origin = containerPageRef.current;
+    if (!origin) return null;
+    const rx = pageX - origin.x;
+    const ry = pageY - origin.y;
+    for (const [name, rect] of Object.entries(layoutsRef.current)) {
+      if (rx >= rect.x && rx <= rect.x + rect.w && ry >= rect.y && ry <= rect.y + rect.h) {
+        return name;
       }
     }
-  };
+    return null;
+  });
 
-  const handleContainerLayout = () => {
-    containerRef.current?.measure((x, y, width, height, pageX, pageY) => {
-      if (pageX !== undefined && pageY !== undefined) {
-        setParentPage({ x: pageX, y: pageY });
-      }
-    });
-  };
+  const panResponder = useRef(
+    PanResponder.create({
+      // Ref: CategoryEditSheet-4
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderTerminationRequest: () => false,
 
-  const handleTouchStart = (evt: any) => {
-    containerRef.current?.measure((x, y, width, height, pageX, pageY) => {
-      if (pageX !== undefined && pageY !== undefined) {
-        const pPage = { x: pageX, y: pageY };
-        setParentPage(pPage);
-        const { pageX: touchPageX, pageY: touchPageY } = evt.nativeEvent;
-        const rx = touchPageX - pPage.x;
-        const ry = touchPageY - pPage.y;
-        findAndSetHoveredIcon(rx, ry);
-
-        if (previewTimeoutRef.current) clearTimeout(previewTimeoutRef.current);
-        previewTimeoutRef.current = setTimeout(() => {
-          if (hoveredIconRef.current) {
-            setPreviewIcon(hoveredIconRef.current);
+      onPanResponderGrant: (evt) => {
+        const { pageX, pageY } = evt.nativeEvent;
+        // Ref: CategoryEditSheet-5
+        containerRef.current?.measure((_x, _y, _w, _h, px, py) => {
+          if (px != null && py != null) {
+            containerPageRef.current = { x: px, y: py };
           }
-        }, 200);
-      }
-    });
-  };
+          const hit = iconAtPagePointRef.current(pageX, pageY);
+          hoveredIconRef.current = hit;
+          touchStartIconRef.current = hit;
 
-  const handleTouchMove = (evt: any) => {
-    if (parentPage) {
-      const { pageX: touchPageX, pageY: touchPageY } = evt.nativeEvent;
-      const rx = touchPageX - parentPage.x;
-      const ry = touchPageY - parentPage.y;
-      findAndSetHoveredIcon(rx, ry);
-    }
-  };
+          // Ref: CategoryEditSheet-6
+          if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+          longPressTimerRef.current = setTimeout(() => {
+            if (hoveredIconRef.current) {
+              isPreviewActiveRef.current = true;
+              setPreviewIcon(hoveredIconRef.current);
+            }
+          }, 350);
+        });
+      },
 
-  const handleTouchEnd = () => {
-    if (previewTimeoutRef.current) clearTimeout(previewTimeoutRef.current);
-    if (hoveredIconRef.current) {
-      setIcon(hoveredIconRef.current);
-    }
-    setPreviewIcon(null);
-    hoveredIconRef.current = null;
-  };
+      onPanResponderMove: (evt) => {
+        const { pageX, pageY } = evt.nativeEvent;
+        const hit = iconAtPagePointRef.current(pageX, pageY);
+        if (hit && hit !== hoveredIconRef.current) {
+          hoveredIconRef.current = hit;
+          // Ref: CategoryEditSheet-7
+          if (isPreviewActiveRef.current) {
+            setPreviewIcon(hit);
+          }
+        }
+      },
+
+      onPanResponderRelease: () => {
+        if (longPressTimerRef.current) {
+          clearTimeout(longPressTimerRef.current);
+          longPressTimerRef.current = null;
+        }
+
+        if (isPreviewActiveRef.current) {
+          // Ref: CategoryEditSheet-8
+          if (hoveredIconRef.current) setIcon(hoveredIconRef.current);
+        } else {
+          // Ref: CategoryEditSheet-9
+          if (touchStartIconRef.current) setIcon(touchStartIconRef.current);
+        }
+
+        // Ref: CategoryEditSheet-10
+        isPreviewActiveRef.current = false;
+        setPreviewIcon(null);
+        hoveredIconRef.current = null;
+        touchStartIconRef.current = null;
+      },
+
+      onPanResponderTerminate: () => {
+        // Ref: CategoryEditSheet-11
+        if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+        isPreviewActiveRef.current = false;
+        setPreviewIcon(null);
+        hoveredIconRef.current = null;
+        touchStartIconRef.current = null;
+      },
+    }),
+  ).current;
 
   const dispatch = useDispatch();
   const categories = useSelector(
@@ -431,10 +463,15 @@ export function CategoryEditSheet({
           </View>
           <View
             ref={containerRef}
-            onLayout={handleContainerLayout}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
+            onLayout={() => {
+              // Ref: CategoryEditSheet-PreviewGesture
+              containerRef.current?.measure((_x, _y, _w, _h, pageX, pageY) => {
+                if (pageX != null && pageY != null) {
+                  containerPageRef.current = { x: pageX, y: pageY };
+                }
+              });
+            }}
+            {...panResponder.panHandlers}
             className="flex-row flex-wrap gap-3 mb-8"
           >
             {PRESET_ICONS.map((i) => (
