@@ -93,22 +93,10 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "2.2.0"
+        versionName "2.1.4"
 
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
-
-    if (project.hasProperty("buildArm64Only")) {
-        splits {
-            abi {
-                reset()
-                enable true
-                universalApk false
-                include "arm64-v8a"
-            }
-        }
-    }
-
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -117,17 +105,20 @@ android {
             keyPassword 'android'
         }
         release {
-            if (System.getenv("KEYSTORE_FILE")) {
-                storeFile file(System.getenv("KEYSTORE_FILE"))
-                storePassword System.getenv("KEYSTORE_PASSWORD")
-                keyAlias System.getenv("KEY_ALIAS")
-                keyPassword System.getenv("KEY_PASSWORD")
-            } else {
-                storeFile file('release.keystore')
-                storePassword 'ledgerlite123'
-                keyAlias 'ledgerlite'
-                keyPassword 'ledgerlite123'
-            }
+            // Use env vars for CI/CD signing; fallback to defaults for local dev
+            storeFile file(System.getenv('KEYSTORE_FILE') ?: "debug.keystore")
+            storePassword System.getenv('KEYSTORE_PASSWORD') ?: 'android'
+            keyAlias System.getenv('KEY_ALIAS') ?: 'androiddebugkey'
+            keyPassword System.getenv('KEY_PASSWORD') ?: 'android'
+        }
+    }
+    // ABI split: only arm64-v8a
+    splits {
+        abi {
+            enable true
+            reset()
+            include "arm64-v8a"
+            universalApk false
         }
     }
     buildTypes {
@@ -154,11 +145,6 @@ android {
     }
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
-    }
-
-    lintOptions {
-        checkReleaseBuilds false
-        abortOnError false
     }
 }
 

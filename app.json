@@ -2,11 +2,11 @@
   "expo": {
     "name": "LedgerLite",
     "slug": "ledgerlite",
-    "version": "2.2.0",
+    "version": "2.1.4",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "ledgerlite",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
@@ -44,7 +44,16 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 250
         }
-      ]
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
+      "expo-font"
     ],
     "extra": {
       "router": {},

@@ -6,15 +6,15 @@ export default function AuthLayout() {
   const isDark = activeThemeClass !== "";
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: isDark ? "#111827" : "#f9fafb" },
-        animation: "slide_from_right",
-      }}
-    >
-      <Stack.Screen name="login" />
-      <Stack.Screen name="register" />
-    </Stack>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: isDark ? "#111827" : "#f9fafb" },
+          animation: "slide_from_right",
+        }}
+      >
+        <Stack.Screen name="login" />
+        <Stack.Screen name="register" />
+      </Stack>
   );
 }

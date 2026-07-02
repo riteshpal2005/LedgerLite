@@ -27,6 +27,7 @@ import Constants from "expo-constants";
 import { Alert } from "react-native";
 import { CustomAlert } from "../../shared/components/CustomAlert";
 import { FAB } from "../../shared/components/ui/FAB";
+import { storage } from "../../core/utils/storage";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");

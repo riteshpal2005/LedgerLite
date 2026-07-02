@@ -373,7 +373,11 @@ export function DataManagementSection() {
       }
     };
 
-    processNextChunk(0);
+    processNextChunk(0).catch((err) => {
+      console.error("[Import] Chunk processing failed:", err);
+      dispatch(setImportProgress(0));
+      showAlert("Import Error", "An error occurred during import. Please try again.");
+    });
   };
 
   const processRestoration = async (importedData: any) => {

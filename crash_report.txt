@@ -1,0 +1,488 @@
+
+> 07-02 01:57:02.724 10851 10998 E AndroidRuntime: FATAL EXCEPTION: pool-11-thread-1
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: Process: dev.ritesh.ledgerlite, PID: 10851
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: java.lang.NoClassDefFoundError: Failed resolution of: Lexpo/modules/kotlin/types/AnyTypeCache;
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at expo.modules.notifications.badge.BadgeModule.definition(BadgeModule.kt:74)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at expo.modules.kotlin.ModuleHolder.<init>(ModuleHolder.kt:22)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:27)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:47)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at expo.modules.kotlin.AppContext.<init>(AppContext.kt:120)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at expo.modules.kotlin.KotlinInteropModuleRegistry.<init>(KotlinInteropModuleRegistry.kt:23)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at expo.modules.adapters.react.NativeModulesProxy.<init>(NativeModulesProxy.java:45)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.getOrCreateNativeModulesProxy(ModuleRegistryAdapter.java:135)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.createNativeModules(ModuleRegistryAdapter.java:64)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at expo.modules.ExpoModulesPackage.createNativeModules(ExpoModulesPackage.kt:35)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.initialize(ReactPackageTurboModuleManagerDelegate.kt:87)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.<init>(ReactPackageTurboModuleManagerDelegate.kt:45)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(DefaultTurboModuleManagerDelegate.kt:35)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(Unknown Source:0)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:62)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:42)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate$Builder.build(ReactPackageTurboModuleManagerDelegate.kt:241)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at com.facebook.react.runtime.ReactInstance.<init>(ReactInstance.kt:168)
+> 07-02 01:57:02.724 10851 10998 E AndroidRuntime: Caused by: java.lang.ClassNotFoundException: Didn't find class "expo.modules.kotlin.types.AnyTypeCache" on path: DexPathList[[zip file "/data/app/~~3b3okDGyUxV0nTbw9RlYdw==/dev.ritesh.ledgerlite-eWFXTGa1iqPSLK59RaN6-Q==/base.apk"],nativeLibraryDirectories=[/data/app/~~3b3okDGyUxV0nTbw9RlYdw==/dev.ritesh.ledgerlite-eWFXTGa1iqPSLK59RaN6-Q==/lib/arm64, /data/app/~~3b3okDGyUxV0nTbw9RlYdw==/dev.ritesh.ledgerlite-eWFXTGa1iqPSLK59RaN6-Q==/base.apk!/lib/arm64-v8a, /system/lib64, /system_ext/lib64]]
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:259)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at java.lang.ClassLoader.loadClass(ClassLoader.java:642)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	at java.lang.ClassLoader.loadClass(ClassLoader.java:578)
+  07-02 01:57:02.724 10851 10998 E AndroidRuntime: 	... 38 more
+  07-02 01:57:00.426  1070  1070 I         : [mi_disp:_sde_kms_drm_check_dpms [msm_drm]][2026-07-01 20:27:02.794224] [I]conn66 early_trigger:1 (power mode 2->2, fps 60->120) - 0.5(ms)
+  07-02 01:57:00.440  1070  1070 I         : [mi_disp:dsi_panel_gamma_switch_locked [msm_drm]][2026-07-01 20:27:02.808337] [I]primary panel: success to switch fps gamma(60->120)
+  07-02 01:57:00.615 10719 10719 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=1 busy try again
+  07-02 01:57:00.618 10719 10719 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=14 busy try again
+  07-02 01:57:00.656 10767 10767 E ipa_pm_handle_suspend: 1280 Client IPA_CLIENT_APPS_WAN_CONS woke up the system
+  07-02 01:57:01.306  8326  8326 E BATTERY_CHG: xm_batt_update_work: batt_update_work: batt_temp:34000 blank_state:0,interval:10,soc:65
+  07-02 01:57:01.465 21790 21790 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=1 busy try again
+  07-02 01:57:01.467 21790 21790 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=14 busy try again
+  07-02 01:57:02.715 21790 21790 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=1 busy try again
+  07-02 01:57:02.717 21790 21790 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=14 busy try again
+  07-02 01:57:02.734 10767 10767 E ipa_pm_handle_suspend: 1280 Client IPA_CLIENT_APPS_WAN_CONS woke up the system
+  07-02 01:57:02.935 21790 21790 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=1 busy try again
+  07-02 01:57:02.938 21790 21790 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=14 busy try again
+  07-02 01:57:03.054 10767 10767 E ipa_pm_handle_suspend: 1280 Client IPA_CLIENT_APPS_WAN_CONS woke up the system
+  07-02 01:57:03.375  9729  9729 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=1 busy try again
+  07-02 01:57:03.377  9729  9729 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=14 busy try again
+> 07-02 01:57:16.774  3729  3729 E RemoteFillService: java.util.concurrent.TimeoutException
+  07-02 01:57:16.774  3729  3729 E RemoteFillService: 	at com.android.internal.infra.AndroidFuture.triggerTimeout(AndroidFuture.java:289)
+  07-02 01:57:16.774  3729  3729 E RemoteFillService: 	at com.android.internal.infra.AndroidFuture$$ExternalSyntheticLambda2.run(D8$$SyntheticClass:0)
+  07-02 01:57:16.774  3729  3729 E RemoteFillService: 	at android.os.Handler.handleCallback(Handler.java:1070)
+  07-02 01:57:16.774  3729  3729 E RemoteFillService: 	at android.os.Handler.dispatchMessage(Handler.java:125)
+  07-02 01:57:16.774  3729  3729 E RemoteFillService: 	at android.os.Looper.dispatchMessage(Looper.java:333)
+  07-02 01:57:16.774  3729  3729 E RemoteFillService: 	at android.os.Looper.loopOnce(Looper.java:263)
+  07-02 01:57:16.774  3729  3729 E RemoteFillService: 	at android.os.Looper.loop(Looper.java:367)
+  07-02 01:57:16.774  3729  3729 E RemoteFillService: 	at com.android.server.SystemServer.run(SystemServer.java:1085)
+  07-02 01:57:16.774  3729  3729 E RemoteFillService: 	at com.android.server.SystemServer.main(SystemServer.java:715)
+  07-02 01:57:16.774  3729  3729 E RemoteFillService: 	at java.lang.reflect.Method.invoke(Native Method)
+  07-02 01:57:16.774  3729  3729 E RemoteFillService: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:566)
+  07-02 01:57:16.774  3729  3729 E RemoteFillService: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:907)
+  07-02 01:57:16.776  3729  3729 W PresentationStatsEventLogger: Shouldn't be logging AutofillPresentationEventReported again for same event
+  07-02 01:57:16.777  3729  3729 W FillRequestEventLogger: Shouldn't be logging AutofillFillRequestReported again for same event
+  07-02 01:57:16.777  3729  3729 W FillResponseEventLogger: Shouldn't be logging AutofillFillRequestReported again for same event
+  07-02 01:57:16.777  3729  3729 W PresentationStatsEventLogger: Shouldn't be logging AutofillPresentationEventReported again for same event
+  07-02 01:57:16.777  3729  3729 D AutofillSession: clearPendingIntentLocked
+  07-02 01:57:16.787  3729  5531 D BackgroundInstallControlService: Package event received: 0
+  07-02 01:57:16.789  3729  5531 D BackgroundInstallControlService: Package event received: 0
+  07-02 01:57:17.421  3729  6227 V WindowManager: DesktopModeLaunchParamsModifier: phase= 0 task=null activity=null display-area-from-current-params=null display-area-source-process=DefaultTaskDisplayArea@2957033 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@2957033 task null, skipping
+> 07-02 01:57:34.234  3729  9419 E AppOps  : java.lang.SecurityException: Specified package "com.android.phone" under uid 10130 but it is not
+  07-02 01:57:34.234  3729  9419 E AppOps  : 	at com.android.server.appop.AppOpsService.verifyAndGetBypass(AppOpsService.java:5100)
+  07-02 01:57:34.234  3729  9419 E AppOps  : 	at com.android.server.appop.AppOpsService.verifyAndGetBypass(AppOpsService.java:4956)
+  07-02 01:57:34.234  3729  9419 E AppOps  : 	at com.android.server.appop.AppOpsService.noteOperationUnchecked(AppOpsService.java:3411)
+  07-02 01:57:34.234  3729  9419 E AppOps  : 	at com.android.server.appop.AppOpsService.noteOperationImpl(AppOpsService.java:3397)
+  07-02 01:57:34.234  3729  9419 E AppOps  : 	at com.android.server.appop.AppOpsService.-$$Nest$mnoteOperationImpl(AppOpsService.java:0)
+  07-02 01:57:34.234  3729  9419 E AppOps  : 	at com.android.server.appop.AppOpsService$CheckOpsDelegateDispatcher.$r8$lambda$eTKLGbByFLiOzK62QHhpSvtx4do(AppOpsService.java:0)
+  07-02 01:57:34.234  3729  9419 E AppOps  : 	at com.android.server.appop.AppOpsService$CheckOpsDelegateDispatcher$$ExternalSyntheticLambda5.apply(R8$$SyntheticClass:0)
+  07-02 01:57:34.234  3729  9419 E AppOps  : 	at com.android.server.policy.AppOpsPolicy.noteOperation(AppOpsPolicy.java:254)
+  07-02 01:57:34.234  3729  9419 E AppOps  : 	at com.android.server.appop.AppOpsService$CheckOpsDelegateDispatcher.noteOperation(AppOpsService.java:7991)
+  07-02 01:57:34.234  3729  9419 E AppOps  : 	at com.android.server.appop.AppOpsService.noteOperation(AppOpsService.java:3344)
+  07-02 01:57:34.234  3729  9419 E AppOps  : 	at com.android.internal.app.IAppOpsService$Stub.onTransact(IAppOpsService.java:585)
+  07-02 01:57:34.234  3729  9419 E AppOps  : 	at android.os.Binder.execTransactInternal(Binder.java:1473)
+  07-02 01:57:34.234  3729  9419 E AppOps  : 	at android.os.Binder.execTransact(Binder.java:1418)
+  07-02 01:57:31.873 25848 25848 I [schedu][0xb7b0aaf7ee1][20:27:34.241427] wlan: [25848:I:OSIF] scan start scan id 42200
+  07-02 01:57:32.220 29072 29072 I adsp_sleepmon: Audio: num_sessions=1,num_lpi_sessions=0,timer_pending=0
+  07-02 01:57:32.222 29072 29072 I adsp_sleepmon: Audio: num_sessions=0,num_lpi_sessions=0,timer_pending=1
+  07-02 01:57:32.346   270   270 E init    : Recovering persistent properties from memory: Unable to read persistent property file: Skipping insecure file
+  07-02 01:57:32.348 29072 29072 I adsp_sleepmon: Audio: num_sessions=1,num_lpi_sessions=0,timer_pending=0
+  07-02 01:57:32.349 29072 29072 I btfm_slim_hw_init: PGD Enum Addr: mfr id:217 prod code:222 dev ind:01 ins:00
+  07-02 01:57:32.349 29072 29072 I         : btpower_get_chipset_version
+> 07-02 01:59:37.833  3729  6329 E AppOps  : java.lang.SecurityException: Specified package "com.android.phone" under uid 10130 but it is not
+  07-02 01:59:37.833  3729  6329 E AppOps  : 	at com.android.server.appop.AppOpsService.verifyAndGetBypass(AppOpsService.java:5100)
+  07-02 01:59:37.833  3729  6329 E AppOps  : 	at com.android.server.appop.AppOpsService.verifyAndGetBypass(AppOpsService.java:4956)
+  07-02 01:59:37.833  3729  6329 E AppOps  : 	at com.android.server.appop.AppOpsService.noteOperationUnchecked(AppOpsService.java:3411)
+  07-02 01:59:37.833  3729  6329 E AppOps  : 	at com.android.server.appop.AppOpsService.noteOperationImpl(AppOpsService.java:3397)
+  07-02 01:59:37.833  3729  6329 E AppOps  : 	at com.android.server.appop.AppOpsService.-$$Nest$mnoteOperationImpl(AppOpsService.java:0)
+  07-02 01:59:37.833  3729  6329 E AppOps  : 	at com.android.server.appop.AppOpsService$CheckOpsDelegateDispatcher.$r8$lambda$eTKLGbByFLiOzK62QHhpSvtx4do(AppOpsService.java:0)
+  07-02 01:59:37.833  3729  6329 E AppOps  : 	at com.android.server.appop.AppOpsService$CheckOpsDelegateDispatcher$$ExternalSyntheticLambda5.apply(R8$$SyntheticClass:0)
+  07-02 01:59:37.833  3729  6329 E AppOps  : 	at com.android.server.policy.AppOpsPolicy.noteOperation(AppOpsPolicy.java:254)
+  07-02 01:59:37.833  3729  6329 E AppOps  : 	at com.android.server.appop.AppOpsService$CheckOpsDelegateDispatcher.noteOperation(AppOpsService.java:7991)
+  07-02 01:59:37.833  3729  6329 E AppOps  : 	at com.android.server.appop.AppOpsService.noteOperation(AppOpsService.java:3344)
+  07-02 01:59:37.833  3729  6329 E AppOps  : 	at com.android.internal.app.IAppOpsService$Stub.onTransact(IAppOpsService.java:585)
+  07-02 01:59:37.833  3729  6329 E AppOps  : 	at android.os.Binder.execTransactInternal(Binder.java:1473)
+  07-02 01:59:37.833  3729  6329 E AppOps  : 	at android.os.Binder.execTransact(Binder.java:1418)
+  07-02 01:59:35.475 25848 25848 I [schedu][0xb7b9822eaa4][20:29:37.843090] wlan: [25848:I:OSIF] scan start scan id 42201
+  07-02 01:59:38.342  3729  4878 W BatteryStatsImpl: Unhandled NetworkType (22), mapping to OTHER
+  07-02 01:59:36.397     0     0 E [    C0] [soft_i][0xb7b99311425][20: 29:38.765244] wlan: [0:E:DP] dp_tx_update_peer_stats: Release source:3 is not from TQM
+  07-02 01:59:36.892  8823  8823 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=1 busy try again
+  07-02 01:59:36.894  8823  8823 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=14 busy try again
+  07-02 01:59:39.346  3729  4878 W BatteryStatsImpl: Unhandled NetworkType (22), mapping to OTHER
+  07-02 01:59:37.668  8823  8823 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=1 busy try again
+> 07-02 02:01:41.424  3729  9615 E AppOps  : java.lang.SecurityException: Specified package "com.android.phone" under uid 10130 but it is not
+  07-02 02:01:41.424  3729  9615 E AppOps  : 	at com.android.server.appop.AppOpsService.verifyAndGetBypass(AppOpsService.java:5100)
+  07-02 02:01:41.424  3729  9615 E AppOps  : 	at com.android.server.appop.AppOpsService.verifyAndGetBypass(AppOpsService.java:4956)
+  07-02 02:01:41.424  3729  9615 E AppOps  : 	at com.android.server.appop.AppOpsService.noteOperationUnchecked(AppOpsService.java:3411)
+  07-02 02:01:41.424  3729  9615 E AppOps  : 	at com.android.server.appop.AppOpsService.noteOperationImpl(AppOpsService.java:3397)
+  07-02 02:01:41.424  3729  9615 E AppOps  : 	at com.android.server.appop.AppOpsService.-$$Nest$mnoteOperationImpl(AppOpsService.java:0)
+  07-02 02:01:41.424  3729  9615 E AppOps  : 	at com.android.server.appop.AppOpsService$CheckOpsDelegateDispatcher.$r8$lambda$eTKLGbByFLiOzK62QHhpSvtx4do(AppOpsService.java:0)
+  07-02 02:01:41.424  3729  9615 E AppOps  : 	at com.android.server.appop.AppOpsService$CheckOpsDelegateDispatcher$$ExternalSyntheticLambda5.apply(R8$$SyntheticClass:0)
+  07-02 02:01:41.424  3729  9615 E AppOps  : 	at com.android.server.policy.AppOpsPolicy.noteOperation(AppOpsPolicy.java:254)
+  07-02 02:01:41.424  3729  9615 E AppOps  : 	at com.android.server.appop.AppOpsService$CheckOpsDelegateDispatcher.noteOperation(AppOpsService.java:7991)
+  07-02 02:01:41.424  3729  9615 E AppOps  : 	at com.android.server.appop.AppOpsService.noteOperation(AppOpsService.java:3344)
+  07-02 02:01:41.424  3729  9615 E AppOps  : 	at com.android.internal.app.IAppOpsService$Stub.onTransact(IAppOpsService.java:585)
+  07-02 02:01:41.424  3729  9615 E AppOps  : 	at android.os.Binder.execTransactInternal(Binder.java:1473)
+  07-02 02:01:41.424  3729  9615 E AppOps  : 	at android.os.Binder.execTransact(Binder.java:1418)
+  07-02 02:01:39.067 25848 25848 I [schedu][0xb7c25938493][20:31:41.435128] wlan: [25848:I:OSIF] scan start scan id 42202
+  07-02 02:01:41.749  3729  4878 W BatteryStatsImpl: Unhandled NetworkType (22), mapping to OTHER
+  07-02 02:01:39.488     0     0 E [    C0] [soft_i][0xb7c260ef6aa][20: 31:41.856490] wlan: [0:E:DP] dp_tx_update_peer_stats: Release source:3 is not from TQM
+  07-02 02:01:39.511 32338 32338 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=1 busy try again
+  07-02 02:01:39.513 32338 32338 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=14 busy try again
+  07-02 02:01:40.020  9207  9207 E ipa_pm_handle_suspend: 1280 Client IPA_CLIENT_APPS_WAN_CONS woke up the system
+  07-02 02:01:42.752  3729  4878 W BatteryStatsImpl: Unhandled NetworkType (22), mapping to OTHER
+> 07-02 02:03:39.278  3729  3729 E RemoteFillService: java.util.concurrent.TimeoutException
+  07-02 02:03:39.278  3729  3729 E RemoteFillService: 	at com.android.internal.infra.AndroidFuture.triggerTimeout(AndroidFuture.java:289)
+  07-02 02:03:39.278  3729  3729 E RemoteFillService: 	at com.android.internal.infra.AndroidFuture$$ExternalSyntheticLambda2.run(D8$$SyntheticClass:0)
+  07-02 02:03:39.278  3729  3729 E RemoteFillService: 	at android.os.Handler.handleCallback(Handler.java:1070)
+  07-02 02:03:39.278  3729  3729 E RemoteFillService: 	at android.os.Handler.dispatchMessage(Handler.java:125)
+  07-02 02:03:39.278  3729  3729 E RemoteFillService: 	at android.os.Looper.dispatchMessage(Looper.java:333)
+  07-02 02:03:39.278  3729  3729 E RemoteFillService: 	at android.os.Looper.loopOnce(Looper.java:263)
+  07-02 02:03:39.278  3729  3729 E RemoteFillService: 	at android.os.Looper.loop(Looper.java:367)
+  07-02 02:03:39.278  3729  3729 E RemoteFillService: 	at com.android.server.SystemServer.run(SystemServer.java:1085)
+  07-02 02:03:39.278  3729  3729 E RemoteFillService: 	at com.android.server.SystemServer.main(SystemServer.java:715)
+  07-02 02:03:39.278  3729  3729 E RemoteFillService: 	at java.lang.reflect.Method.invoke(Native Method)
+  07-02 02:03:39.278  3729  3729 E RemoteFillService: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:566)
+  07-02 02:03:39.278  3729  3729 E RemoteFillService: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:907)
+  07-02 02:03:39.278  3729  3729 W PresentationStatsEventLogger: Empty dataset. Autofill ignoring log
+  07-02 02:03:39.278  3729  3729 W FillRequestEventLogger: Shouldn't be logging AutofillFillRequestReported again for same event
+  07-02 02:03:39.278  3729  3729 W FillResponseEventLogger: Shouldn't be logging AutofillFillRequestReported again for same event
+  07-02 02:03:39.278  3729  3729 W PresentationStatsEventLogger: Shouldn't be logging AutofillPresentationEventReported again for same event
+  07-02 02:03:39.278  3729  3729 D AutofillSession: clearPendingIntentLocked
+  07-02 02:03:39.282  3729  5531 D BackgroundInstallControlService: Package event received: 0
+  07-02 02:03:39.283  3729  5531 D BackgroundInstallControlService: Package event received: 0
+  07-02 02:03:39.398  3729  4857 I DisplayDeviceRepository: Display device changed render timings: "Built-in Screen", renderFrameRate=60.000004, presentationDeadlineNanos=11500000, appVsyncOffsetNanos=6233332, frameRateOverrides=[]
+> 07-02 02:08:17.770 12434 12764 E AndroidRuntime: FATAL EXCEPTION: pool-11-thread-1
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: Process: dev.ritesh.ledgerlite, PID: 12434
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: java.lang.NoSuchMethodError: No static method getDirectConverter(Ljava/lang/Class;)Lexpo/modules/kotlin/types/JSTypeConverter; in class Lexpo/modules/kotlin/types/ReturnTypeKt; or its super classes (declaration of 'expo.modules.kotlin.types.ReturnTypeKt' appears in /data/app/~~0nOP7vi5016rIIJ-AgFyAg==/dev.ritesh.ledgerlite-eh0aMl0DFvdZH9qtfhHHeg==/base.apk!classes8.dex)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at expo.modules.font.FontLoaderModule.definition(FontLoaderModule.kt:98)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at expo.modules.kotlin.ModuleHolder.<init>(ModuleHolder.kt:22)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:27)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:47)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at expo.modules.kotlin.AppContext.<init>(AppContext.kt:120)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at expo.modules.kotlin.KotlinInteropModuleRegistry.<init>(KotlinInteropModuleRegistry.kt:23)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at expo.modules.adapters.react.NativeModulesProxy.<init>(NativeModulesProxy.java:45)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.getOrCreateNativeModulesProxy(ModuleRegistryAdapter.java:135)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.createNativeModules(ModuleRegistryAdapter.java:64)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at expo.modules.ExpoModulesPackage.createNativeModules(ExpoModulesPackage.kt:35)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.initialize(ReactPackageTurboModuleManagerDelegate.kt:87)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.<init>(ReactPackageTurboModuleManagerDelegate.kt:45)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(DefaultTurboModuleManagerDelegate.kt:35)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(Unknown Source:0)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:62)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:42)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate$Builder.build(ReactPackageTurboModuleManagerDelegate.kt:241)
+  07-02 02:08:17.770 12434 12764 E AndroidRuntime: 	at com.facebook.react.runtime.ReactInstance.<init>(ReactInstance.kt:168)
+> 07-02 02:08:43.120 13024 13065 E AndroidRuntime: FATAL EXCEPTION: pool-10-thread-1
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: Process: dev.ritesh.ledgerlite, PID: 13024
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: java.lang.NoSuchMethodError: No static method getDirectConverter(Ljava/lang/Class;)Lexpo/modules/kotlin/types/JSTypeConverter; in class Lexpo/modules/kotlin/types/ReturnTypeKt; or its super classes (declaration of 'expo.modules.kotlin.types.ReturnTypeKt' appears in /data/app/~~0nOP7vi5016rIIJ-AgFyAg==/dev.ritesh.ledgerlite-eh0aMl0DFvdZH9qtfhHHeg==/base.apk!classes8.dex)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at expo.modules.font.FontLoaderModule.definition(FontLoaderModule.kt:98)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at expo.modules.kotlin.ModuleHolder.<init>(ModuleHolder.kt:22)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:27)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:47)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at expo.modules.kotlin.AppContext.<init>(AppContext.kt:120)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at expo.modules.kotlin.KotlinInteropModuleRegistry.<init>(KotlinInteropModuleRegistry.kt:23)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at expo.modules.adapters.react.NativeModulesProxy.<init>(NativeModulesProxy.java:45)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.getOrCreateNativeModulesProxy(ModuleRegistryAdapter.java:135)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.createNativeModules(ModuleRegistryAdapter.java:64)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at expo.modules.ExpoModulesPackage.createNativeModules(ExpoModulesPackage.kt:35)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.initialize(ReactPackageTurboModuleManagerDelegate.kt:87)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.<init>(ReactPackageTurboModuleManagerDelegate.kt:45)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(DefaultTurboModuleManagerDelegate.kt:35)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(Unknown Source:0)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:62)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:42)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate$Builder.build(ReactPackageTurboModuleManagerDelegate.kt:241)
+  07-02 02:08:43.120 13024 13065 E AndroidRuntime: 	at com.facebook.react.runtime.ReactInstance.<init>(ReactInstance.kt:168)
+> 07-02 02:08:52.349  3729  3729 E RemoteFillService: java.util.concurrent.TimeoutException
+  07-02 02:08:52.349  3729  3729 E RemoteFillService: 	at com.android.internal.infra.AndroidFuture.triggerTimeout(AndroidFuture.java:289)
+  07-02 02:08:52.349  3729  3729 E RemoteFillService: 	at com.android.internal.infra.AndroidFuture$$ExternalSyntheticLambda2.run(D8$$SyntheticClass:0)
+  07-02 02:08:52.349  3729  3729 E RemoteFillService: 	at android.os.Handler.handleCallback(Handler.java:1070)
+  07-02 02:08:52.349  3729  3729 E RemoteFillService: 	at android.os.Handler.dispatchMessage(Handler.java:125)
+  07-02 02:08:52.349  3729  3729 E RemoteFillService: 	at android.os.Looper.dispatchMessage(Looper.java:333)
+  07-02 02:08:52.349  3729  3729 E RemoteFillService: 	at android.os.Looper.loopOnce(Looper.java:263)
+  07-02 02:08:52.349  3729  3729 E RemoteFillService: 	at android.os.Looper.loop(Looper.java:367)
+  07-02 02:08:52.349  3729  3729 E RemoteFillService: 	at com.android.server.SystemServer.run(SystemServer.java:1085)
+  07-02 02:08:52.349  3729  3729 E RemoteFillService: 	at com.android.server.SystemServer.main(SystemServer.java:715)
+  07-02 02:08:52.349  3729  3729 E RemoteFillService: 	at java.lang.reflect.Method.invoke(Native Method)
+  07-02 02:08:52.349  3729  3729 E RemoteFillService: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:566)
+  07-02 02:08:52.349  3729  3729 E RemoteFillService: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:907)
+  07-02 02:08:52.350  3729  3729 W PresentationStatsEventLogger: Empty dataset. Autofill ignoring log
+  07-02 02:08:52.351  3729  3729 W FillRequestEventLogger: Shouldn't be logging AutofillFillRequestReported again for same event
+  07-02 02:08:52.351  3729  3729 W FillResponseEventLogger: Shouldn't be logging AutofillFillRequestReported again for same event
+  07-02 02:08:52.351  3729  3729 W PresentationStatsEventLogger: Shouldn't be logging AutofillPresentationEventReported again for same event
+  07-02 02:08:52.351  3729  3729 D AutofillSession: clearPendingIntentLocked
+  07-02 02:08:52.358  3729  5531 D BackgroundInstallControlService: Package event received: 0
+  07-02 02:08:52.358  3729  5531 D BackgroundInstallControlService: Package event received: 0
+  07-02 02:08:52.540  5594  5628 D WindowManagerShell: PipPerfHintController: high perf session [com.android.wm.shell.common.pip.PipPerfHintController$PipHighPerfSession@f8d2576] initially started due to: startBoundsAnimator is started
+> 07-02 02:10:15.152  3729  4887 W ProcessCpuTracker: Failed to stat(/proc/13445): android.system.ErrnoException: stat failed: ENOENT (No such file or directory)
+  07-02 02:10:15.152  3729  4887 W ProcessCpuTracker: Skipping unknown process pid 13445
+> 07-02 02:10:15.153  3729  4887 W ProcessCpuTracker: Failed to stat(/proc/13447): android.system.ErrnoException: stat failed: ENOENT (No such file or directory)
+  07-02 02:10:15.153  3729  4887 W ProcessCpuTracker: Skipping unknown process pid 13447
+  07-02 02:10:15.160  3729  4857 I DisplayDeviceRepository: Display device changed render timings: "Built-in Screen", renderFrameRate=30.000002, presentationDeadlineNanos=11500000, appVsyncOffsetNanos=6233332, frameRateOverrides=[]
+  07-02 02:10:13.131 23938 23938 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=1 busy try again
+  07-02 02:10:13.133 23938 23938 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=14 busy try again
+  07-02 02:10:13.140  7261  7261 E ipa_pm_handle_suspend: 1280 Client IPA_CLIENT_APPS_WAN_CONS woke up the system
+  07-02 02:10:15.523  3729  5858 I ActivityTaskManager: Skip adjustForMinimalTaskDimensions for pip task
+  07-02 02:10:15.599  3729  5858 I ActivityTaskManager: Skip adjustForMinimalTaskDimensions for pip task
+  07-02 02:10:15.599  3729  5858 V WindowManager: continueTransitionReady deferReadyDepth=1 stack=com.android.server.wm.TransitionController.continueTransitionReady:1071 com.android.server.wm.RootWindowContainer.moveActivityToPinnedRootTaskInner:2309 com.android.server.wm.RootWindowContainer.moveActivityToPinnedRootTask:2074 com.android.server.wm.WindowOrganizerController.applyHierarchyOp:1480 com.android.server.wm.WindowOrganizerController.applyTransaction:768 
+  07-02 02:10:15.600  3729  5858 V WindowManager: continueTransitionReady deferReadyDepth=0 stack=com.android.server.wm.WindowOrganizerController.applyTransaction:799 com.android.server.wm.WindowOrganizerController.startTransition:426 com.android.server.wm.WindowOrganizerController.startTransition:332 android.window.IWindowOrganizerController$Stub.onTransact:259 com.android.server.wm.WindowOrganizerController.onTransact:233 
+  07-02 02:10:15.601  5594  5628 V ShellTaskOrganizer:   Migrating from listener FullscreenTaskListener to com.android.wm.shell.pip2.phone.PipTaskListener@3750a12
+  07-02 02:10:15.601  5594  5628 V ShellTaskOrganizer: Fullscreen Task Vanished: #753
+  07-02 02:10:15.601  5594  5628 V ShellDesktopMode: Task Vanished: #753 closed=false
+  07-02 02:10:15.605  3729  4857 I DisplayDeviceRepository: Display device changed render timings: "Built-in Screen", renderFrameRate=60.000004, presentationDeadlineNanos=11500000, appVsyncOffsetNanos=6233332, frameRateOverrides=[]
+  07-02 02:10:15.605  3729  5858 D CoreBackPreview: Window{a95ab16 u0 Splash Screen dev.ritesh.ledgerlite}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@4167e84, mPriority=0, mIsAnimationCallback=false, mOverrideBehavior=0}
+  07-02 02:10:15.608  3729  4855 D WindowManager: DeferredDisplayUpdater: partially applying DisplayInfo(1220 x 2712) immediately
+  07-02 02:10:15.612  3729  5531 D BackgroundInstallControlService: Package event received: 0
+  07-02 02:10:15.615  3729  5531 D BackgroundInstallControlService: Package event received: 0
+  07-02 02:10:15.615  3729  5531 D BackgroundInstallControlService: Package event received: 0
+  07-02 02:10:15.616  3729  5531 D BackgroundInstallControlService: Package event received: 0
+  07-02 02:10:15.616 13351 13455 I DisplayManager: Choreographer implicitly registered for the refresh rate.
+> 07-02 02:10:19.018 13351 13495 E AndroidRuntime: FATAL EXCEPTION: pool-11-thread-1
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: Process: dev.ritesh.ledgerlite, PID: 13351
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: java.lang.NoSuchMethodError: No static method getDirectConverter(Ljava/lang/Class;)Lexpo/modules/kotlin/types/JSTypeConverter; in class Lexpo/modules/kotlin/types/ReturnTypeKt; or its super classes (declaration of 'expo.modules.kotlin.types.ReturnTypeKt' appears in /data/app/~~C-92EaohKWdBUe8b2dYXBA==/dev.ritesh.ledgerlite-cwjGv-LBL3Ehm-lOi_texA==/base.apk!classes8.dex)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at expo.modules.font.FontLoaderModule.definition(FontLoaderModule.kt:98)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at expo.modules.kotlin.ModuleHolder.<init>(ModuleHolder.kt:22)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:27)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:47)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at expo.modules.kotlin.AppContext.<init>(AppContext.kt:120)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at expo.modules.kotlin.KotlinInteropModuleRegistry.<init>(KotlinInteropModuleRegistry.kt:23)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at expo.modules.adapters.react.NativeModulesProxy.<init>(NativeModulesProxy.java:45)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.getOrCreateNativeModulesProxy(ModuleRegistryAdapter.java:135)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.createNativeModules(ModuleRegistryAdapter.java:64)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at expo.modules.ExpoModulesPackage.createNativeModules(ExpoModulesPackage.kt:35)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.initialize(ReactPackageTurboModuleManagerDelegate.kt:87)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.<init>(ReactPackageTurboModuleManagerDelegate.kt:45)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(DefaultTurboModuleManagerDelegate.kt:35)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(Unknown Source:0)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:62)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:42)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate$Builder.build(ReactPackageTurboModuleManagerDelegate.kt:241)
+  07-02 02:10:19.018 13351 13495 E AndroidRuntime: 	at com.facebook.react.runtime.ReactInstance.<init>(ReactInstance.kt:168)
+> 07-02 02:10:25.120 13815 13853 E AndroidRuntime: FATAL EXCEPTION: pool-10-thread-1
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: Process: dev.ritesh.ledgerlite, PID: 13815
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: java.lang.NoSuchMethodError: No static method getDirectConverter(Ljava/lang/Class;)Lexpo/modules/kotlin/types/JSTypeConverter; in class Lexpo/modules/kotlin/types/ReturnTypeKt; or its super classes (declaration of 'expo.modules.kotlin.types.ReturnTypeKt' appears in /data/app/~~C-92EaohKWdBUe8b2dYXBA==/dev.ritesh.ledgerlite-cwjGv-LBL3Ehm-lOi_texA==/base.apk!classes8.dex)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at expo.modules.font.FontLoaderModule.definition(FontLoaderModule.kt:98)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at expo.modules.kotlin.ModuleHolder.<init>(ModuleHolder.kt:22)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:27)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:47)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at expo.modules.kotlin.AppContext.<init>(AppContext.kt:120)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at expo.modules.kotlin.KotlinInteropModuleRegistry.<init>(KotlinInteropModuleRegistry.kt:23)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at expo.modules.adapters.react.NativeModulesProxy.<init>(NativeModulesProxy.java:45)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.getOrCreateNativeModulesProxy(ModuleRegistryAdapter.java:135)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.createNativeModules(ModuleRegistryAdapter.java:64)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at expo.modules.ExpoModulesPackage.createNativeModules(ExpoModulesPackage.kt:35)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.initialize(ReactPackageTurboModuleManagerDelegate.kt:87)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.<init>(ReactPackageTurboModuleManagerDelegate.kt:45)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(DefaultTurboModuleManagerDelegate.kt:35)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(Unknown Source:0)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:62)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:42)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate$Builder.build(ReactPackageTurboModuleManagerDelegate.kt:241)
+  07-02 02:10:25.120 13815 13853 E AndroidRuntime: 	at com.facebook.react.runtime.ReactInstance.<init>(ReactInstance.kt:168)
+> 07-02 02:12:43.066 14157 14189 E AndroidRuntime: FATAL EXCEPTION: pool-10-thread-1
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: Process: dev.ritesh.ledgerlite, PID: 14157
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: java.lang.NoSuchMethodError: No static method getDirectConverter(Ljava/lang/Class;)Lexpo/modules/kotlin/types/JSTypeConverter; in class Lexpo/modules/kotlin/types/ReturnTypeKt; or its super classes (declaration of 'expo.modules.kotlin.types.ReturnTypeKt' appears in /data/app/~~C-92EaohKWdBUe8b2dYXBA==/dev.ritesh.ledgerlite-cwjGv-LBL3Ehm-lOi_texA==/base.apk!classes8.dex)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at expo.modules.font.FontLoaderModule.definition(FontLoaderModule.kt:98)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at expo.modules.kotlin.ModuleHolder.<init>(ModuleHolder.kt:22)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:27)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:47)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at expo.modules.kotlin.AppContext.<init>(AppContext.kt:120)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at expo.modules.kotlin.KotlinInteropModuleRegistry.<init>(KotlinInteropModuleRegistry.kt:23)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at expo.modules.adapters.react.NativeModulesProxy.<init>(NativeModulesProxy.java:45)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.getOrCreateNativeModulesProxy(ModuleRegistryAdapter.java:135)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.createNativeModules(ModuleRegistryAdapter.java:64)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at expo.modules.ExpoModulesPackage.createNativeModules(ExpoModulesPackage.kt:35)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.initialize(ReactPackageTurboModuleManagerDelegate.kt:87)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.<init>(ReactPackageTurboModuleManagerDelegate.kt:45)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(DefaultTurboModuleManagerDelegate.kt:35)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(Unknown Source:0)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:62)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:42)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate$Builder.build(ReactPackageTurboModuleManagerDelegate.kt:241)
+  07-02 02:12:43.066 14157 14189 E AndroidRuntime: 	at com.facebook.react.runtime.ReactInstance.<init>(ReactInstance.kt:168)
+> 07-02 02:13:28.718 14338 14382 E AndroidRuntime: FATAL EXCEPTION: pool-10-thread-1
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: Process: dev.ritesh.ledgerlite, PID: 14338
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: java.lang.NoSuchMethodError: No static method getDirectConverter(Ljava/lang/Class;)Lexpo/modules/kotlin/types/JSTypeConverter; in class Lexpo/modules/kotlin/types/ReturnTypeKt; or its super classes (declaration of 'expo.modules.kotlin.types.ReturnTypeKt' appears in /data/app/~~C-92EaohKWdBUe8b2dYXBA==/dev.ritesh.ledgerlite-cwjGv-LBL3Ehm-lOi_texA==/base.apk!classes8.dex)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at expo.modules.font.FontLoaderModule.definition(FontLoaderModule.kt:98)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at expo.modules.kotlin.ModuleHolder.<init>(ModuleHolder.kt:22)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:27)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:47)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at expo.modules.kotlin.AppContext.<init>(AppContext.kt:120)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at expo.modules.kotlin.KotlinInteropModuleRegistry.<init>(KotlinInteropModuleRegistry.kt:23)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at expo.modules.adapters.react.NativeModulesProxy.<init>(NativeModulesProxy.java:45)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.getOrCreateNativeModulesProxy(ModuleRegistryAdapter.java:135)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.createNativeModules(ModuleRegistryAdapter.java:64)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at expo.modules.ExpoModulesPackage.createNativeModules(ExpoModulesPackage.kt:35)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.initialize(ReactPackageTurboModuleManagerDelegate.kt:87)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.<init>(ReactPackageTurboModuleManagerDelegate.kt:45)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(DefaultTurboModuleManagerDelegate.kt:35)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(Unknown Source:0)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:62)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:42)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate$Builder.build(ReactPackageTurboModuleManagerDelegate.kt:241)
+  07-02 02:13:28.718 14338 14382 E AndroidRuntime: 	at com.facebook.react.runtime.ReactInstance.<init>(ReactInstance.kt:168)
+> 07-02 02:13:33.230 14442 14477 E AndroidRuntime: FATAL EXCEPTION: pool-10-thread-1
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: Process: dev.ritesh.ledgerlite, PID: 14442
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: java.lang.NoSuchMethodError: No static method getDirectConverter(Ljava/lang/Class;)Lexpo/modules/kotlin/types/JSTypeConverter; in class Lexpo/modules/kotlin/types/ReturnTypeKt; or its super classes (declaration of 'expo.modules.kotlin.types.ReturnTypeKt' appears in /data/app/~~C-92EaohKWdBUe8b2dYXBA==/dev.ritesh.ledgerlite-cwjGv-LBL3Ehm-lOi_texA==/base.apk!classes8.dex)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at expo.modules.font.FontLoaderModule.definition(FontLoaderModule.kt:98)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at expo.modules.kotlin.ModuleHolder.<init>(ModuleHolder.kt:22)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:27)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:47)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at expo.modules.kotlin.AppContext.<init>(AppContext.kt:120)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at expo.modules.kotlin.KotlinInteropModuleRegistry.<init>(KotlinInteropModuleRegistry.kt:23)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at expo.modules.adapters.react.NativeModulesProxy.<init>(NativeModulesProxy.java:45)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.getOrCreateNativeModulesProxy(ModuleRegistryAdapter.java:135)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.createNativeModules(ModuleRegistryAdapter.java:64)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at expo.modules.ExpoModulesPackage.createNativeModules(ExpoModulesPackage.kt:35)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.initialize(ReactPackageTurboModuleManagerDelegate.kt:87)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.<init>(ReactPackageTurboModuleManagerDelegate.kt:45)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(DefaultTurboModuleManagerDelegate.kt:35)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(Unknown Source:0)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:62)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:42)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate$Builder.build(ReactPackageTurboModuleManagerDelegate.kt:241)
+  07-02 02:13:33.230 14442 14477 E AndroidRuntime: 	at com.facebook.react.runtime.ReactInstance.<init>(ReactInstance.kt:168)
+> 07-02 02:13:43.661  5759  5913 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.93.222.75, srcPort: 60923, dst4: /49.44.136.16, dstPort: 80), msg: 50000000000105010100000000000000020000003400018014000180080001000A5DDE4B08000200312C88101C000280050001000600000006000200EDFB000006000300005000000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1713412766} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+  07-02 02:13:43.664  5759  5913 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-871442985} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+> 07-02 02:13:43.664  5759  5913 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.93.222.75, srcPort: 60287, dst4: /150.109.28.234, dstPort: 443), msg: 50000000000105010100000000000000020000003400018014000180080001000A5DDE4B08000200966D1CEA1C000280050001000600000006000200EB7F00000600030001BB00000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-871442985} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+  07-02 02:13:43.674  5759  5913 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-833811959} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+> 07-02 02:13:43.674  5759  5913 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.93.222.75, srcPort: 60922, dst4: /49.44.145.117, dstPort: 80), msg: 50000000000105010100000000000000020000003400018014000180080001000A5DDE4B08000200312C91751C000280050001000600000006000200EDFA000006000300005000000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-833811959} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+  07-02 02:13:43.676  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:43.676  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:43.676  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:43.676  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:43.676  3315 29386 D PAL: API: pal_get_param: 1348: Exit, status 0
+  07-02 02:13:43.689  5759  5913 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-2012110228} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+> 07-02 02:13:43.690  5759  5913 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.93.222.75, srcPort: 61054, dst4: /172.217.24.206, dstPort: 443), msg: 50000000000105010100000000000000020000003400018014000180080001000A5DDE4B08000200ACD918CE1C000280050001000600000006000200EE7E00000600030001BB00000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-2012110228} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+  07-02 02:13:43.696  5759  5913 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1677719832} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+> 07-02 02:13:43.697  5759  5913 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.93.222.75, srcPort: 60919, dst4: /49.44.136.16, dstPort: 80), msg: 50000000000105010100000000000000020000003400018014000180080001000A5DDE4B08000200312C88101C000280050001000600000006000200EDF7000006000300005000000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1677719832} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+  07-02 02:13:43.698  5759  5913 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1599396945} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+> 07-02 02:13:43.698  5759  5913 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.93.222.75, srcPort: 60920, dst4: /142.251.43.131, dstPort: 80), msg: 50000000000105010100000000000000020000003400018014000180080001000A5DDE4B080002008EFB2B831C000280050001000600000006000200EDF8000006000300005000000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1599396945} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+  07-02 02:13:43.700  5759  5913 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1870555600} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+> 07-02 02:13:43.700  5759  5913 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.93.222.75, srcPort: 60924, dst4: /162.159.142.9, dstPort: 80), msg: 50000000000105010100000000000000020000003400018014000180080001000A5DDE4B08000200A29F8E091C000280050001000600000006000200EDFC000006000300005000000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1870555600} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+  07-02 02:13:43.703  5759  5913 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-559711333} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+> 07-02 02:13:43.703  5759  5913 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.93.222.75, srcPort: 60143, dst4: /216.239.36.223, dstPort: 443), msg: 50000000000105010100000000000000020000003400018014000180080001000A5DDE4B08000200D8EF24DF1C000280050001000600000006000200EAEF00000600030001BB00000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-559711333} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+  07-02 02:13:43.710  3363 14010 W QC2Comp : [av1D_778] Skipping empty output buffer
+  07-02 02:13:43.710  3443 14009 D CCodecConfig: c2 config diff is   c2::i32 vendor.qti-ext-dec-info-mbi.counter = 9254
+  07-02 02:13:43.710  3443 14009 D CCodecConfig:   Buffer vendor.qti-ext-dec-info-misr.value = 0xb4000078cbe81c30
+  07-02 02:13:43.711  5759  5913 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1099831683} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+> 07-02 02:13:43.711  5759  5913 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.93.222.75, srcPort: 60921, dst4: /49.44.145.117, dstPort: 80), msg: 50000000000105010100000000000000020000003400018014000180080001000A5DDE4B08000200312C91751C000280050001000600000006000200EDF9000006000300005000000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1099831683} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+  07-02 02:13:43.712  5759  5913 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1498070234} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+> 07-02 02:13:43.712  5759  5913 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.93.222.75, srcPort: 60166, dst4: /216.239.32.223, dstPort: 443), msg: 50000000000105010100000000000000020000003400018014000180080001000A5DDE4B08000200D8EF20DF1C000280050001000600000006000200EB0600000600030001BB00000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1498070234} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+  07-02 02:13:43.715  5759  5913 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1879099841} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+> 07-02 02:13:43.715  5759  5913 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.93.222.75, srcPort: 60143, dst4: /216.239.36.223, dstPort: 443), msg: 50000000000105010100000000000000020000003400018014000180080001000A5DDE4B08000200D8EF24DF1C000280050001000600000006000200EAEF00000600030001BB00000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1879099841} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+  07-02 02:13:43.716  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:43.716  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:43.716  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:43.716  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:43.716  3315 29386 D PAL: API: pal_get_param: 1348: Exit, status 0
+  07-02 02:13:43.719  5759  5913 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1989013908} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+> 07-02 02:13:43.719  5759  5913 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.93.222.75, srcPort: 60287, dst4: /150.109.28.234, dstPort: 443), msg: 50000000000105010100000000000000020000003400018014000180080001000A5DDE4B08000200966D1CEA1C000280050001000600000006000200EB7F00000600030001BB00000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1989013908} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+  07-02 02:13:41.358 32338 32338 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=1 busy try again
+  07-02 02:13:41.360 32338 32338 E gsi soc : qcom,msm_gsi: gsi_stop_channel:3688 chan=14 busy try again
+  07-02 02:13:43.735  3347  3715 I vendor.qti.hardware.display.composer-service: Sensor: notify citsensorservice to trigger cwb, misForced = 0
+  07-02 02:13:43.735  4171  5456 I libsensor-parseRGB: request dump start for mRequestDisplayId 0
+  07-02 02:13:43.735  4171  5456 D vendor.xiaomi.sensor.citsensorservice.aidl: handle id:14 wxh:1280x2712 uwxuh:1220x2712 size: 10416128 fd:13 fd_meta:14 flags:0x228 usage:0x33  format:0x3 layer_count: 1 reserved_size = 0 custom_content_md_reserved_size = 0
+  07-02 02:13:43.736  3347  3347 D SDM     : HWCSession::PostBuffer: CWB config passed by cwb_client : tappoint 1  CWB_ROI : (819.000000 -1.000000 970.000000 125.000000)
+  07-02 02:13:43.737  5759  5913 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-824847984} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+> 07-02 02:13:43.737  5759  5913 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.93.222.75, srcPort: 60166, dst4: /216.239.32.223, dstPort: 443), msg: 50000000000105010100000000000000020000003400018014000180080001000A5DDE4B08000200D8EF20DF1C000280050001000600000006000200EB0600000600030001BB00000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-824847984} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+  07-02 02:13:43.756  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:43.756  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:43.756  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:43.756  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:43.756  3315 29386 D PAL: API: pal_get_param: 1348: Exit, status 0
+  07-02 02:13:43.797  4171  5467 I libsensor-boledalgo: dbv:100,lux:0.0,hsv:-1.0,dc:0CWB R:385.3,G:207.4,B:141.9Event ALS:757.9,IR:168.4Cali ALS:1017.2,IR:223.7
+  07-02 02:13:43.798  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:43.798  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:43.798  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:43.798  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:43.798  3315 29386 D PAL: API: pal_get_param: 1348: Exit, status 0
+  07-02 02:13:43.823  3347 23919 D SDM     : CompManager::NotifyCwbDone: display 0 notify cwb callback, status = 0
+  07-02 02:13:43.823  3347  5584 D SDM     : HWCSession::NotifyCWBStatus: Notify the client about buffer status 0.
+  07-02 02:13:43.824  4171 14205 E libsensor-parseRGB: CWB NotifyCWBBufferDone  error 0
+  07-02 02:13:43.824  3347  5584 D SDM     : HWCSession::ProcessCWBStatus: CWB queue is empty. Display: 0
+  07-02 02:13:41.461 10767 10767 E ipa_pm_handle_suspend: 1280 Client IPA_CLIENT_APPS_WAN_CONS woke up the system
+  07-02 02:13:43.836  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:43.837  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:43.837  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:43.837  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+> 07-02 02:13:57.856  3443  3656 E YouTube : java.util.concurrent.CancellationException: Task was cancelled.
+  07-02 02:13:57.856  3443  3656 E YouTube : 	at askb.g(PG:33)
+  07-02 02:13:57.856  3443  3656 E YouTube : 	at askb.get(PG:382)
+  07-02 02:13:57.856  3443  3656 E YouTube : 	at a.bC(PG:2)
+  07-02 02:13:57.856  3443  3656 E YouTube : 	at asbm.aZ(PG:10)
+  07-02 02:13:57.856  3443  3656 E YouTube : 	at asmf.run(PG:23)
+  07-02 02:13:57.856  3443  3656 E YouTube : 	at sef.run(PG:7)
+  07-02 02:13:57.856  3443  3656 E YouTube : 	at asfv.run(PG:44)
+  07-02 02:13:57.856  3443  3656 E YouTube : 	at sga.run(PG:706)
+  07-02 02:13:57.856  3443  3656 E YouTube : 	at ewr.run(PG:1033)
+  07-02 02:13:57.856  3443  3656 E YouTube : 	at java.lang.Thread.run(Thread.java:1563)
+  07-02 02:13:57.856  3443  3656 E YouTube : 	at sfb.run(PG:61)
+  07-02 02:13:57.856  3443  3443 W YouTube : play() called when the player wasn't loaded.
+  07-02 02:13:57.856  3443  3528 E YouTube : Request being made from non-critical thread
+  07-02 02:13:57.857  3443 14008 D CCodecConfig: c2 config diff is   c2::u32 coded.vui.color.matrix = 255
+  07-02 02:13:57.857  3443 14008 D CCodecConfig:   c2::u32 coded.vui.color.primaries = 0
+  07-02 02:13:57.857  3443 14008 D CCodecConfig:   c2::u32 coded.vui.color.range = 0
+  07-02 02:13:57.857  3443 14008 D CCodecConfig:   c2::u32 coded.vui.color.transfer = 255
+  07-02 02:13:57.857  3443 14008 D CCodecConfig:   Buffer vendor.qti-ext-dec-info-misr.value = 0xb4000078cbe77780
+  07-02 02:13:57.857  3443  3443 W YouTube : TraceableOnGlobalLayoutListener.onGlobalLayout[amya-RecyclerView] is called 15
+  07-02 02:13:57.860  3363  3626 W QC2Interface: [av1D_778] Failed to query parameters
+> 07-02 02:13:57.921  3443  3529 E YT.onesie: Caused by: cje: Response code: 413
+  07-02 02:13:57.921  3443  3529 E YT.onesie: 	at ckr.b(PG:477)
+  07-02 02:13:57.921  3443  3529 E YT.onesie: 	at ajsx.b(PG:3)
+  07-02 02:13:57.921  3443  3529 E YT.onesie: 	at ajaq.b(PG:132)
+  07-02 02:13:57.921  3443  3529 E YT.onesie: 	at ajcz.run(PG:12)
+  07-02 02:13:57.921  3443  3529 E YT.onesie: 	... 9 more
+  07-02 02:13:57.937  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:57.937  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:57.937  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:57.937  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:57.937  3315 29386 D PAL: API: pal_get_param: 1348: Exit, status 0
+  07-02 02:13:57.956  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:57.956  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:57.957  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:57.957  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:57.957  3315 29386 D PAL: API: pal_get_param: 1348: Exit, status 0
+  07-02 02:13:57.977  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:57.978  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:57.978  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:57.978  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:57.978  3315 29386 D PAL: API: pal_get_param: 1348: Exit, status 0
+> 07-02 02:13:59.055  3443  3529 E YT.onesie: Caused by: cje: Response code: 413
+  07-02 02:13:59.055  3443  3529 E YT.onesie: 	at ckr.b(PG:477)
+  07-02 02:13:59.055  3443  3529 E YT.onesie: 	at ajsx.b(PG:3)
+  07-02 02:13:59.055  3443  3529 E YT.onesie: 	at ajaq.b(PG:132)
+  07-02 02:13:59.055  3443  3529 E YT.onesie: 	at ajcz.run(PG:12)
+  07-02 02:13:59.055  3443  3529 E YT.onesie: 	... 9 more
+  07-02 02:13:59.060  3448  3496 W qdgralloc: getInterlacedFlag: getMetaData returned 3, defaulting to interlaced_flag = 0
+  07-02 02:13:59.076  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:59.077  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:59.077  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:59.077  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:59.077  3315 29386 D PAL: API: pal_get_param: 1348: Exit, status 0
+  07-02 02:13:59.099  3448  3496 W qdgralloc: getInterlacedFlag: getMetaData returned 3, defaulting to interlaced_flag = 0
+  07-02 02:13:59.116  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:59.117  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:59.117  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_lock:111 ar_osal_mutex_lock: ar_osal_mutex is NULL
+  07-02 02:13:59.117  3315 29386 E COMU    : vendor/qcom/proprietary/args/ar_osal/src/linux/ar_osal_mutex.c:ar_osal_mutex_unlock:149 ar_osal_mutex_unlock: ar_osal_mutex is NULL
+  07-02 02:13:59.117  3315 29386 D PAL: API: pal_get_param: 1348: Exit, status 0
+  07-02 02:13:59.129  3448  3496 W qdgralloc: getInterlacedFlag: getMetaData returned 3, defaulting to interlaced_flag = 0
+  07-02 02:13:59.135  3347  3715 I vendor.qti.hardware.display.composer-service: Sensor: notify citsensorservice to trigger cwb, misForced = 0
+  07-02 02:13:59.135  4171  5456 I libsensor-parseRGB: request dump start for mRequestDisplayId 0
+> 07-02 02:14:15.242 14837 14886 E AndroidRuntime: FATAL EXCEPTION: pool-10-thread-1
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: Process: dev.ritesh.ledgerlite, PID: 14837
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: java.lang.NoSuchMethodError: No static method getDirectConverter(Ljava/lang/Class;)Lexpo/modules/kotlin/types/JSTypeConverter; in class Lexpo/modules/kotlin/types/ReturnTypeKt; or its super classes (declaration of 'expo.modules.kotlin.types.ReturnTypeKt' appears in /data/app/~~C-92EaohKWdBUe8b2dYXBA==/dev.ritesh.ledgerlite-cwjGv-LBL3Ehm-lOi_texA==/base.apk!classes8.dex)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at expo.modules.font.FontLoaderModule.definition(FontLoaderModule.kt:98)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at expo.modules.kotlin.ModuleHolder.<init>(ModuleHolder.kt:22)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:27)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at expo.modules.kotlin.ModuleRegistry.register(ModuleRegistry.kt:47)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at expo.modules.kotlin.AppContext.<init>(AppContext.kt:120)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at expo.modules.kotlin.KotlinInteropModuleRegistry.<init>(KotlinInteropModuleRegistry.kt:23)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at expo.modules.adapters.react.NativeModulesProxy.<init>(NativeModulesProxy.java:45)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.getOrCreateNativeModulesProxy(ModuleRegistryAdapter.java:135)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at expo.modules.adapters.react.ModuleRegistryAdapter.createNativeModules(ModuleRegistryAdapter.java:64)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at expo.modules.ExpoModulesPackage.createNativeModules(ExpoModulesPackage.kt:35)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.initialize(ReactPackageTurboModuleManagerDelegate.kt:87)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate.<init>(ReactPackageTurboModuleManagerDelegate.kt:45)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(DefaultTurboModuleManagerDelegate.kt:35)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate.<init>(Unknown Source:0)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:62)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at com.facebook.react.defaults.DefaultTurboModuleManagerDelegate$Builder.build(DefaultTurboModuleManagerDelegate.kt:42)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at com.facebook.react.ReactPackageTurboModuleManagerDelegate$Builder.build(ReactPackageTurboModuleManagerDelegate.kt:241)
+  07-02 02:14:15.242 14837 14886 E AndroidRuntime: 	at com.facebook.react.runtime.ReactInstance.<init>(ReactInstance.kt:168)
+

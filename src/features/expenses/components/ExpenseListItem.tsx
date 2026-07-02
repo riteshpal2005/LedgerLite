@@ -3,9 +3,24 @@ import { View, Text, Pressable } from "react-native";
 import Animated from "react-native-reanimated";
 import { Expense } from "../../../core/database/schema";
 import { CategoryIcon } from "../../../shared/components/ui/CategoryIcon";
-
 import { useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
+
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"] as const;
+
+function formatExpenseDate(ts: number, use24h: boolean): string {
+  const d = new Date(ts);
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  const day = d.getDate();
+  const mon = MONTHS[d.getMonth()];
+  if (use24h) {
+    return `${String(d.getHours()).padStart(2, "0")}:${mm}, ${day} ${mon}`;
+  }
+  const h = d.getHours();
+  const ampm = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 || 12;
+  return `${h12}:${mm} ${ampm}, ${day} ${mon}`;
+}
 
 interface ExpenseListItemProps {
   item: Expense;
@@ -100,24 +115,7 @@ export function ExpenseListItem({
             {isCredit ? "+" : "-"}₹{item.amount.toFixed(2)}
           </Text>
           <Text className="text-tertiary text-xs mt-1">
-            {(() => {
-              const d = new Date(item.date);
-              const minutes = String(d.getMinutes()).padStart(2, "0");
-              const day = d.getDate();
-              const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-              const monthStr = months[d.getMonth()];
-
-              if (use24HourFormat) {
-                const hourStr = String(d.getHours()).padStart(2, "0");
-                return `${hourStr}:${minutes}, ${day} ${monthStr}`;
-              } else {
-                let hours = d.getHours();
-                const ampm = hours >= 12 ? "PM" : "AM";
-                hours = hours % 12;
-                hours = hours ? hours : 12;
-                return `${hours}:${minutes} ${ampm}, ${day} ${monthStr}`;
-              }
-            })()}
+            {formatExpenseDate(item.date, use24HourFormat)}
           </Text>
         </View>
       </Pressable>

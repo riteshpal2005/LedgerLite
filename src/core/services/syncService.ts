@@ -45,7 +45,15 @@ export const SyncService = {
           if (col === "expenses") {
             const expense = { ...localData } as any;
             if (expense.date !== undefined && expense.date !== null) {
-              expense.date = parseDateTime(expense.date, null);
+              const d = expense.date;
+              if (typeof d === "number") {
+                expense.date = d < 10_000_000_000 ? d * 1000 : d;
+              } else if (typeof d === "string" && /^\d+$/.test(d)) {
+                const n = Number(d);
+                expense.date = n < 10_000_000_000 ? n * 1000 : n;
+              } else {
+                expense.date = new Date(d).getTime() || Date.now();
+              }
             }
             await dbActions.restoreExpense(expense as Expense);
           } else if (col === "categories") {
@@ -87,8 +95,8 @@ export const SyncService = {
     userId: string,
     dbActions: ReturnType<typeof useExpenseDatabase>,
   ) {
-    return;
-
+    if (isSyncing) return;
+    isSyncing = true;
     try {
       const { getAllExpenses, getAllCategories, getAllAccounts } = dbActions;
       const expenses = await getAllExpenses();

@@ -117,7 +117,7 @@ export default function OnboardingScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#2563eb]">
-      {/* Ref: onboarding-1 */}
+      {}
       <View className="flex-row justify-end px-6 pt-6 h-16 relative">
         <Animated.View
           style={[
@@ -166,7 +166,7 @@ export default function OnboardingScreen() {
         ))}
       </ScrollView>
 
-      {/* Ref: onboarding-2 */}
+      {}
       <View className="flex-row justify-center items-center mb-2">
         {SLIDES.map((_, index) => (
           <View
@@ -178,7 +178,7 @@ export default function OnboardingScreen() {
         ))}
       </View>
 
-      {/* Ref: onboarding-3 */}
+      {}
       <View className="px-6 pb-8 pt-4 h-44 justify-end relative">
         <Animated.View
           style={[
