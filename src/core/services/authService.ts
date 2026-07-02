@@ -8,12 +8,17 @@ import Constants, { ExecutionEnvironment } from "expo-constants";
 
 const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
-let GoogleSignin: any;
+type GoogleSigninType = typeof import("@react-native-google-signin/google-signin").GoogleSignin;
+let GoogleSignin: GoogleSigninType | undefined;
 if (!isExpoGo) {
-  GoogleSignin = require("@react-native-google-signin/google-signin").GoogleSignin;
-  GoogleSignin.configure({
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-  });
+  try {
+    GoogleSignin = require("@react-native-google-signin/google-signin").GoogleSignin as GoogleSigninType;
+    GoogleSignin.configure({
+      webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    });
+  } catch (e) {
+    console.warn("[AuthService] GoogleSignin failed to load", e);
+  }
 }
 
 export const AuthService = {
@@ -80,15 +85,19 @@ export const AuthService = {
         const { signInAnonymously } = await import("firebase/auth");
         const userCredential = await signInAnonymously(auth);
         return { user: userCredential.user, error: null };
-      } catch (error: any) {
-        return { user: null, error: error.message };
+      } catch (error: unknown) {
+        return { user: null, error: (error as Error).message };
       }
+    }
+
+    if (!GoogleSignin) {
+      return { user: null, error: "Google Sign-in is not available in this environment." };
     }
 
     try {
       await GoogleSignin.hasPlayServices();
       const signInResult = await GoogleSignin.signIn();
-      const idToken = signInResult.data?.idToken;
+      const idToken = (signInResult as any).data?.idToken;
 
       if (!idToken) {
         throw new Error("No ID token found");
@@ -98,8 +107,8 @@ export const AuthService = {
       const googleCredential = GoogleAuthProvider.credential(idToken);
       const userCredential = await signInWithCredential(auth, googleCredential);
       return { user: userCredential.user, error: null };
-    } catch (error: any) {
-      return { user: null, error: error.message };
+    } catch (error: unknown) {
+      return { user: null, error: (error as Error).message };
     }
   },
 };

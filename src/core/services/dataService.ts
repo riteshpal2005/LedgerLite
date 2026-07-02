@@ -412,7 +412,7 @@ export const importData = async (
         pairedIds.add(matchedExisting.id);
       } else {
         importedExpenses.push({
-          id: String(Date.now() + Math.random()),
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
           amount: parsedAmount,
           description,
           merchant: merchantVal || null,

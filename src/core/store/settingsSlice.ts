@@ -30,7 +30,12 @@ const settingsSlice = createSlice({
       state.themeOption = action.payload;
     },
     loadSettings: (state, action) => {
-      return { ...state, ...action.payload };
+      return {
+        ...state,
+        ...action.payload,
+        importProgress: 0,
+        isGlobalSyncing: false,
+      };
     },
     setExportDirectoryUri: (state, action) => {
       state.exportDirectoryUri = action.payload;
