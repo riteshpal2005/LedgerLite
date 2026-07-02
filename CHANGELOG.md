@@ -1,11 +1,4 @@
-# CHANGELOG
-
-All notable changes to **LedgerLite** are documented here.
-Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-
----
-
-## [2.1.4] – 2026-07-02
+#2.1.4
 
 ### Added
 - **Telegram-style icon preview** in Category Editor: tap-and-hold any icon for 350 ms to see a large modal preview with the icon name; slide the finger to switch icons; release to select.
@@ -99,9 +92,3 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Jest unit tests for Excel serial date/time parsing.
 - Jest unit tests for locale-aware date-time parser in `dataService`.
 - Jest unit tests for timezone-safe date-time parser.
-
----
-
-## [2.0.3] – 2026-06-01 (f8969ef)
-
-_Baseline release prior to this changelog window._
