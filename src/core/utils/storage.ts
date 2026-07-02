@@ -28,19 +28,22 @@ if (isExpoGo) {
     },
   };
 } else {
+  const { MMKV } = require('react-native-mmkv');
+  const mmkv = new MMKV();
   // Fallback to AsyncStorage for environments without MMKV support
   storage = {
     setItem: async (key, value) => {
-      await AsyncStorage.setItem(key, value);
+      mmkv.set(key, value);
     },
     getItem: async (key) => {
-      return await AsyncStorage.getItem(key);
+      const v = mmkv.getString(key);
+      return v === undefined ? null : v;
     },
     removeItem: async (key) => {
-      await AsyncStorage.removeItem(key);
+      mmkv.delete(key);
     },
     clear: async () => {
-      await AsyncStorage.clear();
+      mmkv.clearAll();
     },
   };
 }

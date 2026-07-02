@@ -27,6 +27,7 @@ import Constants from "expo-constants";
 import { Alert } from "react-native";
 import { CustomAlert } from "../../shared/components/CustomAlert";
 import { FAB } from "../../shared/components/ui/FAB";
+import { storage } from "../../core/utils/storage";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -77,13 +78,19 @@ export default function Home() {
     }, []),
   );
 
-  const handlePresentModalPress = () => {
-    if (accounts.length === 0) {
-      addAccountSheetRef.current?.present();
-      return;
-    }
-    setSelectedExpenseToEdit(undefined);
-    bottomSheetModalRef.current?.present();
+  // const handlePresentModalPress = () => {
+  //   if (accounts.length === 0) {
+  //     addAccountSheetRef.current?.present();
+  //     return;
+  //   }
+  //   setSelectedExpenseToEdit(undefined);
+  //   bottomSheetModalRef.current?.present();
+  // };
+
+  const handlePresentModalPress = async () => {
+    await storage.setItem("mmkv_test", "hello‑mmkv");
+    const val = await storage.getItem("mmkv_test");
+    console.log("MMKV test value →", val);
   };
 
   const handleExpensePress = (expense: Expense) => {
