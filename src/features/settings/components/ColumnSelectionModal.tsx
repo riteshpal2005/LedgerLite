@@ -105,7 +105,7 @@ export function ColumnSelectionModal({
             flexShrink: 1,
           }}
         >
-          {/* Ref: ColumnSelectionModal-2 */}
+          {}
           <View
             style={{
               position: "absolute",
@@ -117,7 +117,7 @@ export function ColumnSelectionModal({
             }}
           />
 
-          {/* Ref: ColumnSelectionModal-3 */}
+          {}
           <View className="pb-4">
             <View className="flex-row justify-between items-center mb-2">
               <Text className="text-primary text-xl font-bold">
