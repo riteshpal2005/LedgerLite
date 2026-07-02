@@ -78,19 +78,13 @@ export default function Home() {
     }, []),
   );
 
-  // const handlePresentModalPress = () => {
-  //   if (accounts.length === 0) {
-  //     addAccountSheetRef.current?.present();
-  //     return;
-  //   }
-  //   setSelectedExpenseToEdit(undefined);
-  //   bottomSheetModalRef.current?.present();
-  // };
-
-  const handlePresentModalPress = async () => {
-    await storage.setItem("mmkv_test", "hello‑mmkv");
-    const val = await storage.getItem("mmkv_test");
-    console.log("MMKV test value →", val);
+  const handlePresentModalPress = () => {
+    if (accounts.length === 0) {
+      addAccountSheetRef.current?.present();
+      return;
+    }
+    setSelectedExpenseToEdit(undefined);
+    bottomSheetModalRef.current?.present();
   };
 
   const handleExpensePress = (expense: Expense) => {
