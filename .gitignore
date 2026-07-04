@@ -34,6 +34,7 @@ yarn-error.*
 .env
 .env.*
 google-services.json
+android/app/google-services.json
 
 # typescript
 *.tsbuildinfo
