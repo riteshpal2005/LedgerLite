@@ -157,8 +157,11 @@ export default function RootLayout() {
   );
 }
 
+import { useTheme } from "../core/theme/ThemeContext";
+
 function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
   const { user, isLoading } = useAuth();
+  const { activeThemeClass } = useTheme();
   const hasCompletedOnboarding = useSelector(
     (state: RootState) => state.settings.hasCompletedOnboarding,
   );
@@ -192,15 +195,20 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
     }
   }, [isSettingsLoaded, isLoading]);
 
+  const segments = useSegments();
+  const isQuickAdd = segments[0] === "quick-add";
+
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="(auth)" />
-      <Stack.Screen name="categories" />
-      <Stack.Screen name="backdated" />
-      <Stack.Screen name="onboarding" />
-      <Stack.Screen name="quick-add" options={{ presentation: 'transparentModal', animation: 'fade' }} />
-    </Stack>
+    <View className={`flex-1 ${isQuickAdd ? 'bg-transparent' : 'bg-background'}`}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="categories" />
+        <Stack.Screen name="backdated" />
+        <Stack.Screen name="onboarding" />
+        <Stack.Screen name="quick-add" options={{ presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } }} />
+      </Stack>
+    </View>
   );
 }

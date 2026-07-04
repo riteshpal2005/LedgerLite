@@ -80,7 +80,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         colors,
       }}
     >
-      <View className={`${activeThemeClass} bg-background flex-1`}>
+      <View className={`${activeThemeClass} bg-transparent flex-1`}>
         <StatusBar
           style={activeThemeClass === "" ? "dark" : "light"}
           backgroundColor="transparent"
