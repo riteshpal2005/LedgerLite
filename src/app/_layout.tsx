@@ -4,6 +4,7 @@ import {
   useSegments,
   useRootNavigationState,
 } from "expo-router";
+import { View } from "react-native";
 import { ThemeProvider } from "../core/theme/ThemeContext";
 import "../global.css";
 import { SQLiteProvider } from "expo-sqlite";
