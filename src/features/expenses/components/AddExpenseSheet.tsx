@@ -37,12 +37,14 @@ import { SyncService } from "../../../core/services/syncService";
 interface AddExpenseSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
   initialExpense?: Expense;
+  duplicateExpense?: Expense;
   isBackdatedMode?: boolean;
 }
 
 export function AddExpenseSheet({
   bottomSheetRef,
   initialExpense,
+  duplicateExpense,
   isBackdatedMode = false,
 }: AddExpenseSheetProps) {
   const [amount, setAmount] = useState("");
@@ -113,6 +115,15 @@ export function AddExpenseSheet({
       setCategoryId(initialExpense.categoryId);
       if (initialExpense.accountId) setAccountId(initialExpense.accountId);
       setDestinationAccountId(undefined);
+    } else if (duplicateExpense) {
+      setAmount(duplicateExpense.amount.toString());
+      setDescription(duplicateExpense.description);
+      setMerchant(duplicateExpense.merchant || "");
+      setDate(new Date());
+      setType(duplicateExpense.type);
+      setCategoryId(duplicateExpense.categoryId);
+      if (duplicateExpense.accountId) setAccountId(duplicateExpense.accountId);
+      setDestinationAccountId(undefined);
     } else {
       setAmount("");
       setDescription("");
@@ -124,12 +135,12 @@ export function AddExpenseSheet({
       setDestinationAccountId(undefined);
     }
     setFormKey((prev) => prev + 1);
-  }, [initialExpense, defaultAccountId]);
+  }, [initialExpense, duplicateExpense, defaultAccountId]);
 
   const handleSheetChanges = useCallback(
     (index: number) => {
       if (index === -1) {
-        if (!initialExpense) {
+        if (!initialExpense && !duplicateExpense) {
           setAmount("");
           setDescription("");
           setMerchant("");
@@ -142,7 +153,7 @@ export function AddExpenseSheet({
         }
       }
     },
-    [initialExpense, defaultAccountId],
+    [initialExpense, duplicateExpense, defaultAccountId],
   );
 
   const snapPoints = useMemo(() => ["90%"], []);
@@ -300,7 +311,7 @@ export function AddExpenseSheet({
       <BottomSheetView style={{ flex: 1, padding: 24 }}>
         <View className="flex-row justify-between items-center mb-6">
           <Heading className="mb-0">
-            {initialExpense ? "Edit Transaction" : "Add Expense"}
+            {initialExpense ? "Edit Transaction" : duplicateExpense ? "Duplicate Transaction" : "Add Expense"}
           </Heading>
           <Pressable onPress={handleClose}>
             <Text className="text-secondary font-bold text-lg">Cancel</Text>

@@ -29,6 +29,7 @@ interface ExpenseListItemProps {
   showIcons: boolean;
   isCredit: boolean;
   onPress: () => void;
+  onLongPress?: () => void;
   onAssignAccountPress: () => void;
 }
 
@@ -39,6 +40,7 @@ export function ExpenseListItem({
   showIcons,
   isCredit,
   onPress,
+  onLongPress,
   onAssignAccountPress,
 }: ExpenseListItemProps) {
   const use24HourFormat = useSelector(
@@ -48,6 +50,8 @@ export function ExpenseListItem({
     <Animated.View>
       <Pressable
         onPress={onPress}
+        onLongPress={onLongPress}
+        delayLongPress={500}
         className="bg-surface p-4 rounded-xl mb-3 flex-row justify-between items-center border border-bordercolor active:opacity-80"
       >
         <View className="flex-row items-center flex-1">

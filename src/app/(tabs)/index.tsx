@@ -38,6 +38,9 @@ export default function Home() {
   const [selectedExpenseToEdit, setSelectedExpenseToEdit] = useState<
     Expense | undefined
   >(undefined);
+  const [selectedExpenseToDuplicate, setSelectedExpenseToDuplicate] = useState<
+    Expense | undefined
+  >(undefined);
   const [showExitModal, setShowExitModal] = useState(false);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -84,11 +87,21 @@ export default function Home() {
       return;
     }
     setSelectedExpenseToEdit(undefined);
+    setSelectedExpenseToDuplicate(undefined);
     bottomSheetModalRef.current?.present();
   };
 
   const handleExpensePress = (expense: Expense) => {
     setSelectedExpenseToEdit(expense);
+    setSelectedExpenseToDuplicate(undefined);
+    setTimeout(() => {
+      bottomSheetModalRef.current?.present();
+    }, 0);
+  };
+
+  const handleExpenseLongPress = (expense: Expense) => {
+    setSelectedExpenseToEdit(undefined);
+    setSelectedExpenseToDuplicate(expense);
     setTimeout(() => {
       bottomSheetModalRef.current?.present();
     }, 0);
@@ -138,6 +151,7 @@ export default function Home() {
         filterType={filterType}
         filterAccountId={filterAccountId}
         onExpensePress={handleExpensePress}
+        onExpenseLongPress={handleExpenseLongPress}
       />
       <FAB
         icon={
@@ -149,6 +163,7 @@ export default function Home() {
       <AddExpenseSheet
         bottomSheetRef={bottomSheetModalRef}
         initialExpense={selectedExpenseToEdit}
+        duplicateExpense={selectedExpenseToDuplicate}
       />
       <AddAccountModal bottomSheetRef={addAccountSheetRef} />
 

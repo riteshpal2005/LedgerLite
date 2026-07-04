@@ -28,6 +28,7 @@ interface ExpenseListProps {
   filterType: FilterType;
   filterAccountId: FilterAccountId;
   onExpensePress?: (expense: any) => void;
+  onExpenseLongPress?: (expense: any) => void;
 }
 
 export default function ExpenseList({
@@ -36,6 +37,7 @@ export default function ExpenseList({
   filterType,
   filterAccountId,
   onExpensePress,
+  onExpenseLongPress,
 }: ExpenseListProps) {
   const expenses = useSelector((state: RootState) => state.expenses.expenses);
   const categories = useSelector(
@@ -175,6 +177,7 @@ export default function ExpenseList({
                   showIcons={showIcons}
                   isCredit={isCredit}
                   onPress={() => onExpensePress && onExpensePress(item)}
+                  onLongPress={() => onExpenseLongPress && onExpenseLongPress(item)}
                   onAssignAccountPress={() => setExpenseToAssign(item.id)}
                 />
               );
