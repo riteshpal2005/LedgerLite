@@ -167,7 +167,7 @@ export function AddExpenseSheet({
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (addAnother: boolean = false) => {
     if (!amount || !description || categoryId === undefined) return;
     const selfTransferCatId = categories.find((c) => c.name === "Self Transfer")?.id;
     const isSelfTransfer = categoryId === selfTransferCatId && destinationAccountId !== undefined;
@@ -242,7 +242,14 @@ export function AddExpenseSheet({
       SyncService.schedulePush(user.uid, dbActions);
     }
 
-    handleClose();
+    if (addAnother === true) {
+      setAmount("");
+      setDescription("");
+      setMerchant("");
+      setFormKey((prev) => prev + 1);
+    } else {
+      handleClose();
+    }
   };
 
   const handleDelete = async () => {
@@ -389,9 +396,18 @@ export function AddExpenseSheet({
 
           <Button
             title={initialExpense ? "Save Changes" : "Save Transaction"}
-            onPress={handleSave}
+            onPress={() => handleSave(false)}
             className="mb-4 mt-4"
           />
+
+          {!initialExpense && (
+            <Button
+              title="Save & Add Another"
+              onPress={() => handleSave(true)}
+              variant="secondary"
+              className="mb-4"
+            />
+          )}
 
           {initialExpense && (
             <Button
