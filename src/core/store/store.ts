@@ -19,10 +19,7 @@ export const store = configureStore({
         if (action.type?.startsWith("settings/")) {
           const state = storeAPI.getState();
           const settingsVal = JSON.stringify(state.settings);
-          const res = storage.setItem("ledgerLite_settings", settingsVal);
-          if (res instanceof Promise) {
-            res.catch(console.error);
-          }
+          const res = storage.set("ledgerLite_settings", settingsVal);
         }
         return result;
       },

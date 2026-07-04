@@ -120,11 +120,11 @@ export default function RootLayout() {
         if (fileInfo.exists) {
           const fileData = await FileSystem.readAsStringAsync(fileUri);
           const parsed = JSON.parse(fileData);
-          await storage.setItem("ledgerLite_settings", fileData);
+          storage.set("ledgerLite_settings", fileData);
           store.dispatch(loadSettings(parsed));
           await FileSystem.deleteAsync(fileUri).catch(console.warn);
         } else {
-          const data = await storage.getItem("ledgerLite_settings");
+          const data = storage.getString("ledgerLite_settings");
           if (data) {
             store.dispatch(loadSettings(JSON.parse(data)));
           }

@@ -16,13 +16,13 @@ const firebaseConfig = {
 
 const storageAdapter = {
   getItem: async (key: string) => {
-    return await storage.getItem(key);
+    return storage.getString(key) || null;
   },
   setItem: async (key: string, value: string) => {
-    await storage.setItem(key, value);
+    storage.set(key, value);
   },
   removeItem: async (key: string) => {
-    await storage.removeItem(key);
+    storage.delete(key);
   },
 };
 
