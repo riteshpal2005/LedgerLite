@@ -22,7 +22,7 @@ const storageAdapter = {
     storage.set(key, value);
   },
   removeItem: async (key: string) => {
-    storage.delete(key);
+    storage.remove(key);
   },
 };
 
