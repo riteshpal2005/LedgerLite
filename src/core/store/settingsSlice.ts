@@ -12,6 +12,16 @@ const settingsSlice = createSlice({
     isGlobalSyncing: false,
     importProgress: 0,
     use24HourFormat: false,
+    quickTemplates: [] as Array<{
+      id: string;
+      title: string;
+      amount: string;
+      description: string;
+      merchant: string;
+      categoryId: string;
+      accountId: string | undefined;
+      type: "debit" | "credit";
+    }>,
   },
   reducers: {
     toggleShowIcons: (state) => {
@@ -49,6 +59,12 @@ const settingsSlice = createSlice({
     setImportProgress: (state, action) => {
       state.importProgress = action.payload;
     },
+    addQuickTemplate: (state, action) => {
+      state.quickTemplates.push(action.payload);
+    },
+    removeQuickTemplate: (state, action) => {
+      state.quickTemplates = state.quickTemplates.filter(t => t.id !== action.payload);
+    },
   },
 });
 
@@ -63,5 +79,7 @@ export const {
   completeOnboarding,
   setIsGlobalSyncing,
   setImportProgress,
+  addQuickTemplate,
+  removeQuickTemplate,
 } = settingsSlice.actions;
 export default settingsSlice.reducer;

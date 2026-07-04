@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Alert, ScrollView } from "react-native";
 import { Button } from "../../../shared/components/ui/Button";
 import { Heading } from "../../../shared/components/ui/Typography";
 import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
@@ -10,6 +10,7 @@ import {
   setAccounts,
 } from "../../../core/store/accountSlice";
 import { addExpense as addExpenseToRedux } from "../../../core/store/expenseSlice";
+import { addQuickTemplate, removeQuickTemplate } from "../../../core/store/settingsSlice";
 import {
   BottomSheetModal,
   BottomSheetView,
@@ -98,6 +99,9 @@ export function AddExpenseSheet({
   const accounts = useSelector(selectAccountsWithBalances);
   const defaultAccountId = useSelector(
     (state: RootState) => state.settings.defaultAccountId,
+  );
+  const quickTemplates = useSelector(
+    (state: RootState) => state.settings.quickTemplates || []
   );
 
   const [accountId, setAccountId] = useState(defaultAccountId);
@@ -324,6 +328,40 @@ export function AddExpenseSheet({
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
         >
+          {quickTemplates.length > 0 && (
+            <View className="mb-6">
+              <Text className="text-secondary font-bold text-sm mb-2 uppercase">Quick Templates</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+                {quickTemplates.map(template => (
+                  <Pressable
+                    key={template.id}
+                    onLongPress={() => {
+                      Alert.alert("Remove Template", `Remove "${template.title}"?`, [
+                        { text: "Cancel", style: "cancel" },
+                        { text: "Remove", style: "destructive", onPress: () => dispatch(removeQuickTemplate(template.id)) }
+                      ]);
+                    }}
+                    onPress={() => {
+                      setAmount(template.amount);
+                      setDescription(template.description);
+                      setMerchant(template.merchant);
+                      setCategoryId(template.categoryId);
+                      setType(template.type);
+                      if (template.accountId) setAccountId(template.accountId);
+                      setDestinationAccountId(undefined);
+                      setDate(new Date());
+                      setFormKey(prev => prev + 1);
+                    }}
+                    className="bg-brand-primary/10 px-4 py-2 rounded-xl mr-3 border border-brand-primary/20"
+                  >
+                    <Text className="text-brand-primary font-bold">{template.title}</Text>
+                    <Text className="text-brand-primary/80 text-xs text-center">{template.type === 'credit' ? '+' : '-'}₹{template.amount}</Text>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+
           <View className="flex-row gap-4 mb-4">
             <View className="flex-1">
               <CategoryPickerButton
@@ -412,12 +450,37 @@ export function AddExpenseSheet({
           />
 
           {!initialExpense && (
-            <Button
-              title="Save & Add Another"
-              onPress={() => handleSave(true)}
-              variant="secondary"
-              className="mb-4"
-            />
+            <>
+              <Button
+                title="Save & Add Another"
+                onPress={() => handleSave(true)}
+                variant="secondary"
+                className="mb-4"
+              />
+              <Button
+                title="Save as Quick Template"
+                onPress={() => {
+                  if (!amount || !description || categoryId === undefined) {
+                    Alert.alert("Missing Fields", "Please enter amount, description, and category.");
+                    return;
+                  }
+                  const newTemplate = {
+                    id: Date.now().toString(),
+                    title: description,
+                    amount,
+                    description,
+                    merchant,
+                    categoryId,
+                    accountId: selectedAccount?.id,
+                    type,
+                  };
+                  dispatch(addQuickTemplate(newTemplate));
+                  Alert.alert("Template Saved", `Saved "${description}" as a template.`);
+                }}
+                variant="ghost"
+                className="mb-4"
+              />
+            </>
           )}
 
           {initialExpense && (
