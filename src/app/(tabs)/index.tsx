@@ -65,6 +65,8 @@ export default function Home() {
   );
 
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const expenses = useSelector((state: RootState) => state.expenses.expenses);
+  const uncategorizedCount = expenses.filter(e => e.categoryId === 'uncategorized').length;
 
   useFocusEffect(
     useCallback(() => {
@@ -145,6 +147,26 @@ export default function Home() {
           </View>
         </View>
       )}
+
+      {uncategorizedCount > 0 && (
+        <Pressable 
+          onPress={() => {
+            setSearchQuery("uncategorized");
+          }}
+          className="mb-4 bg-yellow-500/10 rounded-2xl p-4 border border-yellow-500/30 flex-row items-center justify-between"
+        >
+          <View className="flex-1 mr-4">
+            <Text className="text-yellow-600 dark:text-yellow-400 font-bold text-sm mb-1">
+              ⚡ Action Required
+            </Text>
+            <Text className="text-secondary text-xs">
+              You have {uncategorizedCount} staged transaction{uncategorizedCount > 1 ? 's' : ''} that need categories before they affect your balance.
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+        </Pressable>
+      )}
+
       <ExpenseList
         searchQuery={searchQuery}
         sortMode={sortMode}

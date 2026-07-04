@@ -110,8 +110,9 @@ export default function ExpenseList({
       ?.toLocaleLowerCase()
       .includes(lowerQuery);
     const matchesAmount = expense.amount.toString().includes(lowerQuery);
+    const matchesCategory = expense.categoryId.toLowerCase() === lowerQuery;
 
-    return matchesDesc || matchesAmount || matchesMerchant;
+    return matchesDesc || matchesAmount || matchesMerchant || matchesCategory;
   });
 
   const sortedExpenses = [...filteredExpenses].sort((a, b) => {

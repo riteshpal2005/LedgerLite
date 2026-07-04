@@ -146,6 +146,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
     ('cat-11', 'Revenue', 'mdi-trending-up', '#06b6d4', ${defaultTime}),
     ('cat-12', 'Allowance', 'mdi-hand-coin', '#eab308', ${defaultTime}),
     ('cat-13', 'Friend', 'mdi-handshake', '#6366f1', ${defaultTime}),
-    ('cat-14', 'Utilities', 'mdi-sim', '#06b6d4', ${defaultTime});
+    ('cat-14', 'Utilities', 'mdi-sim', '#06b6d4', ${defaultTime}),
+    ('uncategorized', 'Uncategorized', 'help', '#9ca3af', ${defaultTime});
   `);
 }

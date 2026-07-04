@@ -21,6 +21,8 @@ import { AuthProvider, useAuth } from "../core/firebase/AuthContext";
 import * as SplashScreen from "expo-splash-screen";
 import { useState } from "react";
 import Constants, { ExecutionEnvironment } from "expo-constants";
+import * as QuickActions from 'expo-quick-actions';
+import { useQuickAction } from 'expo-quick-actions/hooks';
 
 const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
@@ -163,6 +165,27 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
 
   useProtectedRoute(user, isLoading, hasCompletedOnboarding, isSettingsLoaded);
 
+  const router = useRouter();
+
+  useEffect(() => {
+    QuickActions.setItems([
+      {
+        title: '⚡ Quick Add',
+        subtitle: 'Add expense instantly',
+        icon: 'compose',
+        id: 'quick-add',
+        params: { href: '/quick-add' }
+      }
+    ]);
+  }, []);
+
+  const action = useQuickAction();
+  useEffect(() => {
+    if (action?.id === 'quick-add' && isSettingsLoaded && !isLoading) {
+      router.push('/quick-add');
+    }
+  }, [action, isSettingsLoaded, isLoading]);
+
   useEffect(() => {
     if (isSettingsLoaded && !isLoading) {
       SplashScreen.hideAsync().catch(console.warn);
@@ -177,6 +200,7 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
       <Stack.Screen name="categories" />
       <Stack.Screen name="backdated" />
       <Stack.Screen name="onboarding" />
+      <Stack.Screen name="quick-add" options={{ presentation: 'transparentModal', animation: 'fade' }} />
     </Stack>
   );
 }
