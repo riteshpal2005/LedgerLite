@@ -40,7 +40,13 @@ if (!isExpoGo) {
   });
 }
 
-SplashScreen.preventAutoHideAsync();
+const isDirectQuickAddTopLevel = QuickActions.initial?.id === 'quick-add';
+if (!isDirectQuickAddTopLevel) {
+  SplashScreen.preventAutoHideAsync().catch(console.warn);
+} else {
+  // If we are Quick Add, actively attempt to hide it immediately just in case
+  SplashScreen.hideAsync().catch(console.warn);
+}
 import { UpdateChecker } from "../shared/components/UpdateChecker";
 import {
   configureReanimatedLogger,
