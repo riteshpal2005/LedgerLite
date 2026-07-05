@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, TextInput, Pressable, BackHandler, KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useExpenseDatabase } from "../core/database/useExpenseDatabase";
 import { useDispatch, useSelector } from "react-redux";
@@ -72,34 +73,41 @@ export default function QuickAddScreen() {
   if (isClosing) return <View style={StyleSheet.absoluteFillObject} className="bg-background" />;
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}
-      className="bg-background"
-    >
-      <View className="flex-1 justify-center p-4">
-        <View className="bg-surface rounded-3xl p-6 shadow-xl border border-bordercolor">
-          <View className="flex-row justify-between items-center mb-10">
-            <View className="flex-row items-center">
-              <Ionicons name="flash" size={32} color={colors.brandPrimary} />
-              <Text className="text-primary font-bold text-3xl ml-3">Quick Add</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['bottom', 'top']}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+        className="bg-background"
+      >
+        <View className="flex-1 justify-center p-4">
+          <View className="bg-surface rounded-3xl p-6 shadow-xl border border-bordercolor">
+            <View className="flex-row justify-between items-center mb-10">
+              <View className="flex-row items-center">
+                <Ionicons name="flash" size={32} color={colors.brandPrimary} />
+                <Text className="text-primary font-bold text-3xl ml-3">Quick Add</Text>
+              </View>
+              <Pressable onPress={handleClose} className="p-3 bg-background rounded-full shadow-sm">
+                <Ionicons name="close" size={24} color={colors.textSecondary} />
+              </Pressable>
             </View>
-            <Pressable onPress={handleClose} className="p-3 bg-background rounded-full shadow-sm">
-              <Ionicons name="close" size={24} color={colors.textSecondary} />
-            </Pressable>
-          </View>
 
-          <TextInput
-            ref={amountInputRef}
-            value={amount}
-            onChangeText={setAmount}
-            placeholder="0.00"
-            placeholderTextColor={colors.textTertiary}
-            keyboardType="decimal-pad"
-            className="text-primary text-6xl font-bold text-center mb-10 py-2"
-            autoFocus
-            caretHidden={true}
-          />
+            <TextInput
+              ref={amountInputRef}
+              value={amount}
+              onChangeText={setAmount}
+              placeholder="0.00"
+              placeholderTextColor={colors.textTertiary}
+              keyboardType="decimal-pad"
+              className="text-primary text-6xl font-bold text-center mb-10"
+              style={{ 
+                includeFontPadding: false, 
+                textAlignVertical: 'center', 
+                lineHeight: 75,
+                paddingVertical: 10
+              }}
+              autoFocus
+              caretHidden={true}
+            />
 
           <TextInput
             value={description}
@@ -123,5 +131,6 @@ export default function QuickAddScreen() {
         </View>
       </View>
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
