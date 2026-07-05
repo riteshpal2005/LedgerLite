@@ -200,7 +200,7 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
   const isQuickAdd = segments[0] === "quick-add";
 
   return (
-    <View className={`flex-1 ${isQuickAdd ? 'bg-transparent' : 'bg-background'}`}>
+    <View className="flex-1 bg-background">
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="(tabs)" />
@@ -208,7 +208,7 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
         <Stack.Screen name="categories" />
         <Stack.Screen name="backdated" />
         <Stack.Screen name="onboarding" />
-        <Stack.Screen name="quick-add" options={{ presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } }} />
+        <Stack.Screen name="quick-add" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
       </Stack>
     </View>
   );
