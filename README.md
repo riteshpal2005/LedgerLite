@@ -17,17 +17,17 @@ LedgerLite is a high-performance, offline-first personal finance management appl
 ## UI Showcase
 
 <p align="center">
-  <img src="./assets/analytics.png" width="23%" />
-  <img src="./assets/add-expense.png" width="23%" />
-  <img src="./assets/date-picker.png" width="23%" />
-  <img src="./assets/time-picker.png" width="23%" />
+  <img src="./assets/screenshots/analytics.webp" width="23%" />
+  <img src="./assets/screenshots/add-expense.webp" width="23%" />
+  <img src="./assets/screenshots/date-picker.webp" width="23%" />
+  <img src="./assets/screenshots/time-picker.webp" width="23%" />
 </p>
 
 <p align="center">
-  <img src="./assets/category-picker.png" width="23%" />
-  <img src="./assets/account-picker.png" width="23%" />
-  <img src="./assets/settings.png" width="23%" />
-  <img src="./assets/expenses.png" width="23%" />
+  <img src="./assets/screenshots/category-picker.webp" width="23%" />
+  <img src="./assets/screenshots/account-picker.webp" width="23%" />
+  <img src="./assets/screenshots/settings.webp" width="23%" />
+  <img src="./assets/screenshots/expenses.webp" width="23%" />
 </p>
 
 ---
@@ -61,7 +61,7 @@ The architectural goal of LedgerLite was to avoid the "Loading Spinner" anti-pat
 ### 1. Database Schema & Relational Integrity
 The local data layer is powered by `expo-sqlite`. To maintain strict referential integrity when users delete Accounts or Categories, the database utilizes relational mappings.
 
-![LedgerLite Architecture Diagram](./assets/architecture-diagram.png)
+![LedgerLite Architecture Diagram](./assets/images/architecture-diagram.webp)
 
 ### 2. State Management Segregation
 I chose **Redux Toolkit (RTK)** to manage the highly relational, globally accessed transaction data, but deliberately isolated UI state (Themes, Preferences) into **React Context**. 

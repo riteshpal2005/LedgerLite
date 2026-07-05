@@ -176,7 +176,7 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
       {
         title: 'Quick Add',
         subtitle: 'Add expense instantly',
-        icon: 'compose',
+        icon: 'ic_quick_add',
         id: 'quick-add',
         params: { href: '/quick-add' }
       }
