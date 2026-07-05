@@ -54,7 +54,7 @@
         }
       ],
       "expo-font",
-      "./plugins/withQuickTile.js"
+      "./plugins/withAndroidDrawable.js"
     ],
     "extra": {
       "router": {},
