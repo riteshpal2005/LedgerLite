@@ -183,12 +183,14 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
     ]);
   }, []);
 
+  const navigationState = useRootNavigationState();
   const action = useQuickAction();
+  
   useEffect(() => {
-    if (action?.id === 'quick-add' && isSettingsLoaded && !isLoading) {
+    if (action?.id === 'quick-add' && isSettingsLoaded && !isLoading && navigationState?.key) {
       router.push('/quick-add');
     }
-  }, [action, isSettingsLoaded, isLoading]);
+  }, [action, isSettingsLoaded, isLoading, navigationState?.key]);
 
   useEffect(() => {
     if (isSettingsLoaded && !isLoading) {

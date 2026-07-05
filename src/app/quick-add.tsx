@@ -34,7 +34,11 @@ export default function QuickAddScreen() {
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
-      router.back();
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/');
+      }
     }, 200);
   };
 
