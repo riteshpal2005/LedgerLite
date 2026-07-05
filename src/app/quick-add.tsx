@@ -65,12 +65,13 @@ export default function QuickAddScreen() {
     handleClose();
   };
 
-  if (isClosing) return <View style={[StyleSheet.absoluteFillObject, { backgroundColor: colors.background }]} />;
+  if (isClosing) return <View style={StyleSheet.absoluteFillObject} className="bg-background" />;
 
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1, backgroundColor: colors.background }}
+      style={{ flex: 1 }}
+      className="bg-background"
     >
       <View className="flex-1 p-6 justify-center">
         <View className="flex-row justify-between items-center mb-10">
