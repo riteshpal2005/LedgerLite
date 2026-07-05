@@ -24,6 +24,11 @@ import { useState } from "react";
 import Constants, { ExecutionEnvironment } from "expo-constants";
 import * as QuickActions from "expo-quick-actions";
 import { useQuickAction } from "expo-quick-actions/hooks";
+import { createContext } from "react";
+
+export let isQuickAddEscaped = false;
+
+export const QuickAddEscapeContext = createContext<{ escapeQuickAdd: () => void } | null>(null);
 
 const isExpoGo =
   Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
@@ -140,6 +145,7 @@ function QuickAddOnlyLayout() {
 
 export default function RootLayout() {
   const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
+  const [forceFullApp, setForceFullApp] = useState(false);
 
   useEffect(() => {
     const loadAppPref = async () => {
@@ -170,8 +176,17 @@ export default function RootLayout() {
 
   // Ref: _layout-4
   // If this is a Quick Add cold-start, skip the heavy provider tree entirely
-  if (isDirectQuickAddTopLevel) {
-    return <QuickAddOnlyLayout />;
+  if (isDirectQuickAddTopLevel && !forceFullApp) {
+    return (
+      <QuickAddEscapeContext.Provider value={{
+        escapeQuickAdd: () => {
+          isQuickAddEscaped = true;
+          setForceFullApp(true);
+        }
+      }}>
+        <QuickAddOnlyLayout />
+      </QuickAddEscapeContext.Provider>
+    );
   }
 
   if (!isSettingsLoaded) return null;

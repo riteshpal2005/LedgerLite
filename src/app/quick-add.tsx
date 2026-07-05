@@ -18,7 +18,11 @@ import Animated, {
   withSpring,
   withTiming,
   runOnJS,
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
 } from "react-native-reanimated";
+import { QuickAddEscapeContext } from "./_layout";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { openDatabaseSync } from "expo-sqlite";
@@ -113,10 +117,21 @@ export default function QuickAddScreen() {
     BackHandler.exitApp();
   }, []);
 
+  const escapeContext = useContext(QuickAddEscapeContext);
+  const router = useRouter();
+
   const handleOpenFullApp = useCallback(() => {
     // Ref: QuickAdd-6 — cold restart into the full app
-    Linking.openURL("ledgerlite://?openAddExpense=true");
-  }, []);
+    if (escapeContext) {
+      escapeContext.escapeQuickAdd();
+      // Delay to let the RootLayout remount, then push to root with param
+      setTimeout(() => {
+        router.replace("/?openAddExpense=true");
+      }, 50);
+    } else {
+      Linking.openURL("ledgerlite://?openAddExpense=true");
+    }
+  }, [escapeContext, router]);
 
   const handleSave = useCallback(async () => {
     if (!amount || !description) return;
@@ -193,7 +208,7 @@ export default function QuickAddScreen() {
 
               {/* Open full app */}
               <Pressable onPress={handleOpenFullApp} style={styles.openAppBtn}>
-                <Text style={styles.openAppText}>Open Full App</Text>
+                <Text style={styles.openAppText}>Open App</Text>
               </Pressable>
             </Animated.View>
           </View>
