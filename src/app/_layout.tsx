@@ -43,9 +43,10 @@ if (!isExpoGo) {
 
 // Ref: _layout-2
 const isDirectQuickAddTopLevel = QuickActions.initial?.id === "quick-add";
-if (!isDirectQuickAddTopLevel) {
-  SplashScreen.preventAutoHideAsync().catch(console.warn);
-} else {
+// Always prevent auto-hide — we control when it disappears
+SplashScreen.preventAutoHideAsync().catch(console.warn);
+// For Quick Add: hide as soon as JS runs (no providers needed)
+if (isDirectQuickAddTopLevel) {
   SplashScreen.hideAsync().catch(console.warn);
 }
 
@@ -118,17 +119,22 @@ function useProtectedRoute(
 }
 
 // Ref: _layout-3
-// Minimal wrapper for Quick Add cold-start — avoids mounting heavy providers
+// Minimal wrapper for Quick Add cold-start — avoids mounting heavy providers.
+// Redux Provider IS included because index.tsx (the Expo Router default route)
+// calls useSelector before our quick-add redirect can fire.
 function QuickAddOnlyLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen
-          name="quick-add"
-          options={{ animation: "none" }}
-        />
-      </Stack>
-    </GestureHandlerRootView>
+    <Provider store={store}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen
+            name="quick-add"
+            options={{ animation: "none" }}
+          />
+        </Stack>
+      </GestureHandlerRootView>
+    </Provider>
   );
 }
 

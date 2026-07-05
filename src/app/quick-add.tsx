@@ -11,12 +11,18 @@ import {
   Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Animated, { FadeIn } from "react-native-reanimated";
+import Animated, {
+  FadeIn,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  runOnJS,
+} from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { openDatabaseSync } from "expo-sqlite";
 import { storage } from "../core/utils/storage";
-import { CustomSplashScreen } from "../shared/components/CustomSplashScreen";
 
 // Ref: QuickAdd-1
 const BRAND_PRIMARY = "#2563EB";
@@ -39,13 +45,26 @@ function getDefaultAccountId(): string | undefined {
   }
 }
 
+// Ref: QuickAdd-5
+function getUserDbName(): string {
+  try {
+    const raw = storage.getString("ledgerLite_settings");
+    if (!raw) return "ledgerlite_guest.db";
+    const parsed = JSON.parse(raw);
+    const uid = parsed?.uid;
+    return uid ? `ledgerlite_${uid}.db` : "ledgerlite_guest.db";
+  } catch {
+    return "ledgerlite_guest.db";
+  }
+}
+
 // Ref: QuickAdd-3
 async function saveQuickExpense(
   amount: number,
   description: string,
   accountId?: string
 ): Promise<void> {
-  const db = openDatabaseSync("ledgerlite_guest.db");
+  const db = openDatabaseSync(getUserDbName());
   const id = `qa_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
   const now = Date.now();
 
@@ -57,18 +76,27 @@ async function saveQuickExpense(
 }
 
 export default function QuickAddScreen() {
-  const [ready, setReady] = useState(false);
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
 
   const amountInputRef = useRef<TextInput>(null);
   const descriptionInputRef = useRef<TextInput>(null);
 
-  // Ref: QuickAdd-4
+  // Ref: QuickAdd-4 — zoom-in spring animation
+  const scale = useSharedValue(0.88);
+  const opacity = useSharedValue(0);
+
+  const animatedCardStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setReady(true);
-    }, 80);
+    // Zoom + fade in when screen mounts (native splash already dismissed)
+    scale.value = withSpring(1, { damping: 18, stiffness: 160 });
+    opacity.value = withTiming(1, { duration: 180 });
+
+    setTimeout(() => amountInputRef.current?.focus(), 220);
 
     const backAction = () => {
       handleClose();
@@ -78,23 +106,15 @@ export default function QuickAddScreen() {
       "hardwareBackPress",
       backAction
     );
-    return () => {
-      clearTimeout(timer);
-      backHandler.remove();
-    };
+    return () => backHandler.remove();
   }, []);
-
-  useEffect(() => {
-    if (ready) {
-      setTimeout(() => amountInputRef.current?.focus(), 50);
-    }
-  }, [ready]);
 
   const handleClose = useCallback(() => {
     BackHandler.exitApp();
   }, []);
 
   const handleOpenFullApp = useCallback(() => {
+    // Ref: QuickAdd-6 — cold restart into the full app
     Linking.openURL("ledgerlite://");
   }, []);
 
@@ -109,19 +129,15 @@ export default function QuickAddScreen() {
     BackHandler.exitApp();
   }, [amount, description]);
 
-  if (!ready) {
-    return <CustomSplashScreen />;
-  }
-
   return (
-    <Animated.View entering={FadeIn.duration(200)} style={styles.root}>
+    <View style={styles.root}>
       <SafeAreaView style={styles.safeArea} edges={["bottom", "top"]}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.keyboardView}
         >
           <View style={styles.center}>
-            <View style={styles.card}>
+            <Animated.View style={[styles.card, animatedCardStyle]}>
               {/* Header */}
               <View style={styles.header}>
                 <View style={styles.headerLeft}>
@@ -179,11 +195,11 @@ export default function QuickAddScreen() {
               <Pressable onPress={handleOpenFullApp} style={styles.openAppBtn}>
                 <Text style={styles.openAppText}>Open Full App</Text>
               </Pressable>
-            </View>
+            </Animated.View>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
-    </Animated.View>
+    </View>
   );
 }
 
