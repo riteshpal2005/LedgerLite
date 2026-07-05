@@ -18,6 +18,7 @@ export default function QuickAddScreen() {
   const [isClosing, setIsClosing] = useState(false);
   
   const amountInputRef = useRef<TextInput>(null);
+  const descriptionInputRef = useRef<TextInput>(null);
   const router = useRouter();
   const dbActions = useExpenseDatabase();
   const dispatch = useDispatch();
@@ -30,17 +31,25 @@ export default function QuickAddScreen() {
     setTimeout(() => {
       amountInputRef.current?.focus();
     }, 100);
+
+    const backAction = () => {
+      handleClose();
+      return true; // prevent default
+    };
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    return () => backHandler.remove();
   }, []);
 
   const handleClose = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      if (router.canGoBack()) {
-        router.back();
-      } else {
-        router.replace('/');
-      }
-    }, 200);
+    // Zero friction close
+    BackHandler.exitApp();
+    
+    // Fallback if exitApp doesn't work (iOS or Expo Go)
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/');
+    }
   };
 
   const handleSave = async () => {
@@ -105,11 +114,13 @@ export default function QuickAddScreen() {
                 lineHeight: 75,
                 paddingVertical: 10
               }}
-              autoFocus
               caretHidden={true}
+              returnKeyType="next"
+              onSubmitEditing={() => descriptionInputRef.current?.focus()}
             />
 
           <TextInput
+            ref={descriptionInputRef}
             value={description}
             onChangeText={setDescription}
             placeholder="What was it for?"
