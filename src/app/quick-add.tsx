@@ -73,7 +73,7 @@ export default function QuickAddScreen() {
   if (isClosing) return <View style={StyleSheet.absoluteFillObject} className="bg-background" />;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['bottom', 'top']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['bottom', 'top']}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
