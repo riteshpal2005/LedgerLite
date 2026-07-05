@@ -1,40 +1,53 @@
-import { View, Animated } from "react-native";
-import { useEffect, useRef } from "react";
+import { View } from "react-native";
+import { useEffect } from "react";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from "react-native-reanimated";
 
+// Ref: SkeletonExpenseRow-1
+// Matches ExpenseListItem layout exactly: icon circle + two text lines left, amount + date right
 export function SkeletonExpenseRow() {
-  const fadeAnim = useRef(new Animated.Value(0.3)).current;
+  const opacity = useSharedValue(0.35);
 
   useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(fadeAnim, {
-          toValue: 0.7,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-        Animated.timing(fadeAnim, {
-          toValue: 0.3,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
-  }, [fadeAnim]);
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.75, { duration: 750 }),
+        withTiming(0.35, { duration: 750 }),
+      ),
+      -1,
+      true,
+    );
+  }, []);
+
+  const animStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
 
   return (
     <Animated.View
-      style={{ opacity: fadeAnim }}
+      style={animStyle}
       className="bg-surface p-4 rounded-xl mb-3 flex-row justify-between items-center border border-bordercolor"
     >
+      {/* Left: icon + text block */}
       <View className="flex-row items-center flex-1">
-        <View className="w-10 h-10 rounded-full bg-bordercolor mr-3" />
+        {/* Category icon circle */}
+        <View className="w-10 h-10 rounded-full bg-bordercolor mr-4" />
         <View className="flex-1 pr-2">
-          <View className="h-5 w-24 bg-bordercolor rounded-md mb-2" />
-          <View className="h-3 w-40 bg-bordercolor rounded-md" />
+          {/* Category name */}
+          <View className="h-4 w-28 bg-bordercolor rounded-md mb-2" />
+          {/* Description + account badge */}
+          <View className="flex-row items-center">
+            <View className="h-3 w-32 bg-bordercolor rounded-md" />
+            <View className="h-3 w-16 bg-bordercolor rounded-md ml-2" />
+          </View>
         </View>
       </View>
+      {/* Right: amount + date */}
       <View className="items-end">
-        <View className="h-5 w-16 bg-bordercolor rounded-md mb-2" />
+        <View className="h-4 w-16 bg-bordercolor rounded-md mb-2" />
         <View className="h-3 w-12 bg-bordercolor rounded-md" />
       </View>
     </Animated.View>
