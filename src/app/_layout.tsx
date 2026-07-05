@@ -185,21 +185,26 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
 
   const navigationState = useRootNavigationState();
   const action = useQuickAction();
+  const isDirectQuickAdd = QuickActions.initial?.id === 'quick-add';
+  const segments = useSegments();
   
   useEffect(() => {
     if (action?.id === 'quick-add' && isSettingsLoaded && !isLoading && navigationState?.key) {
-      router.push('/quick-add');
+      if (segments[0] !== 'quick-add') {
+        router.push('/quick-add');
+      }
     }
-  }, [action, isSettingsLoaded, isLoading, navigationState?.key]);
+  }, [action, isSettingsLoaded, isLoading, navigationState?.key, segments]);
 
   useEffect(() => {
-    if (isSettingsLoaded && !isLoading) {
-      SplashScreen.hideAsync().catch(console.warn);
+    if (isSettingsLoaded) {
+      if (isDirectQuickAdd || !isLoading) {
+        SplashScreen.hideAsync().catch(console.warn);
+      }
     }
-  }, [isSettingsLoaded, isLoading]);
+  }, [isSettingsLoaded, isLoading, isDirectQuickAdd]);
 
-  const segments = useSegments();
-  const isQuickAdd = segments[0] === "quick-add";
+
 
   return (
     <View className="flex-1 bg-background">
