@@ -98,19 +98,8 @@ export const SyncService = {
     if (isSyncing) return;
     isSyncing = true;
     try {
-      const { getAllExpenses, getAllCategories, getAllAccounts } = dbActions;
-      const expenses = await getAllExpenses();
-      const categories = await getAllCategories();
-      const accounts = await getAllAccounts();
-      const pendingExpenses = expenses.filter(
-        (e) => e.sync_status === "pending" || e.sync_status === "deleted",
-      );
-      const pendingCategories = categories.filter(
-        (c) => c.sync_status === "pending" || c.sync_status === "deleted",
-      );
-      const pendingAccounts = accounts.filter(
-        (a) => a.sync_status === "pending" || a.sync_status === "deleted",
-      );
+      const { getPendingSyncData } = dbActions;
+      const { pendingExpenses, pendingCategories, pendingAccounts } = await getPendingSyncData();
 
       if (
         pendingExpenses.length === 0 &&

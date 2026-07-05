@@ -58,21 +58,21 @@ export function useExpenseDatabase() {
 
   const getAllExpenses = async () => {
     const result = await db.getAllAsync<Expense>(
-      "SELECT * FROM expenses ORDER BY date DESC",
+      "SELECT * FROM expenses WHERE sync_status != 'deleted' ORDER BY date DESC",
     );
     return result;
   };
 
   const getTotalSpent = async () => {
     const result = await db.getFirstAsync<{ total: number }>(
-      `SELECT SUM(amount) as total FROM expenses WHERE type = ?`,
+      `SELECT SUM(amount) as total FROM expenses WHERE type = ? AND sync_status != 'deleted'`,
       ["debit"],
     );
     return result?.total || 0;
   };
 
   const getAllCategories = async () => {
-    const result = await db.getAllAsync<Category>("SELECT * FROM categories");
+    const result = await db.getAllAsync<Category>("SELECT * FROM categories WHERE sync_status != 'deleted'");
     return result;
   };
 
@@ -198,7 +198,7 @@ export function useExpenseDatabase() {
   };
 
   const getAllAccounts = async () => {
-    const result = await db.getAllAsync<Account>("SELECT * FROM accounts");
+    const result = await db.getAllAsync<Account>("SELECT * FROM accounts WHERE sync_status != 'deleted'");
     return result;
   };
 
@@ -365,7 +365,18 @@ export function useExpenseDatabase() {
     await db.runAsync(`DELETE FROM accounts WHERE id IS NULL`);
   };
 
-
+  const getPendingSyncData = async () => {
+    const pendingExpenses = await db.getAllAsync<Expense>(
+      "SELECT * FROM expenses WHERE sync_status IN ('pending', 'deleted')"
+    );
+    const pendingCategories = await db.getAllAsync<Category>(
+      "SELECT * FROM categories WHERE sync_status IN ('pending', 'deleted')"
+    );
+    const pendingAccounts = await db.getAllAsync<Account>(
+      "SELECT * FROM accounts WHERE sync_status IN ('pending', 'deleted')"
+    );
+    return { pendingExpenses, pendingCategories, pendingAccounts };
+  };
 
   const deleteExpense = async (id: string) => {
     const expense = await db.getFirstAsync<{ rowid: number; accountId: string; date: number; categoryId: string; amount: number; type: string; description: string }>(
@@ -542,5 +553,6 @@ export function useExpenseDatabase() {
      restoreExpense,
      markAsSynced,
      deleteCorruptedData,
+     getPendingSyncData,
    };
  }

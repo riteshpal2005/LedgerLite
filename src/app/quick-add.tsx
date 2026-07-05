@@ -22,7 +22,6 @@ export default function QuickAddScreen() {
   const router = useRouter();
   const dbActions = useExpenseDatabase();
   const dispatch = useDispatch();
-  
   const { colors } = useTheme();
   const defaultAccountId = useSelector((state: RootState) => state.settings.defaultAccountId);
 
