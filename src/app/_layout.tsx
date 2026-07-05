@@ -195,6 +195,7 @@ export default function RootLayout() {
 }
 
 import { useTheme } from "../core/theme/ThemeContext";
+import { SyncingScreen } from "../shared/components/SyncingScreen";
 
 function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
   const { user, isLoading } = useAuth();
@@ -241,6 +242,12 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
       SplashScreen.hideAsync().catch(console.warn);
     }
   }, [isSettingsLoaded, isLoading]);
+
+  // Ref: _layout-5
+  // Show branded syncing screen while Firebase Auth resolves (cold start)
+  if (isLoading) {
+    return <SyncingScreen />;
+  }
 
   return (
     <View className="flex-1 bg-background">
