@@ -65,33 +65,21 @@ export default function QuickAddScreen() {
     handleClose();
   };
 
-  if (isClosing) return <View style={StyleSheet.absoluteFillObject} />;
+  if (isClosing) return <View style={[StyleSheet.absoluteFillObject, { backgroundColor: colors.background }]} />;
 
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: colors.background }}
     >
-      <Animated.View 
-        entering={FadeIn.duration(200)} 
-        exiting={FadeOut.duration(200)}
-        style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.6)' }]}
-      >
-        <Pressable style={{ flex: 1 }} onPress={handleClose} />
-      </Animated.View>
-
-      <Animated.View 
-        entering={SlideInDown.duration(300).springify()}
-        exiting={SlideOutDown.duration(200)}
-        className="absolute bottom-0 w-full bg-surface rounded-t-3xl p-6 pb-8 border-t border-bordercolor shadow-lg"
-      >
-        <View className="flex-row justify-between items-center mb-6">
+      <View className="flex-1 p-6 justify-center">
+        <View className="flex-row justify-between items-center mb-10">
           <View className="flex-row items-center">
-            <Ionicons name="flash" size={24} color={colors.brandPrimary} />
-            <Text className="text-primary font-bold text-xl ml-2">Quick Add</Text>
+            <Ionicons name="flash" size={32} color={colors.brandPrimary} />
+            <Text className="text-primary font-bold text-3xl ml-3">Quick Add</Text>
           </View>
-          <Pressable onPress={handleClose} className="p-2 bg-black/5 dark:bg-white/5 rounded-full">
-            <Ionicons name="close" size={20} color={colors.textSecondary} />
+          <Pressable onPress={handleClose} className="p-3 bg-surface rounded-full shadow-sm">
+            <Ionicons name="close" size={24} color={colors.textSecondary} />
           </Pressable>
         </View>
 
@@ -102,7 +90,7 @@ export default function QuickAddScreen() {
           placeholder="0.00"
           placeholderTextColor={colors.textTertiary}
           keyboardType="decimal-pad"
-          className="text-primary text-5xl font-bold text-center mb-6"
+          className="text-primary text-6xl font-bold text-center mb-10"
           autoFocus
         />
 
@@ -111,7 +99,7 @@ export default function QuickAddScreen() {
           onChangeText={setDescription}
           placeholder="What was it for?"
           placeholderTextColor={colors.textTertiary}
-          className="bg-background text-primary p-4 rounded-xl text-lg mb-6 border border-bordercolor"
+          className="bg-surface text-primary p-5 rounded-2xl text-xl mb-10 border border-bordercolor shadow-sm"
           onSubmitEditing={handleSave}
         />
 
@@ -119,13 +107,13 @@ export default function QuickAddScreen() {
           title="Save & Close" 
           onPress={handleSave} 
           disabled={!amount || !description}
-          icon={<Ionicons name="checkmark-circle-outline" size={20} color="white" />}
+          icon={<Ionicons name="checkmark-circle-outline" size={24} color="white" />}
         />
         
-        <Pressable onPress={() => router.replace('/')} className="mt-4 p-2">
-          <Text className="text-brand-primary text-center font-semibold">Open Full App</Text>
+        <Pressable onPress={() => router.replace('/')} className="mt-8 p-4">
+          <Text className="text-brand-primary text-center font-semibold text-lg">Open Full App</Text>
         </Pressable>
-      </Animated.View>
+      </View>
     </KeyboardAvoidingView>
   );
 }
