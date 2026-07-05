@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../core/store/store";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useGlobalSearchParams, useRouter } from "expo-router";
 import ExpenseList from "../../features/expenses/components/ExpenseList";
 import { ExpenseSearchBar } from "../../features/expenses/components/ExpenseSearchBar";
 import {
@@ -92,6 +92,19 @@ export default function Home() {
     setSelectedExpenseToDuplicate(undefined);
     bottomSheetModalRef.current?.present();
   };
+
+  const { openAddExpense } = useGlobalSearchParams<{ openAddExpense: string }>();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (openAddExpense === "true") {
+      setTimeout(() => {
+        handlePresentModalPress();
+        // Clear the param so it doesn't reopen on subsequent renders
+        router.setParams({ openAddExpense: undefined });
+      }, 500); // Give bottom sheet context time to mount
+    }
+  }, [openAddExpense]);
 
   const handleExpensePress = (expense: Expense) => {
     setSelectedExpenseToEdit(expense);

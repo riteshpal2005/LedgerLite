@@ -115,7 +115,7 @@ export default function QuickAddScreen() {
 
   const handleOpenFullApp = useCallback(() => {
     // Ref: QuickAdd-6 — cold restart into the full app
-    Linking.openURL("ledgerlite://");
+    Linking.openURL("ledgerlite://?openAddExpense=true");
   }, []);
 
   const handleSave = useCallback(async () => {
