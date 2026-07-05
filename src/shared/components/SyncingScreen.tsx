@@ -83,7 +83,7 @@ export function SyncingScreen() {
         {/* Icon */}
         <Animated.View style={iconStyle}>
           <Image
-            source={require("../../assets/splash-icon.png")}
+            source={require("../../../assets/splash-icon.png")}
             style={styles.icon}
             resizeMode="contain"
           />
