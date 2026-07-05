@@ -174,7 +174,7 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
   useEffect(() => {
     QuickActions.setItems([
       {
-        title: '⚡ Quick Add',
+        title: 'Quick Add',
         subtitle: 'Add expense instantly',
         icon: 'compose',
         id: 'quick-add',
