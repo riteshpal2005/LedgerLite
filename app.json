@@ -53,7 +53,8 @@
           }
         }
       ],
-      "expo-font"
+      "expo-font",
+      "./plugins/withAndroidDrawable.js"
     ],
     "extra": {
       "router": {},
