@@ -77,47 +77,50 @@ export default function QuickAddScreen() {
       style={{ flex: 1 }}
       className="bg-background"
     >
-      <View className="flex-1 p-6 justify-center">
-        <View className="flex-row justify-between items-center mb-10">
-          <View className="flex-row items-center">
-            <Ionicons name="flash" size={32} color={colors.brandPrimary} />
-            <Text className="text-primary font-bold text-3xl ml-3">Quick Add</Text>
+      <View className="flex-1 justify-center p-4">
+        <View className="bg-surface rounded-3xl p-6 shadow-xl border border-bordercolor">
+          <View className="flex-row justify-between items-center mb-10">
+            <View className="flex-row items-center">
+              <Ionicons name="flash" size={32} color={colors.brandPrimary} />
+              <Text className="text-primary font-bold text-3xl ml-3">Quick Add</Text>
+            </View>
+            <Pressable onPress={handleClose} className="p-3 bg-background rounded-full shadow-sm">
+              <Ionicons name="close" size={24} color={colors.textSecondary} />
+            </Pressable>
           </View>
-          <Pressable onPress={handleClose} className="p-3 bg-surface rounded-full shadow-sm">
-            <Ionicons name="close" size={24} color={colors.textSecondary} />
+
+          <TextInput
+            ref={amountInputRef}
+            value={amount}
+            onChangeText={setAmount}
+            placeholder="0.00"
+            placeholderTextColor={colors.textTertiary}
+            keyboardType="decimal-pad"
+            className="text-primary text-6xl font-bold text-center mb-10 py-2"
+            autoFocus
+            caretHidden={true}
+          />
+
+          <TextInput
+            value={description}
+            onChangeText={setDescription}
+            placeholder="What was it for?"
+            placeholderTextColor={colors.textTertiary}
+            className="bg-background text-primary p-5 rounded-2xl text-xl mb-10 border border-bordercolor shadow-sm"
+            onSubmitEditing={handleSave}
+          />
+
+          <Button 
+            title="Save & Close" 
+            onPress={handleSave} 
+            disabled={!amount || !description}
+            icon={<Ionicons name="checkmark-circle-outline" size={24} color="white" />}
+          />
+          
+          <Pressable onPress={() => router.replace('/')} className="mt-8 p-4">
+            <Text className="text-brand-primary text-center font-semibold text-lg">Open Full App</Text>
           </Pressable>
         </View>
-
-        <TextInput
-          ref={amountInputRef}
-          value={amount}
-          onChangeText={setAmount}
-          placeholder="0.00"
-          placeholderTextColor={colors.textTertiary}
-          keyboardType="decimal-pad"
-          className="text-primary text-6xl font-bold text-center mb-10"
-          autoFocus
-        />
-
-        <TextInput
-          value={description}
-          onChangeText={setDescription}
-          placeholder="What was it for?"
-          placeholderTextColor={colors.textTertiary}
-          className="bg-surface text-primary p-5 rounded-2xl text-xl mb-10 border border-bordercolor shadow-sm"
-          onSubmitEditing={handleSave}
-        />
-
-        <Button 
-          title="Save & Close" 
-          onPress={handleSave} 
-          disabled={!amount || !description}
-          icon={<Ionicons name="checkmark-circle-outline" size={24} color="white" />}
-        />
-        
-        <Pressable onPress={() => router.replace('/')} className="mt-8 p-4">
-          <Text className="text-brand-primary text-center font-semibold text-lg">Open Full App</Text>
-        </Pressable>
       </View>
     </KeyboardAvoidingView>
   );
