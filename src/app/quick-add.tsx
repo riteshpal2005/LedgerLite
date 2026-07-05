@@ -1,146 +1,257 @@
-import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TextInput, Pressable, BackHandler, KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  BackHandler,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Linking,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { useExpenseDatabase } from "../core/database/useExpenseDatabase";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../core/store/store";
-import { setExpenses } from "../core/store/expenseSlice";
-import Animated, { FadeIn, SlideInDown, FadeOut, SlideOutDown } from "react-native-reanimated";
-import { Button } from "../shared/components/ui/Button";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../core/theme/ThemeContext";
-import * as Haptics from 'expo-haptics';
+import * as Haptics from "expo-haptics";
+import { openDatabaseSync } from "expo-sqlite";
+import { storage } from "../core/utils/storage";
+import { CustomSplashScreen } from "../shared/components/CustomSplashScreen";
+
+// Ref: QuickAdd-1
+const BRAND_PRIMARY = "#2563EB";
+const BG = "#0f172a";
+const SURFACE = "#1e293b";
+const TEXT_PRIMARY = "#f8fafc";
+const TEXT_SECONDARY = "#94a3b8";
+const TEXT_TERTIARY = "#475569";
+const BORDER = "#334155";
+
+// Ref: QuickAdd-2
+function getDefaultAccountId(): string | undefined {
+  try {
+    const raw = storage.getString("ledgerLite_settings");
+    if (!raw) return undefined;
+    const parsed = JSON.parse(raw);
+    return parsed?.defaultAccountId ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+// Ref: QuickAdd-3
+async function saveQuickExpense(
+  amount: number,
+  description: string,
+  accountId?: string
+): Promise<void> {
+  const db = openDatabaseSync("ledgerlite_guest.db");
+  const id = `qa_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+  const now = Date.now();
+
+  db.runSync(
+    `INSERT INTO expenses (id, amount, description, date, type, categoryId, merchant, accountId, sync_status, updated_at)
+     VALUES (?, ?, ?, ?, 'debit', 'uncategorized', '', ?, 'pending', ?)`,
+    [id, amount, description, now, accountId ?? null, now]
+  );
+}
 
 export default function QuickAddScreen() {
+  const [ready, setReady] = useState(false);
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
-  const [isClosing, setIsClosing] = useState(false);
-  
+
   const amountInputRef = useRef<TextInput>(null);
   const descriptionInputRef = useRef<TextInput>(null);
-  const router = useRouter();
-  const dbActions = useExpenseDatabase();
-  const dispatch = useDispatch();
-  const { colors } = useTheme();
-  const defaultAccountId = useSelector((state: RootState) => state.settings.defaultAccountId);
 
+  // Ref: QuickAdd-4
   useEffect(() => {
-    // Auto-focus amount on mount
-    setTimeout(() => {
-      amountInputRef.current?.focus();
-    }, 100);
+    const timer = setTimeout(() => {
+      setReady(true);
+    }, 80);
 
     const backAction = () => {
       handleClose();
-      return true; // prevent default
+      return true;
     };
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-    return () => backHandler.remove();
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+    return () => {
+      clearTimeout(timer);
+      backHandler.remove();
+    };
   }, []);
 
-  const handleClose = () => {
-    // Zero friction close
-    BackHandler.exitApp();
-    
-    // Fallback if exitApp doesn't work (iOS or Expo Go)
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/');
+  useEffect(() => {
+    if (ready) {
+      setTimeout(() => amountInputRef.current?.focus(), 50);
     }
-  };
+  }, [ready]);
 
-  const handleSave = async () => {
-    if (!amount || !description) return;
-    
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    
-    const expenseData = {
-      amount: parseFloat(amount),
-      description: description,
-      date: Date.now(),
-      type: "debit" as const,
-      categoryId: "uncategorized", // Staged transaction
-      merchant: "",
-      accountId: defaultAccountId || undefined,
-    };
-
-    await dbActions.addExpense(expenseData);
-    
-    const updatedExpenses = await dbActions.getAllExpenses();
-    dispatch(setExpenses(updatedExpenses));
-
-    // Try to exit app (works on Android standalone)
+  const handleClose = useCallback(() => {
     BackHandler.exitApp();
-    
-    // Fallback if exitApp doesn't work (iOS or Expo Go)
-    handleClose();
-  };
+  }, []);
 
-  if (isClosing) return <View style={StyleSheet.absoluteFillObject} className="bg-background" />;
+  const handleOpenFullApp = useCallback(() => {
+    Linking.openURL("ledgerlite://");
+  }, []);
+
+  const handleSave = useCallback(async () => {
+    if (!amount || !description) return;
+
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+    const accountId = getDefaultAccountId();
+    await saveQuickExpense(parseFloat(amount), description, accountId);
+
+    BackHandler.exitApp();
+  }, [amount, description]);
+
+  if (!ready) {
+    return <CustomSplashScreen />;
+  }
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={['bottom', 'top']}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
-        className="bg-background"
-      >
-        <View className="flex-1 justify-center p-4">
-          <View className="bg-surface rounded-3xl p-6 shadow-xl border border-bordercolor">
-            <View className="flex-row justify-between items-center mb-10">
-              <View className="flex-row items-center">
-                <Ionicons name="flash" size={32} color={colors.brandPrimary} />
-                <Text className="text-primary font-bold text-3xl ml-3">Quick Add</Text>
+    <Animated.View entering={FadeIn.duration(200)} style={styles.root}>
+      <SafeAreaView style={styles.safeArea} edges={["bottom", "top"]}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.keyboardView}
+        >
+          <View style={styles.center}>
+            <View style={styles.card}>
+              {/* Header */}
+              <View style={styles.header}>
+                <View style={styles.headerLeft}>
+                  <Ionicons name="flash" size={32} color={BRAND_PRIMARY} />
+                  <Text style={styles.title}>Quick Add</Text>
+                </View>
+                <Pressable onPress={handleClose} style={styles.closeBtn}>
+                  <Ionicons name="close" size={24} color={TEXT_SECONDARY} />
+                </Pressable>
               </View>
-              <Pressable onPress={handleClose} className="p-3 bg-background rounded-full shadow-sm">
-                <Ionicons name="close" size={24} color={colors.textSecondary} />
+
+              {/* Amount */}
+              <TextInput
+                ref={amountInputRef}
+                value={amount}
+                onChangeText={setAmount}
+                placeholder="0.00"
+                placeholderTextColor={TEXT_TERTIARY}
+                keyboardType="decimal-pad"
+                style={styles.amountInput}
+                caretHidden={true}
+                returnKeyType="next"
+                onSubmitEditing={() => descriptionInputRef.current?.focus()}
+              />
+
+              {/* Description */}
+              <TextInput
+                ref={descriptionInputRef}
+                value={description}
+                onChangeText={setDescription}
+                placeholder="What was it for?"
+                placeholderTextColor={TEXT_TERTIARY}
+                style={styles.descriptionInput}
+                onSubmitEditing={handleSave}
+              />
+
+              {/* Save button */}
+              <Pressable
+                onPress={handleSave}
+                disabled={!amount || !description}
+                style={[
+                  styles.saveBtn,
+                  (!amount || !description) && styles.saveBtnDisabled,
+                ]}
+              >
+                <Ionicons
+                  name="checkmark-circle-outline"
+                  size={22}
+                  color="white"
+                />
+                <Text style={styles.saveBtnText}>Save &amp; Close</Text>
+              </Pressable>
+
+              {/* Open full app */}
+              <Pressable onPress={handleOpenFullApp} style={styles.openAppBtn}>
+                <Text style={styles.openAppText}>Open Full App</Text>
               </Pressable>
             </View>
-
-            <TextInput
-              ref={amountInputRef}
-              value={amount}
-              onChangeText={setAmount}
-              placeholder="0.00"
-              placeholderTextColor={colors.textTertiary}
-              keyboardType="decimal-pad"
-              className="text-primary text-6xl font-bold text-center mb-10"
-              style={{ 
-                includeFontPadding: false, 
-                textAlignVertical: 'center', 
-                lineHeight: 75,
-                paddingVertical: 10
-              }}
-              caretHidden={true}
-              returnKeyType="next"
-              onSubmitEditing={() => descriptionInputRef.current?.focus()}
-            />
-
-          <TextInput
-            ref={descriptionInputRef}
-            value={description}
-            onChangeText={setDescription}
-            placeholder="What was it for?"
-            placeholderTextColor={colors.textTertiary}
-            className="bg-background text-primary p-5 rounded-2xl text-xl mb-10 border border-bordercolor shadow-sm"
-            onSubmitEditing={handleSave}
-          />
-
-          <Button 
-            title="Save & Close" 
-            onPress={handleSave} 
-            disabled={!amount || !description}
-            icon={<Ionicons name="checkmark-circle-outline" size={24} color="white" />}
-          />
-          
-          <Pressable onPress={() => router.replace('/')} className="mt-8 p-4">
-            <Text className="text-brand-primary text-center font-semibold text-lg">Open Full App</Text>
-          </Pressable>
-        </View>
-      </View>
-    </KeyboardAvoidingView>
-    </SafeAreaView>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: BG },
+  safeArea: { flex: 1, backgroundColor: BG },
+  keyboardView: { flex: 1, backgroundColor: BG },
+  center: { flex: 1, justifyContent: "center", padding: 16 },
+  card: {
+    backgroundColor: SURFACE,
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: BORDER,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 32,
+  },
+  headerLeft: { flexDirection: "row", alignItems: "center" },
+  title: {
+    color: TEXT_PRIMARY,
+    fontWeight: "bold",
+    fontSize: 28,
+    marginLeft: 12,
+  },
+  closeBtn: {
+    padding: 10,
+    backgroundColor: BG,
+    borderRadius: 99,
+  },
+  amountInput: {
+    color: TEXT_PRIMARY,
+    fontSize: 60,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 32,
+    includeFontPadding: false,
+    lineHeight: 72,
+    paddingVertical: 10,
+  },
+  descriptionInput: {
+    backgroundColor: BG,
+    color: TEXT_PRIMARY,
+    padding: 18,
+    borderRadius: 16,
+    fontSize: 18,
+    marginBottom: 32,
+    borderWidth: 1,
+    borderColor: BORDER,
+  },
+  saveBtn: {
+    backgroundColor: BRAND_PRIMARY,
+    borderRadius: 16,
+    padding: 18,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+  },
+  saveBtnDisabled: { opacity: 0.45 },
+  saveBtnText: { color: "white", fontWeight: "bold", fontSize: 18 },
+  openAppBtn: { marginTop: 24, padding: 14, alignItems: "center" },
+  openAppText: {
+    color: BRAND_PRIMARY,
+    fontWeight: "600",
+    fontSize: 16,
+  },
+});

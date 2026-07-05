@@ -22,10 +22,11 @@ import { AuthProvider, useAuth } from "../core/firebase/AuthContext";
 import * as SplashScreen from "expo-splash-screen";
 import { useState } from "react";
 import Constants, { ExecutionEnvironment } from "expo-constants";
-import * as QuickActions from 'expo-quick-actions';
-import { useQuickAction } from 'expo-quick-actions/hooks';
+import * as QuickActions from "expo-quick-actions";
+import { useQuickAction } from "expo-quick-actions/hooks";
 
-const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+const isExpoGo =
+  Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
 if (!isExpoGo) {
   const Notifications = require("expo-notifications");
@@ -40,13 +41,14 @@ if (!isExpoGo) {
   });
 }
 
-const isDirectQuickAddTopLevel = QuickActions.initial?.id === 'quick-add';
+// Ref: _layout-2
+const isDirectQuickAddTopLevel = QuickActions.initial?.id === "quick-add";
 if (!isDirectQuickAddTopLevel) {
   SplashScreen.preventAutoHideAsync().catch(console.warn);
 } else {
-  // If we are Quick Add, actively attempt to hide it immediately just in case
   SplashScreen.hideAsync().catch(console.warn);
 }
+
 import { UpdateChecker } from "../shared/components/UpdateChecker";
 import {
   configureReanimatedLogger,
@@ -115,13 +117,29 @@ function useProtectedRoute(
   ]);
 }
 
+// Ref: _layout-3
+// Minimal wrapper for Quick Add cold-start — avoids mounting heavy providers
+function QuickAddOnlyLayout() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="quick-add"
+          options={{ animation: "none" }}
+        />
+      </Stack>
+    </GestureHandlerRootView>
+  );
+}
+
 export default function RootLayout() {
   const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
 
   useEffect(() => {
     const loadAppPref = async () => {
       try {
-        const fileUri = FileSystem.documentDirectory + "ledgerLite_settings.json";
+        const fileUri =
+          FileSystem.documentDirectory + "ledgerLite_settings.json";
         const fileInfo = await FileSystem.getInfoAsync(fileUri);
         if (fileInfo.exists) {
           const fileData = await FileSystem.readAsStringAsync(fileUri);
@@ -143,6 +161,12 @@ export default function RootLayout() {
     };
     loadAppPref();
   }, []);
+
+  // Ref: _layout-4
+  // If this is a Quick Add cold-start, skip the heavy provider tree entirely
+  if (isDirectQuickAddTopLevel) {
+    return <QuickAddOnlyLayout />;
+  }
 
   if (!isSettingsLoaded) return null;
 
@@ -180,37 +204,37 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
   useEffect(() => {
     QuickActions.setItems([
       {
-        title: 'Quick Add',
-        subtitle: 'Add expense instantly',
-        icon: 'ic_quick_add',
-        id: 'quick-add',
-        params: { href: '/quick-add' }
-      }
+        title: "Quick Add",
+        subtitle: "Add expense instantly",
+        icon: "ic_quick_add",
+        id: "quick-add",
+        params: { href: "/quick-add" },
+      },
     ]);
   }, []);
 
   const navigationState = useRootNavigationState();
   const action = useQuickAction();
-  const isDirectQuickAdd = QuickActions.initial?.id === 'quick-add';
   const segments = useSegments();
-  
+
   useEffect(() => {
-    if (action?.id === 'quick-add' && isSettingsLoaded && !isLoading && navigationState?.key) {
-      if (segments[0] !== 'quick-add') {
-        router.push('/quick-add');
+    if (
+      action?.id === "quick-add" &&
+      isSettingsLoaded &&
+      !isLoading &&
+      navigationState?.key
+    ) {
+      if (segments[0] !== "quick-add") {
+        router.push("/quick-add");
       }
     }
   }, [action, isSettingsLoaded, isLoading, navigationState?.key, segments]);
 
   useEffect(() => {
-    if (isSettingsLoaded) {
-      if (isDirectQuickAdd || !isLoading) {
-        SplashScreen.hideAsync().catch(console.warn);
-      }
+    if (isSettingsLoaded && !isLoading) {
+      SplashScreen.hideAsync().catch(console.warn);
     }
-  }, [isSettingsLoaded, isLoading, isDirectQuickAdd]);
-
-
+  }, [isSettingsLoaded, isLoading]);
 
   return (
     <View className="flex-1 bg-background">
@@ -221,7 +245,10 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
         <Stack.Screen name="categories" />
         <Stack.Screen name="backdated" />
         <Stack.Screen name="onboarding" />
-        <Stack.Screen name="quick-add" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen
+          name="quick-add"
+          options={{ presentation: "modal", animation: "slide_from_bottom" }}
+        />
       </Stack>
     </View>
   );
