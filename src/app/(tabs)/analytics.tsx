@@ -8,51 +8,96 @@ import {
 import { AnalyticsFilter } from "../../features/analytics/components/AnalyticsFilter";
 import { ExpensePieChart } from "../../features/analytics/components/ExpensePieChart";
 import { TotalSpentCard } from "../../features/analytics/components/TotalSpentCard";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../../core/theme/ThemeContext";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withRepeat,
   withTiming,
   withSequence,
+  FadeIn,
 } from "react-native-reanimated";
 
-// Ref: analytics-1
-function SkeletonPieChart() {
-  const opacity = useSharedValue(0.5);
+// Ref: analytics-skeleton-1
+// Mirrors ExpensePieChart layout exactly: 180x180 circle left, legend rows right
+function SkeletonPieChart({ rowCount }: { rowCount: number }) {
+  const opacity = useSharedValue(0.35);
 
   useEffect(() => {
     opacity.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: 800 }),
-        withTiming(0.5, { duration: 800 }),
+        withTiming(0.8, { duration: 750 }),
+        withTiming(0.35, { duration: 750 }),
       ),
       -1,
       true,
     );
   }, []);
 
-  const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+  const animStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+
+  // Clamp: show between 3–7 legend rows (matches real data range)
+  const rows = Math.min(Math.max(rowCount, 3), 7);
 
   return (
     <Animated.View
-      style={animatedStyle}
-      className="items-center justify-center py-10"
+      style={animStyle}
+      className="bg-surface rounded-3xl border border-bordercolor overflow-hidden p-6 mb-8"
     >
-      <View className="w-48 h-48 rounded-full bg-surface mb-8 border-4 border-background" />
-      <View className="w-full">
-        {[1, 2, 3].map((i) => (
-          <View
-            key={i}
-            className="flex-row items-center justify-between mb-4 px-4"
-          >
-            <View className="flex-row items-center">
-              <View className="w-4 h-4 rounded-full bg-surface mr-3" />
-              <View className="w-24 h-4 rounded-full bg-surface" />
+      <View className="flex-row items-center w-full justify-between">
+        {/* Pie circle — exact 180x180 matching ExpensePieChart */}
+        <View
+          className="rounded-full bg-bordercolor"
+          style={{ width: 180, height: 180 }}
+        />
+        {/* Legend rows */}
+        <View className="flex-1 ml-6 justify-center">
+          {Array.from({ length: rows }).map((_, i) => (
+            <View key={i} className="flex-row items-center mb-3">
+              {/* Color dot */}
+              <View className="w-4 h-4 rounded-full bg-bordercolor mr-3" />
+              <View>
+                {/* Category name */}
+                <View
+                  className="h-3.5 bg-bordercolor rounded-md mb-1"
+                  style={{ width: 60 + (i % 3) * 16 }}
+                />
+                {/* Percentage */}
+                <View className="h-3 w-10 bg-bordercolor rounded-md" />
+              </View>
             </View>
-            <View className="w-16 h-4 rounded-full bg-surface" />
-          </View>
-        ))}
+          ))}
+        </View>
       </View>
+    </Animated.View>
+  );
+}
+
+// Ref: analytics-skeleton-2
+function EmptyAnalyticsState() {
+  const { colors } = useTheme();
+  return (
+    <Animated.View
+      entering={FadeIn.duration(300)}
+      className="items-center justify-center py-16"
+    >
+      <View
+        className="w-24 h-24 rounded-full items-center justify-center mb-5"
+        style={{ backgroundColor: colors.surface }}
+      >
+        <Ionicons
+          name="pie-chart-outline"
+          size={44}
+          color={colors.textTertiary}
+        />
+      </View>
+      <Text className="text-primary font-bold text-xl mb-2 text-center">
+        Nothing to analyse yet
+      </Text>
+      <Text className="text-tertiary text-center text-sm px-10 leading-6">
+        Add some transactions to see your{"\n"}spending breakdown here.
+      </Text>
     </Animated.View>
   );
 }
@@ -61,7 +106,11 @@ export default function AnalyticsScreen() {
   const [spendingData, setSpendingData] = useState<CategorySpending[]>([]);
   const [totalSpent, setTotalSpent] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const isFirstLoad = useRef(true);
+
+  // Ref: analytics-skeleton-1 — track previous data row count for consistent skeleton
+  const prevRowCount = useRef(4);
 
   const [dateRange, setDateRange] = useState<{
     start: number;
@@ -76,33 +125,37 @@ export default function AnalyticsScreen() {
     if (!dateRange) return;
 
     const currentRangeStr = JSON.stringify(dateRange);
-    const isDateChange = prevDateRangeStr.current !== null && prevDateRangeStr.current !== currentRangeStr;
+    const isDateChange =
+      prevDateRangeStr.current !== null &&
+      prevDateRangeStr.current !== currentRangeStr;
     const shouldShowSkeleton = isFirstLoad.current || isDateChange;
 
     if (shouldShowSkeleton) {
       setIsLoading(true);
-      setSpendingData([]); // Ref: analytics-1
+      setSpendingData([]);
     }
 
-    // Ref: analytics-2
     const data = await getExpensesByCategory(dateRange.start, dateRange.end);
     const total = data.reduce((sum, item) => sum + item.totalSpent, 0);
-    
-    // Ref: analytics-3
+
+    // Update previous row count for skeleton sizing
+    if (data.length > 0) prevRowCount.current = data.length;
+
     setTotalSpent(total);
 
     if (shouldShowSkeleton) {
-      // Ref: analytics-4
+      // Ref: analytics-2
       setTimeout(() => {
         setSpendingData(data);
         setIsLoading(false);
+        setHasLoaded(true);
         isFirstLoad.current = false;
         prevDateRangeStr.current = currentRangeStr;
-      }, 600);
+      }, 400);
     } else {
-      // Ref: analytics-5
       setSpendingData(data);
       setIsLoading(false);
+      setHasLoaded(true);
       prevDateRangeStr.current = currentRangeStr;
     }
   }, [dateRange]);
@@ -131,10 +184,14 @@ export default function AnalyticsScreen() {
         Spending by Category
       </Text>
 
-      {isLoading && spendingData.length === 0 ? (
-        <SkeletonPieChart />
+      {isLoading ? (
+        <SkeletonPieChart rowCount={prevRowCount.current} />
+      ) : spendingData.length === 0 ? (
+        <EmptyAnalyticsState />
       ) : (
-        <ExpensePieChart spendingData={spendingData} />
+        <Animated.View entering={FadeIn.duration(400)}>
+          <ExpensePieChart spendingData={spendingData} />
+        </Animated.View>
       )}
     </ScrollView>
   );
