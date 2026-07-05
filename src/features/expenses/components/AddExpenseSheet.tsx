@@ -199,20 +199,7 @@ export function AddExpenseSheet({
 
     if (initialExpense) {
       await updateExpenseFull(initialExpense.id, expenseData);
-      if (isBackdatedMode && selectedAccount) {
-        let adjustment = 0;
-        if (initialExpense.type === "debit") {
-          adjustment -= initialExpense.amount;
-        } else {
-          adjustment += initialExpense.amount;
-        }
-        if (expenseData.type === "debit") {
-          adjustment += expenseData.amount;
-        } else {
-          adjustment -= expenseData.amount;
-        }
-        await adjustAccountBalance(selectedAccount.id, adjustment);
-      }
+
     } else {
       if (isSelfTransfer && destinationAccountId) {
         const destAccount = accounts.find((a) => a.id === destinationAccountId);
@@ -222,9 +209,7 @@ export function AddExpenseSheet({
           description: `${description} (To ${destAccount?.name || "Other Account"})`,
         };
         await addExpense(leg1Data);
-        if (isBackdatedMode && selectedAccount) {
-          await adjustAccountBalance(selectedAccount.id, leg1Data.amount);
-        }
+
 
         const leg2Data = {
           ...expenseData,
@@ -234,16 +219,10 @@ export function AddExpenseSheet({
           date: date.getTime() + 1,
         };
         await addExpense(leg2Data);
-        if (isBackdatedMode) {
-          await adjustAccountBalance(destinationAccountId, -leg2Data.amount);
-        }
+
       } else {
         await addExpense(expenseData);
-        if (isBackdatedMode && selectedAccount) {
-          const amountAdjustment =
-            type === "debit" ? expenseData.amount : -expenseData.amount;
-          await adjustAccountBalance(selectedAccount.id, amountAdjustment);
-        }
+
       }
     }
 
@@ -271,13 +250,6 @@ export function AddExpenseSheet({
     if (!initialExpense) return;
     await deleteExpense(initialExpense.id);
 
-    if (isBackdatedMode && initialExpense.accountId) {
-      const adjustment =
-        initialExpense.type === "debit"
-          ? -initialExpense.amount
-          : initialExpense.amount;
-      await adjustAccountBalance(initialExpense.accountId, adjustment);
-    }
 
     const updatedExpenses = await getAllExpenses();
     dispatch(setExpenses(updatedExpenses));

@@ -21,6 +21,7 @@ interface ThemeContextType {
     statusSuccess: string;
     textSecondary: string;
     textTertiary: string;
+    surface: string;
   };
 }
 
@@ -66,6 +67,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     statusSuccess: "#10b981",
     textSecondary: activeThemeClass === "" ? "#52525b" : "#a1a1aa", // zinc-600 (light), zinc-400 (dark)
     textTertiary: activeThemeClass === "" ? "#a1a1aa" : "#52525b", // zinc-400 (light), zinc-600 (dark)
+    surface: activeThemeClass === "theme-pitch-black" ? "#09090b" : activeThemeClass === "theme-dark" ? "#18181b" : "#ffffff",
   };
 
   return (
