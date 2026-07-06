@@ -51,6 +51,9 @@ export default function TransactionList({
   const isGlobalSyncing = useSelector(
     (state: RootState) => state.settings.isGlobalSyncing,
   );
+  const use24HourFormat = useSelector(
+    (state: RootState) => state.settings.use24HourFormat || false
+  );
   const accounts = useSelector(selectAccountsWithBalances);
 
   const [transactionToAssign, setTransactionToAssign] = useState<string | null>(null);
@@ -170,6 +173,8 @@ export default function TransactionList({
               }
             }}
             onEndReachedThreshold={0.5}
+            keyExtractor={(item) => item.id}
+            extraData={use24HourFormat}
             ListEmptyComponent={<EmptyTransactionState searchQuery={searchQuery} />}
             renderItem={({ item }) => {
               const category = categories.find((c) => c.id === item.categoryId);
@@ -188,6 +193,7 @@ export default function TransactionList({
                     onTransactionLongPress && onTransactionLongPress(item)
                   }
                   onAssignAccountPress={() => setTransactionToAssign(item.id)}
+                  use24HourFormat={use24HourFormat}
                 />
               );
             }}
@@ -221,10 +227,10 @@ function EmptyTransactionState({ searchQuery }: { searchQuery: string }) {
         >
           <Ionicons name="search-outline" size={36} color={colors.textTertiary} />
         </View>
-        <Text className="text-primary font-bold text-xl mb-2">
+        <Text className="font-bold text-xl mb-2" style={{ color: colors.text }}>
           No Results Found
         </Text>
-        <Text className="text-tertiary text-center text-sm px-10">
+        <Text className="text-center text-sm px-10" style={{ color: colors.textSecondary }}>
           No transactions match "{searchQuery}". Try a different keyword.
         </Text>
       </Animated.View>
@@ -242,10 +248,10 @@ function EmptyTransactionState({ searchQuery }: { searchQuery: string }) {
       >
         <Ionicons name="receipt-outline" size={44} color={colors.textTertiary} />
       </View>
-      <Text className="text-primary font-bold text-2xl mb-3 text-center">
+      <Text className="font-bold text-2xl mb-3 text-center" style={{ color: colors.text }}>
         Your ledger is empty
       </Text>
-      <Text className="text-tertiary text-center text-sm px-12 leading-6">
+      <Text className="text-center text-sm px-12 leading-6" style={{ color: colors.textSecondary }}>
         Every rupee tells a story.{"\n"}Tap the + button to log your first
         transaction.
       </Text>

@@ -372,6 +372,10 @@ export function DataManagementSection() {
           "Success",
           `Imported ${totalCount} new transactions successfully.`,
         );
+
+        if (user) {
+          SyncService.schedulePush(user.uid, dbActions);
+        }
       }
     };
 

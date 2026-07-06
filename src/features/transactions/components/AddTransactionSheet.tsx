@@ -190,7 +190,7 @@ export function AddTransactionSheet({
 
   const handleSave = async (addAnother: boolean = false) => {
     if (!amount || !description || categoryId === undefined) return;
-    const selfTransferCatId = categories.find((c) => c.name === "Self Transfer")?.id;
+    const selfTransferCatId = "cat-6";
     const isSelfTransfer = categoryId === selfTransferCatId && destinationAccountId !== undefined;
 
     const transactionData = {
@@ -246,6 +246,8 @@ export function AddTransactionSheet({
       setAmount("");
       setDescription("");
       setMerchant("");
+      setCategoryId(undefined);
+      setDestinationAccountId(undefined);
       setFormKey((prev) => prev + 1);
     } else {
       handleClose();

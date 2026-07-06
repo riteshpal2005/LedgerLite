@@ -31,6 +31,7 @@ interface TransactionListItemProps {
   onPress: () => void;
   onLongPress?: () => void;
   onAssignAccountPress: () => void;
+  use24HourFormat: boolean;
 }
 
 export const TransactionListItem = React.memo(function TransactionListItem({
@@ -42,10 +43,8 @@ export const TransactionListItem = React.memo(function TransactionListItem({
   onPress,
   onLongPress,
   onAssignAccountPress,
+  use24HourFormat,
 }: TransactionListItemProps) {
-  const use24HourFormat = useSelector(
-    (state: RootState) => state.settings.use24HourFormat || false
-  );
   return (
     <Animated.View>
       <Pressable
@@ -131,6 +130,7 @@ export const TransactionListItem = React.memo(function TransactionListItem({
     prev.category === next.category &&
     prev.account === next.account &&
     prev.showIcons === next.showIcons &&
-    prev.isCredit === next.isCredit
+    prev.isCredit === next.isCredit &&
+    prev.use24HourFormat === next.use24HourFormat
   );
 });
