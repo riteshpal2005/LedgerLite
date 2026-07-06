@@ -148,7 +148,7 @@ export default function QuickAddScreen() {
     <View style={styles.root}>
       <SafeAreaView style={styles.safeArea} edges={["bottom", "top"]}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={styles.keyboardView}
         >
           <View style={styles.center}>

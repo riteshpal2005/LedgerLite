@@ -33,7 +33,7 @@ interface ExpenseListItemProps {
   onAssignAccountPress: () => void;
 }
 
-export function ExpenseListItem({
+export const ExpenseListItem = React.memo(function ExpenseListItem({
   item,
   category,
   account,
@@ -125,4 +125,12 @@ export function ExpenseListItem({
       </Pressable>
     </Animated.View>
   );
-}
+}, (prev, next) => {
+  return (
+    prev.item === next.item &&
+    prev.category === next.category &&
+    prev.account === next.account &&
+    prev.showIcons === next.showIcons &&
+    prev.isCredit === next.isCredit
+  );
+});

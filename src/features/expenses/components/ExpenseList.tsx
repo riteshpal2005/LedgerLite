@@ -90,7 +90,12 @@ export default function ExpenseList({
         if (!isMounted) return;
         dispatch(setAccounts(accountsData));
 
-        setIsLoading(false);
+        const delay = Math.min(Math.max(expenseData.length * 2, 300), 1500);
+        setTimeout(() => {
+          if (isMounted) {
+            setIsLoading(false);
+          }
+        }, delay);
       } catch (error) {
         console.warn("Database unmounted before queries completed", error);
       }
@@ -209,7 +214,7 @@ function EmptyExpenseState({ searchQuery }: { searchQuery: string }) {
     return (
       <Animated.View
         entering={FadeIn.duration(300)}
-        className="flex-1 items-center justify-center py-20"
+        className="flex-1 items-center justify-center pt-10 pb-20"
       >
         <View
           className="w-20 h-20 rounded-full items-center justify-center mb-5"
@@ -230,7 +235,7 @@ function EmptyExpenseState({ searchQuery }: { searchQuery: string }) {
   return (
     <Animated.View
       entering={FadeIn.duration(300)}
-      className="flex-1 items-center justify-center py-20"
+      className="flex-1 items-center justify-center pt-10 pb-20"
     >
       <View
         className="w-24 h-24 rounded-full items-center justify-center mb-5"

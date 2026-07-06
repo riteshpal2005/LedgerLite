@@ -8,8 +8,10 @@ import Animated, {
   withTiming,
   withSpring,
   FadeIn,
+  cancelAnimation,
 } from "react-native-reanimated";
 import { Image } from "react-native";
+import { useAuth } from "../../core/firebase/AuthContext";
 
 // Ref: SyncingScreen-1
 // Shown while Firebase Auth resolves on cold start.
@@ -20,6 +22,9 @@ export function SyncingScreen() {
   const dot1 = useSharedValue(0.3);
   const dot2 = useSharedValue(0.3);
   const dot3 = useSharedValue(0.3);
+
+  const { user } = useAuth();
+  const subtitle = user && !user.isAnonymous ? "Syncing your ledger…" : "Loading ledger…";
 
   useEffect(() => {
     // Gentle pulsing icon
@@ -45,8 +50,9 @@ export function SyncingScreen() {
     // Sequenced loading dots
     const DELAY = 200;
     const DURATION = 400;
+    const timeouts: NodeJS.Timeout[] = [];
     const startDot = (sv: typeof dot1, delay: number) => {
-      setTimeout(() => {
+      const t = setTimeout(() => {
         sv.value = withRepeat(
           withSequence(
             withTiming(1, { duration: DURATION }),
@@ -56,11 +62,21 @@ export function SyncingScreen() {
           true,
         );
       }, delay);
+      timeouts.push(t);
     };
 
     startDot(dot1, 0);
     startDot(dot2, DELAY);
     startDot(dot3, DELAY * 2);
+
+    return () => {
+      timeouts.forEach(clearTimeout);
+      cancelAnimation(iconScale);
+      cancelAnimation(glowOpacity);
+      cancelAnimation(dot1);
+      cancelAnimation(dot2);
+      cancelAnimation(dot3);
+    };
   }, []);
 
   const iconStyle = useAnimatedStyle(() => ({
@@ -91,7 +107,7 @@ export function SyncingScreen() {
       </View>
 
       <Text style={styles.appName}>LedgerLite</Text>
-      <Text style={styles.subtitle}>Syncing your ledger…</Text>
+      <Text style={styles.subtitle}>{subtitle}</Text>
 
       {/* Loading dots */}
       <View style={styles.dotsRow}>

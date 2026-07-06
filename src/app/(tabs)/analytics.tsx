@@ -117,6 +117,13 @@ export default function AnalyticsScreen() {
     end: number;
   } | null>(null);
 
+  const handleDateRangeChange = useCallback((start: number, end: number) => {
+    setDateRange((prev) => {
+      if (prev?.start === start && prev?.end === end) return prev;
+      return { start, end };
+    });
+  }, []);
+
   const { getExpensesByCategory } = useAnalyticsDatabase();
 
   const prevDateRangeStr = useRef<string | null>(null);
@@ -175,7 +182,7 @@ export default function AnalyticsScreen() {
       <Text className="text-primary text-3xl font-bold mb-4">Analytics</Text>
 
       <AnalyticsFilter
-        onDateRangeChange={(start, end) => setDateRange({ start, end })}
+        onDateRangeChange={handleDateRangeChange}
       />
 
       <TotalSpentCard totalSpent={totalSpent} />

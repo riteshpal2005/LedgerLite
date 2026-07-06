@@ -37,7 +37,7 @@ export default function BackdatedScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background p-6 pt-12">
+    <View className="flex-1 bg-background dark:bg-[#062016] p-6 pt-12">
       <View className="flex-row items-center mb-6 mt-2">
         <Pressable
           onPress={() => router.back()}

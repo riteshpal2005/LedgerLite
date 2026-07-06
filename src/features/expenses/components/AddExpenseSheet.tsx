@@ -110,6 +110,12 @@ export function AddExpenseSheet({
     accounts.find((a) => a.id === accountId) || accounts[0];
 
   useEffect(() => {
+    if (destinationAccountId && destinationAccountId === accountId) {
+      setDestinationAccountId(undefined);
+    }
+  }, [accountId, destinationAccountId]);
+
+  useEffect(() => {
     if (initialExpense) {
       setAmount(initialExpense.amount.toString());
       setDescription(initialExpense.description);

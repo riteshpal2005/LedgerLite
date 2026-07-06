@@ -1,3 +1,4 @@
+import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { Category } from "../../../core/database/schema";
 import { CategoryIcon } from "../../../shared/components/ui/CategoryIcon";
@@ -7,7 +8,7 @@ interface CategoryPickerButtonProps {
   onPress: () => void;
 }
 
-export function CategoryPickerButton({
+export const CategoryPickerButton = React.memo(function CategoryPickerButton({
   selectedCategory,
   onPress,
 }: CategoryPickerButtonProps) {
@@ -39,4 +40,4 @@ export function CategoryPickerButton({
       </View>
     </Pressable>
   );
-}
+}, (prev, next) => prev.selectedCategory?.id === next.selectedCategory?.id);
