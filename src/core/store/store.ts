@@ -16,9 +16,14 @@ export const store = configureStore({
     getDefaultMiddleware().concat(
       (storeAPI: any) => (next: any) => (action: any) => {
         const result = next(action);
-        if (action.type?.startsWith("settings/")) {
+        if (
+          action.type?.startsWith("settings/") &&
+          action.type !== "settings/setImportProgress" &&
+          action.type !== "settings/setIsGlobalSyncing"
+        ) {
           const state = storeAPI.getState();
-          const settingsVal = JSON.stringify(state.settings);
+          const { importProgress, isGlobalSyncing, ...persistableSettings } = state.settings;
+          const settingsVal = JSON.stringify(persistableSettings);
           storage.set("ledgerLite_settings", settingsVal);
         }
         return result;

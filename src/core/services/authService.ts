@@ -72,7 +72,9 @@ export const AuthService = {
       if (!isExpoGo && GoogleSignin) {
         try {
           await GoogleSignin.signOut();
-        } catch (e) {}
+        } catch (e) {
+          console.warn("[AuthService] GoogleSignin.signOut error:", e);
+        }
       }
       return { error: null };
     } catch (error: any) {

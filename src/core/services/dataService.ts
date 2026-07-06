@@ -71,7 +71,9 @@ export const exportData = async (
             encoding: "base64",
           });
           return savedDirectoryUri;
-        } catch (e) {}
+        } catch (e) {
+          console.error("SAF create file error:", e);
+        }
       }
 
       const initialUri =
@@ -101,7 +103,9 @@ export const exportData = async (
               targetDirUri = existingLedgerLite;
               folderCreatedOrFound = true;
             }
-          } catch (e) {}
+          } catch (e) {
+            console.error("SAF readDir error:", e);
+          }
 
           if (!folderCreatedOrFound) {
             try {
@@ -110,7 +114,9 @@ export const exportData = async (
                   permissions.directoryUri,
                   "LedgerLite",
                 );
-            } catch (e) {}
+            } catch (e) {
+              console.error("SAF mkdir error:", e);
+            }
           }
         }
 
@@ -280,8 +286,11 @@ export const parseDateTime = (dateVal: any, timeVal: any): number => {
   }
 
   if (activeTimeVal) {
-    if (typeof activeTimeVal === "number" && activeTimeVal >= 0 && activeTimeVal < 1) {
-      const totalSeconds = Math.round(activeTimeVal * 86400);
+    const activeStr = String(activeTimeVal).trim();
+    const numericTime = Number(activeTimeVal);
+    
+    if (activeStr !== "" && !isNaN(numericTime) && numericTime >= 0 && numericTime < 1) {
+      const totalSeconds = Math.round(numericTime * 86400);
       hours = Math.floor(totalSeconds / 3600);
       minutes = Math.floor((totalSeconds % 3600) / 60);
       seconds = totalSeconds % 60;
@@ -346,6 +355,13 @@ export const importData = async (
     const missingAccounts: { name: string; initialBalance: number }[] = [];
     const pairedIds = new Set<string>();
 
+    const expensesBucket = new Map<number, Expense[]>();
+    for (const ex of existingExpenses) {
+      const bucket = Math.floor(ex.date / 60000);
+      if (!expensesBucket.has(bucket)) expensesBucket.set(bucket, []);
+      expensesBucket.get(bucket)!.push(ex);
+    }
+
     for (const row of rawJson) {
       const amountVal = getRowValue(row, ["Amount", "amount", "value", "sum"]);
       const rawAmountStr = String(amountVal || "0").replace(/[^0-9.-]+/g, "");
@@ -397,7 +413,14 @@ export const importData = async (
 
       const merchantVal = getRowValue(row, ["Merchant", "merchant", "payee", "shop"]);
 
-      const matchedExisting = existingExpenses.find((ex) => {
+      const bucket = Math.floor(parsedDate / 60000);
+      const candidates = [
+        ...(expensesBucket.get(bucket - 1) || []),
+        ...(expensesBucket.get(bucket) || []),
+        ...(expensesBucket.get(bucket + 1) || [])
+      ];
+
+      const matchedExisting = candidates.find((ex) => {
         if (pairedIds.has(ex.id)) return false;
         const timeDiff = Math.abs(ex.date - parsedDate);
         return (
@@ -461,7 +484,9 @@ export const exportSettingsJSON = async (
             encoding: "utf8",
           });
           return savedDirectoryUri;
-        } catch (e) {}
+        } catch (e) {
+          console.error("SAF create file error:", e);
+        }
       }
 
       const initialUri =
@@ -489,7 +514,9 @@ export const exportSettingsJSON = async (
               targetDirUri = existingLedgerLite;
               folderCreatedOrFound = true;
             }
-          } catch (e) {}
+          } catch (e) {
+            console.error("SAF readDir error:", e);
+          }
           if (!folderCreatedOrFound) {
             try {
               targetDirUri =
@@ -497,7 +524,9 @@ export const exportSettingsJSON = async (
                   permissions.directoryUri,
                   "LedgerLite",
                 );
-            } catch (e) {}
+            } catch (e) {
+              console.error("SAF mkdir error:", e);
+            }
           }
         }
 
@@ -724,7 +753,9 @@ export const exportToPDF = async (
                 targetDirUri = existingLedgerLite;
                 folderCreatedOrFound = true;
               }
-            } catch (e) {}
+            } catch (e) {
+              console.error("SAF readDir error:", e);
+            }
 
             if (!folderCreatedOrFound) {
               try {
@@ -733,7 +764,9 @@ export const exportToPDF = async (
                     permissions.directoryUri,
                     "LedgerLite",
                   );
-              } catch (e) {}
+              } catch (e) {
+                console.error("SAF mkdir error:", e);
+              }
             }
           }
         }
@@ -751,7 +784,9 @@ export const exportToPDF = async (
             encoding: "base64",
           });
           return targetDirUri;
-        } catch (e) {}
+        } catch (e) {
+          console.error("SAF create file error:", e);
+        }
       }
     }
 

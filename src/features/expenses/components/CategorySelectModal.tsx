@@ -73,7 +73,7 @@ export function CategorySelectModal({
                 paddingBottom: Platform.OS === "ios" ? 40 : 20,
               }}
             >
-              {categories.map((cat) => (
+              {categories.filter(c => c.id !== "uncategorized").map((cat) => (
                 <Pressable
                   key={cat.id}
                   onPress={() => {

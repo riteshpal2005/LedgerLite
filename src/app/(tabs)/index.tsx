@@ -66,12 +66,15 @@ export default function Home() {
 
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const expenses = useSelector((state: RootState) => state.expenses.expenses);
-  const uncategorizedCount = expenses.filter(e => e.categoryId === 'uncategorized').length;
+  const uncategorizedCount = expenses.filter(e => 
+    e.categoryId === 'uncategorized' && 
+    (filterAccountId === "all" || e.accountId === filterAccountId)
+  ).length;
 
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        setShowExitModal(true);
+        setShowExitModal((prev) => !prev);
         return true;
       };
 

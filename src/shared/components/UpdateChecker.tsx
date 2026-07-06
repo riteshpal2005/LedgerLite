@@ -51,23 +51,27 @@ export function UpdateChecker() {
 
   useEffect(() => {
     const check = async () => {
-      const currentVersion = Constants.expoConfig?.version || "1.0.0";
-      const info = await checkForUpdates(currentVersion);
+      try {
+        const currentVersion = Constants.expoConfig?.version || "1.0.0";
+        const info = await checkForUpdates(currentVersion);
 
-      if (info.isUpdateAvailable && info.downloadUrl) {
-        setUpdateInfo(info);
-        setVisible(true);
+        if (info.isUpdateAvailable && info.downloadUrl) {
+          setUpdateInfo(info);
+          setVisible(true);
 
-        setDownloadStatus("CHECKING");
-        const apkUri =
-          FileSystem.documentDirectory +
-          `LedgerLite-Update-${info.latestVersion}.apk`;
-        const fileInfo = await FileSystem.getInfoAsync(apkUri);
-        if (fileInfo.exists) {
-          setDownloadStatus("READY_TO_INSTALL");
-        } else {
-          setDownloadStatus("IDLE");
+          setDownloadStatus("CHECKING");
+          const apkUri =
+            FileSystem.documentDirectory +
+            `LedgerLite-Update-${info.latestVersion}.apk`;
+          const fileInfo = await FileSystem.getInfoAsync(apkUri);
+          if (fileInfo.exists) {
+            setDownloadStatus("READY_TO_INSTALL");
+          } else {
+            setDownloadStatus("IDLE");
+          }
         }
+      } catch (error) {
+        console.error("Failed to check for updates:", error);
       }
     };
 

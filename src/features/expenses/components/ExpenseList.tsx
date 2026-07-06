@@ -54,7 +54,7 @@ export default function ExpenseList({
   const accounts = useSelector(selectAccountsWithBalances);
 
   const [expenseToAssign, setExpenseToAssign] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(expenses.length === 0);
   const [displayLimit, setDisplayLimit] = useState(20);
 
   const dispatch = useDispatch();
@@ -161,9 +161,8 @@ export default function ExpenseList({
             data={sortedExpenses.slice(0, displayLimit)}
             showsVerticalScrollIndicator={false}
             onEndReached={() => {
-              const maxLimit = 500;
-              if (displayLimit < sortedExpenses.length && displayLimit < maxLimit) {
-                setDisplayLimit((prev) => Math.min(prev + 50, maxLimit));
+              if (displayLimit < sortedExpenses.length) {
+                setDisplayLimit((prev) => prev + 50);
               }
             }}
             onEndReachedThreshold={0.5}

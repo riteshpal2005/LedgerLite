@@ -52,7 +52,7 @@ export function CategoryDeleteModal({
         otherCategories.length > 0 ? otherCategories[0].id : null,
       );
     }
-  }, [visible, category]);
+  }, [visible, category, categories]);
 
   const handleConfirm = async () => {
     if (!category) return;
