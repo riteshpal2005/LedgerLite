@@ -22,6 +22,7 @@ const settingsSlice = createSlice({
       accountId: string | undefined;
       type: "debit" | "credit";
     }>,
+    uid: null as string | null,
   },
   reducers: {
     toggleShowIcons: (state) => {
@@ -65,6 +66,9 @@ const settingsSlice = createSlice({
     removeQuickTemplate: (state, action) => {
       state.quickTemplates = state.quickTemplates.filter(t => t.id !== action.payload);
     },
+    setUid: (state, action) => {
+      state.uid = action.payload;
+    },
   },
 });
 
@@ -81,5 +85,6 @@ export const {
   setImportProgress,
   addQuickTemplate,
   removeQuickTemplate,
+  setUid,
 } = settingsSlice.actions;
 export default settingsSlice.reducer;

@@ -47,7 +47,7 @@ export function useExpenseDatabase() {
         runningBalance -= tx.amount;
       }
 
-      if (tx.balance_after !== runningBalance) {
+      if (tx.balance_after === undefined || tx.balance_after === null || Math.abs(tx.balance_after - runningBalance) > 0.001) {
         await db.runAsync(
           "UPDATE expenses SET balance_after = ?, sync_status = ?, updated_at = ? WHERE id = ?",
           [runningBalance, "pending", Date.now(), tx.id]
@@ -345,6 +345,8 @@ export function useExpenseDatabase() {
     table: "expenses" | "categories" | "accounts",
     id: string,
   ) => {
+    const validTables = ["expenses", "categories", "accounts"];
+    if (!validTables.includes(table)) return;
     const result = await db.getFirstAsync<{ sync_status: string }>(
       `SELECT sync_status FROM ${table} WHERE id = ?`,
       [id],
@@ -363,6 +365,8 @@ export function useExpenseDatabase() {
     await db.runAsync(`DELETE FROM categories WHERE id IS NULL`);
     await db.runAsync(`DELETE FROM expenses WHERE id IS NULL`);
     await db.runAsync(`DELETE FROM accounts WHERE id IS NULL`);
+    await db.runAsync(`DELETE FROM expenses WHERE accountId IS NOT NULL AND accountId NOT IN (SELECT id FROM accounts)`);
+    await db.runAsync(`DELETE FROM expenses WHERE categoryId IS NOT NULL AND categoryId NOT IN (SELECT id FROM categories)`);
   };
 
   const getPendingSyncData = async () => {

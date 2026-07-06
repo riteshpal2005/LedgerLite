@@ -83,6 +83,10 @@ export const CREATE_EXPENSES_CATEGORY_INDEX = `
   CREATE INDEX IF NOT EXISTS idx_expenses_categoryId ON expenses(categoryId);
 `;
 
+export const CREATE_EXPENSES_ACCOUNT_INDEX = `
+  CREATE INDEX IF NOT EXISTS idx_expenses_accountId ON expenses(accountId);
+`;
+
 export async function initializeDatabase(db: SQLiteDatabase) {
   await db.execAsync(CREATE_ACCOUNTS_TABLE);
   await db.execAsync(CREATE_CATEGORIES_TABLE);
@@ -90,6 +94,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
   await db.execAsync(CREATE_EXPENSES_DATE_INDEX);
   await db.execAsync(CREATE_EXPENSES_CATEGORY_INDEX);
+  await db.execAsync(CREATE_EXPENSES_ACCOUNT_INDEX);
 
   const versionResult = await db.getFirstAsync<{ user_version: number }>(
     "PRAGMA user_version"
@@ -112,7 +117,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
         [account.id]
       );
 
-      let runningBalance = account.balance;
+      let runningBalance = 0; // Fix: recalculate from 0
       for (const expense of accountExpenses) {
         if (expense.type === "credit") {
           runningBalance += expense.amount;
@@ -132,7 +137,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
   const defaultTime = Date.now();
   await db.execAsync(`
-    INSERT OR REPLACE INTO categories (id, name, icon, color, updated_at) VALUES 
+    INSERT OR IGNORE INTO categories (id, name, icon, color, updated_at) VALUES 
     ('cat-1', 'Food & Dining', 'fast-food', '#f43f5e', ${defaultTime}),
     ('cat-2', 'Shopping', 'mdi-shopping', '#3b82f6', ${defaultTime}),
     ('cat-3', 'Transportation', 'bus', '#eab308', ${defaultTime}),

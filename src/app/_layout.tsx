@@ -69,13 +69,7 @@ configureReanimatedLogger({
 
 import { useExpenseDatabase } from "../core/database/useExpenseDatabase";
 
-function DatabaseRepairWrapper({ children }: { children: React.ReactNode }) {
-  const { repairSelfTransfers } = useExpenseDatabase();
-  useEffect(() => {
-    repairSelfTransfers().catch(console.error);
-  }, []);
-  return <>{children}</>;
-}
+// DatabaseRepairWrapper removed to improve boot time. Run repair via settings if needed.
 
 function DatabaseProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -87,7 +81,7 @@ function DatabaseProvider({ children }: { children: React.ReactNode }) {
       databaseName={dbName}
       onInit={initializeDatabase}
     >
-      <DatabaseRepairWrapper>{children}</DatabaseRepairWrapper>
+      {children}
     </SQLiteProvider>
   );
 }
@@ -211,9 +205,21 @@ export default function RootLayout() {
 
 import { useTheme } from "../core/theme/ThemeContext";
 import { SyncingScreen } from "../shared/components/SyncingScreen";
+import { useDispatch } from "react-redux";
+import { setUid } from "../core/store/settingsSlice";
+import { SyncService } from "../core/services/syncService";
 
 function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
   const { user, isLoading } = useAuth();
+  const dispatch = useDispatch();
+  
+  useEffect(() => {
+    if (!isLoading) {
+      dispatch(setUid(user?.uid ?? null));
+      SyncService.resetSyncState();
+    }
+  }, [user, isLoading]);
+
   const { activeThemeClass } = useTheme();
   const hasCompletedOnboarding = useSelector(
     (state: RootState) => state.settings.hasCompletedOnboarding,

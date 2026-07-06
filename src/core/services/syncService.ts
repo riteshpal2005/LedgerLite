@@ -16,18 +16,24 @@ import { setAccounts } from "../store/accountSlice";
 import { setIsGlobalSyncing } from "../store/settingsSlice";
 import { parseDateTime } from "./dataService";
 
-let isSyncing = false;
+let isPushing = false;
+let isPulling = false;
 let syncTimeout: NodeJS.Timeout | null = null;
 let lastSyncTime = 0;
 const SYNC_COOLDOWN_MS = 10000; // Ref: syncService-1
 
 export const SyncService = {
+  resetSyncState() {
+    isPushing = false;
+    isPulling = false;
+    lastSyncTime = 0;
+  },
   async pullFromFirebase(
     userId: string,
     dbActions: ReturnType<typeof useExpenseDatabase>,
   ) {
-    if (isSyncing) return;
-    isSyncing = true;
+    if (isPulling) return;
+    isPulling = true;
 
     try {
       const userDocRef = doc(db, "users", userId);
@@ -76,7 +82,7 @@ export const SyncService = {
     } catch (error) {
       console.error("[SyncService] Pull Failed:", error);
     } finally {
-      isSyncing = false;
+      isPulling = false;
     }
   },
   schedulePush(
@@ -95,8 +101,8 @@ export const SyncService = {
     userId: string,
     dbActions: ReturnType<typeof useExpenseDatabase>,
   ) {
-    if (isSyncing) return;
-    isSyncing = true;
+    if (isPushing) return;
+    isPushing = true;
     try {
       const { getPendingSyncData } = dbActions;
       const { pendingExpenses, pendingCategories, pendingAccounts } = await getPendingSyncData();
@@ -106,7 +112,7 @@ export const SyncService = {
         pendingCategories.length === 0 &&
         pendingAccounts.length === 0
       ) {
-        isSyncing = false;
+        isPushing = false;
         return;
       }
 
@@ -162,7 +168,7 @@ export const SyncService = {
     } catch (error) {
       console.error("[SyncService] Push Failed:", error);
     } finally {
-      isSyncing = false;
+      isPushing = false;
     }
   },
   async syncAll(
