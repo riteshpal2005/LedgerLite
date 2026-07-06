@@ -96,7 +96,7 @@ export default function QuickAddScreen() {
   }));
 
   useEffect(() => {
-    // Zoom + fade in when screen mounts (native splash already dismissed)
+
     scale.value = withSpring(1, { damping: 18, stiffness: 160 });
     opacity.value = withTiming(1, { duration: 180 });
 
@@ -124,7 +124,7 @@ export default function QuickAddScreen() {
     // Ref: QuickAdd-6 — cold restart into the full app
     if (escapeContext) {
       escapeContext.escapeQuickAdd();
-      // Delay to let the RootLayout remount, then push to root with param
+
       setTimeout(() => {
         router.replace("/?openAddExpense=true");
       }, 50);
@@ -153,7 +153,7 @@ export default function QuickAddScreen() {
         >
           <View style={styles.center}>
             <Animated.View style={[styles.card, animatedCardStyle]}>
-              {/* Header */}
+              {}
               <View style={styles.header}>
                 <View style={styles.headerLeft}>
                   <Ionicons name="flash" size={32} color={BRAND_PRIMARY} />
@@ -164,7 +164,7 @@ export default function QuickAddScreen() {
                 </Pressable>
               </View>
 
-              {/* Amount */}
+              {}
               <TextInput
                 ref={amountInputRef}
                 value={amount}
@@ -178,7 +178,7 @@ export default function QuickAddScreen() {
                 onSubmitEditing={() => descriptionInputRef.current?.focus()}
               />
 
-              {/* Description */}
+              {}
               <TextInput
                 ref={descriptionInputRef}
                 value={description}
@@ -189,7 +189,7 @@ export default function QuickAddScreen() {
                 onSubmitEditing={handleSave}
               />
 
-              {/* Save button */}
+              {}
               <Pressable
                 onPress={handleSave}
                 disabled={!amount || !description}
@@ -206,7 +206,7 @@ export default function QuickAddScreen() {
                 <Text style={styles.saveBtnText}>Save &amp; Close</Text>
               </Pressable>
 
-              {/* Open full app */}
+              {}
               <Pressable onPress={handleOpenFullApp} style={styles.openAppBtn}>
                 <Text style={styles.openAppText}>Open App</Text>
               </Pressable>

@@ -65,8 +65,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     brandPrimaryContent: "#ffffff",
     statusDanger: "#ef4444",
     statusSuccess: "#10b981",
-    textSecondary: activeThemeClass === "" ? "#52525b" : "#a1a1aa", // zinc-600 (light), zinc-400 (dark)
-    textTertiary: activeThemeClass === "" ? "#a1a1aa" : "#52525b", // zinc-400 (light), zinc-600 (dark)
+    textSecondary: activeThemeClass === "" ? "#52525b" : "#a1a1aa",
+    textTertiary: activeThemeClass === "" ? "#a1a1aa" : "#52525b",
     surface: activeThemeClass === "theme-pitch-black" ? "#09090b" : activeThemeClass === "theme-dark" ? "#18181b" : "#ffffff",
   };
 

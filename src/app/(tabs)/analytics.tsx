@@ -20,7 +20,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 // Ref: analytics-skeleton-1
-// Mirrors ExpensePieChart layout exactly: 180x180 circle left, legend rows right
+
 function SkeletonPieChart({ rowCount }: { rowCount: number }) {
   const opacity = useSharedValue(0.35);
 
@@ -37,7 +37,7 @@ function SkeletonPieChart({ rowCount }: { rowCount: number }) {
 
   const animStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
 
-  // Clamp: show between 3–7 legend rows (matches real data range)
+
   const rows = Math.min(Math.max(rowCount, 3), 7);
 
   return (
@@ -46,24 +46,24 @@ function SkeletonPieChart({ rowCount }: { rowCount: number }) {
       className="bg-surface rounded-3xl border border-bordercolor overflow-hidden p-6 mb-8"
     >
       <View className="flex-row items-center w-full justify-between">
-        {/* Pie circle — exact 180x180 matching ExpensePieChart */}
+        {}
         <View
           className="rounded-full bg-bordercolor"
           style={{ width: 180, height: 180 }}
         />
-        {/* Legend rows */}
+        {}
         <View className="flex-1 ml-6 justify-center">
           {Array.from({ length: rows }).map((_, i) => (
             <View key={i} className="flex-row items-center mb-3">
-              {/* Color dot */}
+              {}
               <View className="w-4 h-4 rounded-full bg-bordercolor mr-3" />
               <View>
-                {/* Category name */}
+                {}
                 <View
                   className="h-3.5 bg-bordercolor rounded-md mb-1"
                   style={{ width: 60 + (i % 3) * 16 }}
                 />
-                {/* Percentage */}
+                {}
                 <View className="h-3 w-10 bg-bordercolor rounded-md" />
               </View>
             </View>
@@ -145,7 +145,7 @@ export default function AnalyticsScreen() {
     const data = await getExpensesByCategory(dateRange.start, dateRange.end);
     const total = data.reduce((sum, item) => sum + item.totalSpent, 0);
 
-    // Update previous row count for skeleton sizing
+
     if (data.length > 0) prevRowCount.current = data.length;
 
     setTotalSpent(total);

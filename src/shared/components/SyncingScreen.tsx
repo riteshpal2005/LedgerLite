@@ -14,8 +14,8 @@ import { Image } from "react-native";
 import { useAuth } from "../../core/firebase/AuthContext";
 
 // Ref: SyncingScreen-1
-// Shown while Firebase Auth resolves on cold start.
-// Uses the actual splash-icon.png with a pulsing glow and animated dots.
+
+
 export function SyncingScreen() {
   const iconScale = useSharedValue(0.9);
   const glowOpacity = useSharedValue(0.3);
@@ -27,7 +27,7 @@ export function SyncingScreen() {
   const subtitle = user && !user.isAnonymous ? "Syncing your ledger…" : "Loading ledger…";
 
   useEffect(() => {
-    // Gentle pulsing icon
+
     iconScale.value = withRepeat(
       withSequence(
         withSpring(1.06, { damping: 8, stiffness: 60 }),
@@ -37,7 +37,7 @@ export function SyncingScreen() {
       true,
     );
 
-    // Glow ring
+
     glowOpacity.value = withRepeat(
       withSequence(
         withTiming(0.6, { duration: 1200 }),
@@ -47,7 +47,7 @@ export function SyncingScreen() {
       true,
     );
 
-    // Sequenced loading dots
+
     const DELAY = 200;
     const DURATION = 400;
     const timeouts: NodeJS.Timeout[] = [];
@@ -94,9 +94,9 @@ export function SyncingScreen() {
   return (
     <Animated.View entering={FadeIn.duration(300)} style={styles.root}>
       <View style={styles.iconWrapper}>
-        {/* Glow ring */}
+        {}
         <Animated.View style={[styles.glow, glowStyle]} />
-        {/* Icon */}
+        {}
         <Animated.View style={iconStyle}>
           <Image
             source={require("../../../assets/splash-icon.png")}
@@ -109,7 +109,7 @@ export function SyncingScreen() {
       <Text style={styles.appName}>LedgerLite</Text>
       <Text style={styles.subtitle}>{subtitle}</Text>
 
-      {/* Loading dots */}
+      {}
       <View style={styles.dotsRow}>
         <Animated.View style={[styles.dot, d1Style]} />
         <Animated.View style={[styles.dot, d2Style]} />

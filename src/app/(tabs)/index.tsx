@@ -103,9 +103,9 @@ export default function Home() {
     if (openAddExpense === "true") {
       setTimeout(() => {
         handlePresentModalPress();
-        // Clear the param so it doesn't reopen on subsequent renders
+
         router.setParams({ openAddExpense: undefined });
-      }, 500); // Give bottom sheet context time to mount
+      }, 500);
     }
   }, [openAddExpense]);
 

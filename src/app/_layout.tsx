@@ -48,9 +48,9 @@ if (!isExpoGo) {
 
 // Ref: _layout-2
 const isDirectQuickAddTopLevel = QuickActions.initial?.id === "quick-add";
-// Always prevent auto-hide — we control when it disappears
+
 SplashScreen.preventAutoHideAsync().catch(console.warn);
-// For Quick Add: hide as soon as JS runs (no providers needed)
+
 if (isDirectQuickAddTopLevel) {
   SplashScreen.hideAsync().catch(console.warn);
 }
@@ -69,7 +69,7 @@ configureReanimatedLogger({
 
 import { useExpenseDatabase } from "../core/database/useExpenseDatabase";
 
-// DatabaseRepairWrapper removed to improve boot time. Run repair via settings if needed.
+
 
 function DatabaseProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -118,9 +118,9 @@ function useProtectedRoute(
 }
 
 // Ref: _layout-3
-// Minimal wrapper for Quick Add cold-start — avoids mounting heavy providers.
-// Redux Provider IS included because index.tsx (the Expo Router default route)
-// calls useSelector before our quick-add redirect can fire.
+
+
+
 function QuickAddOnlyLayout() {
   return (
     <Provider store={store}>
@@ -169,7 +169,7 @@ export default function RootLayout() {
   }, []);
 
   // Ref: _layout-4
-  // If this is a Quick Add cold-start, skip the heavy provider tree entirely
+
   if (isDirectQuickAddTopLevel && !forceFullApp) {
     return (
       <QuickAddEscapeContext.Provider value={{
@@ -265,7 +265,7 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
   }, [isSettingsLoaded, isLoading]);
 
   // Ref: _layout-5
-  // Show branded syncing screen while Firebase Auth resolves (cold start)
+
   if (isLoading) {
     return <SyncingScreen />;
   }

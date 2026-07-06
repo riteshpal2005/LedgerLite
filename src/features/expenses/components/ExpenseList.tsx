@@ -33,7 +33,7 @@ interface ExpenseListProps {
 }
 
 // Ref: ExpenseList-2
-const ITEM_HEIGHT = 80; // approx height of one ExpenseListItem in dp
+const ITEM_HEIGHT = 80;
 
 export default function ExpenseList({
   searchQuery,

@@ -10,8 +10,8 @@ export default function Index() {
   );
 
   // Ref: Index-1
-  // On a true Quick Add cold start _layout.tsx already renders QuickAddOnlyLayout
-  // so this component is never mounted. This guard is a safety net for warm launches.
+
+
   if (QuickActions.initial?.id === "quick-add" && !isQuickAddEscaped) {
     return <Redirect href="/quick-add" />;
   }

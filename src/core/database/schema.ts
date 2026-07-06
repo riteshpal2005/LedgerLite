@@ -117,7 +117,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
         [account.id]
       );
 
-      let runningBalance = 0; // Fix: recalculate from 0
+      let runningBalance = 0;
       for (const expense of accountExpenses) {
         if (expense.type === "credit") {
           runningBalance += expense.amount;
