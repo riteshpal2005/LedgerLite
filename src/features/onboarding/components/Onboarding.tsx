@@ -2,10 +2,10 @@ import { View, Text, ScrollView, Dimensions, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
-import { completeOnboarding } from "../core/store/settingsSlice";
+import { completeOnboarding } from "../../../core/store/settingsSlice";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
-import { triggerHaptic } from "../core/utils/haptics";
+import { triggerHaptic } from "../../../core/utils/haptics";
 import Animated, {
   useAnimatedStyle,
   withTiming,

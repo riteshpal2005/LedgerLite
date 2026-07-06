@@ -7,27 +7,27 @@ import React, {
   useEffect,
 } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../../core/store/store";
+import { RootState } from "../../../core/store/store";
 import { useFocusEffect, useGlobalSearchParams, useRouter } from "expo-router";
-import TransactionList from "../../features/transactions/components/TransactionList";
-import { TransactionSearchBar } from "../../features/transactions/components/TransactionSearchBar";
+import TransactionList from "../../../features/transactions/components/TransactionList";
+import { TransactionSearchBar } from "../../../features/transactions/components/TransactionSearchBar";
 import {
   TransactionSortFilter,
   SortMode,
   FilterType,
   FilterAccountId,
-} from "../../features/transactions/components/TransactionSortFilter";
-import { AddTransactionSheet } from "../../features/transactions/components/AddTransactionSheet";
-import { AddAccountModal } from "../../features/accounts/components/AddAccountModal";
+} from "../../../features/transactions/components/TransactionSortFilter";
+import { AddTransactionSheet } from "../../../features/transactions/components/AddTransactionSheet";
+import { AddAccountModal } from "../../../features/accounts/components/AddAccountModal";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import { useTheme } from "../../core/theme/ThemeContext";
-import { Transaction } from "../../core/database/schema";
+import { useTheme } from "../../../core/theme/ThemeContext";
+import { Transaction } from "../../../core/database/schema";
 import Constants from "expo-constants";
 import { Alert } from "react-native";
-import { CustomAlert } from "../../shared/components/CustomAlert";
-import { FAB } from "../../shared/components/ui/FAB";
-import { storage } from "../../core/utils/storage";
+import { CustomAlert } from "../../../shared/components/CustomAlert";
+import { FAB } from "../../../shared/components/ui/FAB";
+import { storage } from "../../../core/utils/storage";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");

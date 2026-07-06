@@ -4,12 +4,12 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import {
   useAnalyticsDatabase,
   CategorySpending,
-} from "../../features/analytics/db/analyticsQueries";
-import { AnalyticsFilter } from "../../features/analytics/components/AnalyticsFilter";
-import { TransactionPieChart } from "../../features/analytics/components/TransactionPieChart";
-import { TotalSpentCard } from "../../features/analytics/components/TotalSpentCard";
+} from "../../../features/analytics/db/analyticsQueries";
+import { AnalyticsFilter } from "../../../features/analytics/components/AnalyticsFilter";
+import { TransactionPieChart } from "../../../features/analytics/components/TransactionPieChart";
+import { TotalSpentCard } from "../../../features/analytics/components/TotalSpentCard";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../../core/theme/ThemeContext";
+import { useTheme } from "../../../core/theme/ThemeContext";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,

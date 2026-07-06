@@ -18,12 +18,12 @@ import Animated, {
   withSpring,
   withTiming
 } from "react-native-reanimated";
-import { QuickAddEscapeContext } from "./_layout";
+import { QuickAddEscapeContext } from "../../../app/_layout";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { openDatabaseSync } from "expo-sqlite";
-import { storage } from "../core/utils/storage";
+import { storage } from "../../../core/utils/storage";
 
 
 const BRAND_PRIMARY = "#2563EB";

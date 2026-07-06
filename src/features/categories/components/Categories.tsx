@@ -1,15 +1,15 @@
 import { View, Text, Pressable, FlatList } from "react-native";
 import { useSelector } from "react-redux";
-import { RootState } from "../core/store/store";
+import { RootState } from "../../../core/store/store";
 import { Ionicons } from "@expo/vector-icons";
-import { Category } from "../core/database/schema";
-import { CategoryIcon } from "../shared/components/ui/CategoryIcon";
+import { Category } from "../../../core/database/schema";
+import { CategoryIcon } from "../../../shared/components/ui/CategoryIcon";
 import { router } from "expo-router";
-import { CategoryEditSheet } from "../features/categories/components/CategoryEditSheet";
+import { CategoryEditSheet } from "../../../features/categories/components/CategoryEditSheet";
 import { useRef, useState } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from "../core/theme/ThemeContext";
+import { useTheme } from "../../../core/theme/ThemeContext";
 
 export default function CategoriesScreen() {
   const categories = useSelector(

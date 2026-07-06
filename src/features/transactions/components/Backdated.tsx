@@ -1,18 +1,18 @@
 import { Text, View, Pressable, Modal } from "react-native";
 import { useState, useCallback, useRef } from "react";
 import { router } from "expo-router";
-import TransactionList from "../features/transactions/components/TransactionList";
-import { TransactionSearchBar } from "../features/transactions/components/TransactionSearchBar";
+import TransactionList from "../../../features/transactions/components/TransactionList";
+import { TransactionSearchBar } from "../../../features/transactions/components/TransactionSearchBar";
 import {
   TransactionSortFilter,
   SortMode,
   FilterType,
   FilterAccountId,
-} from "../features/transactions/components/TransactionSortFilter";
-import { AddTransactionSheet } from "../features/transactions/components/AddTransactionSheet";
+} from "../../../features/transactions/components/TransactionSortFilter";
+import { AddTransactionSheet } from "../../../features/transactions/components/AddTransactionSheet";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { Transaction } from "../core/database/schema";
+import { Transaction } from "../../../core/database/schema";
 
 export default function BackdatedScreen() {
   const [searchQuery, setSearchQuery] = useState("");

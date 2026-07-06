@@ -71,51 +71,8 @@ import { useTransactionDatabase } from "../core/database/useTransactionDatabase"
 
 
 
-function DatabaseProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
-  const dbName = user ? `ledgerlite_${user.uid}.db` : "ledgerlite_guest.db";
-
-  return (
-    <SQLiteProvider
-      key={dbName}
-      databaseName={dbName}
-      onInit={initializeDatabase}
-    >
-      {children}
-    </SQLiteProvider>
-  );
-}
-
-function useProtectedRoute(
-  user: any,
-  isLoading: boolean,
-  hasCompletedOnboarding: boolean,
-  isSettingsLoaded: boolean,
-) {
-  const segments = useSegments();
-  const router = useRouter();
-  const navigationState = useRootNavigationState();
-
-  useEffect(() => {
-    if (isLoading || !isSettingsLoaded || !navigationState?.key) return;
-
-    const inAuthGroup = segments[0] === "(auth)";
-    const isOnboarding = segments[0] === "onboarding";
-
-    if (hasCompletedOnboarding) {
-      if (user && (inAuthGroup || isOnboarding)) {
-        router.replace("/(tabs)");
-      }
-    }
-  }, [
-    user,
-    isLoading,
-    segments,
-    hasCompletedOnboarding,
-    navigationState?.key,
-    isSettingsLoaded,
-  ]);
-}
+import { DatabaseProvider } from "../core/database/DatabaseProvider";
+import { useProtectedRoute } from "../core/navigation/useProtectedRoute";
 
 
 

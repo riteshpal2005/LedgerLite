@@ -1,17 +1,17 @@
 import React, { useState, useRef } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { Link } from "expo-router";
-import { AuthService } from "../../core/services/authService";
-import { useTheme } from "../../core/theme/ThemeContext";
+import { AuthService } from "../../../core/services/authService";
+import { useTheme } from "../../../core/theme/ThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import * as Linking from "expo-linking";
-import { AuthInput } from "../../shared/components/ui/AuthInput";
-import { AuthButton } from "../../shared/components/ui/AuthButton";
-import { useAlert, CustomAlert } from "../../shared/components/CustomAlert";
+import { AuthInput } from "../../../shared/components/ui/AuthInput";
+import { AuthButton } from "../../../shared/components/ui/AuthButton";
+import { useAlert, CustomAlert } from "../../../shared/components/CustomAlert";
 import { useDispatch } from "react-redux";
-import { completeOnboarding } from "../../core/store/settingsSlice";
+import { completeOnboarding } from "../../../core/store/settingsSlice";
 
 export default function LoginScreen() {
   const { activeThemeClass } = useTheme();
