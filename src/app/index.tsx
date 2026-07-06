@@ -17,7 +17,7 @@ export default function Index() {
   }
 
   if (hasCompletedOnboarding) {
-    return <Redirect href="/(tabs)" />;
+    return <Redirect href="/(tabs)/transactions" />;
   } else {
     return <Redirect href="/onboarding" />;
   }
