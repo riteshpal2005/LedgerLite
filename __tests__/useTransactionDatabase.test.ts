@@ -60,7 +60,7 @@ describe('useTransactionDatabase', () => {
     });
   });
 
-  describe('getTransactions', () => {
+  describe('getAllTransactions', () => {
     it('should return transactions formatted correctly', async () => {
       const mockDbTransactions = [
         { id: '1', amount: 10, description: 'A', date: 1000, type: 'credit', categoryId: 'cat-1', sync_status: 'synced', updated_at: 1000 }
@@ -71,7 +71,7 @@ describe('useTransactionDatabase', () => {
       let transactions: Transaction[] = [];
       
       await act(async () => {
-        transactions = await result.current.getTransactions();
+        transactions = await result.current.getAllTransactions();
       });
 
       expect(mockDb.getAllAsync).toHaveBeenCalledWith(
@@ -101,31 +101,47 @@ describe('useTransactionDatabase', () => {
     it('should update transaction fields and set sync_status to pending', async () => {
       const { result } = await renderHook(() => useTransactionDatabase());
       
-      const updates = { amount: 100, description: 'Updated' };
+      const updates = { 
+        amount: 100, 
+        description: 'Updated',
+        date: 2000,
+        categoryId: 'cat-2',
+        type: 'debit' as const,
+      };
       
       await act(async () => {
-        await result.current.updateTransaction('1', updates);
+        await result.current.updateTransactionFull('1', updates);
       });
 
       expect(mockDb.runAsync).toHaveBeenCalledWith(
         expect.stringContaining("UPDATE transactions SET"),
-        expect.arrayContaining([100, 'Updated', 'pending', 1000, '1'])
+        expect.arrayContaining([100, 'Updated', 2000, 'cat-2', 'debit', null, null, 'pending'])
       );
       expect(SyncService.syncAll).toHaveBeenCalled();
     });
   });
 
-  describe('restoreDeletedTransaction', () => {
+  describe('restoreTransaction', () => {
     it('should mark transaction as pending to restore it and queue sync', async () => {
       const { result } = await renderHook(() => useTransactionDatabase());
       
       await act(async () => {
-        await result.current.restoreDeletedTransaction('1');
+        const transactionToRestore = {
+          id: '1',
+          amount: 10,
+          description: 'A',
+          date: 1000,
+          type: 'credit' as const,
+          categoryId: 'cat-1',
+          sync_status: 'deleted' as const,
+          updated_at: 1000,
+        };
+        await result.current.restoreTransaction(transactionToRestore);
       });
 
       expect(mockDb.runAsync).toHaveBeenCalledWith(
-        expect.stringContaining("UPDATE transactions SET sync_status = 'pending', updated_at = ? WHERE id = ?"),
-        [1000, '1']
+        expect.stringContaining("INSERT OR REPLACE INTO transactions"),
+        expect.arrayContaining(['1', 10, 'A', 1000, 'cat-1', 'credit', null, null, null, 'deleted', 1000])
       );
       expect(SyncService.syncAll).toHaveBeenCalled();
     });
