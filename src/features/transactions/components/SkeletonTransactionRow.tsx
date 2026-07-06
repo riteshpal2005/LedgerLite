@@ -10,7 +10,7 @@ import Animated, {
 
 
 
-export function SkeletonExpenseRow() {
+export function SkeletonTransactionRow() {
   const opacity = useSharedValue(0.35);
 
   useEffect(() => {

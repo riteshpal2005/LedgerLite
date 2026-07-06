@@ -18,7 +18,7 @@ export function AdvancedSection() {
               Backdated Data Entry
             </Text>
             <Text className="text-tertiary text-xs leading-5">
-              Log historical expenses safely. This mode adjusts your Initial
+              Log historical transactions safely. This mode adjusts your Initial
               Balance automatically to preserve your true Current Balance today.
             </Text>
           </View>

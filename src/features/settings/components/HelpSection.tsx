@@ -6,9 +6,9 @@ import { triggerHaptic } from "../../../core/utils/haptics";
 const FAQS = [
   {
     id: "1",
-    question: "How do I track backdated expenses?",
+    question: "How do I track backdated transactions?",
     answer:
-      'When adding an expense, simply tap on the "Today" text next to the calendar icon to select a past date and time for your transaction.',
+      'When adding an transaction, simply tap on the "Today" text next to the calendar icon to select a past date and time for your transaction.',
   },
   {
     id: "2",
@@ -20,13 +20,13 @@ const FAQS = [
     id: "3",
     question: "How do I export my data?",
     answer:
-      "Go to Settings > Data Management. From there, you can export all your expenses and categories to a visually pleasing PDF, Excel, or CSV file.",
+      "Go to Settings > Data Management. From there, you can export all your transactions and categories to a visually pleasing PDF, Excel, or CSV file.",
   },
   {
     id: "4",
     question: "Bank vs Cash Accounts?",
     answer:
-      "Accounts help you visualize where your money currently sits. When you add an expense, you can assign it to a specific account so you know exactly which balance went down.",
+      "Accounts help you visualize where your money currently sits. When you add an transaction, you can assign it to a specific account so you know exactly which balance went down.",
   },
 ];
 

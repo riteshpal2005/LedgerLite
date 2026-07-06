@@ -1,18 +1,18 @@
 import { Text, View, Pressable, Modal } from "react-native";
 import { useState, useCallback, useRef } from "react";
 import { router } from "expo-router";
-import ExpenseList from "../features/expenses/components/ExpenseList";
-import { ExpenseSearchBar } from "../features/expenses/components/ExpenseSearchBar";
+import TransactionList from "../features/transactions/components/TransactionList";
+import { TransactionSearchBar } from "../features/transactions/components/TransactionSearchBar";
 import {
-  ExpenseSortFilter,
+  TransactionSortFilter,
   SortMode,
   FilterType,
   FilterAccountId,
-} from "../features/expenses/components/ExpenseSortFilter";
-import { AddExpenseSheet } from "../features/expenses/components/AddExpenseSheet";
+} from "../features/transactions/components/TransactionSortFilter";
+import { AddTransactionSheet } from "../features/transactions/components/AddTransactionSheet";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { Expense } from "../core/database/schema";
+import { Transaction } from "../core/database/schema";
 
 export default function BackdatedScreen() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,19 +20,19 @@ export default function BackdatedScreen() {
   const [filterType, setFilterType] = useState<FilterType>("all");
   const [filterAccountId, setFilterAccountId] =
     useState<FilterAccountId>("all");
-  const [selectedExpenseToEdit, setSelectedExpenseToEdit] = useState<
-    Expense | undefined
+  const [selectedTransactionToEdit, setSelectedTransactionToEdit] = useState<
+    Transaction | undefined
   >(undefined);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   const handlePresentModalPress = () => {
-    setSelectedExpenseToEdit(undefined);
+    setSelectedTransactionToEdit(undefined);
     bottomSheetModalRef.current?.present();
   };
 
-  const handleExpensePress = (expense: Expense) => {
-    setSelectedExpenseToEdit(expense);
+  const handleTransactionPress = (transaction: Transaction) => {
+    setSelectedTransactionToEdit(transaction);
     bottomSheetModalRef.current?.present();
   };
 
@@ -56,11 +56,11 @@ export default function BackdatedScreen() {
       </View>
 
       <View className="flex-row items-center mb-6 z-50 relative">
-        <ExpenseSearchBar
+        <TransactionSearchBar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
-        <ExpenseSortFilter
+        <TransactionSortFilter
           sortMode={sortMode}
           setSortMode={setSortMode}
           filterType={filterType}
@@ -70,12 +70,12 @@ export default function BackdatedScreen() {
         />
       </View>
 
-      <ExpenseList
+      <TransactionList
         searchQuery={searchQuery}
         sortMode={sortMode}
         filterType={filterType}
         filterAccountId={filterAccountId}
-        onExpensePress={handleExpensePress}
+        onTransactionPress={handleTransactionPress}
       />
 
       <Pressable
@@ -85,9 +85,9 @@ export default function BackdatedScreen() {
         <Ionicons name="time" size={28} color="white" />
       </Pressable>
 
-      <AddExpenseSheet
+      <AddTransactionSheet
         bottomSheetRef={bottomSheetModalRef}
-        initialExpense={selectedExpenseToEdit}
+        initialTransaction={selectedTransactionToEdit}
         isBackdatedMode={true}
       />
     </View>

@@ -1,14 +1,14 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import Animated from "react-native-reanimated";
-import { Expense } from "../../../core/database/schema";
+import { Transaction } from "../../../core/database/schema";
 import { CategoryIcon } from "../../../shared/components/ui/CategoryIcon";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
 
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"] as const;
 
-function formatExpenseDate(ts: number, use24h: boolean): string {
+function formatTransactionDate(ts: number, use24h: boolean): string {
   const d = new Date(ts);
   const mm = String(d.getMinutes()).padStart(2, "0");
   const day = d.getDate();
@@ -22,8 +22,8 @@ function formatExpenseDate(ts: number, use24h: boolean): string {
   return `${h12}:${mm} ${ampm}, ${day} ${mon}`;
 }
 
-interface ExpenseListItemProps {
-  item: Expense;
+interface TransactionListItemProps {
+  item: Transaction;
   category: any;
   account: any;
   showIcons: boolean;
@@ -33,7 +33,7 @@ interface ExpenseListItemProps {
   onAssignAccountPress: () => void;
 }
 
-export const ExpenseListItem = React.memo(function ExpenseListItem({
+export const TransactionListItem = React.memo(function TransactionListItem({
   item,
   category,
   account,
@@ -42,7 +42,7 @@ export const ExpenseListItem = React.memo(function ExpenseListItem({
   onPress,
   onLongPress,
   onAssignAccountPress,
-}: ExpenseListItemProps) {
+}: TransactionListItemProps) {
   const use24HourFormat = useSelector(
     (state: RootState) => state.settings.use24HourFormat || false
   );
@@ -119,7 +119,7 @@ export const ExpenseListItem = React.memo(function ExpenseListItem({
             {isCredit ? "+" : "-"}₹{item.amount.toFixed(2)}
           </Text>
           <Text className="text-tertiary text-xs mt-1">
-            {formatExpenseDate(item.date, use24HourFormat)}
+            {formatTransactionDate(item.date, use24HourFormat)}
           </Text>
         </View>
       </Pressable>

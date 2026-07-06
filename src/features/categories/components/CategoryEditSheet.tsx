@@ -9,7 +9,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
-import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
+import { useTransactionDatabase } from "../../../core/database/useTransactionDatabase";
 import {
   updateCategoryAction,
   addCategory as addCategoryAction,
@@ -246,14 +246,14 @@ export function CategoryEditSheet({
   const categories = useSelector(
     (state: RootState) => state.categories.categories,
   );
-  const expenses = useSelector((state: RootState) => state.expenses.expenses);
+  const transactions = useSelector((state: RootState) => state.transactions.transactions);
 
-  const linkedExpenseCount = useMemo(() => {
+  const linkedTransactionCount = useMemo(() => {
     if (!initialCategory) return 0;
-    return expenses.filter((e) => e.categoryId === initialCategory.id).length;
-  }, [initialCategory, expenses]);
+    return transactions.filter((e) => e.categoryId === initialCategory.id).length;
+  }, [initialCategory, transactions]);
 
-  const dbActions = useExpenseDatabase();
+  const dbActions = useTransactionDatabase();
   const { updateCategory, addCategory } = dbActions;
   const {
     bottomSheetBackgroundColor,
@@ -529,7 +529,7 @@ export function CategoryEditSheet({
         }}
         category={initialCategory || null}
         categories={categories}
-        linkedExpenseCount={linkedExpenseCount}
+        linkedTransactionCount={linkedTransactionCount}
       />
 
       <Modal visible={previewIcon !== null} transparent animationType="fade">

@@ -4,7 +4,7 @@ import * as DocumentPicker from "expo-document-picker";
 import * as Print from "expo-print";
 import * as XLSX from "xlsx";
 import * as Clipboard from "expo-clipboard";
-import { Expense, Account, Category } from "../database/schema";
+import { Transaction, Account, Category } from "../database/schema";
 import { Platform } from "react-native";
 
 export type ExportColumn =
@@ -19,7 +19,7 @@ export type ExportColumn =
   | "AccountInitialBalance";
 
 export const exportData = async (
-  expenses: Expense[],
+  transactions: Transaction[],
   accounts: Account[],
   categories: Category[],
   format: "csv" | "xlsx",
@@ -27,13 +27,13 @@ export const exportData = async (
   savedDirectoryUri?: string | null,
 ): Promise<string | undefined> => {
   try {
-    const formattedData = expenses.map((e) => {
+    const formattedData = transactions.map((e) => {
       const account = accounts.find((a) => a.id === e.accountId);
       const category = categories.find((c) => c.id === e.categoryId);
       return {
         Date: new Date(e.date).toLocaleDateString().replace(/\u202F/g, " "),
         Time: new Date(e.date).toLocaleTimeString().replace(/\u202F/g, " "),
-        Type: e.type === "credit" ? "Income" : "Expense",
+        Type: e.type === "credit" ? "Income" : "Transaction",
         Category: category ? category.name : "Unknown",
         Amount: `₹${e.amount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         Description: e.description,
@@ -47,7 +47,7 @@ export const exportData = async (
 
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Expenses");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
     const fileBase64 = XLSX.write(workbook, {
       type: "base64",
       bookType: format,
@@ -320,9 +320,9 @@ export const parseDateTime = (dateVal: any, timeVal: any): number => {
 export const importData = async (
   categories: Category[],
   accounts: Account[],
-  existingExpenses: Expense[],
+  existingTransactions: Transaction[],
 ): Promise<{
-  expenses: any[];
+  transactions: any[];
   missingAccounts: { name: string; initialBalance: number }[];
 } | null> => {
   try {
@@ -351,15 +351,15 @@ export const importData = async (
 
     const rawJson = XLSX.utils.sheet_to_json(worksheet) as any[];
 
-    const importedExpenses: any[] = [];
+    const importedTransactions: any[] = [];
     const missingAccounts: { name: string; initialBalance: number }[] = [];
     const pairedIds = new Set<string>();
 
-    const expensesBucket = new Map<number, Expense[]>();
-    for (const ex of existingExpenses) {
+    const transactionsBucket = new Map<number, Transaction[]>();
+    for (const ex of existingTransactions) {
       const bucket = Math.floor(ex.date / 60000);
-      if (!expensesBucket.has(bucket)) expensesBucket.set(bucket, []);
-      expensesBucket.get(bucket)!.push(ex);
+      if (!transactionsBucket.has(bucket)) transactionsBucket.set(bucket, []);
+      transactionsBucket.get(bucket)!.push(ex);
     }
 
     for (const row of rawJson) {
@@ -415,9 +415,9 @@ export const importData = async (
 
       const bucket = Math.floor(parsedDate / 60000);
       const candidates = [
-        ...(expensesBucket.get(bucket - 1) || []),
-        ...(expensesBucket.get(bucket) || []),
-        ...(expensesBucket.get(bucket + 1) || [])
+        ...(transactionsBucket.get(bucket - 1) || []),
+        ...(transactionsBucket.get(bucket) || []),
+        ...(transactionsBucket.get(bucket + 1) || [])
       ];
 
       const matchedExisting = candidates.find((ex) => {
@@ -434,7 +434,7 @@ export const importData = async (
       if (matchedExisting) {
         pairedIds.add(matchedExisting.id);
       } else {
-        importedExpenses.push({
+        importedTransactions.push({
           id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
           amount: parsedAmount,
           description,
@@ -448,7 +448,7 @@ export const importData = async (
       }
     }
 
-    return { expenses: importedExpenses, missingAccounts };
+    return { transactions: importedTransactions, missingAccounts };
   } catch (error) {
     console.error("Import Error: ", error);
     return null;
@@ -582,7 +582,7 @@ export const importSettingsJSON = async () => {
 };
 
 export const exportToPDF = async (
-  expenses: Expense[],
+  transactions: Transaction[],
   accounts: Account[],
   categories: Category[],
   selectedColumns: ExportColumn[],
@@ -603,13 +603,13 @@ export const exportToPDF = async (
         .replace(/'/g, "&#039;");
     };
 
-    const formattedData = expenses.map((e) => {
+    const formattedData = transactions.map((e) => {
       const account = accounts.find((a) => a.id === e.accountId);
       const category = categories.find((c) => c.id === e.categoryId);
       return {
         Date: new Date(e.date).toLocaleDateString().replace(/\u202F/g, " "),
         Time: new Date(e.date).toLocaleTimeString().replace(/\u202F/g, " "),
-        Type: e.type === "credit" ? "Income" : "Expense",
+        Type: e.type === "credit" ? "Income" : "Transaction",
         Category: category ? category.name : "Unknown",
         Amount: `₹${e.amount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         Description: e.description,
@@ -636,7 +636,7 @@ export const exportToPDF = async (
 
       const categoryTotals: Record<string, number> = {};
       let totalDebit = 0;
-      expenses.forEach((e) => {
+      transactions.forEach((e) => {
         if (e.type === "debit") {
           const catName = categories.find((c) => c.id === e.categoryId)?.name || "Unknown";
           categoryTotals[catName] = (categoryTotals[catName] || 0) + e.amount;

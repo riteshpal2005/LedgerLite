@@ -2,14 +2,14 @@ import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { View, Text, Pressable, Alert, ScrollView } from "react-native";
 import { Button } from "../../../shared/components/ui/Button";
 import { Heading } from "../../../shared/components/ui/Typography";
-import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
+import { useTransactionDatabase } from "../../../core/database/useTransactionDatabase";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
 import {
   selectAccountsWithBalances,
   setAccounts,
 } from "../../../core/store/accountSlice";
-import { addExpense as addExpenseToRedux } from "../../../core/store/expenseSlice";
+import { addTransaction as addTransactionToRedux } from "../../../core/store/transactionSlice";
 import { addQuickTemplate, removeQuickTemplate } from "../../../core/store/settingsSlice";
 import {
   BottomSheetModal,
@@ -24,30 +24,30 @@ import { CategorySelectModal } from "./CategorySelectModal";
 import { AccountSelectModal } from "../../accounts/components/AccountSelectModal";
 import { DateTimePickerSection } from "./DateTimePickerSection";
 import { BottomSheetFormField } from "../../../shared/components/BottomSheetFormField";
-import { Expense } from "../../../core/database/schema";
+import { Transaction } from "../../../core/database/schema";
 import {
-  updateExpenseAction,
-  deleteExpenseAction,
-  setExpenses,
-} from "../../../core/store/expenseSlice";
+  updateTransactionAction,
+  deleteTransactionAction,
+  setTransactions,
+} from "../../../core/store/transactionSlice";
 import { DeleteConfirmationModal } from "../../../shared/components/DeleteConfirmationModal";
 import { useTheme } from "../../../core/theme/ThemeContext";
 import { useAuth } from "../../../core/firebase/AuthContext";
 import { SyncService } from "../../../core/services/syncService";
 
-interface AddExpenseSheetProps {
+interface AddTransactionSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
-  initialExpense?: Expense;
-  duplicateExpense?: Expense;
+  initialTransaction?: Transaction;
+  duplicateTransaction?: Transaction;
   isBackdatedMode?: boolean;
 }
 
-export function AddExpenseSheet({
+export function AddTransactionSheet({
   bottomSheetRef,
-  initialExpense,
-  duplicateExpense,
+  initialTransaction,
+  duplicateTransaction,
   isBackdatedMode = false,
-}: AddExpenseSheetProps) {
+}: AddTransactionSheetProps) {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [merchant, setMerchant] = useState("");
@@ -63,14 +63,14 @@ export function AddExpenseSheet({
   const [showDestinationPicker, setShowDestinationPicker] = useState(false);
 
   const dispatch = useDispatch();
-  const dbActions = useExpenseDatabase();
+  const dbActions = useTransactionDatabase();
   const {
-    addExpense,
-    updateExpenseFull,
-    deleteExpense,
+    addTransaction,
+    updateTransactionFull,
+    deleteTransaction,
     adjustAccountBalance,
     getAllAccounts,
-    getAllExpenses,
+    getAllTransactions,
   } = dbActions;
   const categories = useSelector(
     (state: RootState) => state.categories.categories,
@@ -116,23 +116,23 @@ export function AddExpenseSheet({
   }, [accountId, destinationAccountId]);
 
   useEffect(() => {
-    if (initialExpense) {
-      setAmount(initialExpense.amount.toString());
-      setDescription(initialExpense.description);
-      setMerchant(initialExpense.merchant || "");
-      setDate(new Date(initialExpense.date));
-      setType(initialExpense.type);
-      setCategoryId(initialExpense.categoryId);
-      if (initialExpense.accountId) setAccountId(initialExpense.accountId);
+    if (initialTransaction) {
+      setAmount(initialTransaction.amount.toString());
+      setDescription(initialTransaction.description);
+      setMerchant(initialTransaction.merchant || "");
+      setDate(new Date(initialTransaction.date));
+      setType(initialTransaction.type);
+      setCategoryId(initialTransaction.categoryId);
+      if (initialTransaction.accountId) setAccountId(initialTransaction.accountId);
       setDestinationAccountId(undefined);
-    } else if (duplicateExpense) {
-      setAmount(duplicateExpense.amount.toString());
-      setDescription(duplicateExpense.description);
-      setMerchant(duplicateExpense.merchant || "");
+    } else if (duplicateTransaction) {
+      setAmount(duplicateTransaction.amount.toString());
+      setDescription(duplicateTransaction.description);
+      setMerchant(duplicateTransaction.merchant || "");
       setDate(new Date());
-      setType(duplicateExpense.type);
-      setCategoryId(duplicateExpense.categoryId);
-      if (duplicateExpense.accountId) setAccountId(duplicateExpense.accountId);
+      setType(duplicateTransaction.type);
+      setCategoryId(duplicateTransaction.categoryId);
+      if (duplicateTransaction.accountId) setAccountId(duplicateTransaction.accountId);
       setDestinationAccountId(undefined);
     } else {
       setAmount("");
@@ -145,12 +145,12 @@ export function AddExpenseSheet({
       setDestinationAccountId(undefined);
     }
     setFormKey((prev) => prev + 1);
-  }, [initialExpense, duplicateExpense, defaultAccountId]);
+  }, [initialTransaction, duplicateTransaction, defaultAccountId]);
 
   const handleSheetChanges = useCallback(
     (index: number) => {
       if (index === -1) {
-        if (!initialExpense && !duplicateExpense) {
+        if (!initialTransaction && !duplicateTransaction) {
           setAmount("");
           setDescription("");
           setMerchant("");
@@ -163,7 +163,7 @@ export function AddExpenseSheet({
         }
       }
     },
-    [initialExpense, duplicateExpense, defaultAccountId],
+    [initialTransaction, duplicateTransaction, defaultAccountId],
   );
 
   const snapPoints = useMemo(() => ["90%"], []);
@@ -193,7 +193,7 @@ export function AddExpenseSheet({
     const selfTransferCatId = categories.find((c) => c.name === "Self Transfer")?.id;
     const isSelfTransfer = categoryId === selfTransferCatId && destinationAccountId !== undefined;
 
-    const expenseData = {
+    const transactionData = {
       amount: parseFloat(amount),
       description: description,
       date: date.getTime(),
@@ -203,37 +203,37 @@ export function AddExpenseSheet({
       accountId: selectedAccount?.id || undefined,
     };
 
-    if (initialExpense) {
-      await updateExpenseFull(initialExpense.id, expenseData);
+    if (initialTransaction) {
+      await updateTransactionFull(initialTransaction.id, transactionData);
 
     } else {
       if (isSelfTransfer && destinationAccountId) {
         const destAccount = accounts.find((a) => a.id === destinationAccountId);
         const leg1Data = {
-          ...expenseData,
+          ...transactionData,
           type: "debit" as const,
           description: `${description} (To ${destAccount?.name || "Other Account"})`,
         };
-        await addExpense(leg1Data);
+        await addTransaction(leg1Data);
 
 
         const leg2Data = {
-          ...expenseData,
+          ...transactionData,
           type: "credit" as const,
           accountId: destinationAccountId,
           description: `${description} (From ${selectedAccount?.name || "Other Account"})`,
           date: date.getTime() + 1,
         };
-        await addExpense(leg2Data);
+        await addTransaction(leg2Data);
 
       } else {
-        await addExpense(expenseData);
+        await addTransaction(transactionData);
 
       }
     }
 
-    const updatedExpenses = await getAllExpenses();
-    dispatch(setExpenses(updatedExpenses));
+    const updatedTransactions = await getAllTransactions();
+    dispatch(setTransactions(updatedTransactions));
 
     const updatedAccounts = await getAllAccounts();
     dispatch(setAccounts(updatedAccounts));
@@ -253,12 +253,12 @@ export function AddExpenseSheet({
   };
 
   const handleDelete = async () => {
-    if (!initialExpense) return;
-    await deleteExpense(initialExpense.id);
+    if (!initialTransaction) return;
+    await deleteTransaction(initialTransaction.id);
 
 
-    const updatedExpenses = await getAllExpenses();
-    dispatch(setExpenses(updatedExpenses));
+    const updatedTransactions = await getAllTransactions();
+    dispatch(setTransactions(updatedTransactions));
 
     const updatedAccounts = await getAllAccounts();
     dispatch(setAccounts(updatedAccounts));
@@ -293,7 +293,7 @@ export function AddExpenseSheet({
       <BottomSheetView style={{ flex: 1, padding: 24 }}>
         <View className="flex-row justify-between items-center mb-6">
           <Heading className="mb-0">
-            {initialExpense ? "Edit Transaction" : duplicateExpense ? "Duplicate Transaction" : "Add Expense"}
+            {initialTransaction ? "Edit Transaction" : duplicateTransaction ? "Duplicate Transaction" : "Add Transaction"}
           </Heading>
           <Pressable onPress={handleClose}>
             <Text className="text-secondary font-bold text-lg">Cancel</Text>
@@ -422,12 +422,12 @@ export function AddExpenseSheet({
           <DateTimePickerSection date={date} setDate={setDate} />
 
           <Button
-            title={initialExpense ? "Save Changes" : "Save Transaction"}
+            title={initialTransaction ? "Save Changes" : "Save Transaction"}
             onPress={() => handleSave(false)}
             className="mb-4 mt-4"
           />
 
-          {!initialExpense && (
+          {!initialTransaction && (
             <>
               <Button
                 title="Save & Add Another"
@@ -461,7 +461,7 @@ export function AddExpenseSheet({
             </>
           )}
 
-          {initialExpense && (
+          {initialTransaction && (
             <Button
               title="Delete Transaction"
               variant="danger"

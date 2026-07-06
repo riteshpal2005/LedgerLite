@@ -8,9 +8,9 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { store } from "../store/store";
-import { useExpenseDatabase } from "../database/useExpenseDatabase";
-import { Expense, Category, Account } from "../database/schema";
-import { setExpenses } from "../store/expenseSlice";
+import { useTransactionDatabase } from "../database/useTransactionDatabase";
+import { Transaction, Category, Account } from "../database/schema";
+import { setTransactions } from "../store/transactionSlice";
 import { setCategories } from "../store/categorySlice";
 import { setAccounts } from "../store/accountSlice";
 import { setIsGlobalSyncing } from "../store/settingsSlice";
@@ -30,14 +30,14 @@ export const SyncService = {
   },
   async pullFromFirebase(
     userId: string,
-    dbActions: ReturnType<typeof useExpenseDatabase>,
+    dbActions: ReturnType<typeof useTransactionDatabase>,
   ) {
     if (isPulling) return;
     isPulling = true;
 
     try {
       const userDocRef = doc(db, "users", userId);
-      const collectionsToSync = ["expenses", "categories", "accounts"];
+      const collectionsToSync = ["transactions", "categories", "accounts"];
       for (const col of collectionsToSync) {
         const q = query(collection(userDocRef, col));
         const snapshot = await getDocs(q);
@@ -48,20 +48,20 @@ export const SyncService = {
           const localData = { ...data, id: document.id, sync_status: "synced" };
           if (!document.id) continue; // Ref: syncService-1
 
-          if (col === "expenses") {
-            const expense = { ...localData } as any;
-            if (expense.date !== undefined && expense.date !== null) {
-              const d = expense.date;
+          if (col === "transactions") {
+            const transaction = { ...localData } as any;
+            if (transaction.date !== undefined && transaction.date !== null) {
+              const d = transaction.date;
               if (typeof d === "number") {
-                expense.date = d < 10_000_000_000 ? d * 1000 : d;
+                transaction.date = d < 10_000_000_000 ? d * 1000 : d;
               } else if (typeof d === "string" && /^\d+$/.test(d)) {
                 const n = Number(d);
-                expense.date = n < 10_000_000_000 ? n * 1000 : n;
+                transaction.date = n < 10_000_000_000 ? n * 1000 : n;
               } else {
-                expense.date = new Date(d).getTime() || Date.now();
+                transaction.date = new Date(d).getTime() || Date.now();
               }
             }
-            await dbActions.restoreExpense(expense as Expense);
+            await dbActions.restoreTransaction(transaction as Transaction);
           } else if (col === "categories") {
             await dbActions.restoreCategory(localData as Category);
           } else if (col === "accounts") {
@@ -73,10 +73,10 @@ export const SyncService = {
 
       await dbActions.deleteCorruptedData();
 
-      const expenses = await dbActions.getAllExpenses();
+      const transactions = await dbActions.getAllTransactions();
       const categories = await dbActions.getAllCategories();
       const accounts = await dbActions.getAllAccounts();
-      store.dispatch(setExpenses(expenses));
+      store.dispatch(setTransactions(transactions));
       store.dispatch(setCategories(categories));
       store.dispatch(setAccounts(accounts));
     } catch (error) {
@@ -87,7 +87,7 @@ export const SyncService = {
   },
   schedulePush(
     userId: string,
-    dbActions: ReturnType<typeof useExpenseDatabase>,
+    dbActions: ReturnType<typeof useTransactionDatabase>,
   ) {
     if (syncTimeout) {
       clearTimeout(syncTimeout);
@@ -99,16 +99,16 @@ export const SyncService = {
   },
   async pushToFirebase(
     userId: string,
-    dbActions: ReturnType<typeof useExpenseDatabase>,
+    dbActions: ReturnType<typeof useTransactionDatabase>,
   ) {
     if (isPushing) return;
     isPushing = true;
     try {
       const { getPendingSyncData } = dbActions;
-      const { pendingExpenses, pendingCategories, pendingAccounts } = await getPendingSyncData();
+      const { pendingTransactions, pendingCategories, pendingAccounts } = await getPendingSyncData();
 
       if (
-        pendingExpenses.length === 0 &&
+        pendingTransactions.length === 0 &&
         pendingCategories.length === 0 &&
         pendingAccounts.length === 0
       ) {
@@ -143,15 +143,15 @@ export const SyncService = {
           batch.set(docRef, remoteData, { merge: true });
         }
       }
-      for (const expense of pendingExpenses) {
+      for (const transaction of pendingTransactions) {
         const docRef = doc(
-          collection(userRef, "expenses"),
-          expense.id.toString(),
+          collection(userRef, "transactions"),
+          transaction.id.toString(),
         );
-        if (expense.sync_status === "deleted") {
+        if (transaction.sync_status === "deleted") {
           batch.delete(docRef);
         } else {
-          const { sync_status, ...remoteData } = expense;
+          const { sync_status, ...remoteData } = transaction;
           batch.set(docRef, remoteData, { merge: true });
         }
       }
@@ -162,8 +162,8 @@ export const SyncService = {
       for (const category of pendingCategories) {
         await dbActions.markAsSynced("categories", category.id);
       }
-      for (const expense of pendingExpenses) {
-        await dbActions.markAsSynced("expenses", expense.id);
+      for (const transaction of pendingTransactions) {
+        await dbActions.markAsSynced("transactions", transaction.id);
       }
     } catch (error) {
       console.error("[SyncService] Push Failed:", error);
@@ -173,7 +173,7 @@ export const SyncService = {
   },
   async syncAll(
     userId: string,
-    dbActions: ReturnType<typeof useExpenseDatabase>,
+    dbActions: ReturnType<typeof useTransactionDatabase>,
   ) {
     const now = Date.now();
     if (now - lastSyncTime < SYNC_COOLDOWN_MS) {

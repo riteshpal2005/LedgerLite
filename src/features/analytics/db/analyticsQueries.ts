@@ -8,10 +8,10 @@ export type CategorySpending = {
 export function useAnalyticsDatabase() {
   const db = useSQLiteContext();
 
-  const getExpensesByCategory = async (startDate: number, endDate: number) => {
+  const getTransactionsByCategory = async (startDate: number, endDate: number) => {
     const result = await db.getAllAsync<CategorySpending>(
       `SELECT categoryId, SUM(amount) as totalSpent 
-       FROM expenses 
+       FROM transactions 
        WHERE type = 'debit' AND sync_status != 'deleted' AND date >= ? AND date <= ? 
        GROUP BY categoryId
        ORDER BY totalSpent DESC`,
@@ -20,5 +20,5 @@ export function useAnalyticsDatabase() {
     return result;
   };
 
-  return { getExpensesByCategory };
+  return { getTransactionsByCategory };
 }

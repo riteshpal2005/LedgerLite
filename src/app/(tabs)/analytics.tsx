@@ -6,7 +6,7 @@ import {
   CategorySpending,
 } from "../../features/analytics/db/analyticsQueries";
 import { AnalyticsFilter } from "../../features/analytics/components/AnalyticsFilter";
-import { ExpensePieChart } from "../../features/analytics/components/ExpensePieChart";
+import { TransactionPieChart } from "../../features/analytics/components/TransactionPieChart";
 import { TotalSpentCard } from "../../features/analytics/components/TotalSpentCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../core/theme/ThemeContext";
@@ -124,7 +124,7 @@ export default function AnalyticsScreen() {
     });
   }, []);
 
-  const { getExpensesByCategory } = useAnalyticsDatabase();
+  const { getTransactionsByCategory } = useAnalyticsDatabase();
 
   const prevDateRangeStr = useRef<string | null>(null);
 
@@ -142,7 +142,7 @@ export default function AnalyticsScreen() {
       setSpendingData([]);
     }
 
-    const data = await getExpensesByCategory(dateRange.start, dateRange.end);
+    const data = await getTransactionsByCategory(dateRange.start, dateRange.end);
     const total = data.reduce((sum, item) => sum + item.totalSpent, 0);
 
 
@@ -197,7 +197,7 @@ export default function AnalyticsScreen() {
         <EmptyAnalyticsState />
       ) : (
         <Animated.View entering={FadeIn.duration(400)}>
-          <ExpensePieChart spendingData={spendingData} />
+          <TransactionPieChart spendingData={spendingData} />
         </Animated.View>
       )}
     </ScrollView>

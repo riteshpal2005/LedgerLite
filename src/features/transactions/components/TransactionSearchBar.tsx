@@ -1,15 +1,15 @@
 import { View, TextInput, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-interface ExpenseSearchBarProps {
+interface TransactionSearchBarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
 }
 
-export function ExpenseSearchBar({
+export function TransactionSearchBar({
   searchQuery,
   setSearchQuery,
-}: ExpenseSearchBarProps) {
+}: TransactionSearchBarProps) {
   return (
     <View className="flex-1 flex-row items-center bg-surface rounded-2xl px-4 h-[46px] border border-bordercolor">
       <Ionicons name="search" size={20} color="#71717a" />

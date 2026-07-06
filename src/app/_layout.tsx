@@ -67,7 +67,7 @@ configureReanimatedLogger({
   strict: false,
 });
 
-import { useExpenseDatabase } from "../core/database/useExpenseDatabase";
+import { useTransactionDatabase } from "../core/database/useTransactionDatabase";
 
 
 
@@ -233,7 +233,7 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
     QuickActions.setItems([
       {
         title: "Quick Add",
-        subtitle: "Add expense instantly",
+        subtitle: "Add transaction instantly",
         icon: "ic_quick_add",
         id: "quick-add",
         params: { href: "/quick-add" },

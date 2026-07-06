@@ -1,6 +1,6 @@
 import { View, Text, Pressable, Platform } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { setExpenses } from "../../../core/store/expenseSlice";
+import { setTransactions } from "../../../core/store/transactionSlice";
 import { RootState, store } from "../../../core/store/store";
 import {
   setExportDirectoryUri,
@@ -10,7 +10,7 @@ import {
 import { setCategories } from "../../../core/store/categorySlice";
 import { setAccounts } from "../../../core/store/accountSlice";
 import { Ionicons } from "@expo/vector-icons";
-import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
+import { useTransactionDatabase } from "../../../core/database/useTransactionDatabase";
 import {
   exportData,
   importData,
@@ -37,18 +37,18 @@ import { CustomAlert, useAlert } from "../../../shared/components/CustomAlert";
 export function DataManagementSection() {
   const dispatch = useDispatch();
   const { user } = useAuth();
-  const dbActions = useExpenseDatabase();
+  const dbActions = useTransactionDatabase();
   const {
-    getAllExpenses,
-    addExpense,
+    getAllTransactions,
+    addTransaction,
     getAllCategories,
     restoreCategory,
     getAllAccounts,
     addAccount,
     restoreAccount,
-    restoreExpense,
+    restoreTransaction,
     markAsSynced,
-    deleteExpense,
+    deleteTransaction,
     deleteAccount,
     deleteCategory,
   } = dbActions;
@@ -63,7 +63,7 @@ export function DataManagementSection() {
   const [missingAccountsForImport, setMissingAccountsForImport] = useState<
     { name: string; initialBalance: number }[]
   >([]);
-  const [pendingImportExpenses, setPendingImportExpenses] = useState<any[]>([]);
+  const [pendingImportTransactions, setPendingImportTransactions] = useState<any[]>([]);
   const [accountMappingModalVisible, setAccountMappingModalVisible] =
     useState(false);
 
@@ -77,8 +77,8 @@ export function DataManagementSection() {
       await SyncService.syncAll(user.uid, dbActions);
 
 
-      const newExpenses = await getAllExpenses();
-      dispatch(setExpenses(newExpenses));
+      const newTransactions = await getAllTransactions();
+      dispatch(setTransactions(newTransactions));
       const newCategories = await getAllCategories();
       dispatch(setCategories(newCategories));
       const newAccounts = await getAllAccounts();
@@ -117,12 +117,12 @@ export function DataManagementSection() {
   };
 
   const handleExportExcel = async (action: "save" | "share") => {
-    const expenses = await getAllExpenses();
-    if (expenses.length === 0)
-      return showAlert("No Data", "There are no expenses to export.");
+    const transactions = await getAllTransactions();
+    if (transactions.length === 0)
+      return showAlert("No Data", "There are no transactions to export.");
     const state = store.getState();
     const newDirUri = await exportData(
-      expenses,
+      transactions,
       state.accounts.accounts,
       state.categories.categories,
       "xlsx",
@@ -140,13 +140,13 @@ export function DataManagementSection() {
   };
 
   const handleExportCSV = async (action: "save" | "share") => {
-    const expenses = await getAllExpenses();
-    if (expenses.length === 0)
-      return showAlert("No Data", "There are no expenses to export.");
+    const transactions = await getAllTransactions();
+    if (transactions.length === 0)
+      return showAlert("No Data", "There are no transactions to export.");
     const state = store.getState();
 
     const newDirUri = await exportData(
-      expenses,
+      transactions,
       state.accounts.accounts,
       state.categories.categories,
       "csv",
@@ -164,9 +164,9 @@ export function DataManagementSection() {
   };
 
   const initiateExportPDF = async (action: "save" | "share") => {
-    const expenses = await getAllExpenses();
-    if (expenses.length === 0)
-      return showAlert("No Data", "There are no expenses to export.");
+    const transactions = await getAllTransactions();
+    if (transactions.length === 0)
+      return showAlert("No Data", "There are no transactions to export.");
     setPdfAction(action);
     setPdfModalVisible(true);
   };
@@ -181,22 +181,22 @@ export function DataManagementSection() {
     if (selectedColumns.length === 0)
       return showAlert("Error", "Please select at least one column.");
 
-    const expenses = await getAllExpenses();
+    const transactions = await getAllTransactions();
     
 
     const startMs = startDate.getTime();
     const endMs = endDate.getTime();
-    const filteredExpenses = expenses.filter(
+    const filteredTransactions = transactions.filter(
       (e) => e.date >= startMs && e.date <= endMs
     );
 
-    if (filteredExpenses.length === 0) {
-      return showAlert("No Data", "There are no expenses in the selected date range.");
+    if (filteredTransactions.length === 0) {
+      return showAlert("No Data", "There are no transactions in the selected date range.");
     }
 
     const state = store.getState();
     const newDirUri = await exportToPDF(
-      filteredExpenses,
+      filteredTransactions,
       state.accounts.accounts,
       state.categories.categories,
       selectedColumns,
@@ -219,23 +219,23 @@ export function DataManagementSection() {
   };
 
   const handleImport = async () => {
-    const expenses = await getAllExpenses();
+    const transactions = await getAllTransactions();
     const categories = await getAllCategories();
     const accounts = await getAllAccounts();
 
-    const importResult = await importData(categories, accounts, expenses);
+    const importResult = await importData(categories, accounts, transactions);
     if (importResult) {
       if (
         importResult.missingAccounts &&
         importResult.missingAccounts.length > 0
       ) {
         setMissingAccountsForImport(importResult.missingAccounts);
-        setPendingImportExpenses(importResult.expenses);
+        setPendingImportTransactions(importResult.transactions);
         setAccountMappingModalVisible(true);
         return;
       }
 
-      await finalizeImport(importResult.expenses, []);
+      await finalizeImport(importResult.transactions, []);
     }
   };
 
@@ -258,14 +258,14 @@ export function DataManagementSection() {
     const updatedAccounts = await getAllAccounts();
     dispatch(setAccounts(updatedAccounts));
 
-    await finalizeImport(pendingImportExpenses, newlyCreatedAccounts);
+    await finalizeImport(pendingImportTransactions, newlyCreatedAccounts);
 
     setMissingAccountsForImport([]);
-    setPendingImportExpenses([]);
+    setPendingImportTransactions([]);
   };
 
   const finalizeImport = async (
-    expensesToImport: any[],
+    transactionsToImport: any[],
     newlyCreatedAccounts: Account[],
   ) => {
     let hasPermission = false;
@@ -283,7 +283,7 @@ export function DataManagementSection() {
       }
     }
 
-    const totalCount = expensesToImport.length;
+    const totalCount = transactionsToImport.length;
     if (totalCount === 0) {
       triggerHaptic.light();
       showAlert(
@@ -307,25 +307,25 @@ export function DataManagementSection() {
 
     const chunkSize = 200;
     let processedCount = 0;
-    const mappedExpenses: any[] = [];
+    const mappedTransactions: any[] = [];
 
-    for (const expense of expensesToImport) {
-      const { id, _accountName, ...expenseData } = expense;
-      if (_accountName && !expenseData.accountId) {
+    for (const transaction of transactionsToImport) {
+      const { id, _accountName, ...transactionData } = transaction;
+      if (_accountName && !transactionData.accountId) {
         const mappedAccount = newlyCreatedAccounts.find(
           (a) => a.name === _accountName,
         );
         if (mappedAccount) {
-          expenseData.accountId = mappedAccount.id;
+          transactionData.accountId = mappedAccount.id;
         }
       }
-      mappedExpenses.push(expenseData);
+      mappedTransactions.push(transactionData);
     }
 
     const processNextChunk = async (index: number) => {
-      const chunk = mappedExpenses.slice(index, index + chunkSize);
+      const chunk = mappedTransactions.slice(index, index + chunkSize);
       if (chunk.length > 0) {
-        await dbActions.addExpensesBatch(chunk);
+        await dbActions.addTransactionsBatch(chunk);
         processedCount += chunk.length;
 
         const progressPercent = Math.min(
@@ -348,8 +348,8 @@ export function DataManagementSection() {
       } else {
         dispatch(setImportProgress(0));
 
-        const updatedExpenses = await getAllExpenses();
-        dispatch(setExpenses(updatedExpenses));
+        const updatedTransactions = await getAllTransactions();
+        dispatch(setTransactions(updatedTransactions));
 
         const updatedAccounts = await getAllAccounts();
         dispatch(setAccounts(updatedAccounts));
@@ -550,7 +550,7 @@ export function DataManagementSection() {
         onClose={() => {
           setAccountMappingModalVisible(false);
           setMissingAccountsForImport([]);
-          setPendingImportExpenses([]);
+          setPendingImportTransactions([]);
           showAlert(
             "Import Cancelled",
             "Import was cancelled because you discarded the unknown accounts mapping.",

@@ -107,7 +107,7 @@ export default function LoginScreen() {
           <Text
             className={`text-base mt-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}
           >
-            Sign in to sync your expenses
+            Sign in to sync your transactions
           </Text>
         </Animated.View>
 

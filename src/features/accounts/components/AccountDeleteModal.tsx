@@ -3,9 +3,9 @@ import { useState, useEffect } from "react";
 import { useTheme } from "../../../core/theme/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { Account } from "../../../core/database/schema";
-import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
+import { useTransactionDatabase } from "../../../core/database/useTransactionDatabase";
 import { useDispatch } from "react-redux";
-import { setExpenses } from "../../../core/store/expenseSlice";
+import { setTransactions } from "../../../core/store/transactionSlice";
 import { removeAccountFromRedux } from "../../../core/store/accountSlice";
 import { CustomAlert } from "../../../shared/components/CustomAlert";
 
@@ -14,7 +14,7 @@ interface AccountDeleteModalProps {
   onClose: () => void;
   account: Account | null;
   accounts: Account[];
-  linkedExpenseCount: number;
+  linkedTransactionCount: number;
 }
 
 type ActionOption = "delete" | "reassign";
@@ -24,7 +24,7 @@ export function AccountDeleteModal({
   onClose,
   account,
   accounts,
-  linkedExpenseCount,
+  linkedTransactionCount,
 }: AccountDeleteModalProps) {
   const [option, setOption] = useState<ActionOption>("delete");
   const [selectedExistingAccountId, setSelectedExistingAccountId] = useState<
@@ -33,10 +33,10 @@ export function AccountDeleteModal({
 
   const {
     deleteAccount,
-    deleteExpensesByAccount,
-    reassignExpenses,
-    getAllExpenses,
-  } = useExpenseDatabase();
+    deleteTransactionsByAccount,
+    reassignTransactions,
+    getAllTransactions,
+  } = useTransactionDatabase();
   const dispatch = useDispatch();
 
   const { bottomSheetBackgroundColor, bottomSheetBorderColor, colors } =
@@ -56,20 +56,20 @@ export function AccountDeleteModal({
     if (!account) return;
 
     try {
-      if (linkedExpenseCount > 0) {
+      if (linkedTransactionCount > 0) {
         if (option === "delete") {
-          await deleteExpensesByAccount(account.id);
+          await deleteTransactionsByAccount(account.id);
         } else if (option === "reassign") {
           if (!selectedExistingAccountId) return;
-          await reassignExpenses(account.id, selectedExistingAccountId);
+          await reassignTransactions(account.id, selectedExistingAccountId);
         }
       }
 
       await deleteAccount(account.id);
       dispatch(removeAccountFromRedux(account.id));
 
-      const updatedExpenses = await getAllExpenses();
-      dispatch(setExpenses(updatedExpenses));
+      const updatedTransactions = await getAllTransactions();
+      dispatch(setTransactions(updatedTransactions));
 
       onClose();
     } catch (error) {
@@ -85,7 +85,7 @@ export function AccountDeleteModal({
       <CustomAlert
         visible={visible}
         title="Cannot Delete"
-        message="You must have at least one active account to track expenses."
+        message="You must have at least one active account to track transactions."
         onConfirm={onClose}
         confirmText="OK"
       />
@@ -128,11 +128,11 @@ export function AccountDeleteModal({
               <Text className="font-bold text-primary">{account?.name}</Text>.
             </Text>
 
-            {linkedExpenseCount > 0 && (
+            {linkedTransactionCount > 0 && (
               <ScrollView className="mb-6" showsVerticalScrollIndicator={false}>
                 <View className="bg-status-danger/10 p-3 rounded-xl border border-status-danger/30 mb-6">
                   <Text className="text-status-danger font-bold">
-                    Warning: {linkedExpenseCount} linked transactions found.
+                    Warning: {linkedTransactionCount} linked transactions found.
                   </Text>
                   <Text className="text-status-danger opacity-80 text-sm mt-1">
                     What would you like to do with them?

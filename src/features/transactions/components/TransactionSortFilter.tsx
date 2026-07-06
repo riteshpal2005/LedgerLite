@@ -13,7 +13,7 @@ export type SortMode = "newest" | "oldest" | "highest" | "lowest";
 export type FilterType = "all" | "debit" | "credit";
 export type FilterAccountId = string | "all";
 
-interface ExpenseSortFilterProps {
+interface TransactionSortFilterProps {
   sortMode: SortMode;
   setSortMode: (mode: SortMode) => void;
   filterType: FilterType;
@@ -22,14 +22,14 @@ interface ExpenseSortFilterProps {
   setFilterAccountId: (id: FilterAccountId) => void;
 }
 
-export function ExpenseSortFilter({
+export function TransactionSortFilter({
   sortMode,
   setSortMode,
   filterType,
   setFilterType,
   filterAccountId,
   setFilterAccountId,
-}: ExpenseSortFilterProps) {
+}: TransactionSortFilterProps) {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const accounts = useSelector(selectAccountsWithBalances);
   const { bottomSheetBackgroundColor, bottomSheetIndicatorColor } = useTheme();
@@ -133,7 +133,7 @@ export function ExpenseSortFilter({
           <View className="flex-row flex-wrap gap-2 mb-6">
             {[
               { id: "all", label: "All" },
-              { id: "debit", label: "Expense" },
+              { id: "debit", label: "Transaction" },
               { id: "credit", label: "Income" },
             ].map((type) => (
               <Pressable

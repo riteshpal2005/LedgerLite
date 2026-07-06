@@ -1,12 +1,12 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
 import { View, Text, Pressable, useWindowDimensions } from "react-native";
-import { SortMode } from "./ExpenseSortFilter";
+import { SortMode } from "./TransactionSortFilter";
 import { FlashList } from "@shopify/flash-list";
 import { useEffect, useMemo } from "react";
-import { setExpenses } from "../../../core/store/expenseSlice";
+import { setTransactions } from "../../../core/store/transactionSlice";
 import { useDispatch } from "react-redux";
-import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
+import { useTransactionDatabase } from "../../../core/database/useTransactionDatabase";
 import { Ionicons } from "@expo/vector-icons";
 import { setCategories } from "../../../core/store/categorySlice";
 import {
@@ -15,35 +15,35 @@ import {
 } from "../../../core/store/accountSlice";
 import { useState } from "react";
 import { AccountSelectModal } from "../../accounts/components/AccountSelectModal";
-import { SkeletonExpenseRow } from "./SkeletonExpenseRow";
+import { SkeletonTransactionRow } from "./SkeletonTransactionRow";
 import { Heading } from "../../../shared/components/ui/Typography";
-import { ExpenseListItem } from "./ExpenseListItem";
+import { TransactionListItem } from "./TransactionListItem";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useTheme } from "../../../core/theme/ThemeContext";
 
-import { FilterType, FilterAccountId } from "./ExpenseSortFilter";
+import { FilterType, FilterAccountId } from "./TransactionSortFilter";
 
-interface ExpenseListProps {
+interface TransactionListProps {
   searchQuery: string;
   sortMode: SortMode;
   filterType: FilterType;
   filterAccountId: FilterAccountId;
-  onExpensePress?: (expense: any) => void;
-  onExpenseLongPress?: (expense: any) => void;
+  onTransactionPress?: (transaction: any) => void;
+  onTransactionLongPress?: (transaction: any) => void;
 }
 
 
 const ITEM_HEIGHT = 80;
 
-export default function ExpenseList({
+export default function TransactionList({
   searchQuery,
   sortMode,
   filterType,
   filterAccountId,
-  onExpensePress,
-  onExpenseLongPress,
-}: ExpenseListProps) {
-  const expenses = useSelector((state: RootState) => state.expenses.expenses);
+  onTransactionPress,
+  onTransactionLongPress,
+}: TransactionListProps) {
+  const transactions = useSelector((state: RootState) => state.transactions.transactions);
   const categories = useSelector(
     (state: RootState) => state.categories.categories,
   );
@@ -53,8 +53,8 @@ export default function ExpenseList({
   );
   const accounts = useSelector(selectAccountsWithBalances);
 
-  const [expenseToAssign, setExpenseToAssign] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(expenses.length === 0);
+  const [transactionToAssign, setTransactionToAssign] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(transactions.length === 0);
   const [displayLimit, setDisplayLimit] = useState(20);
 
   const dispatch = useDispatch();
@@ -67,20 +67,20 @@ export default function ExpenseList({
   );
 
   const {
-    getAllExpenses,
+    getAllTransactions,
     getAllCategories,
     getAllAccounts,
-    updateExpenseAccount,
-  } = useExpenseDatabase();
+    updateTransactionAccount,
+  } = useTransactionDatabase();
 
   useEffect(() => {
     let isMounted = true;
 
     const loadData = async () => {
       try {
-        const expenseData = await getAllExpenses();
+        const transactionData = await getAllTransactions();
         if (!isMounted) return;
-        dispatch(setExpenses(expenseData));
+        dispatch(setTransactions(transactionData));
 
         const categoryData = await getAllCategories();
         if (!isMounted) return;
@@ -90,7 +90,7 @@ export default function ExpenseList({
         if (!isMounted) return;
         dispatch(setAccounts(accountsData));
 
-        const delay = Math.min(Math.max(expenseData.length * 2, 300), 1500);
+        const delay = Math.min(Math.max(transactionData.length * 2, 300), 1500);
         setTimeout(() => {
           if (isMounted) {
             setIsLoading(false);
@@ -108,25 +108,25 @@ export default function ExpenseList({
     };
   }, []);
 
-  const filteredExpenses = expenses.filter((expense) => {
-    if (filterType !== "all" && expense.type !== filterType) return false;
+  const filteredTransactions = transactions.filter((transaction) => {
+    if (filterType !== "all" && transaction.type !== filterType) return false;
 
-    if (filterAccountId !== "all" && expense.accountId !== filterAccountId)
+    if (filterAccountId !== "all" && transaction.accountId !== filterAccountId)
       return false;
 
     if (!searchQuery) return true;
     const lowerQuery = searchQuery.toLowerCase();
-    const matchesDesc = expense.description.toLowerCase().includes(lowerQuery);
-    const matchesMerchant = expense.merchant
+    const matchesDesc = transaction.description.toLowerCase().includes(lowerQuery);
+    const matchesMerchant = transaction.merchant
       ?.toLocaleLowerCase()
       .includes(lowerQuery);
-    const matchesAmount = expense.amount.toString().includes(lowerQuery);
-    const matchesCategory = expense.categoryId.toLowerCase() === lowerQuery;
+    const matchesAmount = transaction.amount.toString().includes(lowerQuery);
+    const matchesCategory = transaction.categoryId.toLowerCase() === lowerQuery;
 
     return matchesDesc || matchesAmount || matchesMerchant || matchesCategory;
   });
 
-  const sortedExpenses = [...filteredExpenses].sort((a, b) => {
+  const sortedTransactions = [...filteredTransactions].sort((a, b) => {
     switch (sortMode) {
       case "newest":
         return b.date - a.date;
@@ -142,53 +142,53 @@ export default function ExpenseList({
   });
 
   const handleAssignAccount = async (accountId: string) => {
-    if (expenseToAssign) {
-      await updateExpenseAccount(expenseToAssign, accountId);
-      const expenseData = await getAllExpenses();
-      dispatch(setExpenses(expenseData));
+    if (transactionToAssign) {
+      await updateTransactionAccount(transactionToAssign, accountId);
+      const transactionData = await getAllTransactions();
+      dispatch(setTransactions(transactionData));
     }
   };
 
   return (
     <View className="flex-1">
-      <Heading className="text-xl mb-4">Recent Expenses</Heading>
+      <Heading className="text-xl mb-4">Recent Transactions</Heading>
 
       {isLoading ? (
 
         <View className="flex-1">
           {Array.from({ length: skeletonCount }).map((_, i) => (
-            <SkeletonExpenseRow key={i} />
+            <SkeletonTransactionRow key={i} />
           ))}
         </View>
       ) : (
         <Animated.View entering={FadeIn.duration(400)} className="flex-1">
           <FlashList
-            data={sortedExpenses.slice(0, displayLimit)}
+            data={sortedTransactions.slice(0, displayLimit)}
             showsVerticalScrollIndicator={false}
             onEndReached={() => {
-              if (displayLimit < sortedExpenses.length) {
+              if (displayLimit < sortedTransactions.length) {
                 setDisplayLimit((prev) => prev + 50);
               }
             }}
             onEndReachedThreshold={0.5}
-            ListEmptyComponent={<EmptyExpenseState searchQuery={searchQuery} />}
+            ListEmptyComponent={<EmptyTransactionState searchQuery={searchQuery} />}
             renderItem={({ item }) => {
               const category = categories.find((c) => c.id === item.categoryId);
               const account = accounts.find((a) => a.id === item.accountId);
               const isCredit = item.type === "credit";
 
               return (
-                <ExpenseListItem
+                <TransactionListItem
                   item={item}
                   category={category}
                   account={account}
                   showIcons={showIcons}
                   isCredit={isCredit}
-                  onPress={() => onExpensePress && onExpensePress(item)}
+                  onPress={() => onTransactionPress && onTransactionPress(item)}
                   onLongPress={() =>
-                    onExpenseLongPress && onExpenseLongPress(item)
+                    onTransactionLongPress && onTransactionLongPress(item)
                   }
-                  onAssignAccountPress={() => setExpenseToAssign(item.id)}
+                  onAssignAccountPress={() => setTransactionToAssign(item.id)}
                 />
               );
             }}
@@ -197,8 +197,8 @@ export default function ExpenseList({
       )}
 
       <AccountSelectModal
-        visible={expenseToAssign !== null}
-        onClose={() => setExpenseToAssign(null)}
+        visible={transactionToAssign !== null}
+        onClose={() => setTransactionToAssign(null)}
         accounts={accounts}
         onSelect={handleAssignAccount}
       />
@@ -207,7 +207,7 @@ export default function ExpenseList({
 }
 
 
-function EmptyExpenseState({ searchQuery }: { searchQuery: string }) {
+function EmptyTransactionState({ searchQuery }: { searchQuery: string }) {
   const { colors } = useTheme();
 
   if (searchQuery) {
@@ -226,7 +226,7 @@ function EmptyExpenseState({ searchQuery }: { searchQuery: string }) {
           No Results Found
         </Text>
         <Text className="text-tertiary text-center text-sm px-10">
-          No expenses match "{searchQuery}". Try a different keyword.
+          No transactions match "{searchQuery}". Try a different keyword.
         </Text>
       </Animated.View>
     );

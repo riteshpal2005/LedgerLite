@@ -3,9 +3,9 @@ import { useState, useEffect } from "react";
 import { useTheme } from "../../../core/theme/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { Category } from "../../../core/database/schema";
-import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
+import { useTransactionDatabase } from "../../../core/database/useTransactionDatabase";
 import { useDispatch } from "react-redux";
-import { setExpenses } from "../../../core/store/expenseSlice";
+import { setTransactions } from "../../../core/store/transactionSlice";
 import { removeCategory } from "../../../core/store/categorySlice";
 import { CustomAlert } from "../../../shared/components/CustomAlert";
 
@@ -15,7 +15,7 @@ interface CategoryDeleteModalProps {
   onSuccess?: () => void;
   category: Category | null;
   categories: Category[];
-  linkedExpenseCount: number;
+  linkedTransactionCount: number;
 }
 
 type ActionOption = "delete" | "reassign";
@@ -26,7 +26,7 @@ export function CategoryDeleteModal({
   onSuccess,
   category,
   categories,
-  linkedExpenseCount,
+  linkedTransactionCount,
 }: CategoryDeleteModalProps) {
   const [option, setOption] = useState<ActionOption>("delete");
   const [selectedExistingCategoryId, setSelectedExistingCategoryId] = useState<
@@ -35,10 +35,10 @@ export function CategoryDeleteModal({
 
   const {
     deleteCategory,
-    deleteExpensesByCategory,
-    reassignExpensesCategory,
-    getAllExpenses,
-  } = useExpenseDatabase();
+    deleteTransactionsByCategory,
+    reassignTransactionsCategory,
+    getAllTransactions,
+  } = useTransactionDatabase();
   const dispatch = useDispatch();
 
   const { bottomSheetBackgroundColor, bottomSheetBorderColor, colors } =
@@ -58,12 +58,12 @@ export function CategoryDeleteModal({
     if (!category) return;
 
     try {
-      if (linkedExpenseCount > 0) {
+      if (linkedTransactionCount > 0) {
         if (option === "delete") {
-          await deleteExpensesByCategory(category.id);
+          await deleteTransactionsByCategory(category.id);
         } else if (option === "reassign") {
           if (!selectedExistingCategoryId) return;
-          await reassignExpensesCategory(
+          await reassignTransactionsCategory(
             category.id,
             selectedExistingCategoryId,
           );
@@ -73,8 +73,8 @@ export function CategoryDeleteModal({
       await deleteCategory(category.id);
       dispatch(removeCategory(category.id));
 
-      const updatedExpenses = await getAllExpenses();
-      dispatch(setExpenses(updatedExpenses));
+      const updatedTransactions = await getAllTransactions();
+      dispatch(setTransactions(updatedTransactions));
 
       if (onSuccess) {
         onSuccess();
@@ -94,7 +94,7 @@ export function CategoryDeleteModal({
       <CustomAlert
         visible={visible}
         title="Cannot Delete"
-        message="You must have at least one active category to track expenses."
+        message="You must have at least one active category to track transactions."
         onConfirm={onClose}
         confirmText="OK"
       />
@@ -137,11 +137,11 @@ export function CategoryDeleteModal({
               <Text className="font-bold text-primary">{category?.name}</Text>.
             </Text>
 
-            {linkedExpenseCount > 0 && (
+            {linkedTransactionCount > 0 && (
               <ScrollView className="mb-6" showsVerticalScrollIndicator={false}>
                 <View className="bg-status-danger/10 p-3 rounded-xl border border-status-danger/30 mb-6">
                   <Text className="text-status-danger font-bold">
-                    Warning: {linkedExpenseCount} linked transactions found.
+                    Warning: {linkedTransactionCount} linked transactions found.
                   </Text>
                   <Text className="text-status-danger opacity-80 text-sm mt-1">
                     What would you like to do with them?

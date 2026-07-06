@@ -9,20 +9,20 @@ import React, {
 import { useSelector } from "react-redux";
 import { RootState } from "../../core/store/store";
 import { useFocusEffect, useGlobalSearchParams, useRouter } from "expo-router";
-import ExpenseList from "../../features/expenses/components/ExpenseList";
-import { ExpenseSearchBar } from "../../features/expenses/components/ExpenseSearchBar";
+import TransactionList from "../../features/transactions/components/TransactionList";
+import { TransactionSearchBar } from "../../features/transactions/components/TransactionSearchBar";
 import {
-  ExpenseSortFilter,
+  TransactionSortFilter,
   SortMode,
   FilterType,
   FilterAccountId,
-} from "../../features/expenses/components/ExpenseSortFilter";
-import { AddExpenseSheet } from "../../features/expenses/components/AddExpenseSheet";
+} from "../../features/transactions/components/TransactionSortFilter";
+import { AddTransactionSheet } from "../../features/transactions/components/AddTransactionSheet";
 import { AddAccountModal } from "../../features/accounts/components/AddAccountModal";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { useTheme } from "../../core/theme/ThemeContext";
-import { Expense } from "../../core/database/schema";
+import { Transaction } from "../../core/database/schema";
 import Constants from "expo-constants";
 import { Alert } from "react-native";
 import { CustomAlert } from "../../shared/components/CustomAlert";
@@ -35,11 +35,11 @@ export default function Home() {
   const [filterType, setFilterType] = useState<FilterType>("all");
   const [filterAccountId, setFilterAccountId] =
     useState<FilterAccountId>("all");
-  const [selectedExpenseToEdit, setSelectedExpenseToEdit] = useState<
-    Expense | undefined
+  const [selectedTransactionToEdit, setSelectedTransactionToEdit] = useState<
+    Transaction | undefined
   >(undefined);
-  const [selectedExpenseToDuplicate, setSelectedExpenseToDuplicate] = useState<
-    Expense | undefined
+  const [selectedTransactionToDuplicate, setSelectedTransactionToDuplicate] = useState<
+    Transaction | undefined
   >(undefined);
   const [showExitModal, setShowExitModal] = useState(false);
 
@@ -65,8 +65,8 @@ export default function Home() {
   );
 
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
-  const expenses = useSelector((state: RootState) => state.expenses.expenses);
-  const uncategorizedCount = expenses.filter(e => 
+  const transactions = useSelector((state: RootState) => state.transactions.transactions);
+  const uncategorizedCount = transactions.filter(e => 
     e.categoryId === 'uncategorized' && 
     (filterAccountId === "all" || e.accountId === filterAccountId)
   ).length;
@@ -91,35 +91,35 @@ export default function Home() {
       addAccountSheetRef.current?.present();
       return;
     }
-    setSelectedExpenseToEdit(undefined);
-    setSelectedExpenseToDuplicate(undefined);
+    setSelectedTransactionToEdit(undefined);
+    setSelectedTransactionToDuplicate(undefined);
     bottomSheetModalRef.current?.present();
   };
 
-  const { openAddExpense } = useGlobalSearchParams<{ openAddExpense: string }>();
+  const { openAddTransaction } = useGlobalSearchParams<{ openAddTransaction: string }>();
   const router = useRouter();
 
   useEffect(() => {
-    if (openAddExpense === "true") {
+    if (openAddTransaction === "true") {
       setTimeout(() => {
         handlePresentModalPress();
 
-        router.setParams({ openAddExpense: undefined });
+        router.setParams({ openAddTransaction: undefined });
       }, 500);
     }
-  }, [openAddExpense]);
+  }, [openAddTransaction]);
 
-  const handleExpensePress = (expense: Expense) => {
-    setSelectedExpenseToEdit(expense);
-    setSelectedExpenseToDuplicate(undefined);
+  const handleTransactionPress = (transaction: Transaction) => {
+    setSelectedTransactionToEdit(transaction);
+    setSelectedTransactionToDuplicate(undefined);
     setTimeout(() => {
       bottomSheetModalRef.current?.present();
     }, 0);
   };
 
-  const handleExpenseLongPress = (expense: Expense) => {
-    setSelectedExpenseToEdit(undefined);
-    setSelectedExpenseToDuplicate(expense);
+  const handleTransactionLongPress = (transaction: Transaction) => {
+    setSelectedTransactionToEdit(undefined);
+    setSelectedTransactionToDuplicate(transaction);
     setTimeout(() => {
       bottomSheetModalRef.current?.present();
     }, 0);
@@ -132,11 +132,11 @@ export default function Home() {
   return (
     <View className="flex-1 bg-background p-6 pt-12">
       <View className="flex-row items-center mb-6 mt-2 z-50 relative">
-        <ExpenseSearchBar
+        <TransactionSearchBar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
-        <ExpenseSortFilter
+        <TransactionSortFilter
           sortMode={sortMode}
           setSortMode={setSortMode}
           filterType={filterType}
@@ -183,13 +183,13 @@ export default function Home() {
         </Pressable>
       )}
 
-      <ExpenseList
+      <TransactionList
         searchQuery={searchQuery}
         sortMode={sortMode}
         filterType={filterType}
         filterAccountId={filterAccountId}
-        onExpensePress={handleExpensePress}
-        onExpenseLongPress={handleExpenseLongPress}
+        onTransactionPress={handleTransactionPress}
+        onTransactionLongPress={handleTransactionLongPress}
       />
       <FAB
         icon={
@@ -198,10 +198,10 @@ export default function Home() {
         onPress={handlePresentModalPress}
       />
 
-      <AddExpenseSheet
+      <AddTransactionSheet
         bottomSheetRef={bottomSheetModalRef}
-        initialExpense={selectedExpenseToEdit}
-        duplicateExpense={selectedExpenseToDuplicate}
+        initialTransaction={selectedTransactionToEdit}
+        duplicateTransaction={selectedTransactionToDuplicate}
       />
       <AddAccountModal bottomSheetRef={addAccountSheetRef} />
 

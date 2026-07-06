@@ -17,7 +17,7 @@ import { Button } from "../../../shared/components/ui/Button";
 import { Heading, Label } from "../../../shared/components/ui/Typography";
 import { Card } from "../../../shared/components/ui/Card";
 import { useDispatch } from "react-redux";
-import { useExpenseDatabase } from "../../../core/database/useExpenseDatabase";
+import { useTransactionDatabase } from "../../../core/database/useTransactionDatabase";
 import {
   addAccountToRedux,
   updateAccountInRedux,
@@ -95,7 +95,7 @@ export function AddAccountModal({
   );
 
   const dispatch = useDispatch();
-  const dbActions = useExpenseDatabase();
+  const dbActions = useTransactionDatabase();
   const { addAccount, updateAccount } = dbActions;
   const { user } = useAuth();
 

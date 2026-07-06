@@ -1,12 +1,12 @@
 import * as SQLite from "expo-sqlite";
 import * as FileSystem from "expo-file-system/legacy";
-import { useExpenseDatabase } from "../database/useExpenseDatabase";
+import { useTransactionDatabase } from "../database/useTransactionDatabase";
 import { SyncService } from "./syncService";
 
 export const MigrationService = {
   async migrateGuestDataToUser(
     userId: string,
-    dbActions: ReturnType<typeof useExpenseDatabase>,
+    dbActions: ReturnType<typeof useTransactionDatabase>,
   ) {
     const guestDbName = "ledgerlite_guest.db";
 
@@ -22,7 +22,7 @@ export const MigrationService = {
       const guestDb = await SQLite.openDatabaseAsync(guestDbName);
 
 
-      const expenses = await guestDb.getAllAsync<any>(`SELECT * FROM expenses`);
+      const transactions = await guestDb.getAllAsync<any>(`SELECT * FROM transactions`);
       const categories = await guestDb.getAllAsync<any>(
         `SELECT * FROM categories`,
       );
@@ -31,7 +31,7 @@ export const MigrationService = {
       await guestDb.closeAsync();
 
 
-      if (expenses.length > 0 || categories.length > 0 || accounts.length > 0) {
+      if (transactions.length > 0 || categories.length > 0 || accounts.length > 0) {
 
         for (const account of accounts) {
           account.sync_status = "pending"; // Ref: migrationService-6
@@ -45,9 +45,9 @@ export const MigrationService = {
         }
 
 
-        for (const expense of expenses) {
-          expense.sync_status = "pending"; // Ref: migrationService-10
-          await dbActions.restoreExpense(expense);
+        for (const transaction of transactions) {
+          transaction.sync_status = "pending"; // Ref: migrationService-10
+          await dbActions.restoreTransaction(transaction);
         }
 
 

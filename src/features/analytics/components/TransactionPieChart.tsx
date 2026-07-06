@@ -47,11 +47,11 @@ function describeArc(
   ].join(" ");
 }
 
-interface ExpensePieChartProps {
+interface TransactionPieChartProps {
   spendingData: CategorySpending[];
 }
 
-export function ExpensePieChart({ spendingData }: ExpensePieChartProps) {
+export function TransactionPieChart({ spendingData }: TransactionPieChartProps) {
   const categories = useSelector(
     (state: RootState) => state.categories.categories,
   );
@@ -92,7 +92,7 @@ export function ExpensePieChart({ spendingData }: ExpensePieChartProps) {
   if (chartData.length === 0) {
     return (
       <View className="items-center justify-center h-48 bg-surface rounded-3xl border border-bordercolor">
-        <Text className="text-tertiary text-lg">No expenses in this range</Text>
+        <Text className="text-tertiary text-lg">No transactions in this range</Text>
       </View>
     );
   }

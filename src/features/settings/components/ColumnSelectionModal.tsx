@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, Pressable, Modal, Switch, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../core/theme/ThemeContext";
-import { CustomDateTimePickerModal } from "../../expenses/components/CustomDateTimePickerModal";
+import { CustomDateTimePickerModal } from "../../transactions/components/CustomDateTimePickerModal";
 
 export const AVAILABLE_COLUMNS = [
   "Date",
@@ -168,7 +168,7 @@ export function ColumnSelectionModal({
               <View>
                 <Text className="text-primary font-bold">Include Pie Chart</Text>
                 <Text className="text-secondary text-xs mt-1">
-                  Visual summary of expenses by category
+                  Visual summary of transactions by category
                 </Text>
               </View>
               <Switch

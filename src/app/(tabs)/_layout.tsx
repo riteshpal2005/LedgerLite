@@ -6,7 +6,7 @@ import { useTheme } from "../../core/theme/ThemeContext";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useEffect } from "react";
 import { useAuth } from "../../core/firebase/AuthContext";
-import { useExpenseDatabase } from "../../core/database/useExpenseDatabase";
+import { useTransactionDatabase } from "../../core/database/useTransactionDatabase";
 import { SyncService } from "../../core/services/syncService";
 import { MigrationService } from "../../core/services/migrationService";
 
@@ -21,7 +21,7 @@ export default function TabLayout() {
   const { activeThemeClass } = useTheme();
 
   const { user } = useAuth();
-  const dbActions = useExpenseDatabase();
+  const dbActions = useTransactionDatabase();
 
   useEffect(() => {
     if (user && !syncedSessions.has(user.uid)) {
@@ -73,7 +73,7 @@ export default function TabLayout() {
       <MaterialTabs.Screen
         name="index"
         options={{
-          title: "Expenses",
+          title: "Transactions",
           tabBarIcon: ({ color }: { color: string }) => (
             <Ionicons name="cash-outline" size={24} color={color} />
           ),

@@ -17,14 +17,14 @@ export function AccountsSection() {
   const defaultAccountId = useSelector(
     (state: RootState) => state.settings.defaultAccountId,
   );
-  const expenses = useSelector((state: RootState) => state.expenses.expenses);
+  const transactions = useSelector((state: RootState) => state.transactions.transactions);
 
   const addAccountSheetRef = useRef<BottomSheetModal>(null);
   const [accountToEdit, setAccountToEdit] = useState<Account | undefined>(
     undefined,
   );
   const [accountToDelete, setAccountToDelete] = useState<Account | null>(null);
-  const [linkedExpenseCount, setLinkedExpenseCount] = useState(0);
+  const [linkedTransactionCount, setLinkedTransactionCount] = useState(0);
   const [actionAccount, setActionAccount] = useState<Account | null>(null);
 
   const dispatch = useDispatch();
@@ -43,8 +43,8 @@ export function AccountsSection() {
       Alert.alert("Cannot Delete", "You must have at least one account.");
       return;
     }
-    const count = expenses.filter((e) => e.accountId === account.id).length;
-    setLinkedExpenseCount(count);
+    const count = transactions.filter((e) => e.accountId === account.id).length;
+    setLinkedTransactionCount(count);
     setAccountToDelete(account);
   };
 
@@ -130,7 +130,7 @@ export function AccountsSection() {
         onClose={() => setAccountToDelete(null)}
         account={accountToDelete}
         accounts={accounts}
-        linkedExpenseCount={linkedExpenseCount}
+        linkedTransactionCount={linkedTransactionCount}
       />
 
       <Modal visible={actionAccount !== null} transparent animationType="fade">

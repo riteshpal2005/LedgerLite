@@ -16,10 +16,7 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  withTiming,
-  runOnJS,
-  configureReanimatedLogger,
-  ReanimatedLogLevel,
+  withTiming
 } from "react-native-reanimated";
 import { QuickAddEscapeContext } from "./_layout";
 import { useRouter } from "expo-router";
@@ -63,7 +60,7 @@ function getUserDbName(): string {
 }
 
 
-async function saveQuickExpense(
+async function saveQuickTransaction(
   amount: number,
   description: string,
   accountId?: string
@@ -73,7 +70,7 @@ async function saveQuickExpense(
   const now = Date.now();
 
   db.runSync(
-    `INSERT INTO expenses (id, amount, description, date, type, categoryId, merchant, accountId, sync_status, updated_at)
+    `INSERT INTO transactions (id, amount, description, date, type, categoryId, merchant, accountId, sync_status, updated_at)
      VALUES (?, ?, ?, ?, 'debit', 'uncategorized', '', ?, 'pending', ?)`,
     [id, amount, description, now, accountId ?? null, now]
   );
@@ -126,10 +123,10 @@ export default function QuickAddScreen() {
       escapeContext.escapeQuickAdd();
 
       setTimeout(() => {
-        router.replace("/?openAddExpense=true");
+        router.replace("/?openAddTransaction=true");
       }, 50);
     } else {
-      Linking.openURL("ledgerlite://?openAddExpense=true");
+      Linking.openURL("ledgerlite://?openAddTransaction=true");
     }
   }, [escapeContext, router]);
 
@@ -139,7 +136,7 @@ export default function QuickAddScreen() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
     const accountId = getDefaultAccountId();
-    await saveQuickExpense(parseFloat(amount), description, accountId);
+    await saveQuickTransaction(parseFloat(amount), description, accountId);
 
     BackHandler.exitApp();
   }, [amount, description]);

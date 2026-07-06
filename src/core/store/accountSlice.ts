@@ -45,10 +45,10 @@ export const {
 
 export const selectAccountsWithBalances = createSelector(
   (state: RootState) => state.accounts.accounts,
-  (state: RootState) => state.expenses.expenses,
-  (accounts, expenses) => {
+  (state: RootState) => state.transactions.transactions,
+  (accounts, transactions) => {
     return accounts.map((account) => {
-      const accountTransactions = expenses.filter(
+      const accountTransactions = transactions.filter(
         (e) => e.accountId === account.id,
       );
 
@@ -56,11 +56,11 @@ export const selectAccountsWithBalances = createSelector(
         .filter((e) => e.type === "credit")
         .reduce((sum, e) => sum + e.amount, 0);
 
-      const totalExpense = accountTransactions
+      const totalTransaction = accountTransactions
         .filter((e) => e.type === "debit")
         .reduce((sum, e) => sum + e.amount, 0);
 
-      const currentBalance = account.balance + totalIncome - totalExpense;
+      const currentBalance = account.balance + totalIncome - totalTransaction;
 
       return {
         ...account,

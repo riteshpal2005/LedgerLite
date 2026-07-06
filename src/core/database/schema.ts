@@ -4,7 +4,7 @@ export type TransactionType = "credit" | "debit";
 
 export type SyncStatus = "pending" | "synced" | "deleted";
 
-export interface Expense {
+export interface Transaction {
   id: string;
   amount: number;
   description: string;
@@ -59,8 +59,8 @@ export const CREATE_ACCOUNTS_TABLE = `
   );
 `;
 
-export const CREATE_EXPENSES_TABLE = `
-  CREATE TABLE IF NOT EXISTS expenses (
+export const CREATE_TRANSACTIONS_TABLE = `
+  CREATE TABLE IF NOT EXISTS transactions (
     id TEXT PRIMARY KEY,
     amount REAL NOT NULL,
     description TEXT,
@@ -75,26 +75,26 @@ export const CREATE_EXPENSES_TABLE = `
   );
 `;
 
-export const CREATE_EXPENSES_DATE_INDEX = `
-  CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date);
+export const CREATE_TRANSACTIONS_DATE_INDEX = `
+  CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(date);
 `;
 
-export const CREATE_EXPENSES_CATEGORY_INDEX = `
-  CREATE INDEX IF NOT EXISTS idx_expenses_categoryId ON expenses(categoryId);
+export const CREATE_TRANSACTIONS_CATEGORY_INDEX = `
+  CREATE INDEX IF NOT EXISTS idx_transactions_categoryId ON transactions(categoryId);
 `;
 
-export const CREATE_EXPENSES_ACCOUNT_INDEX = `
-  CREATE INDEX IF NOT EXISTS idx_expenses_accountId ON expenses(accountId);
+export const CREATE_TRANSACTIONS_ACCOUNT_INDEX = `
+  CREATE INDEX IF NOT EXISTS idx_transactions_accountId ON transactions(accountId);
 `;
 
 export async function initializeDatabase(db: SQLiteDatabase) {
   await db.execAsync(CREATE_ACCOUNTS_TABLE);
   await db.execAsync(CREATE_CATEGORIES_TABLE);
-  await db.execAsync(CREATE_EXPENSES_TABLE);
+  await db.execAsync(CREATE_TRANSACTIONS_TABLE);
 
-  await db.execAsync(CREATE_EXPENSES_DATE_INDEX);
-  await db.execAsync(CREATE_EXPENSES_CATEGORY_INDEX);
-  await db.execAsync(CREATE_EXPENSES_ACCOUNT_INDEX);
+  await db.execAsync(CREATE_TRANSACTIONS_DATE_INDEX);
+  await db.execAsync(CREATE_TRANSACTIONS_CATEGORY_INDEX);
+  await db.execAsync(CREATE_TRANSACTIONS_ACCOUNT_INDEX);
 
   const versionResult = await db.getFirstAsync<{ user_version: number }>(
     "PRAGMA user_version"
@@ -103,7 +103,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
   if (version < 2) {
     try {
-      await db.execAsync("ALTER TABLE expenses ADD COLUMN balance_after REAL;");
+      await db.execAsync("ALTER TABLE transactions ADD COLUMN balance_after REAL;");
     } catch (e) {
     }
 
@@ -112,22 +112,22 @@ export async function initializeDatabase(db: SQLiteDatabase) {
     );
 
     for (const account of accounts) {
-      const accountExpenses = await db.getAllAsync<{ id: string; amount: number; type: string }>(
-        "SELECT id, amount, type FROM expenses WHERE accountId = ? AND sync_status != 'deleted' ORDER BY date ASC, rowid ASC",
+      const accountTransactions = await db.getAllAsync<{ id: string; amount: number; type: string }>(
+        "SELECT id, amount, type FROM transactions WHERE accountId = ? AND sync_status != 'deleted' ORDER BY date ASC, rowid ASC",
         [account.id]
       );
 
       let runningBalance = 0;
-      for (const expense of accountExpenses) {
-        if (expense.type === "credit") {
-          runningBalance += expense.amount;
-        } else if (expense.type === "debit") {
-          runningBalance -= expense.amount;
+      for (const transaction of accountTransactions) {
+        if (transaction.type === "credit") {
+          runningBalance += transaction.amount;
+        } else if (transaction.type === "debit") {
+          runningBalance -= transaction.amount;
         }
 
         await db.runAsync(
-          "UPDATE expenses SET balance_after = ?, sync_status = ?, updated_at = ? WHERE id = ?",
-          [runningBalance, "pending", Date.now(), expense.id]
+          "UPDATE transactions SET balance_after = ?, sync_status = ?, updated_at = ? WHERE id = ?",
+          [runningBalance, "pending", Date.now(), transaction.id]
         );
       }
     }

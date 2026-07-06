@@ -7,7 +7,6 @@ import { router } from "expo-router";
 import { useRef, useState } from "react";
 import { triggerHaptic } from "../core/utils/haptics";
 import Animated, {
-  FadeInDown,
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
@@ -19,7 +18,7 @@ const SLIDES = [
     id: "1",
     title: "Track in Seconds",
     description:
-      "Add your expenses lightning fast. No cluttered menus, just pure efficiency.",
+      "Add your transactions lightning fast. No cluttered menus, just pure efficiency.",
     icon: "flash" as const,
     color: "#ffffff",
     bgColor: "#ffffff20",

@@ -1,8 +1,8 @@
 import { useSQLiteContext } from "expo-sqlite";
 import * as Crypto from "expo-crypto";
-import { Expense, Category, Account } from "./schema";
+import { Transaction, Category, Account } from "./schema";
 
-export function useExpenseDatabase() {
+export function useTransactionDatabase() {
   const db = useSQLiteContext();
 
   const propagateForward = async (
@@ -21,7 +21,7 @@ export function useExpenseDatabase() {
 
     if (baseBalance === undefined) {
       const prevTx = await db.getFirstAsync<{ balance_after: number }>(
-        `SELECT balance_after FROM expenses 
+        `SELECT balance_after FROM transactions 
          WHERE accountId = ? AND sync_status != 'deleted' 
            AND (date < ? OR (date = ? AND rowid < ?))
          ORDER BY date DESC, rowid DESC LIMIT 1`,
@@ -33,7 +33,7 @@ export function useExpenseDatabase() {
     }
 
     const nextTxs = await db.getAllAsync<{ id: string; amount: number; type: string; balance_after?: number }>(
-      `SELECT id, amount, type, balance_after FROM expenses 
+      `SELECT id, amount, type, balance_after FROM transactions 
        WHERE accountId = ? AND sync_status != 'deleted'
          AND (date > ? OR (date = ? AND rowid >= ?))
        ORDER BY date ASC, rowid ASC`,
@@ -49,23 +49,23 @@ export function useExpenseDatabase() {
 
       if (tx.balance_after === undefined || tx.balance_after === null || Math.abs(tx.balance_after - runningBalance) > 0.001) {
         await db.runAsync(
-          "UPDATE expenses SET balance_after = ?, sync_status = ?, updated_at = ? WHERE id = ?",
+          "UPDATE transactions SET balance_after = ?, sync_status = ?, updated_at = ? WHERE id = ?",
           [runningBalance, "pending", Date.now(), tx.id]
         );
       }
     }
   };
 
-  const getAllExpenses = async () => {
-    const result = await db.getAllAsync<Expense>(
-      "SELECT * FROM expenses WHERE sync_status != 'deleted' ORDER BY date DESC",
+  const getAllTransactions = async () => {
+    const result = await db.getAllAsync<Transaction>(
+      "SELECT * FROM transactions WHERE sync_status != 'deleted' ORDER BY date DESC",
     );
     return result;
   };
 
   const getTotalSpent = async () => {
     const result = await db.getFirstAsync<{ total: number }>(
-      `SELECT SUM(amount) as total FROM expenses WHERE type = ? AND sync_status != 'deleted'`,
+      `SELECT SUM(amount) as total FROM transactions WHERE type = ? AND sync_status != 'deleted'`,
       ["debit"],
     );
     return result?.total || 0;
@@ -112,78 +112,78 @@ export function useExpenseDatabase() {
     );
   };
 
-  const addExpense = async (
-    expense: Omit<Expense, "id" | "sync_status" | "updated_at">,
+  const addTransaction = async (
+    transaction: Omit<Transaction, "id" | "sync_status" | "updated_at">,
   ) => {
     const id = Crypto.randomUUID();
     const updated_at = Date.now();
     await db.runAsync(
-      "INSERT INTO expenses (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO transactions (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         id,
-        expense.amount,
-        expense.description,
-        expense.date,
-        expense.categoryId,
-        expense.type,
-        expense.merchant || null,
-        expense.accountId || null,
+        transaction.amount,
+        transaction.description,
+        transaction.date,
+        transaction.categoryId,
+        transaction.type,
+        transaction.merchant || null,
+        transaction.accountId || null,
         null,
         "pending",
         updated_at,
       ],
     );
-    if (expense.accountId) {
+    if (transaction.accountId) {
       const newTx = await db.getFirstAsync<{ rowid: number }>(
-        "SELECT rowid FROM expenses WHERE id = ?",
+        "SELECT rowid FROM transactions WHERE id = ?",
         [id]
       );
       if (newTx) {
-        await propagateForward(expense.accountId, expense.date, newTx.rowid);
+        await propagateForward(transaction.accountId, transaction.date, newTx.rowid);
       }
     }
     return id;
   };
 
-  const addExpensesBatch = async (
-    expensesList: Omit<Expense, "id" | "sync_status" | "updated_at">[]
+  const addTransactionsBatch = async (
+    transactionsList: Omit<Transaction, "id" | "sync_status" | "updated_at">[]
   ) => {
     await db.withTransactionAsync(async () => {
       const affectedAccounts = new Set<string>();
       const accountMinDates: Record<string, number> = {};
       const accountMinRowids: Record<string, number> = {};
 
-      for (const expense of expensesList) {
+      for (const transaction of transactionsList) {
         const id = Crypto.randomUUID();
         const updated_at = Date.now();
         await db.runAsync(
-          "INSERT INTO expenses (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+          "INSERT INTO transactions (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
           [
             id,
-            expense.amount,
-            expense.description,
-            expense.date,
-            expense.categoryId,
-            expense.type,
-            expense.merchant || null,
-            expense.accountId || null,
+            transaction.amount,
+            transaction.description,
+            transaction.date,
+            transaction.categoryId,
+            transaction.type,
+            transaction.merchant || null,
+            transaction.accountId || null,
             null,
             "pending",
             updated_at,
           ]
         );
 
-        if (expense.accountId) {
-          affectedAccounts.add(expense.accountId);
-          const currentMinDate = accountMinDates[expense.accountId] ?? Infinity;
-          if (expense.date < currentMinDate) {
-            accountMinDates[expense.accountId] = expense.date;
+        if (transaction.accountId) {
+          affectedAccounts.add(transaction.accountId);
+          const currentMinDate = accountMinDates[transaction.accountId] ?? Infinity;
+          if (transaction.date < currentMinDate) {
+            accountMinDates[transaction.accountId] = transaction.date;
             const newRow = await db.getFirstAsync<{ rowid: number }>(
-              "SELECT rowid FROM expenses WHERE id = ?",
+              "SELECT rowid FROM transactions WHERE id = ?",
               [id]
             );
             if (newRow) {
-              accountMinRowids[expense.accountId] = newRow.rowid;
+              accountMinRowids[transaction.accountId] = newRow.rowid;
             }
           }
         }
@@ -246,106 +246,106 @@ export function useExpenseDatabase() {
     await propagateForward(accountId, 0);
   };
 
-  const updateExpenseAccount = async (expenseId: string, accountId: string) => {
-    const oldExpense = await db.getFirstAsync<{ rowid: number; accountId: string; date: number }>(
-      "SELECT rowid, accountId, date FROM expenses WHERE id = ?",
-      [expenseId]
+  const updateTransactionAccount = async (transactionId: string, accountId: string) => {
+    const oldTransaction = await db.getFirstAsync<{ rowid: number; accountId: string; date: number }>(
+      "SELECT rowid, accountId, date FROM transactions WHERE id = ?",
+      [transactionId]
     );
     await db.runAsync(
-      "UPDATE expenses SET accountId = ?, sync_status = ?, updated_at = ? WHERE id = ?",
-      [accountId, "pending", Date.now(), expenseId],
+      "UPDATE transactions SET accountId = ?, sync_status = ?, updated_at = ? WHERE id = ?",
+      [accountId, "pending", Date.now(), transactionId],
     );
-    const newExpenseRow = await db.getFirstAsync<{ rowid: number }>(
-      "SELECT rowid FROM expenses WHERE id = ?",
-      [expenseId]
+    const newTransactionRow = await db.getFirstAsync<{ rowid: number }>(
+      "SELECT rowid FROM transactions WHERE id = ?",
+      [transactionId]
     );
 
-    if (oldExpense) {
-      if (oldExpense.accountId === accountId) {
+    if (oldTransaction) {
+      if (oldTransaction.accountId === accountId) {
         if (accountId) {
-          await propagateForward(accountId, oldExpense.date, oldExpense.rowid);
+          await propagateForward(accountId, oldTransaction.date, oldTransaction.rowid);
         }
       } else {
-        if (oldExpense.accountId) {
-          await propagateForward(oldExpense.accountId, oldExpense.date, oldExpense.rowid);
+        if (oldTransaction.accountId) {
+          await propagateForward(oldTransaction.accountId, oldTransaction.date, oldTransaction.rowid);
         }
-        if (accountId && newExpenseRow) {
-          await propagateForward(accountId, oldExpense.date, newExpenseRow.rowid);
+        if (accountId && newTransactionRow) {
+          await propagateForward(accountId, oldTransaction.date, newTransactionRow.rowid);
         }
       }
     }
   };
 
-  const updateExpenseFull = async (
+  const updateTransactionFull = async (
     id: string,
-    expense: Omit<Expense, "id" | "sync_status" | "updated_at">,
+    transaction: Omit<Transaction, "id" | "sync_status" | "updated_at">,
   ) => {
-    const oldExpense = await db.getFirstAsync<{ rowid: number; accountId: string; date: number }>(
-      "SELECT rowid, accountId, date FROM expenses WHERE id = ?",
+    const oldTransaction = await db.getFirstAsync<{ rowid: number; accountId: string; date: number }>(
+      "SELECT rowid, accountId, date FROM transactions WHERE id = ?",
       [id]
     );
     await db.runAsync(
-      "UPDATE expenses SET amount = ?, description = ?, date = ?, categoryId = ?, type = ?, merchant = ?, accountId = ?, sync_status = ?, updated_at = ? WHERE id = ?",
+      "UPDATE transactions SET amount = ?, description = ?, date = ?, categoryId = ?, type = ?, merchant = ?, accountId = ?, sync_status = ?, updated_at = ? WHERE id = ?",
       [
-        expense.amount,
-        expense.description,
-        expense.date,
-        expense.categoryId,
-        expense.type,
-        expense.merchant || null,
-        expense.accountId || null,
+        transaction.amount,
+        transaction.description,
+        transaction.date,
+        transaction.categoryId,
+        transaction.type,
+        transaction.merchant || null,
+        transaction.accountId || null,
         "pending",
         Date.now(),
         id,
       ],
     );
-    const newExpenseRow = await db.getFirstAsync<{ rowid: number }>(
-      "SELECT rowid FROM expenses WHERE id = ?",
+    const newTransactionRow = await db.getFirstAsync<{ rowid: number }>(
+      "SELECT rowid FROM transactions WHERE id = ?",
       [id]
     );
 
-    if (oldExpense) {
-      if (oldExpense.accountId === expense.accountId) {
-        if (expense.accountId) {
-          const minDate = Math.min(oldExpense.date, expense.date);
-          const minRowid = minDate === oldExpense.date ? oldExpense.rowid : (newExpenseRow?.rowid || 0);
-          await propagateForward(expense.accountId, minDate, minRowid);
+    if (oldTransaction) {
+      if (oldTransaction.accountId === transaction.accountId) {
+        if (transaction.accountId) {
+          const minDate = Math.min(oldTransaction.date, transaction.date);
+          const minRowid = minDate === oldTransaction.date ? oldTransaction.rowid : (newTransactionRow?.rowid || 0);
+          await propagateForward(transaction.accountId, minDate, minRowid);
         }
       } else {
-        if (oldExpense.accountId) {
-          await propagateForward(oldExpense.accountId, oldExpense.date, oldExpense.rowid);
+        if (oldTransaction.accountId) {
+          await propagateForward(oldTransaction.accountId, oldTransaction.date, oldTransaction.rowid);
         }
-        if (expense.accountId && newExpenseRow) {
-          await propagateForward(expense.accountId, expense.date, newExpenseRow.rowid);
+        if (transaction.accountId && newTransactionRow) {
+          await propagateForward(transaction.accountId, transaction.date, newTransactionRow.rowid);
         }
       }
     }
   };
 
-  const restoreExpense = async (expense: Expense) => {
+  const restoreTransaction = async (transaction: Transaction) => {
     await db.runAsync(
-      "INSERT OR REPLACE INTO expenses (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT OR REPLACE INTO transactions (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
-        expense.id,
-        expense.amount,
-        expense.description,
-        expense.date,
-        expense.categoryId,
-        expense.type,
-        expense.merchant || null,
-        expense.accountId || null,
-        expense.balance_after || null,
-        expense.sync_status,
-        expense.updated_at,
+        transaction.id,
+        transaction.amount,
+        transaction.description,
+        transaction.date,
+        transaction.categoryId,
+        transaction.type,
+        transaction.merchant || null,
+        transaction.accountId || null,
+        transaction.balance_after || null,
+        transaction.sync_status,
+        transaction.updated_at,
       ],
     );
   };
 
   const markAsSynced = async (
-    table: "expenses" | "categories" | "accounts",
+    table: "transactions" | "categories" | "accounts",
     id: string,
   ) => {
-    const validTables = ["expenses", "categories", "accounts"];
+    const validTables = ["transactions", "categories", "accounts"];
     if (!validTables.includes(table)) return;
     const result = await db.getFirstAsync<{ sync_status: string }>(
       `SELECT sync_status FROM ${table} WHERE id = ?`,
@@ -363,15 +363,15 @@ export function useExpenseDatabase() {
 
   const deleteCorruptedData = async () => {
     await db.runAsync(`DELETE FROM categories WHERE id IS NULL`);
-    await db.runAsync(`DELETE FROM expenses WHERE id IS NULL`);
+    await db.runAsync(`DELETE FROM transactions WHERE id IS NULL`);
     await db.runAsync(`DELETE FROM accounts WHERE id IS NULL`);
-    await db.runAsync(`DELETE FROM expenses WHERE accountId IS NOT NULL AND accountId NOT IN (SELECT id FROM accounts)`);
-    await db.runAsync(`DELETE FROM expenses WHERE categoryId IS NOT NULL AND categoryId NOT IN (SELECT id FROM categories)`);
+    await db.runAsync(`DELETE FROM transactions WHERE accountId IS NOT NULL AND accountId NOT IN (SELECT id FROM accounts)`);
+    await db.runAsync(`DELETE FROM transactions WHERE categoryId IS NOT NULL AND categoryId NOT IN (SELECT id FROM categories)`);
   };
 
   const getPendingSyncData = async () => {
-    const pendingExpenses = await db.getAllAsync<Expense>(
-      "SELECT * FROM expenses WHERE sync_status IN ('pending', 'deleted')"
+    const pendingTransactions = await db.getAllAsync<Transaction>(
+      "SELECT * FROM transactions WHERE sync_status IN ('pending', 'deleted')"
     );
     const pendingCategories = await db.getAllAsync<Category>(
       "SELECT * FROM categories WHERE sync_status IN ('pending', 'deleted')"
@@ -379,38 +379,38 @@ export function useExpenseDatabase() {
     const pendingAccounts = await db.getAllAsync<Account>(
       "SELECT * FROM accounts WHERE sync_status IN ('pending', 'deleted')"
     );
-    return { pendingExpenses, pendingCategories, pendingAccounts };
+    return { pendingTransactions, pendingCategories, pendingAccounts };
   };
 
-  const deleteExpense = async (id: string) => {
-    const expense = await db.getFirstAsync<{ rowid: number; accountId: string; date: number; categoryId: string; amount: number; type: string; description: string }>(
-      "SELECT rowid, accountId, date, categoryId, amount, type, description FROM expenses WHERE id = ?",
+  const deleteTransaction = async (id: string) => {
+    const transaction = await db.getFirstAsync<{ rowid: number; accountId: string; date: number; categoryId: string; amount: number; type: string; description: string }>(
+      "SELECT rowid, accountId, date, categoryId, amount, type, description FROM transactions WHERE id = ?",
       [id]
     );
-    if (!expense) return;
+    if (!transaction) return;
 
     await db.runAsync(
-      "UPDATE expenses SET sync_status = ?, updated_at = ? WHERE id = ?",
+      "UPDATE transactions SET sync_status = ?, updated_at = ? WHERE id = ?",
       ["deleted", Date.now(), id],
     );
-    if (expense.accountId) {
-      await propagateForward(expense.accountId, expense.date, expense.rowid);
+    if (transaction.accountId) {
+      await propagateForward(transaction.accountId, transaction.date, transaction.rowid);
     }
 
     const selfTransferCat = await db.getFirstAsync<{ id: string }>(
       "SELECT id FROM categories WHERE name = 'Self Transfer'"
     );
-    if (selfTransferCat && expense.categoryId === selfTransferCat.id) {
-      const oppositeType = expense.type === "debit" ? "credit" : "debit";
+    if (selfTransferCat && transaction.categoryId === selfTransferCat.id) {
+      const oppositeType = transaction.type === "debit" ? "credit" : "debit";
       const partner = await db.getFirstAsync<{ id: string; rowid: number; accountId: string; date: number }>(
-        `SELECT id, rowid, accountId, date FROM expenses 
+        `SELECT id, rowid, accountId, date FROM transactions 
          WHERE categoryId = ? AND type = ? AND amount = ? 
            AND abs(date - ?) <= 1000 AND sync_status != 'deleted' AND id != ?`,
-        [expense.categoryId, oppositeType, expense.amount, expense.date, id]
+        [transaction.categoryId, oppositeType, transaction.amount, transaction.date, id]
       );
       if (partner) {
         await db.runAsync(
-          "UPDATE expenses SET sync_status = ?, updated_at = ? WHERE id = ?",
+          "UPDATE transactions SET sync_status = ?, updated_at = ? WHERE id = ?",
           ["deleted", Date.now(), partner.id],
         );
         if (partner.accountId) {
@@ -427,7 +427,7 @@ export function useExpenseDatabase() {
     if (!selfTransferCat) return;
 
     const txs = await db.getAllAsync<{ id: string; amount: number; type: string; date: number; accountId: string }>(
-      "SELECT id, amount, type, date, accountId FROM expenses WHERE categoryId = ? AND sync_status != 'deleted' ORDER BY date ASC, rowid ASC",
+      "SELECT id, amount, type, date, accountId FROM transactions WHERE categoryId = ? AND sync_status != 'deleted' ORDER BY date ASC, rowid ASC",
       [selfTransferCat.id]
     );
 
@@ -459,11 +459,11 @@ export function useExpenseDatabase() {
 
           if (debitTx.date !== newDebitDate || creditTx.date !== newCreditDate) {
             await db.runAsync(
-              "UPDATE expenses SET date = ?, sync_status = 'pending', updated_at = ? WHERE id = ?",
+              "UPDATE transactions SET date = ?, sync_status = 'pending', updated_at = ? WHERE id = ?",
               [newDebitDate, Date.now(), debitTx.id]
             );
             await db.runAsync(
-              "UPDATE expenses SET date = ?, sync_status = 'pending', updated_at = ? WHERE id = ?",
+              "UPDATE transactions SET date = ?, sync_status = 'pending', updated_at = ? WHERE id = ?",
               [newCreditDate, Date.now(), creditTx.id]
             );
             if (debitTx.accountId) affectedAccounts.add(debitTx.accountId);
@@ -486,20 +486,20 @@ export function useExpenseDatabase() {
     );
   };
 
-  const deleteExpensesByAccount = async (accountId: string) => {
+  const deleteTransactionsByAccount = async (accountId: string) => {
     await db.runAsync(
-      "UPDATE expenses SET sync_status = ?, updated_at = ? WHERE accountId = ?",
+      "UPDATE transactions SET sync_status = ?, updated_at = ? WHERE accountId = ?",
       ["deleted", Date.now(), accountId],
     );
     await propagateForward(accountId, 0);
   };
 
-  const reassignExpenses = async (
+  const reassignTransactions = async (
     oldAccountId: string,
     newAccountId: string,
   ) => {
     await db.runAsync(
-      "UPDATE expenses SET accountId = ?, sync_status = ?, updated_at = ? WHERE accountId = ?",
+      "UPDATE transactions SET accountId = ?, sync_status = ?, updated_at = ? WHERE accountId = ?",
       [newAccountId, "pending", Date.now(), oldAccountId],
     );
     await propagateForward(oldAccountId, 0);
@@ -513,48 +513,48 @@ export function useExpenseDatabase() {
     );
   };
 
-  const deleteExpensesByCategory = async (categoryId: string) => {
+  const deleteTransactionsByCategory = async (categoryId: string) => {
     await db.runAsync(
-      "UPDATE expenses SET sync_status = ?, updated_at = ? WHERE categoryId = ?",
+      "UPDATE transactions SET sync_status = ?, updated_at = ? WHERE categoryId = ?",
       ["deleted", Date.now(), categoryId],
     );
   };
 
-  const reassignExpensesCategory = async (
+  const reassignTransactionsCategory = async (
     oldCategoryId: string,
     newCategoryId: string,
   ) => {
     await db.runAsync(
-      "UPDATE expenses SET categoryId = ?, sync_status = ?, updated_at = ? WHERE categoryId = ?",
+      "UPDATE transactions SET categoryId = ?, sync_status = ?, updated_at = ? WHERE categoryId = ?",
       [newCategoryId, "pending", Date.now(), oldCategoryId],
     );
   };
 
   return {
-    addExpense,
-    addExpensesBatch,
-    getAllExpenses,
+    addTransaction,
+    addTransactionsBatch,
+    getAllTransactions,
     getTotalSpent,
     getAllCategories,
     updateCategory,
     addCategory,
     restoreCategory,
     deleteCategory,
-    deleteExpensesByCategory,
-    reassignExpensesCategory,
+    deleteTransactionsByCategory,
+    reassignTransactionsCategory,
     getAllAccounts,
     addAccount,
     restoreAccount,
     updateAccount,
     adjustAccountBalance,
-    updateExpenseAccount,
-    updateExpenseFull,
-     deleteExpense,
+    updateTransactionAccount,
+    updateTransactionFull,
+     deleteTransaction,
      repairSelfTransfers,
      deleteAccount,
-     deleteExpensesByAccount,
-     reassignExpenses,
-     restoreExpense,
+     deleteTransactionsByAccount,
+     reassignTransactions,
+     restoreTransaction,
      markAsSynced,
      deleteCorruptedData,
      getPendingSyncData,

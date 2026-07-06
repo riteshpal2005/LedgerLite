@@ -43,7 +43,7 @@ export function AccountSection() {
             </Text>
           </View>
           <Text className="text-secondary text-sm mb-4">
-            If you uninstall the app, your expenses will be lost. Sign in to
+            If you uninstall the app, your transactions will be lost. Sign in to
             safely back them up to the cloud.
           </Text>
           <Pressable
