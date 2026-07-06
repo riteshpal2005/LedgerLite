@@ -56,7 +56,7 @@ export function ColumnSelectionModal({
   };
 
   const handleConfirm = () => {
-    // Ref: ColumnSelectionModal-1
+
     const finalEndDate = new Date(endDate);
     finalEndDate.setHours(23, 59, 59, 999);
     

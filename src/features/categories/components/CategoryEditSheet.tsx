@@ -171,14 +171,14 @@ export function CategoryEditSheet({
 
   const panResponder = useRef(
     PanResponder.create({
-      // Ref: CategoryEditSheet-4
+
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
       onPanResponderTerminationRequest: () => false,
 
       onPanResponderGrant: (evt) => {
         const { pageX, pageY } = evt.nativeEvent;
-        // Ref: CategoryEditSheet-5
+
         containerRef.current?.measure((_x, _y, _w, _h, px, py) => {
           if (px != null && py != null) {
             containerPageRef.current = { x: px, y: py };
@@ -187,7 +187,7 @@ export function CategoryEditSheet({
           hoveredIconRef.current = hit;
           touchStartIconRef.current = hit;
 
-          // Ref: CategoryEditSheet-6
+
           if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
           longPressTimerRef.current = setTimeout(() => {
             if (hoveredIconRef.current) {
@@ -203,7 +203,7 @@ export function CategoryEditSheet({
         const hit = iconAtPagePointRef.current(pageX, pageY);
         if (hit && hit !== hoveredIconRef.current) {
           hoveredIconRef.current = hit;
-          // Ref: CategoryEditSheet-7
+
           if (isPreviewActiveRef.current) {
             setPreviewIcon(hit);
           }
@@ -217,14 +217,14 @@ export function CategoryEditSheet({
         }
 
         if (isPreviewActiveRef.current) {
-          // Ref: CategoryEditSheet-8
+
           if (hoveredIconRef.current) setIcon(hoveredIconRef.current);
         } else {
-          // Ref: CategoryEditSheet-9
+
           if (touchStartIconRef.current) setIcon(touchStartIconRef.current);
         }
 
-        // Ref: CategoryEditSheet-10
+
         isPreviewActiveRef.current = false;
         setPreviewIcon(null);
         hoveredIconRef.current = null;
@@ -232,7 +232,7 @@ export function CategoryEditSheet({
       },
 
       onPanResponderTerminate: () => {
-        // Ref: CategoryEditSheet-11
+
         if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
         isPreviewActiveRef.current = false;
         setPreviewIcon(null);
@@ -464,7 +464,7 @@ export function CategoryEditSheet({
           <View
             ref={containerRef}
             onLayout={() => {
-              // Ref: CategoryEditSheet-PreviewGesture
+
               containerRef.current?.measure((_x, _y, _w, _h, pageX, pageY) => {
                 if (pageX != null && pageY != null) {
                   containerPageRef.current = { x: pageX, y: pageY };

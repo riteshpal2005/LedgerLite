@@ -32,7 +32,7 @@ interface ExpenseListProps {
   onExpenseLongPress?: (expense: any) => void;
 }
 
-// Ref: ExpenseList-2
+
 const ITEM_HEIGHT = 80;
 
 export default function ExpenseList({
@@ -59,7 +59,7 @@ export default function ExpenseList({
 
   const dispatch = useDispatch();
 
-  // Ref: ExpenseList-2 — calculate how many skeletons fill the visible list area
+
   const { height: windowHeight } = useWindowDimensions();
   const skeletonCount = useMemo(
     () => Math.max(3, Math.floor((windowHeight * 0.65) / ITEM_HEIGHT)),
@@ -154,7 +154,7 @@ export default function ExpenseList({
       <Heading className="text-xl mb-4">Recent Expenses</Heading>
 
       {isLoading ? (
-        // Ref: ExpenseList-2 — dynamic skeleton count matches visible rows
+
         <View className="flex-1">
           {Array.from({ length: skeletonCount }).map((_, i) => (
             <SkeletonExpenseRow key={i} />
@@ -206,7 +206,7 @@ export default function ExpenseList({
   );
 }
 
-// Ref: ExpenseList-3
+
 function EmptyExpenseState({ searchQuery }: { searchQuery: string }) {
   const { colors } = useTheme();
 

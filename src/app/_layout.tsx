@@ -46,7 +46,7 @@ if (!isExpoGo) {
   });
 }
 
-// Ref: _layout-2
+
 const isDirectQuickAddTopLevel = QuickActions.initial?.id === "quick-add";
 
 SplashScreen.preventAutoHideAsync().catch(console.warn);
@@ -61,7 +61,7 @@ import {
   ReanimatedLogLevel,
 } from "react-native-reanimated";
 
-// Ref: _layout-1
+
 configureReanimatedLogger({
   level: ReanimatedLogLevel.warn,
   strict: false,
@@ -117,7 +117,7 @@ function useProtectedRoute(
   ]);
 }
 
-// Ref: _layout-3
+
 
 
 
@@ -168,7 +168,7 @@ export default function RootLayout() {
     loadAppPref();
   }, []);
 
-  // Ref: _layout-4
+
 
   if (isDirectQuickAddTopLevel && !forceFullApp) {
     return (
@@ -264,7 +264,7 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
     }
   }, [isSettingsLoaded, isLoading]);
 
-  // Ref: _layout-5
+
 
   if (isLoading) {
     return <SyncingScreen />;

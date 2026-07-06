@@ -76,7 +76,7 @@ export function DataManagementSection() {
     try {
       await SyncService.syncAll(user.uid, dbActions);
 
-      // Ref: DataManagementSection-1
+
       const newExpenses = await getAllExpenses();
       dispatch(setExpenses(newExpenses));
       const newCategories = await getAllCategories();
@@ -183,7 +183,7 @@ export function DataManagementSection() {
 
     const expenses = await getAllExpenses();
     
-    // Ref: DataManagementSection-1
+
     const startMs = startDate.getTime();
     const endMs = endDate.getTime();
     const filteredExpenses = expenses.filter(
@@ -387,7 +387,7 @@ export function DataManagementSection() {
       }
       if (importedData.categories && Array.isArray(importedData.categories)) {
         for (const cat of importedData.categories) {
-          // Ref: DataManagementSection-2
+
           if (!isNaN(Number(cat.id)) && !String(cat.id).startsWith("cat-")) {
             cat.id = `cat-${cat.id}`;
           }

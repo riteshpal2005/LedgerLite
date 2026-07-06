@@ -19,7 +19,7 @@ import Animated, {
   FadeIn,
 } from "react-native-reanimated";
 
-// Ref: analytics-skeleton-1
+
 
 function SkeletonPieChart({ rowCount }: { rowCount: number }) {
   const opacity = useSharedValue(0.35);
@@ -74,7 +74,7 @@ function SkeletonPieChart({ rowCount }: { rowCount: number }) {
   );
 }
 
-// Ref: analytics-skeleton-2
+
 function EmptyAnalyticsState() {
   const { colors } = useTheme();
   return (
@@ -109,7 +109,7 @@ export default function AnalyticsScreen() {
   const [hasLoaded, setHasLoaded] = useState(false);
   const isFirstLoad = useRef(true);
 
-  // Ref: analytics-skeleton-1 — track previous data row count for consistent skeleton
+
   const prevRowCount = useRef(4);
 
   const [dateRange, setDateRange] = useState<{
@@ -151,7 +151,7 @@ export default function AnalyticsScreen() {
     setTotalSpent(total);
 
     if (shouldShowSkeleton) {
-      // Ref: analytics-2
+
       setTimeout(() => {
         setSpendingData(data);
         setIsLoading(false);

@@ -13,7 +13,7 @@ import Animated, {
 import { Image } from "react-native";
 import { useAuth } from "../../core/firebase/AuthContext";
 
-// Ref: SyncingScreen-1
+
 
 
 export function SyncingScreen() {

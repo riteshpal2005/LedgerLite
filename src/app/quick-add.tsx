@@ -28,7 +28,7 @@ import * as Haptics from "expo-haptics";
 import { openDatabaseSync } from "expo-sqlite";
 import { storage } from "../core/utils/storage";
 
-// Ref: QuickAdd-1
+
 const BRAND_PRIMARY = "#2563EB";
 const BG = "#0f172a";
 const SURFACE = "#1e293b";
@@ -37,7 +37,7 @@ const TEXT_SECONDARY = "#94a3b8";
 const TEXT_TERTIARY = "#475569";
 const BORDER = "#334155";
 
-// Ref: QuickAdd-2
+
 function getDefaultAccountId(): string | undefined {
   try {
     const raw = storage.getString("ledgerLite_settings");
@@ -49,7 +49,7 @@ function getDefaultAccountId(): string | undefined {
   }
 }
 
-// Ref: QuickAdd-5
+
 function getUserDbName(): string {
   try {
     const raw = storage.getString("ledgerLite_settings");
@@ -62,7 +62,7 @@ function getUserDbName(): string {
   }
 }
 
-// Ref: QuickAdd-3
+
 async function saveQuickExpense(
   amount: number,
   description: string,
@@ -86,7 +86,7 @@ export default function QuickAddScreen() {
   const amountInputRef = useRef<TextInput>(null);
   const descriptionInputRef = useRef<TextInput>(null);
 
-  // Ref: QuickAdd-4 — zoom-in spring animation
+
   const scale = useSharedValue(0.88);
   const opacity = useSharedValue(0);
 
@@ -121,7 +121,7 @@ export default function QuickAddScreen() {
   const router = useRouter();
 
   const handleOpenFullApp = useCallback(() => {
-    // Ref: QuickAdd-6 — cold restart into the full app
+
     if (escapeContext) {
       escapeContext.escapeQuickAdd();
 

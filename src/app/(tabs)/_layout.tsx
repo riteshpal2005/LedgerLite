@@ -27,9 +27,9 @@ export default function TabLayout() {
     if (user && !syncedSessions.has(user.uid)) {
       syncedSessions.add(user.uid);
       (async () => {
-        // Ref: _layout-1
+
         await MigrationService.migrateGuestDataToUser(user.uid, dbActions);
-        // Ref: _layout-2
+
         await SyncService.syncAll(user.uid, dbActions);
       })();
     }

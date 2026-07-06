@@ -8,7 +8,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-// Ref: SkeletonExpenseRow-1
+
 
 export function SkeletonExpenseRow() {
   const opacity = useSharedValue(0.35);

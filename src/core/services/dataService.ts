@@ -633,7 +633,7 @@ export const exportToPDF = async (
 
     let pieChartHtml = "";
     if (includePieChart) {
-      // Ref: dataService-1
+
       const categoryTotals: Record<string, number> = {};
       let totalDebit = 0;
       expenses.forEach((e) => {
@@ -645,7 +645,7 @@ export const exportToPDF = async (
       });
 
       if (totalDebit > 0) {
-        // Ref: dataService-2
+
         const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899", "#14b8a6", "#6366f1"];
         let cumulativePercentage = 0;
         const gradientStops: string[] = [];
@@ -711,11 +711,11 @@ export const exportToPDF = async (
 
     const { uri } = await Print.printToFileAsync({
       html,
-      width: 612, // Ref: dataService-1
-      height: 792, // Ref: dataService-2
+      width: 612,
+      height: 792,
     });
 
-    // Ref: dataService-3
+
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const filename = `LedgerLite_Report_${Date.now()}.pdf`;
@@ -790,9 +790,9 @@ export const exportToPDF = async (
       }
     }
 
-    // Ref: dataService-4
+
     if (action === "share") {
-      // Ref: dataService-3
+
       const documentUri = FileSystem.documentDirectory + filename;
       await FileSystem.copyAsync({
         from: uri,

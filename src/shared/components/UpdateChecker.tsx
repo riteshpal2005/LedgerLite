@@ -85,7 +85,7 @@ export function UpdateChecker() {
         const contentUri = await FileSystem.getContentUriAsync(uri);
         await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
           data: contentUri,
-          flags: 1 | 268435456, // Ref: UpdateChecker-1
+          flags: 1 | 268435456,
           type: "application/vnd.android.package-archive",
         });
         setVisible(false);
@@ -137,7 +137,7 @@ export function UpdateChecker() {
       if (result?.uri) {
         setDownloadStatus("INSTALLING");
 
-        // Ref: UpdateChecker-3
+
         const base64 = await FileSystem.readAsStringAsync(result.uri, {
           encoding: "base64",
         });
@@ -154,10 +154,10 @@ export function UpdateChecker() {
 
         setDownloadStatus("READY_TO_INSTALL");
 
-        // Ref: UpdateChecker-4
+
         await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
           data: safUri,
-          flags: 1 | 268435456, // Ref: UpdateChecker-5
+          flags: 1 | 268435456,
           type: "application/vnd.android.package-archive",
         });
 

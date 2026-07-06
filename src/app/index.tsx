@@ -9,7 +9,7 @@ export default function Index() {
     (state: RootState) => state.settings.hasCompletedOnboarding,
   );
 
-  // Ref: Index-1
+
 
 
   if (QuickActions.initial?.id === "quick-add" && !isQuickAddEscaped) {

@@ -20,7 +20,7 @@ let isPushing = false;
 let isPulling = false;
 let syncTimeout: NodeJS.Timeout | null = null;
 let lastSyncTime = 0;
-const SYNC_COOLDOWN_MS = 10000; // Ref: syncService-1
+const SYNC_COOLDOWN_MS = 10000;
 
 export const SyncService = {
   resetSyncState() {
@@ -70,7 +70,7 @@ export const SyncService = {
         }
       }
 
-      // Ref: syncService-2
+
       await dbActions.deleteCorruptedData();
 
       const expenses = await dbActions.getAllExpenses();
@@ -183,9 +183,9 @@ export const SyncService = {
 
     store.dispatch(setIsGlobalSyncing(true));
     try {
-      // Ref: syncService-3
+
       await this.pushToFirebase(userId, dbActions);
-      // Ref: syncService-4
+
       await this.pullFromFirebase(userId, dbActions);
       lastSyncTime = Date.now();
     } finally {
