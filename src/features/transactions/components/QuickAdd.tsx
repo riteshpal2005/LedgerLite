@@ -24,6 +24,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { openDatabaseSync } from "expo-sqlite";
 import { storage } from "../../../core/utils/storage";
+import { initializeDatabase } from "../../../core/database/schema";
 
 
 const BRAND_PRIMARY = "#2563EB";
@@ -66,12 +67,13 @@ async function saveQuickTransaction(
   accountId?: string
 ): Promise<void> {
   const db = openDatabaseSync(getUserDbName());
+  await initializeDatabase(db);
   const id = `qa_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
   const now = Date.now();
 
-  db.runSync(
-    `INSERT INTO transactions (id, amount, description, date, type, categoryId, merchant, accountId, sync_status, updated_at)
-     VALUES (?, ?, ?, ?, 'debit', 'uncategorized', '', ?, 'pending', ?)`,
+  await db.runAsync(
+    `INSERT INTO transactions (id, amount, description, date, type, categoryId, merchant, accountId, balance_after, sync_status, updated_at)
+     VALUES (?, ?, ?, ?, 'debit', 'uncategorized', '', ?, NULL, 'pending', ?)`,
     [id, amount, description, now, accountId ?? null, now]
   );
 }
@@ -133,12 +135,15 @@ export default function QuickAddScreen() {
   const handleSave = useCallback(async () => {
     if (!amount || !description) return;
 
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-
-    const accountId = getDefaultAccountId();
-    await saveQuickTransaction(parseFloat(amount), description, accountId);
-
-    BackHandler.exitApp();
+    try {
+      const accountId = getDefaultAccountId();
+      await saveQuickTransaction(parseFloat(amount), description, accountId);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      BackHandler.exitApp();
+    } catch (error) {
+      console.error("[QuickAdd] Save failed", error);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    }
   }, [amount, description]);
 
   return (

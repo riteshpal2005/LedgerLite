@@ -344,7 +344,9 @@ export function DataManagementSection() {
           }).catch(console.error);
         }
 
-        setTimeout(() => processNextChunk(index + chunkSize), 50);
+        requestAnimationFrame(() => {
+          processNextChunk(index + chunkSize);
+        });
       } else {
         dispatch(setImportProgress(0));
 

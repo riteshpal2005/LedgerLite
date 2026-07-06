@@ -117,7 +117,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
         [account.id]
       );
 
-      let runningBalance = 0;
+      let runningBalance = account.balance || 0;
       for (const transaction of accountTransactions) {
         if (transaction.type === "credit") {
           runningBalance += transaction.amount;
@@ -137,21 +137,21 @@ export async function initializeDatabase(db: SQLiteDatabase) {
 
   const defaultTime = Date.now();
   await db.execAsync(`
-    INSERT OR IGNORE INTO categories (id, name, icon, color, updated_at) VALUES 
-    ('cat-1', 'Food & Dining', 'fast-food', '#f43f5e', ${defaultTime}),
-    ('cat-2', 'Shopping', 'mdi-shopping', '#3b82f6', ${defaultTime}),
-    ('cat-3', 'Transportation', 'bus', '#eab308', ${defaultTime}),
-    ('cat-4', 'Entertainment', 'tv', '#a855f7', ${defaultTime}),
-    ('cat-5', 'Bills', 'mdi-file-document-outline', '#10b981', ${defaultTime}),
-    ('cat-6', 'Self Transfer', 'mdi-bank-transfer', '#6366f1', ${defaultTime}),
-    ('cat-7', 'Withdraw', 'mdi-cash-multiple', '#10b981', ${defaultTime}),
-    ('cat-8', 'Medicine', 'mdi-pill', '#ec4899', ${defaultTime}),
-    ('cat-9', 'Grocery', 'basket', '#f97316', ${defaultTime}),
-    ('cat-10', 'Salary', 'cash', '#22c55e', ${defaultTime}),
-    ('cat-11', 'Revenue', 'mdi-trending-up', '#06b6d4', ${defaultTime}),
-    ('cat-12', 'Allowance', 'mdi-hand-coin', '#eab308', ${defaultTime}),
-    ('cat-13', 'Friend', 'mdi-handshake', '#6366f1', ${defaultTime}),
-    ('cat-14', 'Utilities', 'mdi-sim', '#06b6d4', ${defaultTime}),
-    ('uncategorized', 'Uncategorized', 'help', '#9ca3af', ${defaultTime});
+    INSERT OR IGNORE INTO categories (id, name, icon, color, sync_status, updated_at) VALUES 
+    ('cat-1', 'Food & Dining', 'fast-food', '#f43f5e', 'synced', ${defaultTime}),
+    ('cat-2', 'Shopping', 'mdi-shopping', '#3b82f6', 'synced', ${defaultTime}),
+    ('cat-3', 'Transportation', 'bus', '#eab308', 'synced', ${defaultTime}),
+    ('cat-4', 'Entertainment', 'tv', '#a855f7', 'synced', ${defaultTime}),
+    ('cat-5', 'Bills', 'mdi-file-document-outline', '#10b981', 'synced', ${defaultTime}),
+    ('cat-6', 'Self Transfer', 'mdi-bank-transfer', '#6366f1', 'synced', ${defaultTime}),
+    ('cat-7', 'Withdraw', 'mdi-cash-multiple', '#10b981', 'synced', ${defaultTime}),
+    ('cat-8', 'Medicine', 'mdi-pill', '#ec4899', 'synced', ${defaultTime}),
+    ('cat-9', 'Grocery', 'basket', '#f97316', 'synced', ${defaultTime}),
+    ('cat-10', 'Salary', 'cash', '#22c55e', 'synced', ${defaultTime}),
+    ('cat-11', 'Investment', 'mdi-piggy-bank', '#6366f1', 'synced', ${defaultTime}),
+    ('cat-12', 'Allowance', 'mdi-hand-coin', '#eab308', 'synced', ${defaultTime}),
+    ('cat-13', 'Friend', 'mdi-handshake', '#6366f1', 'synced', ${defaultTime}),
+    ('cat-14', 'Utilities', 'mdi-sim', '#06b6d4', 'synced', ${defaultTime}),
+    ('uncategorized', 'Uncategorized', 'help', '#9ca3af', 'synced', ${defaultTime});
   `);
 }

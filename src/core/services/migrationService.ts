@@ -54,6 +54,7 @@ export const MigrationService = {
         await SyncService.pushToFirebase(userId, dbActions);
       }
 
+      await FileSystem.deleteAsync(guestDbPath, { idempotent: true });
 
     } catch (error) {
       console.error(`[MigrationService] Failed to migrate guest data:`, error);

@@ -47,7 +47,7 @@ export function useTransactionDatabase() {
         runningBalance -= tx.amount;
       }
 
-      if (tx.balance_after === undefined || tx.balance_after === null || Math.abs(tx.balance_after - runningBalance) > 0.001) {
+      if (tx.balance_after === undefined || tx.balance_after === null || Math.round(tx.balance_after * 100) !== Math.round(runningBalance * 100)) {
         await db.runAsync(
           "UPDATE transactions SET balance_after = ?, sync_status = ?, updated_at = ? WHERE id = ?",
           [runningBalance, "pending", Date.now(), tx.id]
@@ -178,6 +178,8 @@ export function useTransactionDatabase() {
           const currentMinDate = accountMinDates[transaction.accountId] ?? Infinity;
           if (transaction.date < currentMinDate) {
             accountMinDates[transaction.accountId] = transaction.date;
+          }
+          if (!accountMinRowids[transaction.accountId] || transaction.date < currentMinDate) {
             const newRow = await db.getFirstAsync<{ rowid: number }>(
               "SELECT rowid FROM transactions WHERE id = ?",
               [id]
@@ -334,7 +336,7 @@ export function useTransactionDatabase() {
         transaction.type,
         transaction.merchant || null,
         transaction.accountId || null,
-        transaction.balance_after || null,
+        transaction.balance_after ?? null,
         transaction.sync_status,
         transaction.updated_at,
       ],
@@ -347,10 +349,17 @@ export function useTransactionDatabase() {
   ) => {
     const validTables = ["transactions", "categories", "accounts"];
     if (!validTables.includes(table)) return;
-    const result = await db.getFirstAsync<{ sync_status: string }>(
-      `SELECT sync_status FROM ${table} WHERE id = ?`,
-      [id],
-    );
+      let tableName = "transactions";
+      switch(table) {
+        case "accounts": tableName = "accounts"; break;
+        case "categories": tableName = "categories"; break;
+        case "transactions": tableName = "transactions"; break;
+      }
+      
+      const result = await db.getFirstAsync<{ sync_status: string }>(
+        `SELECT sync_status FROM ${tableName} WHERE id = ?`,
+        [id],
+      );
     if (result?.sync_status === "deleted") {
       await db.runAsync(`DELETE FROM ${table} WHERE id = ?`, [id]);
     } else {
@@ -404,7 +413,7 @@ export function useTransactionDatabase() {
       const oppositeType = transaction.type === "debit" ? "credit" : "debit";
       const partner = await db.getFirstAsync<{ id: string; rowid: number; accountId: string; date: number }>(
         `SELECT id, rowid, accountId, date FROM transactions 
-         WHERE categoryId = ? AND type = ? AND amount = ? 
+         WHERE categoryId = ? AND type = ? AND ABS(amount - ?) < 0.001 
            AND abs(date - ?) <= 1000 AND sync_status != 'deleted' AND id != ?`,
         [transaction.categoryId, oppositeType, transaction.amount, transaction.date, id]
       );
@@ -443,7 +452,7 @@ export function useTransactionDatabase() {
         if (paired.has(tx2.id)) continue;
 
         const isOpposite = tx1.type !== tx2.type;
-        const isSameAmount = tx1.amount === tx2.amount;
+        const isSameAmount = Math.round(tx1.amount * 100) === Math.round(tx2.amount * 100);
         const isSameTime = Math.abs(tx1.date - tx2.date) <= 1000;
 
         if (isOpposite && isSameAmount && isSameTime) {
@@ -491,7 +500,10 @@ export function useTransactionDatabase() {
       "UPDATE transactions SET sync_status = ?, updated_at = ? WHERE accountId = ?",
       ["deleted", Date.now(), accountId],
     );
-    await propagateForward(accountId, 0);
+    const accountCheck = await db.getFirstAsync(`SELECT id FROM accounts WHERE id = ? AND sync_status != 'deleted'`, [accountId]);
+    if (accountCheck) {
+      await propagateForward(accountId, 0);
+    }
   };
 
   const reassignTransactions = async (

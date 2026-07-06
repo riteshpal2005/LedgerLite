@@ -48,23 +48,31 @@ export const selectAccountsWithBalances = createSelector(
   (state: RootState) => state.transactions.transactions,
   (accounts, transactions) => {
     return accounts.map((account) => {
-      const accountTransactions = transactions.filter(
-        (e) => e.accountId === account.id,
-      );
+      let currentBalance = account.balance;
+      
+      const accountTransactions = transactions.filter((e) => e.accountId === account.id);
+      if (accountTransactions.length > 0) {
+        // Transactions are ordered date DESC, so the first one is the most recent
+        const latestTx = accountTransactions[0];
+        if (latestTx.balance_after !== undefined && latestTx.balance_after !== null) {
+          currentBalance = latestTx.balance_after;
+        } else {
+          // Fallback if balance_after is missing for some reason
+          const totalIncome = accountTransactions
+            .filter((e) => e.type === "credit")
+            .reduce((sum, e) => sum + e.amount, 0);
 
-      const totalIncome = accountTransactions
-        .filter((e) => e.type === "credit")
-        .reduce((sum, e) => sum + e.amount, 0);
+          const totalTransaction = accountTransactions
+            .filter((e) => e.type === "debit")
+            .reduce((sum, e) => sum + e.amount, 0);
 
-      const totalTransaction = accountTransactions
-        .filter((e) => e.type === "debit")
-        .reduce((sum, e) => sum + e.amount, 0);
-
-      const currentBalance = account.balance + totalIncome - totalTransaction;
+          currentBalance = account.balance + totalIncome - totalTransaction;
+        }
+      }
 
       return {
         ...account,
-        currentBalance: currentBalance,
+        currentBalance,
       };
     });
   },

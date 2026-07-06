@@ -18,6 +18,7 @@ import { parseDateTime } from "./dataService";
 
 let isPushing = false;
 let isPulling = false;
+let pushPending = false;
 let syncTimeout: NodeJS.Timeout | null = null;
 let lastSyncTime = 0;
 const SYNC_COOLDOWN_MS = 10000;
@@ -81,6 +82,7 @@ export const SyncService = {
       store.dispatch(setAccounts(accounts));
     } catch (error) {
       console.error("[SyncService] Pull Failed:", error);
+      throw error;
     } finally {
       isPulling = false;
     }
@@ -101,8 +103,12 @@ export const SyncService = {
     userId: string,
     dbActions: ReturnType<typeof useTransactionDatabase>,
   ) {
-    if (isPushing) return;
+    if (isPushing) {
+      pushPending = true;
+      return;
+    }
     isPushing = true;
+    pushPending = false;
     try {
       const { getPendingSyncData } = dbActions;
       const { pendingTransactions, pendingCategories, pendingAccounts } = await getPendingSyncData();
@@ -167,8 +173,12 @@ export const SyncService = {
       }
     } catch (error) {
       console.error("[SyncService] Push Failed:", error);
+      throw error;
     } finally {
       isPushing = false;
+      if (pushPending) {
+        this.schedulePush(userId, dbActions);
+      }
     }
   },
   async syncAll(
@@ -183,11 +193,11 @@ export const SyncService = {
 
     store.dispatch(setIsGlobalSyncing(true));
     try {
-
       await this.pushToFirebase(userId, dbActions);
-
       await this.pullFromFirebase(userId, dbActions);
       lastSyncTime = Date.now();
+    } catch (error) {
+      console.warn("Sync failed, not updating lastSyncTime");
     } finally {
       store.dispatch(setIsGlobalSyncing(false));
     }

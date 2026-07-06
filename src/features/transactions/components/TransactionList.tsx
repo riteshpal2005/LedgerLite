@@ -54,7 +54,7 @@ export default function TransactionList({
   const accounts = useSelector(selectAccountsWithBalances);
 
   const [transactionToAssign, setTransactionToAssign] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(transactions.length === 0);
+  const [isLoading, setIsLoading] = useState(true);
   const [displayLimit, setDisplayLimit] = useState(20);
 
   const dispatch = useDispatch();
@@ -90,12 +90,9 @@ export default function TransactionList({
         if (!isMounted) return;
         dispatch(setAccounts(accountsData));
 
-        const delay = Math.min(Math.max(transactionData.length * 2, 300), 1500);
-        setTimeout(() => {
-          if (isMounted) {
-            setIsLoading(false);
-          }
-        }, delay);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       } catch (error) {
         console.warn("Database unmounted before queries completed", error);
       }
@@ -121,7 +118,8 @@ export default function TransactionList({
       ?.toLocaleLowerCase()
       .includes(lowerQuery);
     const matchesAmount = transaction.amount.toString().includes(lowerQuery);
-    const matchesCategory = transaction.categoryId.toLowerCase() === lowerQuery;
+    const cat = categories.find(c => c.id === transaction.categoryId);
+    const matchesCategory = cat?.name.toLowerCase().includes(lowerQuery) || false;
 
     return matchesDesc || matchesAmount || matchesMerchant || matchesCategory;
   });
@@ -164,6 +162,7 @@ export default function TransactionList({
         <Animated.View entering={FadeIn.duration(400)} className="flex-1">
           <FlashList
             data={sortedTransactions.slice(0, displayLimit)}
+            estimatedItemSize={ITEM_HEIGHT}
             showsVerticalScrollIndicator={false}
             onEndReached={() => {
               if (displayLimit < sortedTransactions.length) {

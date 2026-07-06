@@ -4,6 +4,7 @@ import * as DocumentPicker from "expo-document-picker";
 import * as Print from "expo-print";
 import * as XLSX from "xlsx";
 import * as Clipboard from "expo-clipboard";
+import * as Crypto from "expo-crypto";
 import { Transaction, Account, Category } from "../database/schema";
 import { Platform } from "react-native";
 
@@ -33,7 +34,7 @@ export const exportData = async (
       return {
         Date: new Date(e.date).toLocaleDateString().replace(/\u202F/g, " "),
         Time: new Date(e.date).toLocaleTimeString().replace(/\u202F/g, " "),
-        Type: e.type === "credit" ? "Income" : "Transaction",
+        Type: e.type === "credit" ? "Income" : "Expense",
         Category: category ? category.name : "Unknown",
         Amount: `₹${e.amount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         Description: e.description,
@@ -314,7 +315,7 @@ export const parseDateTime = (dateVal: any, timeVal: any): number => {
     }
   }
 
-  return new Date(year, month, day, hours, minutes, seconds).getTime();
+  return Date.UTC(year, month, day, hours, minutes, seconds);
 };
 
 export const importData = async (
@@ -425,7 +426,7 @@ export const importData = async (
         const timeDiff = Math.abs(ex.date - parsedDate);
         return (
           ex.amount === parsedAmount &&
-          ex.description === description &&
+          ex.description.trim().toLowerCase() === description.trim().toLowerCase() &&
           ex.type === type &&
           timeDiff < 60000
         );
@@ -435,7 +436,7 @@ export const importData = async (
         pairedIds.add(matchedExisting.id);
       } else {
         importedTransactions.push({
-          id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          id: Crypto.randomUUID(),
           amount: parsedAmount,
           description,
           merchant: merchantVal || null,
