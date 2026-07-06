@@ -100,13 +100,14 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
     if (openAddTransaction === "true") {
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         handlePresentModalPress();
-
         router.setParams({ openAddTransaction: undefined });
       }, 500);
     }
+    return () => clearTimeout(timeoutId);
   }, [openAddTransaction]);
 
   const handleTransactionPress = (transaction: Transaction) => {
