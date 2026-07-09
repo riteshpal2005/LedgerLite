@@ -29,7 +29,7 @@ import * as QuickActions from "expo-quick-actions";
 import { useQuickAction } from "expo-quick-actions/hooks";
 import { createContext } from "react";
 
-export let isQuickAddEscaped = false;
+import { setIsQuickAddEscaped } from "../core/store/settingsSlice";
 
 export const QuickAddEscapeContext = createContext<{ escapeQuickAdd: () => void } | null>(null);
 
@@ -135,7 +135,7 @@ export default function RootLayout() {
     return (
       <QuickAddEscapeContext.Provider value={{
         escapeQuickAdd: () => {
-          isQuickAddEscaped = true;
+          store.dispatch(setIsQuickAddEscaped(true));
           setForceFullApp(true);
         }
       }}>

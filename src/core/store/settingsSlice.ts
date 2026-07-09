@@ -23,6 +23,7 @@ export type SettingsState = {
   use24HourFormat: boolean;
   quickTemplates: QuickTemplate[];
   uid: string | null;
+  isQuickAddEscaped: boolean;
 };
 
 const initialState: SettingsState = {
@@ -37,6 +38,7 @@ const initialState: SettingsState = {
   use24HourFormat: false,
   quickTemplates: [],
   uid: null,
+  isQuickAddEscaped: false,
 };
 
 const settingsSlice = createSlice({
@@ -87,6 +89,9 @@ const settingsSlice = createSlice({
     setUid: (state, action: PayloadAction<string | null>) => {
       state.uid = action.payload;
     },
+    setIsQuickAddEscaped: (state, action: PayloadAction<boolean>) => {
+      state.isQuickAddEscaped = action.payload;
+    },
   },
 });
 
@@ -104,5 +109,6 @@ export const {
   addQuickTemplate,
   removeQuickTemplate,
   setUid,
+  setIsQuickAddEscaped,
 } = settingsSlice.actions;
 export default settingsSlice.reducer;
