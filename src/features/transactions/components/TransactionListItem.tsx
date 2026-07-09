@@ -103,7 +103,7 @@ export const TransactionListItem = React.memo(function TransactionListItem({
                   className="ml-2 bg-yellow-500/20 px-2 py-0.5 rounded-md border border-yellow-500/30 flex-shrink-0"
                   onPress={onAssignAccountPress}
                 >
-                  <Text className="text-yellow-500 text-xs font-bold">
+                  <Text className="text-yellow-500 text-xs font-bold whitespace-nowrap" numberOfLines={1}>
                     Assign Account
                   </Text>
                 </Pressable>
