@@ -164,11 +164,15 @@ const getRowValue = (row: any, keys: string[]): any => {
 };
 
 const getSystemDateFormat = (): "MDY" | "DMY" | "YMD" => {
-  const testDate = new Date(2026, 11, 25);
-  const formatted = testDate.toLocaleDateString();
-  if (formatted.startsWith("2026")) return "YMD";
-  if (formatted.startsWith("25")) return "DMY";
-  return "MDY";
+  try {
+    const parts = new Intl.DateTimeFormat().formatToParts(new Date());
+    const firstPart = parts.find(p => p.type === "year" || p.type === "month" || p.type === "day");
+    if (firstPart?.type === "year") return "YMD";
+    if (firstPart?.type === "day") return "DMY";
+    return "MDY";
+  } catch (e) {
+    return "MDY";
+  }
 };
 
 export const parseTimeString = (timeStr: string) => {

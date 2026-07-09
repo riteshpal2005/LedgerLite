@@ -22,7 +22,6 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { openDatabaseSync } from "expo-sqlite";
 import { storage } from "../../../core/utils/storage";
-import { initializeDatabase } from "../../../core/database/schema";
 import * as Crypto from "expo-crypto";
 
 function getDefaultAccountId(): string | undefined {
@@ -54,7 +53,6 @@ async function saveQuickTransaction(
   accountId?: string
 ): Promise<void> {
   const db = openDatabaseSync(getUserDbName());
-  await initializeDatabase(db);
   const id = Crypto.randomUUID();
   const now = Date.now();
 

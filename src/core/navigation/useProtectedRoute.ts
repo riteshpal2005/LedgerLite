@@ -22,7 +22,7 @@ export function useProtectedRoute(
         router.replace("/onboarding");
       }
     } else {
-      if (isOnboarding || (user && inAuthGroup)) {
+      if (isOnboarding || (user && !user.isAnonymous && inAuthGroup)) {
         router.replace("/(tabs)");
       }
     }

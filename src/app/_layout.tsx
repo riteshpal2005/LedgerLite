@@ -178,7 +178,7 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
       dispatch(setUid(user?.uid ?? null));
       SyncService.resetSyncState();
     }
-  }, [user, isLoading]);
+  }, [user?.uid, isLoading]);
 
   const {
     getAllTransactions,

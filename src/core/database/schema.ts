@@ -104,6 +104,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
   const version = versionResult?.user_version || 0;
 
   if (version < 2) {
+    await db.execAsync("PRAGMA user_version = 2;");
     try {
       await db.execAsync("ALTER TABLE transactions ADD COLUMN balance_after REAL;");
     } catch (e) {
@@ -133,8 +134,6 @@ export async function initializeDatabase(db: SQLiteDatabase) {
         );
       }
     }
-
-    await db.execAsync("PRAGMA user_version = 2;");
   }
 
   if (version < 3) {

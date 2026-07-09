@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
-import { View, Text, Pressable, useWindowDimensions, Dimensions } from "react-native";
+import { View, Text, useWindowDimensions } from "react-native";
 import { SortMode } from "./TransactionSortFilter";
 import { FlashList } from "@shopify/flash-list";
 import { useEffect, useMemo } from "react";
@@ -73,39 +73,46 @@ export default function TransactionList({
   } = useTransactionDatabase();
 
 
-  const filteredTransactions = transactions.filter((transaction) => {
-    if (filterType !== "all" && transaction.type !== filterType) return false;
+  const categoryMap = useMemo(() => new Map(categories.map(c => [c.id, c])), [categories]);
+  const accountMap = useMemo(() => new Map(accounts.map(a => [a.id, a])), [accounts]);
 
-    if (filterAccountId !== "all" && transaction.accountId !== filterAccountId)
-      return false;
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter((transaction) => {
+      if (filterType !== "all" && transaction.type !== filterType) return false;
 
-    if (!searchQuery) return true;
-    const lowerQuery = searchQuery.toLowerCase();
-    const matchesDesc = transaction.description.toLowerCase().includes(lowerQuery);
-    const matchesMerchant = transaction.merchant
-      ?.toLocaleLowerCase()
-      .includes(lowerQuery);
-    const matchesAmount = transaction.amount.toString().includes(lowerQuery);
-    const cat = categories.find(c => c.id === transaction.categoryId);
-    const matchesCategory = cat?.name.toLowerCase().includes(lowerQuery) || false;
+      if (filterAccountId !== "all" && transaction.accountId !== filterAccountId)
+        return false;
 
-    return matchesDesc || matchesAmount || matchesMerchant || matchesCategory;
-  });
+      if (!searchQuery) return true;
+      const lowerQuery = searchQuery.toLowerCase();
+      const matchesDesc = transaction.description.toLowerCase().includes(lowerQuery);
+      const matchesMerchant = transaction.merchant
+        ?.toLocaleLowerCase()
+        .includes(lowerQuery);
+      const matchesAmount = transaction.amount.toString().includes(lowerQuery);
+      const cat = categoryMap.get(transaction.categoryId);
+      const matchesCategory = cat?.name.toLowerCase().includes(lowerQuery) || false;
 
-  const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-    switch (sortMode) {
-      case "newest":
-        return b.date - a.date;
-      case "oldest":
-        return a.date - b.date;
-      case "highest":
-        return b.amount - a.amount;
-      case "lowest":
-        return a.amount - b.amount;
-      default:
-        return 0;
-    }
-  });
+      return matchesDesc || matchesAmount || matchesMerchant || matchesCategory;
+    });
+  }, [transactions, filterType, filterAccountId, searchQuery, categoryMap]);
+
+  const sortedTransactions = useMemo(() => {
+    return [...filteredTransactions].sort((a, b) => {
+      switch (sortMode) {
+        case "newest":
+          return b.date - a.date;
+        case "oldest":
+          return a.date - b.date;
+        case "highest":
+          return b.amount - a.amount;
+        case "lowest":
+          return a.amount - b.amount;
+        default:
+          return 0;
+      }
+    });
+  }, [filteredTransactions, sortMode]);
 
   const handleAssignAccount = async (accountId: string) => {
     if (transactionToAssign) {
@@ -134,8 +141,8 @@ export default function TransactionList({
             contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
             ListEmptyComponent={<EmptyTransactionState searchQuery={searchQuery} />}
             renderItem={({ item }) => {
-              const category = categories.find((c) => c.id === item.categoryId);
-              const account = accounts.find((a) => a.id === item.accountId);
+              const category = categoryMap.get(item.categoryId);
+              const account = item.accountId ? accountMap.get(item.accountId) : undefined;
               const isCredit = item.type === "credit";
 
               return (

@@ -74,7 +74,7 @@ export default function Home() {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        setShowExitModal((prev) => !prev);
+        setShowExitModal(true);
         return true;
       };
 
@@ -110,20 +110,20 @@ export default function Home() {
     return () => clearTimeout(timeoutId);
   }, [openAddTransaction]);
 
+  useEffect(() => {
+    if (selectedTransactionToEdit || selectedTransactionToDuplicate) {
+      bottomSheetModalRef.current?.present();
+    }
+  }, [selectedTransactionToEdit, selectedTransactionToDuplicate]);
+
   const handleTransactionPress = (transaction: Transaction) => {
     setSelectedTransactionToEdit(transaction);
     setSelectedTransactionToDuplicate(undefined);
-    setTimeout(() => {
-      bottomSheetModalRef.current?.present();
-    }, 0);
   };
 
   const handleTransactionLongPress = (transaction: Transaction) => {
     setSelectedTransactionToEdit(undefined);
     setSelectedTransactionToDuplicate(transaction);
-    setTimeout(() => {
-      bottomSheetModalRef.current?.present();
-    }, 0);
   };
 
   const importProgress = useSelector(

@@ -131,6 +131,9 @@ export const TransactionListItem = React.memo(function TransactionListItem({
     prev.account === next.account &&
     prev.showIcons === next.showIcons &&
     prev.isCredit === next.isCredit &&
-    prev.use24HourFormat === next.use24HourFormat
+    prev.use24HourFormat === next.use24HourFormat &&
+    prev.onPress === next.onPress &&
+    prev.onLongPress === next.onLongPress &&
+    prev.onAssignAccountPress === next.onAssignAccountPress
   );
 });

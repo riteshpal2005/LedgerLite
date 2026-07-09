@@ -101,6 +101,12 @@ export function useTransactionDatabase() {
   };
 
   const restoreCategory = async (category: Category) => {
+    const existing = await db.getFirstAsync<{ updated_at: number }>(
+      "SELECT updated_at FROM categories WHERE id = ?",
+      [category.id]
+    );
+    if (existing && existing.updated_at >= category.updated_at) return;
+
     await db.runAsync(
       "INSERT OR REPLACE INTO categories (id, name, icon, color, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
       [
@@ -222,6 +228,12 @@ export function useTransactionDatabase() {
   };
 
   const restoreAccount = async (account: Account) => {
+    const existing = await db.getFirstAsync<{ updated_at: number }>(
+      "SELECT updated_at FROM accounts WHERE id = ?",
+      [account.id]
+    );
+    if (existing && existing.updated_at >= account.updated_at) return;
+
     await db.runAsync(
       "INSERT OR REPLACE INTO accounts (id, name, type, balance, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
       [
@@ -339,6 +351,12 @@ export function useTransactionDatabase() {
   };
 
   const restoreTransaction = async (transaction: Transaction) => {
+    const existing = await db.getFirstAsync<{ updated_at: number }>(
+      "SELECT updated_at FROM transactions WHERE id = ?",
+      [transaction.id]
+    );
+    if (existing && existing.updated_at >= transaction.updated_at) return;
+
     await db.runAsync(
       "INSERT OR REPLACE INTO transactions (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, linkedTransactionId, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
@@ -356,6 +374,9 @@ export function useTransactionDatabase() {
         transaction.updated_at,
       ],
     );
+    if (transaction.accountId) {
+      await propagateForward(transaction.accountId, transaction.date);
+    }
   };
 
   const markAsSynced = async (
@@ -526,10 +547,6 @@ export function useTransactionDatabase() {
       "UPDATE transactions SET sync_status = ?, updated_at = ? WHERE accountId = ?",
       ["deleted", Date.now(), accountId],
     );
-    const accountCheck = await db.getFirstAsync(`SELECT id FROM accounts WHERE id = ? AND sync_status != 'deleted'`, [accountId]);
-    if (accountCheck) {
-      await propagateForward(accountId, 0);
-    }
   };
 
   const reassignTransactions = async (
