@@ -71,7 +71,7 @@ export default function TabLayout() {
       }}
     >
       <MaterialTabs.Screen
-        name="index"
+        name="transactions"
         options={{
           title: "Transactions",
           tabBarIcon: ({ color }: { color: string }) => (
