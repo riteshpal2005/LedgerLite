@@ -26,10 +26,6 @@ import { storage } from "../../../core/utils/storage";
 import { initializeDatabase } from "../../../core/database/schema";
 import { BlurView } from "expo-blur";
 
-const BRAND_PRIMARY = "#2563EB";
-const TEXT_PRIMARY = "#f8fafc";
-const TEXT_SECONDARY = "#94a3b8";
-
 function getDefaultAccountId(): string | undefined {
   try {
     const raw = storage.getString("ledgerLite_settings");
@@ -148,51 +144,56 @@ export default function QuickAddScreen() {
 
   return (
     <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
-      <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
+      <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
-          style={styles.keyboardView}
+          className="flex-1"
         >
-          <Animated.View style={[styles.center, animatedStyle]}>
-            <View style={styles.header}>
-              <Pressable onPress={handleClose} style={styles.closeBtn}>
-                <Ionicons name="close" size={28} color={TEXT_SECONDARY} />
+          <Animated.View className="flex-1 justify-between p-6 pt-10 pb-5" style={animatedStyle}>
+            <View className="items-end">
+              <Pressable onPress={handleClose} className="p-2">
+                <Ionicons name="close" size={28} color="#94a3b8" />
               </Pressable>
             </View>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.promptText}>What did you spend?</Text>
+            <View className="flex-1 justify-center">
+              <Text className="text-slate-400 text-lg font-medium mb-4 text-center">
+                What did you spend?
+              </Text>
               
               <TextInput
                 ref={inputRef}
                 value={smartString}
                 onChangeText={setSmartString}
                 placeholder="e.g. 15.50 lunch"
-                placeholderTextColor={TEXT_SECONDARY + "80"}
-                style={styles.smartInput}
+                placeholderTextColor="#94a3b880"
+                className="text-slate-50 text-5xl font-bold text-center leading-[60px]"
+                style={{ includeFontPadding: false }}
                 returnKeyType="done"
                 onSubmitEditing={handleSave}
                 autoFocus
               />
 
               {/* Real-time parsing feedback */}
-              <View style={styles.feedbackContainer}>
+              <View className="flex-row items-center justify-center mt-6 bg-white/5 self-center px-4 py-2 rounded-full gap-2 max-w-full">
                 {parsedData.amount ? (
-                  <Text style={styles.amountFeedback}>₹{parsedData.amountStr}</Text>
+                  <Text className="text-green-400 text-base font-bold">₹{parsedData.amountStr}</Text>
                 ) : (
-                  <Text style={styles.emptyFeedback}>Amount</Text>
+                  <Text className="text-slate-400/50 text-base">Amount</Text>
                 )}
-                <Text style={styles.feedbackDivider}>•</Text>
+                <Text className="text-slate-400 text-base">•</Text>
                 {parsedData.description ? (
-                  <Text style={styles.descFeedback} numberOfLines={1}>{parsedData.description}</Text>
+                  <Text className="text-slate-50 text-base font-semibold shrink" numberOfLines={1}>
+                    {parsedData.description}
+                  </Text>
                 ) : (
-                  <Text style={styles.emptyFeedback}>Description</Text>
+                  <Text className="text-slate-400/50 text-base">Description</Text>
                 )}
               </View>
             </View>
 
-            <Pressable onPress={handleOpenFullApp} style={styles.openAppBtn}>
-              <Text style={styles.openAppText}>Open LedgerLite</Text>
+            <Pressable onPress={handleOpenFullApp} className="p-4 items-center self-center">
+              <Text className="text-blue-600 font-semibold text-base">Open LedgerLite</Text>
             </Pressable>
           </Animated.View>
         </KeyboardAvoidingView>
@@ -200,82 +201,3 @@ export default function QuickAddScreen() {
     </BlurView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  keyboardView: { flex: 1 },
-  center: { 
-    flex: 1, 
-    justifyContent: "space-between", 
-    padding: 24,
-    paddingTop: 40,
-    paddingBottom: 20
-  },
-  header: {
-    alignItems: "flex-end",
-  },
-  closeBtn: {
-    padding: 8,
-  },
-  inputContainer: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  promptText: {
-    color: TEXT_SECONDARY,
-    fontSize: 18,
-    fontWeight: "500",
-    marginBottom: 16,
-    textAlign: "center"
-  },
-  smartInput: {
-    color: TEXT_PRIMARY,
-    fontSize: 42,
-    fontWeight: "bold",
-    textAlign: "center",
-    includeFontPadding: false,
-    lineHeight: 52,
-  },
-  feedbackContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 24,
-    backgroundColor: "rgba(255,255,255,0.05)",
-    alignSelf: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    gap: 8,
-    maxWidth: "100%"
-  },
-  amountFeedback: {
-    color: "#4ade80",
-    fontSize: 16,
-    fontWeight: "700"
-  },
-  descFeedback: {
-    color: TEXT_PRIMARY,
-    fontSize: 16,
-    fontWeight: "600",
-    flexShrink: 1
-  },
-  emptyFeedback: {
-    color: TEXT_SECONDARY + "80",
-    fontSize: 16,
-  },
-  feedbackDivider: {
-    color: TEXT_SECONDARY,
-    fontSize: 16,
-  },
-  openAppBtn: { 
-    padding: 14, 
-    alignItems: "center",
-    alignSelf: "center",
-  },
-  openAppText: {
-    color: BRAND_PRIMARY,
-    fontWeight: "600",
-    fontSize: 16,
-  },
-});
