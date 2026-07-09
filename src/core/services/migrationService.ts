@@ -1,6 +1,6 @@
 import * as SQLite from "expo-sqlite";
 import { Paths, File, Directory } from "expo-file-system";
-import { useTransactionDatabase } from "../database/useTransactionDatabase";
+import type { useTransactionDatabase } from "../database/useTransactionDatabase";
 import { SyncService } from "./syncService";
 
 export const MigrationService = {

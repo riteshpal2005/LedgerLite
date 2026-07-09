@@ -84,15 +84,17 @@ import { useProtectedRoute } from "../core/navigation/useProtectedRoute";
 function QuickAddOnlyLayout() {
   return (
     <Provider store={store}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen
-            name="quick-add"
-            options={{ animation: "none" }}
-          />
-        </Stack>
-      </GestureHandlerRootView>
+      <DatabaseProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen
+              name="quick-add"
+              options={{ animation: "none" }}
+            />
+          </Stack>
+        </GestureHandlerRootView>
+      </DatabaseProvider>
     </Provider>
   );
 }

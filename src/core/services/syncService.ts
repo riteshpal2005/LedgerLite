@@ -8,7 +8,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { store } from "../store/store";
-import { useTransactionDatabase } from "../database/useTransactionDatabase";
+import type { useTransactionDatabase } from "../database/useTransactionDatabase";
 import { Transaction, Category, Account } from "../database/schema";
 import { setTransactions } from "../store/transactionSlice";
 import { setCategories } from "../store/categorySlice";

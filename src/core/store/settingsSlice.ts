@@ -1,29 +1,47 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+export type QuickTemplate = {
+  id: string;
+  title: string;
+  amount: string;
+  description: string;
+  merchant: string;
+  categoryId: string;
+  accountId: string | undefined;
+  type: "debit" | "credit";
+};
+
+export type SettingsState = {
+  showIcons: boolean;
+  hapticsEnabled: boolean;
+  defaultAccountId: string | null;
+  themeOption: "light" | "dark" | "pitch-black" | "system";
+  exportDirectoryUri: string | null;
+  hasCompletedOnboarding: boolean;
+  isGlobalSyncing: boolean;
+  importProgress: number;
+  use24HourFormat: boolean;
+  quickTemplates: QuickTemplate[];
+  uid: string | null;
+};
+
+const initialState: SettingsState = {
+  showIcons: true,
+  hapticsEnabled: true,
+  defaultAccountId: null,
+  themeOption: "dark",
+  exportDirectoryUri: null,
+  hasCompletedOnboarding: false,
+  isGlobalSyncing: false,
+  importProgress: 0,
+  use24HourFormat: false,
+  quickTemplates: [],
+  uid: null,
+};
 
 const settingsSlice = createSlice({
   name: "settings",
-  initialState: {
-    showIcons: true,
-    hapticsEnabled: true,
-    defaultAccountId: null as string | null,
-    themeOption: "dark" as "light" | "dark" | "pitch-black" | "system",
-    exportDirectoryUri: null as string | null,
-    hasCompletedOnboarding: false,
-    isGlobalSyncing: false,
-    importProgress: 0,
-    use24HourFormat: false,
-    quickTemplates: [] as Array<{
-      id: string;
-      title: string;
-      amount: string;
-      description: string;
-      merchant: string;
-      categoryId: string;
-      accountId: string | undefined;
-      type: "debit" | "credit";
-    }>,
-    uid: null as string | null,
-  },
+  initialState,
   reducers: {
     toggleShowIcons: (state) => {
       state.showIcons = !state.showIcons;
@@ -34,13 +52,13 @@ const settingsSlice = createSlice({
     toggle24HourFormat: (state) => {
       state.use24HourFormat = !state.use24HourFormat;
     },
-    setDefaultAccount: (state, action) => {
+    setDefaultAccount: (state, action: PayloadAction<string | null>) => {
       state.defaultAccountId = action.payload;
     },
-    setThemeOptionRedux: (state, action) => {
+    setThemeOptionRedux: (state, action: PayloadAction<"system" | "light" | "dark" | "pitch-black">) => {
       state.themeOption = action.payload;
     },
-    loadSettings: (state, action) => {
+    loadSettings: (state, action: PayloadAction<Partial<SettingsState>>) => {
       return {
         ...state,
         ...action.payload,
@@ -48,25 +66,25 @@ const settingsSlice = createSlice({
         isGlobalSyncing: false,
       };
     },
-    setExportDirectoryUri: (state, action) => {
+    setExportDirectoryUri: (state, action: PayloadAction<string | null>) => {
       state.exportDirectoryUri = action.payload;
     },
     completeOnboarding: (state) => {
       state.hasCompletedOnboarding = true;
     },
-    setIsGlobalSyncing: (state, action) => {
+    setIsGlobalSyncing: (state, action: PayloadAction<boolean>) => {
       state.isGlobalSyncing = action.payload;
     },
-    setImportProgress: (state, action) => {
+    setImportProgress: (state, action: PayloadAction<number>) => {
       state.importProgress = action.payload;
     },
-    addQuickTemplate: (state, action) => {
+    addQuickTemplate: (state, action: PayloadAction<QuickTemplate>) => {
       state.quickTemplates.push(action.payload);
     },
-    removeQuickTemplate: (state, action) => {
+    removeQuickTemplate: (state, action: PayloadAction<string>) => {
       state.quickTemplates = state.quickTemplates.filter(t => t.id !== action.payload);
     },
-    setUid: (state, action) => {
+    setUid: (state, action: PayloadAction<string | null>) => {
       state.uid = action.payload;
     },
   },
