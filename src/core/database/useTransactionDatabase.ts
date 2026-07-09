@@ -67,7 +67,7 @@ export function useTransactionDatabase() {
 
   const getTotalSpent = async () => {
     const result = await db.getFirstAsync<{ total: number }>(
-      `SELECT SUM(amount) as total FROM transactions WHERE type = ? AND sync_status != 'deleted'`,
+      `SELECT SUM(amount) as total FROM transactions WHERE type = ? AND sync_status != 'deleted' AND categoryId != 'uncategorized'`,
       ["debit"],
     );
     return result?.total || 0;

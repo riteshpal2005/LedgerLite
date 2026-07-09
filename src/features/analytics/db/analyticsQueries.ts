@@ -12,7 +12,7 @@ export function useAnalyticsDatabase() {
     const result = await db.getAllAsync<CategorySpending>(
       `SELECT categoryId, SUM(amount) as totalSpent 
        FROM transactions 
-       WHERE type = 'debit' AND sync_status != 'deleted' AND date >= ? AND date <= ? 
+       WHERE type = 'debit' AND sync_status != 'deleted' AND categoryId != 'uncategorized' AND date >= ? AND date <= ? 
        GROUP BY categoryId
        ORDER BY totalSpent DESC`,
       [startDate, endDate],
