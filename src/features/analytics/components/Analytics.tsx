@@ -17,6 +17,7 @@ import Animated, {
   withTiming,
   withSequence,
   FadeIn,
+  cancelAnimation,
 } from "react-native-reanimated";
 
 
@@ -33,6 +34,7 @@ function SkeletonPieChart({ rowCount }: { rowCount: number }) {
       -1,
       true,
     );
+    return () => cancelAnimation(opacity);
   }, []);
 
   const animStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));

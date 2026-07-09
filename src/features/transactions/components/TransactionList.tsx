@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useSelector, shallowEqual } from "react-redux";
 import { RootState } from "../../../core/store/store";
 import { View, Text, useWindowDimensions } from "react-native";
 import { SortMode } from "./TransactionSortFilter";
@@ -43,16 +43,21 @@ export default function TransactionList({
   onTransactionPress,
   onTransactionLongPress,
 }: TransactionListProps) {
-  const transactions = useSelector((state: RootState) => state.transactions.transactions);
-  const categories = useSelector(
-    (state: RootState) => state.categories.categories,
-  );
-  const showIcons = useSelector((state: RootState) => state.settings.showIcons);
-  const isGlobalSyncing = useSelector(
-    (state: RootState) => state.settings.isGlobalSyncing,
-  );
-  const use24HourFormat = useSelector(
-    (state: RootState) => state.settings.use24HourFormat || false
+  const {
+    transactions,
+    categories,
+    showIcons,
+    isGlobalSyncing,
+    use24HourFormat,
+  } = useSelector(
+    (state: RootState) => ({
+      transactions: state.transactions.transactions,
+      categories: state.categories.categories,
+      showIcons: state.settings.showIcons,
+      isGlobalSyncing: state.settings.isGlobalSyncing,
+      use24HourFormat: state.settings.use24HourFormat || false,
+    }),
+    shallowEqual
   );
   const accounts = useSelector(selectAccountsWithBalances);
 

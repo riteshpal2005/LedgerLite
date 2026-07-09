@@ -46,7 +46,7 @@ export const TransactionListItem = React.memo(function TransactionListItem({
   use24HourFormat,
 }: TransactionListItemProps) {
   return (
-    <Animated.View>
+    <>
       <Pressable
         onPress={onPress}
         onLongPress={onLongPress}
@@ -122,7 +122,7 @@ export const TransactionListItem = React.memo(function TransactionListItem({
           </Text>
         </View>
       </Pressable>
-    </Animated.View>
+    </>
   );
 }, (prev, next) => {
   return (

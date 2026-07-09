@@ -240,16 +240,6 @@ export function AddTransactionSheet({
       }
     }
 
-    const updatedTransactions = await getAllTransactions();
-    dispatch(setTransactions(updatedTransactions));
-
-    const updatedAccounts = await getAllAccounts();
-    dispatch(setAccounts(updatedAccounts));
-
-    if (user) {
-      SyncService.schedulePush(user.uid, dbActions);
-    }
-
     if (addAnother === true) {
       setAmount("");
       setDescription("");
@@ -260,27 +250,38 @@ export function AddTransactionSheet({
     } else {
       handleClose();
     }
+
+    setTimeout(async () => {
+      const updatedTransactions = await getAllTransactions();
+      dispatch(setTransactions(updatedTransactions));
+
+      const updatedAccounts = await getAllAccounts();
+      dispatch(setAccounts(updatedAccounts));
+
+      if (user) {
+        SyncService.schedulePush(user.uid, dbActions);
+      }
+    }, 0);
   };
 
   const handleDelete = async () => {
     if (!initialTransaction) return;
     await deleteTransaction(initialTransaction.id);
 
-
-    const updatedTransactions = await getAllTransactions();
-    dispatch(setTransactions(updatedTransactions));
-
-    const updatedAccounts = await getAllAccounts();
-    dispatch(setAccounts(updatedAccounts));
-
-    if (user) {
-      SyncService.schedulePush(user.uid, dbActions);
-    }
-
     setShowDeleteModal(false);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       handleClose();
+      
+      const updatedTransactions = await getAllTransactions();
+      dispatch(setTransactions(updatedTransactions));
+
+      const updatedAccounts = await getAllAccounts();
+      dispatch(setAccounts(updatedAccounts));
+
+      if (user) {
+        SyncService.schedulePush(user.uid, dbActions);
+      }
     }, 300);
   };
 

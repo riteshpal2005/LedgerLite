@@ -28,9 +28,12 @@ export const exportData = async (
   savedDirectoryUri?: string | null,
 ): Promise<string | undefined> => {
   try {
+    const accountMap = new Map(accounts.map((a) => [a.id, a]));
+    const categoryMap = new Map(categories.map((c) => [c.id, c]));
+
     const formattedData = transactions.map((e) => {
-      const account = accounts.find((a) => a.id === e.accountId);
-      const category = categories.find((c) => c.id === e.categoryId);
+      const account = e.accountId ? accountMap.get(e.accountId) : undefined;
+      const category = categoryMap.get(e.categoryId);
       return {
         Date: new Date(e.date).toLocaleDateString().replace(/\u202F/g, " "),
         Time: new Date(e.date).toLocaleTimeString().replace(/\u202F/g, " "),
@@ -706,7 +709,13 @@ export const exportToPDF = async (
     });
 
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    let retries = 0;
+    while (retries < 20) {
+      const info = await FileSystem.getInfoAsync(uri);
+      if (info.exists && info.size && info.size > 0) break;
+      await new Promise((r) => setTimeout(r, 100));
+      retries++;
+    }
 
     const filename = `LedgerLite_Report_${Date.now()}.pdf`;
     const mimeType = "application/pdf";
