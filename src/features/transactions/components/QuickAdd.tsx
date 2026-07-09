@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useContext } from "react";
+import React, { useState, useEffect, useRef, useCallback, useContext, useMemo } from "react";
 import {
   View,
   Text,
@@ -9,13 +9,12 @@ import {
   Platform,
   StyleSheet,
   Linking,
+  Keyboard,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, {
-  FadeIn,
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
   withTiming
 } from "react-native-reanimated";
 import { QuickAddEscapeContext } from "../../../app/_layout";
@@ -25,16 +24,11 @@ import * as Haptics from "expo-haptics";
 import { openDatabaseSync } from "expo-sqlite";
 import { storage } from "../../../core/utils/storage";
 import { initializeDatabase } from "../../../core/database/schema";
-
+import { BlurView } from "expo-blur";
 
 const BRAND_PRIMARY = "#2563EB";
-const BG = "#0f172a";
-const SURFACE = "#1e293b";
 const TEXT_PRIMARY = "#f8fafc";
 const TEXT_SECONDARY = "#94a3b8";
-const TEXT_TERTIARY = "#475569";
-const BORDER = "#334155";
-
 
 function getDefaultAccountId(): string | undefined {
   try {
@@ -47,7 +41,6 @@ function getDefaultAccountId(): string | undefined {
   }
 }
 
-
 function getUserDbName(): string {
   try {
     const raw = storage.getString("ledgerLite_settings");
@@ -59,7 +52,6 @@ function getUserDbName(): string {
     return "ledgerlite_guest.db";
   }
 }
-
 
 async function saveQuickTransaction(
   amount: number,
@@ -79,27 +71,19 @@ async function saveQuickTransaction(
 }
 
 export default function QuickAddScreen() {
-  const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
+  const [smartString, setSmartString] = useState("");
+  const inputRef = useRef<TextInput>(null);
 
-  const amountInputRef = useRef<TextInput>(null);
-  const descriptionInputRef = useRef<TextInput>(null);
-
-
-  const scale = useSharedValue(0.88);
   const opacity = useSharedValue(0);
 
-  const animatedCardStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+  const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
 
   useEffect(() => {
-
-    scale.value = withSpring(1, { damping: 18, stiffness: 160 });
     opacity.value = withTiming(1, { duration: 180 });
-
-    setTimeout(() => amountInputRef.current?.focus(), 220);
+    // Focus immediately
+    setTimeout(() => inputRef.current?.focus(), 150);
 
     const backAction = () => {
       handleClose();
@@ -113,6 +97,7 @@ export default function QuickAddScreen() {
   }, []);
 
   const handleClose = useCallback(() => {
+    Keyboard.dismiss();
     BackHandler.exitApp();
   }, []);
 
@@ -120,10 +105,8 @@ export default function QuickAddScreen() {
   const router = useRouter();
 
   const handleOpenFullApp = useCallback(() => {
-
     if (escapeContext) {
       escapeContext.escapeQuickAdd();
-
       setTimeout(() => {
         router.replace("/?openAddTransaction=true");
       }, 50);
@@ -132,156 +115,164 @@ export default function QuickAddScreen() {
     }
   }, [escapeContext, router]);
 
+  // NLP Parser
+  const parsedData = useMemo(() => {
+    // Matches the first number with optional decimals
+    const match = smartString.match(/\d+(?:\.\d+)?/);
+    if (!match) return { amount: null, description: smartString.trim() };
+    
+    const amountStr = match[0];
+    const amount = parseFloat(amountStr);
+    const description = smartString.replace(amountStr, "").trim();
+    
+    return { amount, description, amountStr };
+  }, [smartString]);
+
   const handleSave = useCallback(async () => {
-    if (!amount || !description) return;
+    const { amount, description } = parsedData;
+    if (!amount || !description) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      return;
+    }
 
     try {
       const accountId = getDefaultAccountId();
-      await saveQuickTransaction(parseFloat(amount), description, accountId);
+      await saveQuickTransaction(amount, description, accountId);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      BackHandler.exitApp();
+      handleClose();
     } catch (error) {
       console.error("[QuickAdd] Save failed", error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
-  }, [amount, description]);
+  }, [parsedData, handleClose]);
 
   return (
-    <View style={styles.root}>
-      <SafeAreaView style={styles.safeArea} edges={["bottom", "top"]}>
+    <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
+      <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={styles.keyboardView}
         >
-          <View style={styles.center}>
-            <Animated.View style={[styles.card, animatedCardStyle]}>
-              {}
-              <View style={styles.header}>
-                <View style={styles.headerLeft}>
-                  <Ionicons name="flash" size={32} color={BRAND_PRIMARY} />
-                  <Text style={styles.title}>Quick Add</Text>
-                </View>
-                <Pressable onPress={handleClose} style={styles.closeBtn}>
-                  <Ionicons name="close" size={24} color={TEXT_SECONDARY} />
-                </Pressable>
-              </View>
+          <Animated.View style={[styles.center, animatedStyle]}>
+            <View style={styles.header}>
+              <Pressable onPress={handleClose} style={styles.closeBtn}>
+                <Ionicons name="close" size={28} color={TEXT_SECONDARY} />
+              </Pressable>
+            </View>
 
-              {}
+            <View style={styles.inputContainer}>
+              <Text style={styles.promptText}>What did you spend?</Text>
+              
               <TextInput
-                ref={amountInputRef}
-                value={amount}
-                onChangeText={setAmount}
-                placeholder="0.00"
-                placeholderTextColor={TEXT_TERTIARY}
-                keyboardType="decimal-pad"
-                style={styles.amountInput}
-                caretHidden={true}
-                returnKeyType="next"
-                onSubmitEditing={() => descriptionInputRef.current?.focus()}
-              />
-
-              {}
-              <TextInput
-                ref={descriptionInputRef}
-                value={description}
-                onChangeText={setDescription}
-                placeholder="What was it for?"
-                placeholderTextColor={TEXT_TERTIARY}
-                style={styles.descriptionInput}
+                ref={inputRef}
+                value={smartString}
+                onChangeText={setSmartString}
+                placeholder="e.g. 15.50 lunch"
+                placeholderTextColor={TEXT_SECONDARY + "80"}
+                style={styles.smartInput}
+                returnKeyType="done"
                 onSubmitEditing={handleSave}
+                autoFocus
               />
 
-              {}
-              <Pressable
-                onPress={handleSave}
-                disabled={!amount || !description}
-                style={[
-                  styles.saveBtn,
-                  (!amount || !description) && styles.saveBtnDisabled,
-                ]}
-              >
-                <Ionicons
-                  name="checkmark-circle-outline"
-                  size={22}
-                  color="white"
-                />
-                <Text style={styles.saveBtnText}>Save &amp; Close</Text>
-              </Pressable>
+              {/* Real-time parsing feedback */}
+              <View style={styles.feedbackContainer}>
+                {parsedData.amount ? (
+                  <Text style={styles.amountFeedback}>₹{parsedData.amountStr}</Text>
+                ) : (
+                  <Text style={styles.emptyFeedback}>Amount</Text>
+                )}
+                <Text style={styles.feedbackDivider}>•</Text>
+                {parsedData.description ? (
+                  <Text style={styles.descFeedback} numberOfLines={1}>{parsedData.description}</Text>
+                ) : (
+                  <Text style={styles.emptyFeedback}>Description</Text>
+                )}
+              </View>
+            </View>
 
-              {}
-              <Pressable onPress={handleOpenFullApp} style={styles.openAppBtn}>
-                <Text style={styles.openAppText}>Open App</Text>
-              </Pressable>
-            </Animated.View>
-          </View>
+            <Pressable onPress={handleOpenFullApp} style={styles.openAppBtn}>
+              <Text style={styles.openAppText}>Open LedgerLite</Text>
+            </Pressable>
+          </Animated.View>
         </KeyboardAvoidingView>
       </SafeAreaView>
-    </View>
+    </BlurView>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: BG },
-  safeArea: { flex: 1, backgroundColor: BG },
-  keyboardView: { flex: 1, backgroundColor: BG },
-  center: { flex: 1, justifyContent: "center", padding: 16 },
-  card: {
-    backgroundColor: SURFACE,
-    borderRadius: 24,
+  safeArea: { flex: 1 },
+  keyboardView: { flex: 1 },
+  center: { 
+    flex: 1, 
+    justifyContent: "space-between", 
     padding: 24,
-    borderWidth: 1,
-    borderColor: BORDER,
+    paddingTop: 40,
+    paddingBottom: 20
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 32,
-  },
-  headerLeft: { flexDirection: "row", alignItems: "center" },
-  title: {
-    color: TEXT_PRIMARY,
-    fontWeight: "bold",
-    fontSize: 28,
-    marginLeft: 12,
+    alignItems: "flex-end",
   },
   closeBtn: {
-    padding: 10,
-    backgroundColor: BG,
-    borderRadius: 99,
+    padding: 8,
   },
-  amountInput: {
+  inputContainer: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  promptText: {
+    color: TEXT_SECONDARY,
+    fontSize: 18,
+    fontWeight: "500",
+    marginBottom: 16,
+    textAlign: "center"
+  },
+  smartInput: {
     color: TEXT_PRIMARY,
-    fontSize: 60,
+    fontSize: 42,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 32,
     includeFontPadding: false,
-    lineHeight: 72,
-    paddingVertical: 10,
+    lineHeight: 52,
   },
-  descriptionInput: {
-    backgroundColor: BG,
-    color: TEXT_PRIMARY,
-    padding: 18,
-    borderRadius: 16,
-    fontSize: 18,
-    marginBottom: 32,
-    borderWidth: 1,
-    borderColor: BORDER,
-  },
-  saveBtn: {
-    backgroundColor: BRAND_PRIMARY,
-    borderRadius: 16,
-    padding: 18,
+  feedbackContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 10,
+    marginTop: 24,
+    backgroundColor: "rgba(255,255,255,0.05)",
+    alignSelf: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 8,
+    maxWidth: "100%"
   },
-  saveBtnDisabled: { opacity: 0.45 },
-  saveBtnText: { color: "white", fontWeight: "bold", fontSize: 18 },
-  openAppBtn: { marginTop: 24, padding: 14, alignItems: "center" },
+  amountFeedback: {
+    color: "#4ade80",
+    fontSize: 16,
+    fontWeight: "700"
+  },
+  descFeedback: {
+    color: TEXT_PRIMARY,
+    fontSize: 16,
+    fontWeight: "600",
+    flexShrink: 1
+  },
+  emptyFeedback: {
+    color: TEXT_SECONDARY + "80",
+    fontSize: 16,
+  },
+  feedbackDivider: {
+    color: TEXT_SECONDARY,
+    fontSize: 16,
+  },
+  openAppBtn: { 
+    padding: 14, 
+    alignItems: "center",
+    alignSelf: "center",
+  },
   openAppText: {
     color: BRAND_PRIMARY,
     fontWeight: "600",
