@@ -79,13 +79,14 @@ export default function QuickAddScreen() {
 
   const handleClose = useCallback(() => {
     Keyboard.dismiss();
-    if (escapeContext === null) {
-      if (router.canGoBack()) {
-        router.back();
-      } else {
+    if (escapeContext) {
+      // Shortcut mode: transition to full app state in background, then kill activity.
+      escapeContext.escapeQuickAdd();
+      setTimeout(() => {
         BackHandler.exitApp();
-      }
+      }, 50);
     } else {
+      // Full app mode: just close the modal.
       router.back();
     }
   }, [escapeContext, router]);
@@ -152,12 +153,22 @@ export default function QuickAddScreen() {
       const accountId = getDefaultAccountId();
       await saveQuickTransaction(amount, description, accountId);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      BackHandler.exitApp();
+      
+      if (escapeContext) {
+        // Shortcut mode: exit app after giving SQLite 100ms to flush
+        escapeContext.escapeQuickAdd();
+        setTimeout(() => {
+          BackHandler.exitApp();
+        }, 100);
+      } else {
+        // Full app mode: just go back
+        router.back();
+      }
     } catch (error) {
       console.error("[QuickAdd] Save failed", error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
-  }, [parsedData]);
+  }, [parsedData, escapeContext, router]);
 
   return (
     <View className="flex-1 bg-background">
@@ -198,15 +209,15 @@ export default function QuickAddScreen() {
                   {parsedData.amount ? (
                     <Text className="text-green-500 text-sm font-bold">₹{parsedData.amountStr}</Text>
                   ) : (
-                    <Text className="text-secondary/50 text-sm">Amount</Text>
+                    <Text className="text-secondary text-sm">Amount</Text>
                   )}
-                  <Text className="text-secondary/50 text-sm">•</Text>
+                  <Text className="text-secondary text-sm">•</Text>
                   {parsedData.description ? (
                     <Text className="text-primary text-sm font-semibold shrink" numberOfLines={1}>
                       {parsedData.description}
                     </Text>
                   ) : (
-                    <Text className="text-secondary/50 text-sm">Description</Text>
+                    <Text className="text-secondary text-sm">Description</Text>
                   )}
                 </View>
               </View>
