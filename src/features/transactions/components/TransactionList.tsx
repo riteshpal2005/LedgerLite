@@ -241,7 +241,7 @@ function EmptyTransactionState({ searchQuery }: { searchQuery: string }) {
   return (
     <Animated.View
       entering={FadeIn.duration(300)}
-      className="flex-1 items-center justify-center pt-10 pb-20"
+      className="flex-1 items-center justify-center"
     >
       <View
         className="w-24 h-24 rounded-full items-center justify-center mb-5"

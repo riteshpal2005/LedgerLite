@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Linking,
   Keyboard,
+  NativeModules,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, {
@@ -76,9 +77,29 @@ export default function QuickAddScreen() {
     opacity: opacity.value,
   }));
 
+  const escapeContext = useContext(QuickAddEscapeContext);
+  const router = useRouter();
+
+  // Ref: QuickAdd-1
+  const handleClose = useCallback(() => {
+    Keyboard.dismiss();
+    if (escapeContext === null) {
+      // Cold-start shortcut path: minimise the app to background.
+      // We do NOT call exitApp() because that kills the JS process and
+      // causes the expo-keep-awake error on the 2nd launch.
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        BackHandler.exitApp();
+      }
+    } else {
+      // Launched from within the full app as a modal: just go back.
+      router.back();
+    }
+  }, [escapeContext, router]);
+
   useEffect(() => {
     opacity.value = withTiming(1, { duration: 180 });
-    // Focus immediately
     setTimeout(() => inputRef.current?.focus(), 150);
 
     const backAction = () => {
@@ -90,15 +111,7 @@ export default function QuickAddScreen() {
       backAction
     );
     return () => backHandler.remove();
-  }, []);
-
-  const handleClose = useCallback(() => {
-    Keyboard.dismiss();
-    BackHandler.exitApp();
-  }, []);
-
-  const escapeContext = useContext(QuickAddEscapeContext);
-  const router = useRouter();
+  }, [handleClose]);
 
   const handleOpenFullApp = useCallback(() => {
     if (escapeContext) {
@@ -135,12 +148,13 @@ export default function QuickAddScreen() {
       const accountId = getDefaultAccountId();
       await saveQuickTransaction(amount, description, accountId);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      handleClose();
+      // After a successful save, always exit the app regardless of launch path.
+      BackHandler.exitApp();
     } catch (error) {
       console.error("[QuickAdd] Save failed", error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
-  }, [parsedData, handleClose]);
+  }, [parsedData]);
 
   return (
     <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
