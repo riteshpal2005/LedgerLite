@@ -18,7 +18,7 @@ import { setAccounts } from "../core/store/accountSlice";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useEffect } from "react";
-import * as FileSystem from "expo-file-system/legacy";
+import { Paths, File } from "expo-file-system";
 import { loadSettings } from "../core/store/settingsSlice";
 import { storage } from "../core/utils/storage";
 import { AuthProvider, useAuth } from "../core/firebase/AuthContext";
@@ -104,15 +104,14 @@ export default function RootLayout() {
   useEffect(() => {
     const loadAppPref = async () => {
       try {
-        const fileUri =
-          FileSystem.documentDirectory + "ledgerLite_settings.json";
-        const fileInfo = await FileSystem.getInfoAsync(fileUri);
-        if (fileInfo.exists) {
-          const fileData = await FileSystem.readAsStringAsync(fileUri);
+        const fileUri = Paths.document.uri + "ledgerLite_settings.json";
+        const file = new File(fileUri);
+        if (file.exists) {
+          const fileData = await file.text();
           const parsed = JSON.parse(fileData);
           storage.set("ledgerLite_settings", fileData);
           store.dispatch(loadSettings(parsed));
-          await FileSystem.deleteAsync(fileUri).catch(console.warn);
+          try { file.delete(); } catch(e) { console.warn(e); }
         } else {
           const data = storage.getString("ledgerLite_settings");
           if (data) {

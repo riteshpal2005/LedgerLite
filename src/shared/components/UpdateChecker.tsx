@@ -6,7 +6,9 @@ import { Heading, SubText, Label } from "./ui/Typography";
 import { Button } from "./ui/Button";
 import * as Linking from "expo-linking";
 import Constants from "expo-constants";
-import * as FileSystem from "expo-file-system/legacy";
+import { Paths, File, Directory } from "expo-file-system";
+// @ts-ignore
+import * as FileSystemLegacy from "expo-file-system/legacy";
 import * as IntentLauncher from "expo-intent-launcher";
 import { checkForUpdates, UpdateInfo } from "../../core/services/updateService";
 import { Ionicons } from "@expo/vector-icons";
@@ -61,10 +63,10 @@ export function UpdateChecker() {
 
           setDownloadStatus("CHECKING");
           const apkUri =
-            FileSystem.documentDirectory +
+            Paths.document.uri +
             `LedgerLite-Update-${info.latestVersion}.apk`;
-          const fileInfo = await FileSystem.getInfoAsync(apkUri);
-          if (fileInfo.exists) {
+          const file = new File(apkUri);
+          if (file.exists) {
             setDownloadStatus("READY_TO_INSTALL");
           } else {
             setDownloadStatus("IDLE");
@@ -82,7 +84,7 @@ export function UpdateChecker() {
     async (uri: string) => {
       setDownloadStatus("INSTALLING");
       try {
-        const contentUri = await FileSystem.getContentUriAsync(uri);
+        const contentUri = await FileSystemLegacy.getContentUriAsync(uri);
         await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
           data: contentUri,
           flags: 1 | 268435456,
@@ -103,7 +105,7 @@ export function UpdateChecker() {
     if (!updateInfo?.downloadUrl) return;
 
     try {
-      const apkUri = FileSystem.documentDirectory + `LedgerLite-Update-${updateInfo.latestVersion}.apk`;
+      const apkUri = Paths.document.uri + `LedgerLite-Update-${updateInfo.latestVersion}.apk`;
 
       if (downloadStatus === "READY_TO_INSTALL") {
         await installApk(apkUri);
@@ -114,18 +116,18 @@ export function UpdateChecker() {
       setDownloadProgress(0);
 
 
-      const dirContents = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory!);
-      for (const file of dirContents) {
-        if (file.endsWith('.apk') && file !== `LedgerLite-Update-${updateInfo.latestVersion}.apk`) {
-          await FileSystem.deleteAsync(FileSystem.documentDirectory + file, { idempotent: true });
+      const dirContents = new Directory(Paths.document).list();
+      for (const item of dirContents) {
+        if (item instanceof File && item.name.endsWith('.apk') && item.name !== `LedgerLite-Update-${updateInfo.latestVersion}.apk`) {
+          try { item.delete(); } catch (e) {}
         }
       }
 
-      const downloadResumable = FileSystem.createDownloadResumable(
+      const downloadResumable = FileSystemLegacy.createDownloadResumable(
         updateInfo.downloadUrl,
         apkUri,
         {},
-        (progress) => {
+        (progress: any) => {
           const percentage = progress.totalBytesWritten / progress.totalBytesExpectedToWrite;
           setDownloadProgress(percentage);
         }

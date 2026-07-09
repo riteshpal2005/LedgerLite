@@ -1,5 +1,5 @@
 import * as SQLite from "expo-sqlite";
-import * as FileSystem from "expo-file-system/legacy";
+import { Paths, File, Directory } from "expo-file-system";
 import { useTransactionDatabase } from "../database/useTransactionDatabase";
 import { SyncService } from "./syncService";
 
@@ -10,11 +10,11 @@ export const MigrationService = {
   ) {
     const guestDbName = "ledgerlite_guest.db";
 
-    const guestDbPath = `${FileSystem.documentDirectory}SQLite/${guestDbName}`;
+    const guestDbPath = Paths.document.uri + "SQLite/" + guestDbName;
 
     try {
-      const fileInfo = await FileSystem.getInfoAsync(guestDbPath);
-      if (!fileInfo.exists) {
+      const file = new File(guestDbPath);
+      if (!file.exists) {
         return;
       }
 
@@ -54,7 +54,7 @@ export const MigrationService = {
         await SyncService.pushToFirebase(userId, dbActions);
       }
 
-      await FileSystem.deleteAsync(guestDbPath, { idempotent: true });
+      file.delete();
 
     } catch (error) {
       console.error(`[MigrationService] Failed to migrate guest data:`, error);

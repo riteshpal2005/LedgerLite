@@ -2,7 +2,7 @@ import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 import * as DocumentPicker from "expo-document-picker";
 import * as Print from "expo-print";
-import * as XLSX from "xlsx";
+import Papa from "papaparse";
 import * as Clipboard from "expo-clipboard";
 import * as Crypto from "expo-crypto";
 import { Transaction, Account, Category } from "../database/schema";
@@ -46,18 +46,9 @@ export const exportData = async (
       };
     });
 
-    const worksheet = XLSX.utils.json_to_sheet(formattedData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
-    const fileBase64 = XLSX.write(workbook, {
-      type: "base64",
-      bookType: format,
-    });
-    const mimeType =
-      format === "csv"
-        ? "text/csv"
-        : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    const filename = `LedgerLite_Export_${Date.now()}.${format}`;
+    const csvString = Papa.unparse(formattedData);
+    const mimeType = "text/csv";
+    const filename = `LedgerLite_Export_${Date.now()}.csv`;
 
     if (action === "save" && Platform.OS === "android") {
       if (savedDirectoryUri) {
@@ -68,8 +59,8 @@ export const exportData = async (
               filename,
               mimeType,
             );
-          await FileSystem.writeAsStringAsync(safUri, fileBase64, {
-            encoding: "base64",
+          await FileSystem.writeAsStringAsync(safUri, csvString, {
+            encoding: FileSystem.EncodingType.UTF8,
           });
           return savedDirectoryUri;
         } catch (e) {
@@ -126,16 +117,16 @@ export const exportData = async (
           filename,
           mimeType,
         );
-        await FileSystem.writeAsStringAsync(safUri, fileBase64, {
-          encoding: "base64",
+        await FileSystem.writeAsStringAsync(safUri, csvString, {
+          encoding: FileSystem.EncodingType.UTF8,
         });
         return targetDirUri;
       }
     }
 
     const fileUri = FileSystem.cacheDirectory + filename;
-    await FileSystem.writeAsStringAsync(fileUri, fileBase64, {
-      encoding: "base64",
+    await FileSystem.writeAsStringAsync(fileUri, csvString, {
+      encoding: FileSystem.EncodingType.UTF8,
     });
 
     await Sharing.shareAsync(fileUri, {
@@ -336,8 +327,6 @@ export const importData = async (
         "text/csv",
         "text/comma-separated-values",
         "application/csv",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "application/vnd.ms-excel",
       ],
       copyToCacheDirectory: true,
     });
@@ -347,14 +336,12 @@ export const importData = async (
     }
 
     const fileUri = result.assets[0].uri;
-    const fileBase64 = await FileSystem.readAsStringAsync(fileUri, {
-      encoding: "base64",
+    const fileString = await FileSystem.readAsStringAsync(fileUri, {
+      encoding: FileSystem.EncodingType.UTF8,
     });
-    const workbook = XLSX.read(fileBase64, { type: "base64", cellDates: true });
-    const firstSheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[firstSheetName];
-
-    const rawJson = XLSX.utils.sheet_to_json(worksheet) as any[];
+    
+    const parsed = Papa.parse(fileString, { header: true, skipEmptyLines: true });
+    const rawJson = parsed.data as any[];
 
     const importedTransactions: any[] = [];
     const missingAccounts: { name: string; initialBalance: number }[] = [];
