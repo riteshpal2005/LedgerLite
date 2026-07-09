@@ -51,3 +51,4 @@ release-keystore.base64.txt
 !CHANGELOG.md
 !README.md
 /scripts
+*.txt
