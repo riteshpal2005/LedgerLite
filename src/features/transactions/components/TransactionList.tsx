@@ -250,7 +250,7 @@ function EmptyTransactionState({ searchQuery }: { searchQuery: string }) {
       >
         <Ionicons name="receipt-outline" size={44} color={colors.textTertiary} />
       </View>
-      <Text className="font-bold text-2xl mb-3 text-center" style={{ color: colors.text }} numberOfLines={1} adjustsFontSizeToFit>
+      <Text className="font-bold text-xl mb-3 text-center px-4" style={{ color: colors.text }}>
         Your ledger is empty
       </Text>
       <Text className="text-center text-sm px-12 leading-6" style={{ color: colors.textSecondary }}>
