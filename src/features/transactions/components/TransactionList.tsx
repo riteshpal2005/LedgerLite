@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
-import { View, Text, Pressable, useWindowDimensions } from "react-native";
+import { View, Text, Pressable, useWindowDimensions, Dimensions } from "react-native";
 import { SortMode } from "./TransactionSortFilter";
 import { FlashList } from "@shopify/flash-list";
 import { useEffect, useMemo } from "react";
@@ -242,7 +242,8 @@ function EmptyTransactionState({ searchQuery }: { searchQuery: string }) {
   return (
     <Animated.View
       entering={FadeIn.duration(300)}
-      className="flex-1 w-full items-center justify-center"
+      className="flex-1 items-center justify-center"
+      style={{ width: Dimensions.get('window').width }}
     >
       <View
         className="w-24 h-24 rounded-full items-center justify-center mb-5"
@@ -250,7 +251,7 @@ function EmptyTransactionState({ searchQuery }: { searchQuery: string }) {
       >
         <Ionicons name="receipt-outline" size={44} color={colors.textTertiary} />
       </View>
-      <Text className="font-bold text-xl mb-3 text-center px-4" style={{ color: colors.text }}>
+      <Text className="w-full font-bold text-2xl mb-3 text-center px-4" style={{ color: colors.text }}>
         Your ledger is empty
       </Text>
       <Text className="text-center text-sm px-12 leading-6" style={{ color: colors.textSecondary }}>
