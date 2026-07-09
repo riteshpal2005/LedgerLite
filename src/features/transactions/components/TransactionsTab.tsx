@@ -23,7 +23,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { useTheme } from "../../../core/theme/ThemeContext";
 import { Transaction } from "../../../core/database/schema";
-import Constants from "expo-constants";
+import Constants, { ExecutionEnvironment } from "expo-constants";
 import { Alert } from "react-native";
 import { CustomAlert } from "../../../shared/components/CustomAlert";
 import { FAB } from "../../../shared/components/ui/FAB";
@@ -215,7 +215,7 @@ export default function Home() {
         confirmStyle="danger"
         onCancel={() => setShowExitModal(false)}
         onConfirm={() => {
-          if (Constants.appOwnership === "expo") {
+          if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
             setShowExitModal(false);
             Alert.alert(
               "Expo Go",
