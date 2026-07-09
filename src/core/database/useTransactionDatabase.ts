@@ -49,7 +49,7 @@ export function useTransactionDatabase() {
         }
       }
 
-      if (tx.balance_after === undefined || tx.balance_after === null || Math.round(tx.balance_after * 100) !== Math.round(runningBalance * 100)) {
+      if (tx.balance_after === undefined || tx.balance_after === null || Math.abs((tx.balance_after || 0) - runningBalance) > 0.001) {
         await db.runAsync(
           "UPDATE transactions SET balance_after = ?, sync_status = ?, updated_at = ? WHERE id = ?",
           [runningBalance, "pending", Date.now(), tx.id]
@@ -115,12 +115,12 @@ export function useTransactionDatabase() {
   };
 
   const addTransaction = async (
-    transaction: Omit<Transaction, "id" | "sync_status" | "updated_at">,
+    transaction: Omit<Transaction, "id" | "sync_status" | "updated_at"> & { id?: string },
   ) => {
-    const id = Crypto.randomUUID();
+    const id = transaction.id || Crypto.randomUUID();
     const updated_at = Date.now();
     await db.runAsync(
-      "INSERT INTO transactions (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO transactions (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, linkedTransactionId, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         id,
         transaction.amount,
@@ -131,6 +131,7 @@ export function useTransactionDatabase() {
         transaction.merchant || null,
         transaction.accountId || null,
         null,
+        transaction.linkedTransactionId || null,
         "pending",
         updated_at,
       ],
@@ -148,7 +149,7 @@ export function useTransactionDatabase() {
   };
 
   const addTransactionsBatch = async (
-    transactionsList: Omit<Transaction, "id" | "sync_status" | "updated_at">[]
+    transactionsList: (Omit<Transaction, "id" | "sync_status" | "updated_at"> & { id?: string })[]
   ) => {
     await db.withTransactionAsync(async () => {
       const affectedAccounts = new Set<string>();
@@ -156,10 +157,10 @@ export function useTransactionDatabase() {
       const accountMinRowids: Record<string, number> = {};
 
       for (const transaction of transactionsList) {
-        const id = Crypto.randomUUID();
+        const id = transaction.id || Crypto.randomUUID();
         const updated_at = Date.now();
         await db.runAsync(
-          "INSERT INTO transactions (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+          "INSERT INTO transactions (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, linkedTransactionId, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
           [
             id,
             transaction.amount,
@@ -170,6 +171,7 @@ export function useTransactionDatabase() {
             transaction.merchant || null,
             transaction.accountId || null,
             null,
+            transaction.linkedTransactionId || null,
             "pending",
             updated_at,
           ]
@@ -181,7 +183,8 @@ export function useTransactionDatabase() {
           if (transaction.date < currentMinDate) {
             accountMinDates[transaction.accountId] = transaction.date;
           }
-          if (!accountMinRowids[transaction.accountId] || transaction.date < currentMinDate) {
+          const updatedMinDate = accountMinDates[transaction.accountId];
+          if (!accountMinRowids[transaction.accountId] || transaction.date <= updatedMinDate) {
             const newRow = await db.getFirstAsync<{ rowid: number }>(
               "SELECT rowid FROM transactions WHERE id = ?",
               [id]
@@ -247,7 +250,15 @@ export function useTransactionDatabase() {
       "UPDATE accounts SET balance = balance + ?, sync_status = ?, updated_at = ? WHERE id = ?",
       [amount, "pending", Date.now(), accountId],
     );
-    await propagateForward(accountId, 0);
+    const firstTx = await db.getFirstAsync<{ date: number; rowid: number }>(
+      "SELECT date, rowid FROM transactions WHERE accountId = ? AND sync_status != 'deleted' ORDER BY date ASC, rowid ASC LIMIT 1",
+      [accountId]
+    );
+    if (firstTx) {
+      await propagateForward(accountId, firstTx.date, firstTx.rowid);
+    } else {
+      await propagateForward(accountId, 0);
+    }
   };
 
   const updateTransactionAccount = async (transactionId: string, accountId: string) => {
@@ -289,7 +300,7 @@ export function useTransactionDatabase() {
       [id]
     );
     await db.runAsync(
-      "UPDATE transactions SET amount = ?, description = ?, date = ?, categoryId = ?, type = ?, merchant = ?, accountId = ?, sync_status = ?, updated_at = ? WHERE id = ?",
+      "UPDATE transactions SET amount = ?, description = ?, date = ?, categoryId = ?, type = ?, merchant = ?, accountId = ?, linkedTransactionId = ?, sync_status = ?, updated_at = ? WHERE id = ?",
       [
         transaction.amount,
         transaction.description,
@@ -298,6 +309,7 @@ export function useTransactionDatabase() {
         transaction.type,
         transaction.merchant || null,
         transaction.accountId || null,
+        transaction.linkedTransactionId || null,
         "pending",
         Date.now(),
         id,
@@ -328,7 +340,7 @@ export function useTransactionDatabase() {
 
   const restoreTransaction = async (transaction: Transaction) => {
     await db.runAsync(
-      "INSERT OR REPLACE INTO transactions (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT OR REPLACE INTO transactions (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, linkedTransactionId, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         transaction.id,
         transaction.amount,
@@ -339,6 +351,7 @@ export function useTransactionDatabase() {
         transaction.merchant || null,
         transaction.accountId || null,
         transaction.balance_after ?? null,
+        transaction.linkedTransactionId || null,
         transaction.sync_status,
         transaction.updated_at,
       ],
@@ -394,8 +407,8 @@ export function useTransactionDatabase() {
   };
 
   const deleteTransaction = async (id: string) => {
-    const transaction = await db.getFirstAsync<{ rowid: number; accountId: string; date: number; categoryId: string; amount: number; type: string; description: string }>(
-      "SELECT rowid, accountId, date, categoryId, amount, type, description FROM transactions WHERE id = ?",
+    const transaction = await db.getFirstAsync<{ rowid: number; accountId: string; date: number; categoryId: string; amount: number; type: string; description: string; linkedTransactionId: string | null }>(
+      "SELECT rowid, accountId, date, categoryId, amount, type, description, linkedTransactionId FROM transactions WHERE id = ?",
       [id]
     );
     if (!transaction) return;
@@ -408,16 +421,10 @@ export function useTransactionDatabase() {
       await propagateForward(transaction.accountId, transaction.date, transaction.rowid);
     }
 
-    const selfTransferCat = await db.getFirstAsync<{ id: string }>(
-      "SELECT id FROM categories WHERE name = 'Self Transfer'"
-    );
-    if (selfTransferCat && transaction.categoryId === selfTransferCat.id) {
-      const oppositeType = transaction.type === "debit" ? "credit" : "debit";
+    if (transaction.linkedTransactionId) {
       const partner = await db.getFirstAsync<{ id: string; rowid: number; accountId: string; date: number }>(
-        `SELECT id, rowid, accountId, date FROM transactions 
-         WHERE categoryId = ? AND type = ? AND ABS(amount - ?) < 0.001 
-           AND abs(date - ?) <= 1000 AND sync_status != 'deleted' AND id != ?`,
-        [transaction.categoryId, oppositeType, transaction.amount, transaction.date, id]
+        "SELECT id, rowid, accountId, date FROM transactions WHERE id = ? AND sync_status != 'deleted'",
+        [transaction.linkedTransactionId]
       );
       if (partner) {
         await db.runAsync(
@@ -563,14 +570,14 @@ export function useTransactionDatabase() {
     adjustAccountBalance,
     updateTransactionAccount,
     updateTransactionFull,
-     deleteTransaction,
-     repairSelfTransfers,
-     deleteAccount,
-     deleteTransactionsByAccount,
-     reassignTransactions,
-     restoreTransaction,
-     markAsSynced,
-     deleteCorruptedData,
-     getPendingSyncData,
+    deleteTransaction,
+    repairSelfTransfers,
+    deleteAccount,
+    deleteTransactionsByAccount,
+    reassignTransactions,
+    restoreTransaction,
+    markAsSynced,
+    deleteCorruptedData,
+    getPendingSyncData,
    };
  }

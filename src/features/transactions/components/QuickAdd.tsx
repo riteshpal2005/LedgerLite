@@ -23,6 +23,7 @@ import * as Haptics from "expo-haptics";
 import { openDatabaseSync } from "expo-sqlite";
 import { storage } from "../../../core/utils/storage";
 import { initializeDatabase } from "../../../core/database/schema";
+import * as Crypto from "expo-crypto";
 
 function getDefaultAccountId(): string | undefined {
   try {
@@ -54,12 +55,12 @@ async function saveQuickTransaction(
 ): Promise<void> {
   const db = openDatabaseSync(getUserDbName());
   await initializeDatabase(db);
-  const id = `qa_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+  const id = Crypto.randomUUID();
   const now = Date.now();
 
   await db.runAsync(
-    `INSERT INTO transactions (id, amount, description, date, type, categoryId, merchant, accountId, balance_after, sync_status, updated_at)
-     VALUES (?, ?, ?, ?, 'debit', 'uncategorized', '', ?, NULL, 'pending', ?)`,
+    `INSERT INTO transactions (id, amount, description, date, type, categoryId, merchant, accountId, balance_after, linkedTransactionId, sync_status, updated_at)
+     VALUES (?, ?, ?, ?, 'debit', 'uncategorized', '', ?, NULL, NULL, 'pending', ?)`,
     [id, amount, description, now, accountId ?? null, now]
   );
 }

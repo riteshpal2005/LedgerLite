@@ -301,7 +301,6 @@ export const parseDateTime = (dateVal: any, timeVal: any): number => {
       seconds = activeTimeVal.getUTCSeconds();
     } else {
       const dateParsed = new Date(activeTimeVal);
-      const activeStr = String(activeTimeVal);
       if (!isNaN(dateParsed.getTime()) && (activeStr.includes("T") || activeStr.includes("GMT") || activeStr.includes("Z"))) {
         hours = dateParsed.getUTCHours();
         minutes = dateParsed.getUTCMinutes();

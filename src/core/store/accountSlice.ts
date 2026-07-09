@@ -52,8 +52,8 @@ export const selectAccountsWithBalances = createSelector(
       
       const accountTransactions = transactions.filter((e) => e.accountId === account.id);
       if (accountTransactions.length > 0) {
-
-        const latestTx = accountTransactions[0];
+        const sortedTransactions = [...accountTransactions].sort((a, b) => b.date - a.date);
+        const latestTx = sortedTransactions[0];
         if (latestTx.balance_after !== undefined && latestTx.balance_after !== null) {
           currentBalance = latestTx.balance_after;
         } else {

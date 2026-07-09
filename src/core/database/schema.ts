@@ -14,6 +14,7 @@ export interface Transaction {
   merchant?: string;
   accountId?: string;
   balance_after?: number;
+  linkedTransactionId?: string;
   sync_status: SyncStatus;
   updated_at: number;
 }
@@ -70,6 +71,7 @@ export const CREATE_TRANSACTIONS_TABLE = `
     merchant TEXT,
     accountId TEXT,
     balance_after REAL,
+    linkedTransactionId TEXT,
     sync_status TEXT DEFAULT 'pending',
     updated_at INTEGER
   );
@@ -133,6 +135,15 @@ export async function initializeDatabase(db: SQLiteDatabase) {
     }
 
     await db.execAsync("PRAGMA user_version = 2;");
+  }
+
+  if (version < 3) {
+    try {
+      await db.execAsync("ALTER TABLE transactions ADD COLUMN linkedTransactionId TEXT;");
+    } catch (e: any) {
+      if (!e.message?.includes('duplicate column name')) console.warn(e);
+    }
+    await db.execAsync("PRAGMA user_version = 3;");
   }
 
   const defaultTime = Date.now();

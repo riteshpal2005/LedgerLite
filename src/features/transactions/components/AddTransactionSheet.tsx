@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { View, Text, Pressable, Alert, ScrollView } from "react-native";
+import * as Crypto from "expo-crypto";
 import { Button } from "../../../shared/components/ui/Button";
 import { Heading } from "../../../shared/components/ui/Typography";
 import { useTransactionDatabase } from "../../../core/database/useTransactionDatabase";
@@ -190,8 +191,8 @@ export function AddTransactionSheet({
 
   const handleSave = async (addAnother: boolean = false) => {
     if (!amount || !description || categoryId === undefined) return;
-    const selfTransferCatId = "cat-6";
-    const isSelfTransfer = categoryId === selfTransferCatId && destinationAccountId !== undefined;
+    const cat = categories.find((c) => c.id === categoryId);
+    const isSelfTransfer = cat?.name === "Self Transfer" && destinationAccountId !== undefined;
 
     const transactionData = {
       amount: parseFloat(amount),
@@ -209,20 +210,27 @@ export function AddTransactionSheet({
     } else {
       if (isSelfTransfer && destinationAccountId) {
         const destAccount = accounts.find((a) => a.id === destinationAccountId);
+        const leg1Id = Crypto.randomUUID();
+        const leg2Id = Crypto.randomUUID();
+
         const leg1Data = {
           ...transactionData,
+          id: leg1Id,
           type: "debit" as const,
           description: `${description} (To ${destAccount?.name || "Other Account"})`,
+          linkedTransactionId: leg2Id,
         };
         await addTransaction(leg1Data);
 
 
         const leg2Data = {
           ...transactionData,
+          id: leg2Id,
           type: "credit" as const,
           accountId: destinationAccountId,
           description: `${description} (From ${selectedAccount?.name || "Other Account"})`,
           date: date.getTime() + 1,
+          linkedTransactionId: leg1Id,
         };
         await addTransaction(leg2Data);
 
