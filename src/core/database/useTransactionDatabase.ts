@@ -32,8 +32,8 @@ export function useTransactionDatabase() {
       }
     }
 
-    const nextTxs = await db.getAllAsync<{ id: string; amount: number; type: string; balance_after?: number }>(
-      `SELECT id, amount, type, balance_after FROM transactions 
+    const nextTxs = await db.getAllAsync<{ id: string; amount: number; type: string; categoryId: string; balance_after?: number }>(
+      `SELECT id, amount, type, categoryId, balance_after FROM transactions 
        WHERE accountId = ? AND sync_status != 'deleted'
          AND (date > ? OR (date = ? AND rowid >= ?))
        ORDER BY date ASC, rowid ASC`,
@@ -41,10 +41,12 @@ export function useTransactionDatabase() {
     );
 
     for (const tx of nextTxs) {
-      if (tx.type === "credit") {
-        runningBalance += tx.amount;
-      } else if (tx.type === "debit") {
-        runningBalance -= tx.amount;
+      if (tx.categoryId !== 'uncategorized') {
+        if (tx.type === "credit") {
+          runningBalance += tx.amount;
+        } else if (tx.type === "debit") {
+          runningBalance -= tx.amount;
+        }
       }
 
       if (tx.balance_after === undefined || tx.balance_after === null || Math.round(tx.balance_after * 100) !== Math.round(runningBalance * 100)) {

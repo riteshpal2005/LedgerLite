@@ -59,11 +59,11 @@ export const selectAccountsWithBalances = createSelector(
         } else {
           // Fallback if balance_after is missing for some reason
           const totalIncome = accountTransactions
-            .filter((e) => e.type === "credit")
+            .filter((e) => e.type === "credit" && e.categoryId !== 'uncategorized')
             .reduce((sum, e) => sum + e.amount, 0);
 
           const totalTransaction = accountTransactions
-            .filter((e) => e.type === "debit")
+            .filter((e) => e.type === "debit" && e.categoryId !== 'uncategorized')
             .reduce((sum, e) => sum + e.amount, 0);
 
           currentBalance = account.balance + totalIncome - totalTransaction;
