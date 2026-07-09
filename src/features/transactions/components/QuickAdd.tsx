@@ -7,10 +7,8 @@ import {
   BackHandler,
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
   Linking,
   Keyboard,
-  NativeModules,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, {
@@ -25,7 +23,6 @@ import * as Haptics from "expo-haptics";
 import { openDatabaseSync } from "expo-sqlite";
 import { storage } from "../../../core/utils/storage";
 import { initializeDatabase } from "../../../core/database/schema";
-import { BlurView } from "expo-blur";
 
 function getDefaultAccountId(): string | undefined {
   try {
@@ -80,20 +77,15 @@ export default function QuickAddScreen() {
   const escapeContext = useContext(QuickAddEscapeContext);
   const router = useRouter();
 
-  // Ref: QuickAdd-1
   const handleClose = useCallback(() => {
     Keyboard.dismiss();
     if (escapeContext === null) {
-      // Cold-start shortcut path: minimise the app to background.
-      // We do NOT call exitApp() because that kills the JS process and
-      // causes the expo-keep-awake error on the 2nd launch.
       if (router.canGoBack()) {
         router.back();
       } else {
         BackHandler.exitApp();
       }
     } else {
-      // Launched from within the full app as a modal: just go back.
       router.back();
     }
   }, [escapeContext, router]);
@@ -113,17 +105,6 @@ export default function QuickAddScreen() {
     return () => backHandler.remove();
   }, [handleClose]);
 
-  const handleOpenFullApp = useCallback(() => {
-    if (escapeContext) {
-      escapeContext.escapeQuickAdd();
-      setTimeout(() => {
-        router.replace("/?openAddTransaction=true");
-      }, 50);
-    } else {
-      Linking.openURL("ledgerlite://?openAddTransaction=true");
-    }
-  }, [escapeContext, router]);
-
   // NLP Parser
   const parsedData = useMemo(() => {
     // Matches the first number with optional decimals
@@ -137,6 +118,29 @@ export default function QuickAddScreen() {
     return { amount, description, amountStr };
   }, [smartString]);
 
+  const handleOpenFullApp = useCallback(async () => {
+    const { amount, description } = parsedData;
+    // Attempt to save if they entered something valid before tapping Open App
+    if (amount && description) {
+      try {
+        const accountId = getDefaultAccountId();
+        await saveQuickTransaction(amount, description, accountId);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } catch (error) {
+        console.error("[QuickAdd] Save before open failed", error);
+      }
+    }
+
+    if (escapeContext) {
+      escapeContext.escapeQuickAdd();
+      setTimeout(() => {
+        router.replace("/?openAddTransaction=true");
+      }, 50);
+    } else {
+      Linking.openURL("ledgerlite://?openAddTransaction=true");
+    }
+  }, [escapeContext, router, parsedData]);
+
   const handleSave = useCallback(async () => {
     const { amount, description } = parsedData;
     if (!amount || !description) {
@@ -148,7 +152,6 @@ export default function QuickAddScreen() {
       const accountId = getDefaultAccountId();
       await saveQuickTransaction(amount, description, accountId);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      // After a successful save, always exit the app regardless of launch path.
       BackHandler.exitApp();
     } catch (error) {
       console.error("[QuickAdd] Save failed", error);
@@ -157,7 +160,7 @@ export default function QuickAddScreen() {
   }, [parsedData]);
 
   return (
-    <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
+    <View className="flex-1 bg-background">
       <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -165,53 +168,56 @@ export default function QuickAddScreen() {
         >
           <Animated.View className="flex-1 justify-between p-6 pt-10 pb-5" style={animatedStyle}>
             <View className="items-end">
-              <Pressable onPress={handleClose} className="p-2">
-                <Ionicons name="close" size={28} color="#94a3b8" />
+              <Pressable onPress={handleClose} className="p-2 bg-surface rounded-full border border-bordercolor">
+                <Ionicons name="close" size={24} color="#94a3b8" />
               </Pressable>
             </View>
 
             <View className="flex-1 justify-center">
-              <Text className="text-slate-400 text-lg font-medium mb-4 text-center">
+              <Text className="text-secondary text-lg font-medium mb-6 text-center">
                 What did you spend?
               </Text>
               
-              <TextInput
-                ref={inputRef}
-                value={smartString}
-                onChangeText={setSmartString}
-                placeholder="e.g. 15.50 lunch"
-                placeholderTextColor="#94a3b880"
-                className="text-slate-50 text-5xl font-bold text-center leading-[60px]"
-                style={{ includeFontPadding: false }}
-                returnKeyType="done"
-                onSubmitEditing={handleSave}
-                autoFocus
-              />
+              <View className="bg-surface border border-bordercolor rounded-3xl p-8 shadow-sm">
+                <TextInput
+                  ref={inputRef}
+                  value={smartString}
+                  onChangeText={setSmartString}
+                  placeholder="e.g. 15.50 lunch"
+                  placeholderTextColor="#94a3b880"
+                  className="text-primary text-4xl font-bold text-center leading-[50px]"
+                  style={{ includeFontPadding: false }}
+                  returnKeyType="done"
+                  onSubmitEditing={handleSave}
+                  autoFocus
+                  caretHidden={true}
+                />
 
-              {/* Real-time parsing feedback */}
-              <View className="flex-row items-center justify-center mt-6 bg-white/5 self-center px-4 py-2 rounded-full gap-2 max-w-full">
-                {parsedData.amount ? (
-                  <Text className="text-green-400 text-base font-bold">₹{parsedData.amountStr}</Text>
-                ) : (
-                  <Text className="text-slate-400/50 text-base">Amount</Text>
-                )}
-                <Text className="text-slate-400 text-base">•</Text>
-                {parsedData.description ? (
-                  <Text className="text-slate-50 text-base font-semibold shrink" numberOfLines={1}>
-                    {parsedData.description}
-                  </Text>
-                ) : (
-                  <Text className="text-slate-400/50 text-base">Description</Text>
-                )}
+                {/* Real-time parsing feedback */}
+                <View className="flex-row items-center justify-center mt-6 bg-background self-center px-4 py-2 rounded-full border border-bordercolor gap-2 max-w-full">
+                  {parsedData.amount ? (
+                    <Text className="text-green-500 text-sm font-bold">₹{parsedData.amountStr}</Text>
+                  ) : (
+                    <Text className="text-secondary/50 text-sm">Amount</Text>
+                  )}
+                  <Text className="text-secondary/50 text-sm">•</Text>
+                  {parsedData.description ? (
+                    <Text className="text-primary text-sm font-semibold shrink" numberOfLines={1}>
+                      {parsedData.description}
+                    </Text>
+                  ) : (
+                    <Text className="text-secondary/50 text-sm">Description</Text>
+                  )}
+                </View>
               </View>
             </View>
 
-            <Pressable onPress={handleOpenFullApp} className="p-4 items-center self-center">
-              <Text className="text-blue-600 font-semibold text-base">Open LedgerLite</Text>
+            <Pressable onPress={handleOpenFullApp} className="p-4 mt-6 items-center self-center bg-surface border border-bordercolor rounded-2xl w-full">
+              <Text className="text-blue-500 font-semibold text-base">Open LedgerLite</Text>
             </Pressable>
           </Animated.View>
         </KeyboardAvoidingView>
       </SafeAreaView>
-    </BlurView>
+    </View>
   );
 }
