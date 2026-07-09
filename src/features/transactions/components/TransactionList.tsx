@@ -176,6 +176,7 @@ export default function TransactionList({
             onEndReachedThreshold={0.5}
             keyExtractor={(item) => item.id}
             extraData={use24HourFormat}
+            contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
             ListEmptyComponent={<EmptyTransactionState searchQuery={searchQuery} />}
             renderItem={({ item }) => {
               const category = categories.find((c) => c.id === item.categoryId);
