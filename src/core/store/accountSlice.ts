@@ -52,12 +52,12 @@ export const selectAccountsWithBalances = createSelector(
       
       const accountTransactions = transactions.filter((e) => e.accountId === account.id);
       if (accountTransactions.length > 0) {
-        // Transactions are ordered date DESC, so the first one is the most recent
+
         const latestTx = accountTransactions[0];
         if (latestTx.balance_after !== undefined && latestTx.balance_after !== null) {
           currentBalance = latestTx.balance_after;
         } else {
-          // Fallback if balance_after is missing for some reason
+
           const totalIncome = accountTransactions
             .filter((e) => e.type === "credit" && e.categoryId !== 'uncategorized')
             .reduce((sum, e) => sum + e.amount, 0);

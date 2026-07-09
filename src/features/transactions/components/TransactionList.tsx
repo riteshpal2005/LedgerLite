@@ -165,6 +165,7 @@ export default function TransactionList({
         <Animated.View entering={FadeIn.duration(400)} className="flex-1">
           <FlashList
             data={sortedTransactions.slice(0, displayLimit)}
+            // @ts-ignore
             estimatedItemSize={ITEM_HEIGHT}
             showsVerticalScrollIndicator={false}
             onEndReached={() => {
