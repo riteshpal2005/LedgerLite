@@ -89,7 +89,7 @@ export default function LoginScreen() {
         >
           <View className="w-32 h-32 items-center justify-center mb-2">
             <Image
-              source={require("../../../assets/splash-icon.png")}
+              source={require("../../../../assets/splash-icon.png")}
               style={{
                 width: "100%",
                 height: "100%",
