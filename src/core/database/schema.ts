@@ -152,6 +152,7 @@ export async function initializeDatabase(db: SQLiteDatabase) {
     ('cat-12', 'Allowance', 'mdi-hand-coin', '#eab308', 'synced', ${defaultTime}),
     ('cat-13', 'Friend', 'mdi-handshake', '#6366f1', 'synced', ${defaultTime}),
     ('cat-14', 'Utilities', 'mdi-sim', '#06b6d4', 'synced', ${defaultTime}),
+    ('cat-15', 'Bank Deductions', 'mdi-alert-circle', '#ef4444', 'synced', ${defaultTime}),
     ('uncategorized', 'Uncategorized', 'help', '#9ca3af', 'synced', ${defaultTime});
   `);
 }
