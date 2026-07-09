@@ -213,7 +213,7 @@ export const parseDateTime = (dateVal: any, timeVal: any): number => {
     hours = dateVal.getUTCHours();
     minutes = dateVal.getUTCMinutes();
     seconds = dateVal.getUTCSeconds();
-  } else if (typeof dateVal === "number" && dateVal > 25569) {
+  } else if (typeof dateVal === "number" && dateVal > 1 && dateVal < 2958465) {
     const datePart = Math.floor(dateVal);
     const timePart = dateVal - datePart;
 
@@ -290,8 +290,9 @@ export const parseDateTime = (dateVal: any, timeVal: any): number => {
     const activeStr = String(activeTimeVal).trim();
     const numericTime = Number(activeTimeVal);
     
-    if (activeStr !== "" && !isNaN(numericTime) && numericTime >= 0 && numericTime < 1) {
-      const totalSeconds = Math.round(numericTime * 86400);
+    if (activeStr !== "" && !isNaN(numericTime) && numericTime >= 0) {
+      const fraction = numericTime % 1;
+      const totalSeconds = Math.round(fraction * 86400);
       hours = Math.floor(totalSeconds / 3600);
       minutes = Math.floor((totalSeconds % 3600) / 60);
       seconds = totalSeconds % 60;
@@ -372,9 +373,7 @@ export const importData = async (
         if (!categoryName) return false;
         const name1 = c.name.toLowerCase().replace(/[^a-z0-9]/g, "");
         const name2 = String(categoryName).toLowerCase().replace(/[^a-z0-9]/g, "");
-        return name1 === name2 || 
-               (name1.includes("food") && name2.includes("food")) ||
-               (name1.includes("dining") && name2.includes("drink"));
+        return name1 === name2;
       });
       const categoryId = matchedCategory ? matchedCategory.id : "unmapped";
 

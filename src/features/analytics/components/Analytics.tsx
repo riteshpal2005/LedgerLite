@@ -150,21 +150,11 @@ export default function AnalyticsScreen() {
 
     setTotalSpent(total);
 
-    if (shouldShowSkeleton) {
-
-      setTimeout(() => {
-        setSpendingData(data);
-        setIsLoading(false);
-        setHasLoaded(true);
-        isFirstLoad.current = false;
-        prevDateRangeStr.current = currentRangeStr;
-      }, 400);
-    } else {
-      setSpendingData(data);
-      setIsLoading(false);
-      setHasLoaded(true);
-      prevDateRangeStr.current = currentRangeStr;
-    }
+    setSpendingData(data);
+    setIsLoading(false);
+    setHasLoaded(true);
+    isFirstLoad.current = false;
+    prevDateRangeStr.current = currentRangeStr;
   }, [dateRange]);
 
   useFocusEffect(

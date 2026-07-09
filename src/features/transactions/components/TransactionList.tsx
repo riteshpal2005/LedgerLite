@@ -57,7 +57,6 @@ export default function TransactionList({
   const accounts = useSelector(selectAccountsWithBalances);
 
   const [transactionToAssign, setTransactionToAssign] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [displayLimit, setDisplayLimit] = useState(20);
 
   const dispatch = useDispatch();
@@ -70,43 +69,9 @@ export default function TransactionList({
   );
 
   const {
-    getAllTransactions,
-    getAllCategories,
-    getAllAccounts,
     updateTransactionAccount,
   } = useTransactionDatabase();
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadData = async () => {
-      try {
-        const transactionData = await getAllTransactions();
-        if (!isMounted) return;
-        dispatch(setTransactions(transactionData));
-
-        const categoryData = await getAllCategories();
-        if (!isMounted) return;
-        dispatch(setCategories(categoryData));
-
-        const accountsData = await getAllAccounts();
-        if (!isMounted) return;
-        dispatch(setAccounts(accountsData));
-
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.warn("Database unmounted before queries completed", error);
-      }
-    };
-
-    loadData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const filteredTransactions = transactions.filter((transaction) => {
     if (filterType !== "all" && transaction.type !== filterType) return false;
@@ -145,8 +110,6 @@ export default function TransactionList({
   const handleAssignAccount = async (accountId: string) => {
     if (transactionToAssign) {
       await updateTransactionAccount(transactionToAssign, accountId);
-      const transactionData = await getAllTransactions();
-      dispatch(setTransactions(transactionData));
     }
   };
 
@@ -154,14 +117,6 @@ export default function TransactionList({
     <View className="flex-1">
       <Heading className="text-xl mb-4">Recent Transactions</Heading>
 
-      {isLoading ? (
-
-        <View className="flex-1">
-          {Array.from({ length: skeletonCount }).map((_, i) => (
-            <SkeletonTransactionRow key={i} />
-          ))}
-        </View>
-      ) : (
         <Animated.View entering={FadeIn.duration(400)} className="flex-1">
           <FlashList
             data={sortedTransactions.slice(0, displayLimit)}
@@ -201,7 +156,7 @@ export default function TransactionList({
             }}
           />
         </Animated.View>
-      )}
+
 
       <AccountSelectModal
         visible={transactionToAssign !== null}

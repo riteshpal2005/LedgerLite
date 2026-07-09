@@ -68,7 +68,7 @@ export default function Home() {
   const transactions = useSelector((state: RootState) => state.transactions.transactions);
   const uncategorizedCount = transactions.filter(e => 
     e.categoryId === 'uncategorized' && 
-    (filterAccountId === "all" || e.accountId === filterAccountId)
+    (filterAccountId === "all" || e.accountId === filterAccountId || !e.accountId)
   ).length;
 
   useFocusEffect(

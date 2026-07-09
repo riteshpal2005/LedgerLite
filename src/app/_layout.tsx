@@ -12,6 +12,9 @@ import { initializeDatabase } from "../core/database/schema";
 import { Provider } from "react-redux";
 import { store, RootState } from "../core/store/store";
 import { useSelector } from "react-redux";
+import { setTransactions } from "../core/store/transactionSlice";
+import { setCategories } from "../core/store/categorySlice";
+import { setAccounts } from "../core/store/accountSlice";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useEffect } from "react";
@@ -176,6 +179,37 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
       SyncService.resetSyncState();
     }
   }, [user, isLoading]);
+
+  const {
+    getAllTransactions,
+    getAllCategories,
+    getAllAccounts,
+  } = useTransactionDatabase();
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadData = async () => {
+      try {
+        const transactionData = await getAllTransactions();
+        if (!isMounted) return;
+        dispatch(setTransactions(transactionData));
+
+        const categoryData = await getAllCategories();
+        if (!isMounted) return;
+        dispatch(setCategories(categoryData));
+
+        const accountsData = await getAllAccounts();
+        if (!isMounted) return;
+        dispatch(setAccounts(accountsData));
+      } catch (error) {
+        console.warn("Global load failed", error);
+      }
+    };
+    loadData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const { activeThemeClass } = useTheme();
   const hasCompletedOnboarding = useSelector(

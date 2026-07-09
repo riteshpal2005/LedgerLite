@@ -364,17 +364,11 @@ export function useTransactionDatabase() {
   ) => {
     const validTables = ["transactions", "categories", "accounts"];
     if (!validTables.includes(table)) return;
-      let tableName = "transactions";
-      switch(table) {
-        case "accounts": tableName = "accounts"; break;
-        case "categories": tableName = "categories"; break;
-        case "transactions": tableName = "transactions"; break;
-      }
-      
-      const result = await db.getFirstAsync<{ sync_status: string }>(
-        `SELECT sync_status FROM ${tableName} WHERE id = ?`,
-        [id],
-      );
+    
+    const result = await db.getFirstAsync<{ sync_status: string }>(
+      `SELECT sync_status FROM ${table} WHERE id = ?`,
+      [id],
+    );
     if (result?.sync_status === "deleted") {
       await db.runAsync(`DELETE FROM ${table} WHERE id = ?`, [id]);
     } else {
@@ -385,12 +379,34 @@ export function useTransactionDatabase() {
     }
   };
 
+  const markMultipleAsSynced = async (
+    updates: { table: "transactions" | "categories" | "accounts"; id: string }[]
+  ) => {
+    await db.withTransactionAsync(async () => {
+      for (const { table, id } of updates) {
+        if (!["transactions", "categories", "accounts"].includes(table)) continue;
+        const result = await db.getFirstAsync<{ sync_status: string }>(
+          `SELECT sync_status FROM ${table} WHERE id = ?`,
+          [id],
+        );
+        if (result?.sync_status === "deleted") {
+          await db.runAsync(`DELETE FROM ${table} WHERE id = ?`, [id]);
+        } else {
+          await db.runAsync(
+            `UPDATE ${table} SET sync_status = 'synced' WHERE id = ?`,
+            [id],
+          );
+        }
+      }
+    });
+  };
+
   const deleteCorruptedData = async () => {
     await db.runAsync(`DELETE FROM categories WHERE id IS NULL`);
     await db.runAsync(`DELETE FROM transactions WHERE id IS NULL`);
     await db.runAsync(`DELETE FROM accounts WHERE id IS NULL`);
     await db.runAsync(`DELETE FROM transactions WHERE accountId IS NOT NULL AND accountId NOT IN (SELECT id FROM accounts)`);
-    await db.runAsync(`DELETE FROM transactions WHERE categoryId IS NOT NULL AND categoryId NOT IN (SELECT id FROM categories)`);
+    await db.runAsync(`DELETE FROM transactions WHERE categoryId IS NOT NULL AND categoryId != 'uncategorized' AND categoryId NOT IN (SELECT id FROM categories)`);
   };
 
   const getPendingSyncData = async () => {
@@ -458,6 +474,7 @@ export function useTransactionDatabase() {
 
       for (let j = i + 1; j < txs.length; j++) {
         const tx2 = txs[j];
+        if (tx2.date - tx1.date > 1000) break;
         if (paired.has(tx2.id)) continue;
 
         const isOpposite = tx1.type !== tx2.type;
@@ -572,6 +589,7 @@ export function useTransactionDatabase() {
     updateTransactionFull,
     deleteTransaction,
     repairSelfTransfers,
+    markMultipleAsSynced,
     deleteAccount,
     deleteTransactionsByAccount,
     reassignTransactions,

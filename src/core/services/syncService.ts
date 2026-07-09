@@ -15,12 +15,13 @@ import { setCategories } from "../store/categorySlice";
 import { setAccounts } from "../store/accountSlice";
 import { setIsGlobalSyncing } from "../store/settingsSlice";
 import { parseDateTime } from "./dataService";
+import { storage } from "../utils/storage";
 
 let isPushing = false;
 let isPulling = false;
 let pushPending = false;
 let syncTimeout: NodeJS.Timeout | null = null;
-let lastSyncTime = 0;
+let lastSyncTime = storage.getNumber('lastSyncTime') || 0;
 const SYNC_COOLDOWN_MS = 10000;
 
 export const SyncService = {
@@ -28,6 +29,7 @@ export const SyncService = {
     isPushing = false;
     isPulling = false;
     lastSyncTime = 0;
+    storage.set('lastSyncTime', 0);
   },
   async pullFromFirebase(
     userId: string,
@@ -162,15 +164,18 @@ export const SyncService = {
         }
       }
       await batch.commit();
+      
+      const updates: { table: "transactions" | "categories" | "accounts"; id: string }[] = [];
       for (const account of pendingAccounts) {
-        await dbActions.markAsSynced("accounts", account.id);
+        updates.push({ table: "accounts", id: account.id });
       }
       for (const category of pendingCategories) {
-        await dbActions.markAsSynced("categories", category.id);
+        updates.push({ table: "categories", id: category.id });
       }
       for (const transaction of pendingTransactions) {
-        await dbActions.markAsSynced("transactions", transaction.id);
+        updates.push({ table: "transactions", id: transaction.id });
       }
+      await dbActions.markMultipleAsSynced(updates);
     } catch (error) {
       console.error("[SyncService] Push Failed:", error);
       throw error;
@@ -196,6 +201,7 @@ export const SyncService = {
       await this.pushToFirebase(userId, dbActions);
       await this.pullFromFirebase(userId, dbActions);
       lastSyncTime = Date.now();
+      storage.set('lastSyncTime', lastSyncTime);
     } catch (error) {
       console.warn("Sync failed, not updating lastSyncTime");
     } finally {
