@@ -5,7 +5,7 @@ import { Label } from "../../../shared/components/ui/Typography";
 import * as Linking from "expo-linking";
 import Constants from "expo-constants";
 
-// TODO: Replace these with your actual GitHub username and Hosted Policy URLs
+
 const DEVELOPER_URL = "https://github.com/riteshpal2005";
 const GITHUB_URL = "https://github.com/riteshpal2005/LedgerLite/releases";
 const PRIVACY_POLICY_URL = "https://riteshpal2005.github.io/privacy.html";

@@ -113,7 +113,7 @@ export function UpdateChecker() {
       setDownloadStatus("DOWNLOADING");
       setDownloadProgress(0);
 
-      // Clean old apks
+
       const dirContents = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory!);
       for (const file of dirContents) {
         if (file.endsWith('.apk') && file !== `LedgerLite-Update-${updateInfo.latestVersion}.apk`) {
