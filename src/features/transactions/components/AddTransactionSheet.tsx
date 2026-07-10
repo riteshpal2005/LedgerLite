@@ -109,55 +109,51 @@ export function AddTransactionSheet({
     }
   }, [accountId, destinationAccountId]);
 
+  const resetForm = useCallback(() => {
+    setAmount("");
+    setDescription("");
+    setMerchant("");
+    setDate(new Date());
+    setType("debit");
+    setCategoryId(undefined);
+    if (defaultAccountId) setAccountId(defaultAccountId);
+    setDestinationAccountId(undefined);
+    setFormKey((prev) => prev + 1);
+  }, [defaultAccountId]);
+
   useEffect(() => {
     if (initialTransaction) {
-      setAmount(initialTransaction.amount.toString());
+      setAmount(Math.abs(initialTransaction.amount).toString());
       setDescription(initialTransaction.description);
       setMerchant(initialTransaction.merchant || "");
       setDate(new Date(initialTransaction.date));
       setType(initialTransaction.type);
-      setCategoryId(initialTransaction.categoryId);
-      if (initialTransaction.accountId) setAccountId(initialTransaction.accountId);
-      setDestinationAccountId(undefined);
+      setCategoryId(initialTransaction.categoryId || undefined);
+      setAccountId(initialTransaction.accountId);
+      setDestinationAccountId(initialTransaction.destinationAccountId || undefined);
     } else if (duplicateTransaction) {
-      setAmount(duplicateTransaction.amount.toString());
+      setAmount(Math.abs(duplicateTransaction.amount).toString());
       setDescription(duplicateTransaction.description);
       setMerchant(duplicateTransaction.merchant || "");
       setDate(new Date());
       setType(duplicateTransaction.type);
-      setCategoryId(duplicateTransaction.categoryId);
-      if (duplicateTransaction.accountId) setAccountId(duplicateTransaction.accountId);
-      setDestinationAccountId(undefined);
+      setCategoryId(duplicateTransaction.categoryId || undefined);
+      setAccountId(duplicateTransaction.accountId);
+      setDestinationAccountId(duplicateTransaction.destinationAccountId || undefined);
     } else {
-      setAmount("");
-      setDescription("");
-      setMerchant("");
-      setDate(new Date());
-      setType("debit");
-      setCategoryId(undefined);
-      if (defaultAccountId) setAccountId(defaultAccountId);
-      setDestinationAccountId(undefined);
+      resetForm();
     }
-    setFormKey((prev) => prev + 1);
-  }, [initialTransaction, duplicateTransaction, defaultAccountId]);
+  }, [initialTransaction, duplicateTransaction, resetForm]);
 
   const handleSheetChanges = useCallback(
     (index: number) => {
       if (index === -1) {
         if (!initialTransaction && !duplicateTransaction) {
-          setAmount("");
-          setDescription("");
-          setMerchant("");
-          setDate(new Date());
-          setType("debit");
-          setCategoryId(undefined);
-          if (defaultAccountId) setAccountId(defaultAccountId);
-          setDestinationAccountId(undefined);
-          setFormKey((prev) => prev + 1);
+          resetForm();
         }
       }
     },
-    [initialTransaction, duplicateTransaction, defaultAccountId],
+    [initialTransaction, duplicateTransaction, resetForm],
   );
 
   const snapPoints = useMemo(() => ["90%"], []);

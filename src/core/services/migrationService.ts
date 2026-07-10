@@ -2,12 +2,12 @@ import * as SQLite from "expo-sqlite";
 import { Paths, File, Directory } from "expo-file-system";
 import type { useTransactionDatabase } from "../database/useTransactionDatabase";
 import { SyncService } from "./syncService";
-import { Transaction, Category, Account } from "../database/schema";
+import { Transaction, Category, Account, DatabaseActions } from "../database/schema";
 
 export const MigrationService = {
   async migrateGuestDataToUser(
     userId: string,
-    dbActions: ReturnType<typeof useTransactionDatabase>,
+    dbActions: DatabaseActions,
   ) {
     const guestDbName = "ledgerlite_guest.db";
 
