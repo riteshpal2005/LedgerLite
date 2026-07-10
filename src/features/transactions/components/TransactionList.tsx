@@ -35,7 +35,7 @@ interface TransactionListProps {
 
 const ITEM_HEIGHT = 80;
 
-export default function TransactionList({
+export function TransactionList({
   searchQuery,
   sortMode,
   filterType,

@@ -9,7 +9,7 @@ import React, {
 import { useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
 import { useFocusEffect, useGlobalSearchParams, useRouter } from "expo-router";
-import TransactionList from "../../../features/transactions/components/TransactionList";
+import { TransactionList } from "../../../features/transactions/components/TransactionList";
 import { TransactionSearchBar } from "../../../features/transactions/components/TransactionSearchBar";
 import {
   TransactionSortFilter,

@@ -1,1 +1,1 @@
-export { default } from '../../features/analytics/components/Analytics';
+export { Analytics as default } from '../../features/analytics/components/Analytics';

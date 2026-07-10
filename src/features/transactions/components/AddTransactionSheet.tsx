@@ -129,7 +129,7 @@ export function AddTransactionSheet({
       setDate(new Date(initialTransaction.date));
       setType(initialTransaction.type);
       setCategoryId(initialTransaction.categoryId || undefined);
-      setAccountId(initialTransaction.accountId);
+      setAccountId(initialTransaction.accountId || null);
       setDestinationAccountId(initialTransaction.destinationAccountId || undefined);
     } else if (duplicateTransaction) {
       setAmount(Math.abs(duplicateTransaction.amount).toString());
@@ -138,7 +138,7 @@ export function AddTransactionSheet({
       setDate(new Date());
       setType(duplicateTransaction.type);
       setCategoryId(duplicateTransaction.categoryId || undefined);
-      setAccountId(duplicateTransaction.accountId);
+      setAccountId(duplicateTransaction.accountId || null);
       setDestinationAccountId(duplicateTransaction.destinationAccountId || undefined);
     } else {
       resetForm();

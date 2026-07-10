@@ -104,7 +104,7 @@ function EmptyAnalyticsState() {
   );
 }
 
-export default function AnalyticsScreen() {
+export function Analytics() {
   const [spendingData, setSpendingData] = useState<CategorySpending[]>([]);
   const [totalSpent, setTotalSpent] = useState(0);
   const [isLoading, setIsLoading] = useState(true);

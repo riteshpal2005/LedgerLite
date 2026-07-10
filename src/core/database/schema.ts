@@ -13,6 +13,7 @@ export interface Transaction {
   categoryId: string;
   merchant?: string;
   accountId?: string;
+  destinationAccountId?: string;
   balance_after?: number;
   linkedTransactionId?: string;
   sync_status: SyncStatus;
@@ -62,6 +63,7 @@ export interface DatabaseActions {
   restoreAccount(a: Account): Promise<void>;
   deleteCorruptedData(): Promise<void>;
   markMultipleAsSynced(updates: { id: string; table: "transactions" | "categories" | "accounts" }[]): Promise<void>;
+  getPendingSyncData(): Promise<{ pendingTransactions: Transaction[]; pendingCategories: Category[]; pendingAccounts: Account[] }>;
 }
 
 export const CREATE_CATEGORIES_TABLE = `

@@ -1,7 +1,7 @@
 import { Text, View, Pressable, Modal } from "react-native";
 import { useState, useCallback, useRef } from "react";
 import { router } from "expo-router";
-import TransactionList from "../../../features/transactions/components/TransactionList";
+import { TransactionList } from "../../../features/transactions/components/TransactionList";
 import { TransactionSearchBar } from "../../../features/transactions/components/TransactionSearchBar";
 import {
   TransactionSortFilter,
