@@ -21,6 +21,7 @@ import { AddTransactionSheet } from "../../../features/transactions/components/A
 import { AddAccountModal } from "../../../features/accounts/components/AddAccountModal";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
+import { renderStandardBackdrop } from "../../../shared/components/ui/BottomSheetUtils";
 import { useTheme } from "../../../core/theme/ThemeContext";
 import { Transaction } from "../../../core/database/schema";
 import Constants, { ExecutionEnvironment } from "expo-constants";
@@ -53,16 +54,7 @@ export default function Home() {
     colors,
   } = useTheme();
 
-  const renderBackdrop = useCallback(
-    (props: BottomSheetBackdropProps) =>
-      React.createElement(BottomSheetBackdrop, {
-        ...props,
-        disappearsOnIndex: -1,
-        appearsOnIndex: 0,
-        opacity: 0.5,
-      }),
-    [],
-  );
+  const renderBackdrop = useCallback(renderStandardBackdrop, []);
 
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const transactions = useSelector((state: RootState) => state.transactions.transactions);

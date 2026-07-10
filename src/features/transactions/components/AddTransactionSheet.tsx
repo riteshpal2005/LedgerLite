@@ -24,6 +24,7 @@ import { TransactionTypeToggle } from "./TransactionTypeToggle";
 import { CategoryPickerButton } from "./CategoryPickerButton";
 import { CategorySelectModal } from "./CategorySelectModal";
 import { AccountSelectModal } from "../../accounts/components/AccountSelectModal";
+import { renderStandardBackdrop } from "../../../shared/components/ui/BottomSheetUtils";
 import { DateTimePickerSection } from "./DateTimePickerSection";
 import { BottomSheetFormField } from "../../../shared/components/BottomSheetFormField";
 import { Transaction } from "../../../core/database/schema";
@@ -87,16 +88,7 @@ export function AddTransactionSheet({
     bottomSheetBorderColor,
   } = useTheme();
 
-  const renderBackdrop = useCallback(
-    (props: BottomSheetBackdropProps) =>
-      React.createElement(BottomSheetBackdrop, {
-        ...props,
-        disappearsOnIndex: -1,
-        appearsOnIndex: 0,
-        opacity: 0.5,
-      }),
-    [],
-  );
+  const renderBackdrop = useCallback(renderStandardBackdrop, []);
 
   const accounts = useSelector(selectAccountsWithBalances);
   const defaultAccountId = useSelector(
