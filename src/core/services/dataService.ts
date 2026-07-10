@@ -567,7 +567,25 @@ export const importSettingsJSON = async () => {
       encoding: "utf8",
     });
     const parsedData = JSON.parse(fileContent);
-    return parsedData;
+    
+    if (typeof parsedData !== "object" || parsedData === null) {
+      console.warn("Invalid JSON structure");
+      return null;
+    }
+
+    // Only extract safe preference keys, dropping critical states like 'uid', 'isGlobalSyncing', etc.
+    const safeSettings: any = {};
+    if ("showIcons" in parsedData) safeSettings.showIcons = Boolean(parsedData.showIcons);
+    if ("hapticsEnabled" in parsedData) safeSettings.hapticsEnabled = Boolean(parsedData.hapticsEnabled);
+    if ("defaultAccountId" in parsedData) safeSettings.defaultAccountId = parsedData.defaultAccountId ? String(parsedData.defaultAccountId) : null;
+    if ("themeOption" in parsedData && ["dark", "light", "system", "pitch-black"].includes(parsedData.themeOption)) {
+      safeSettings.themeOption = parsedData.themeOption;
+    }
+    if ("exportDirectoryUri" in parsedData) safeSettings.exportDirectoryUri = parsedData.exportDirectoryUri ? String(parsedData.exportDirectoryUri) : null;
+    if ("use24HourFormat" in parsedData) safeSettings.use24HourFormat = Boolean(parsedData.use24HourFormat);
+    if (Array.isArray(parsedData.quickTemplates)) safeSettings.quickTemplates = parsedData.quickTemplates;
+
+    return safeSettings;
   } catch (error) {
     console.error("Settings Import Error: ", error);
     return null;

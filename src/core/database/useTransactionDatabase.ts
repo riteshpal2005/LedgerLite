@@ -379,22 +379,30 @@ export function useTransactionDatabase() {
     }
   };
 
+  const getSafeTableName = (table: string) => {
+    switch (table) {
+      case "transactions": return "transactions";
+      case "categories": return "categories";
+      case "accounts": return "accounts";
+      default: throw new Error("Invalid table name for sync operation");
+    }
+  };
+
   const markAsSynced = async (
     table: "transactions" | "categories" | "accounts",
     id: string,
   ) => {
-    const validTables = ["transactions", "categories", "accounts"];
-    if (!validTables.includes(table)) return;
+    const tableName = getSafeTableName(table);
     
     const result = await db.getFirstAsync<{ sync_status: string }>(
-      `SELECT sync_status FROM ${table} WHERE id = ?`,
+      `SELECT sync_status FROM ${tableName} WHERE id = ?`,
       [id],
     );
     if (result?.sync_status === "deleted") {
-      await db.runAsync(`DELETE FROM ${table} WHERE id = ?`, [id]);
+      await db.runAsync(`DELETE FROM ${tableName} WHERE id = ?`, [id]);
     } else {
       await db.runAsync(
-        `UPDATE ${table} SET sync_status = 'synced' WHERE id = ?`,
+        `UPDATE ${tableName} SET sync_status = 'synced' WHERE id = ?`,
         [id],
       );
     }
@@ -405,16 +413,22 @@ export function useTransactionDatabase() {
   ) => {
     await db.withTransactionAsync(async () => {
       for (const { table, id } of updates) {
-        if (!["transactions", "categories", "accounts"].includes(table)) continue;
+        let tableName: string;
+        try {
+          tableName = getSafeTableName(table);
+        } catch {
+          continue;
+        }
+        
         const result = await db.getFirstAsync<{ sync_status: string }>(
-          `SELECT sync_status FROM ${table} WHERE id = ?`,
+          `SELECT sync_status FROM ${tableName} WHERE id = ?`,
           [id],
         );
         if (result?.sync_status === "deleted") {
-          await db.runAsync(`DELETE FROM ${table} WHERE id = ?`, [id]);
+          await db.runAsync(`DELETE FROM ${tableName} WHERE id = ?`, [id]);
         } else {
           await db.runAsync(
-            `UPDATE ${table} SET sync_status = 'synced' WHERE id = ?`,
+            `UPDATE ${tableName} SET sync_status = 'synced' WHERE id = ?`,
             [id],
           );
         }
