@@ -54,76 +54,22 @@ export const exportData = async (
     const filename = `LedgerLite_Export_${Date.now()}.csv`;
 
     if (action === "save" && Platform.OS === "android") {
-      if (savedDirectoryUri) {
+      const targetDirUri = await getOrCreateSAFDirectory(savedDirectoryUri);
+
+      if (targetDirUri) {
         try {
-          const safUri =
-            await FileSystem.StorageAccessFramework.createFileAsync(
-              savedDirectoryUri,
-              filename,
-              mimeType,
-            );
+          const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
+            targetDirUri,
+            filename,
+            mimeType,
+          );
           await FileSystem.writeAsStringAsync(safUri, csvString, {
             encoding: FileSystem.EncodingType.UTF8,
           });
-          return savedDirectoryUri;
+          return targetDirUri;
         } catch (e) {
           console.error("SAF create file error:", e);
         }
-      }
-
-      const initialUri =
-        "content://com.android.externalstorage.documents/tree/primary%3ADocuments";
-      const permissions =
-        await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
-          initialUri,
-        );
-
-      if (permissions.granted) {
-        let targetDirUri = permissions.directoryUri;
-
-        if (!decodeURIComponent(targetDirUri).endsWith("LedgerLite")) {
-          let folderCreatedOrFound = false;
-
-          try {
-            const files =
-              await FileSystem.StorageAccessFramework.readDirectoryAsync(
-                permissions.directoryUri,
-              );
-            const existingLedgerLite = files.find(
-              (f) =>
-                decodeURIComponent(f).endsWith("/LedgerLite") ||
-                decodeURIComponent(f).endsWith(":LedgerLite"),
-            );
-            if (existingLedgerLite) {
-              targetDirUri = existingLedgerLite;
-              folderCreatedOrFound = true;
-            }
-          } catch (e) {
-            console.error("SAF readDir error:", e);
-          }
-
-          if (!folderCreatedOrFound) {
-            try {
-              targetDirUri =
-                await FileSystem.StorageAccessFramework.makeDirectoryAsync(
-                  permissions.directoryUri,
-                  "LedgerLite",
-                );
-            } catch (e) {
-              console.error("SAF mkdir error:", e);
-            }
-          }
-        }
-
-        const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
-          targetDirUri,
-          filename,
-          mimeType,
-        );
-        await FileSystem.writeAsStringAsync(safUri, csvString, {
-          encoding: FileSystem.EncodingType.UTF8,
-        });
-        return targetDirUri;
       }
     }
 
@@ -448,6 +394,58 @@ export const importData = async (
   }
 };
 
+const getOrCreateSAFDirectory = async (
+  savedDirectoryUri?: string | null,
+): Promise<string | undefined> => {
+  if (savedDirectoryUri) {
+    return savedDirectoryUri;
+  }
+
+  const initialUri =
+    "content://com.android.externalstorage.documents/tree/primary%3ADocuments";
+  const permissions =
+    await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
+      initialUri,
+    );
+
+  if (permissions.granted) {
+    let targetDirUri = permissions.directoryUri;
+    if (!decodeURIComponent(targetDirUri).endsWith("LedgerLite")) {
+      let folderCreatedOrFound = false;
+      try {
+        const files =
+          await FileSystem.StorageAccessFramework.readDirectoryAsync(
+            permissions.directoryUri,
+          );
+        const existingLedgerLite = files.find(
+          (f) =>
+            decodeURIComponent(f).endsWith("/LedgerLite") ||
+            decodeURIComponent(f).endsWith(":LedgerLite"),
+        );
+        if (existingLedgerLite) {
+          targetDirUri = existingLedgerLite;
+          folderCreatedOrFound = true;
+        }
+      } catch (e) {
+        console.error("SAF readDir error:", e);
+      }
+      if (!folderCreatedOrFound) {
+        try {
+          targetDirUri =
+            await FileSystem.StorageAccessFramework.makeDirectoryAsync(
+              permissions.directoryUri,
+              "LedgerLite",
+            );
+        } catch (e) {
+          console.error("SAF mkdir error:", e);
+        }
+      }
+    }
+    return targetDirUri;
+  }
+  return undefined;
+};
+
 export const exportSettingsJSON = async (
   settingsData: any,
   action: "save" | "share" | "copy" = "share",
@@ -465,73 +463,22 @@ export const exportSettingsJSON = async (
     const mimeType = "application/json";
 
     if (action === "save" && Platform.OS === "android") {
-      if (savedDirectoryUri) {
+      const targetDirUri = await getOrCreateSAFDirectory(savedDirectoryUri);
+      
+      if (targetDirUri) {
         try {
-          const safUri =
-            await FileSystem.StorageAccessFramework.createFileAsync(
-              savedDirectoryUri,
-              filename,
-              mimeType,
-            );
+          const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
+            targetDirUri,
+            filename,
+            mimeType,
+          );
           await FileSystem.writeAsStringAsync(safUri, jsonString, {
             encoding: "utf8",
           });
-          return savedDirectoryUri;
+          return targetDirUri;
         } catch (e) {
           console.error("SAF create file error:", e);
         }
-      }
-
-      const initialUri =
-        "content://com.android.externalstorage.documents/tree/primary%3ADocuments";
-      const permissions =
-        await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
-          initialUri,
-        );
-
-      if (permissions.granted) {
-        let targetDirUri = permissions.directoryUri;
-        if (!decodeURIComponent(targetDirUri).endsWith("LedgerLite")) {
-          let folderCreatedOrFound = false;
-          try {
-            const files =
-              await FileSystem.StorageAccessFramework.readDirectoryAsync(
-                permissions.directoryUri,
-              );
-            const existingLedgerLite = files.find(
-              (f) =>
-                decodeURIComponent(f).endsWith("/LedgerLite") ||
-                decodeURIComponent(f).endsWith(":LedgerLite"),
-            );
-            if (existingLedgerLite) {
-              targetDirUri = existingLedgerLite;
-              folderCreatedOrFound = true;
-            }
-          } catch (e) {
-            console.error("SAF readDir error:", e);
-          }
-          if (!folderCreatedOrFound) {
-            try {
-              targetDirUri =
-                await FileSystem.StorageAccessFramework.makeDirectoryAsync(
-                  permissions.directoryUri,
-                  "LedgerLite",
-                );
-            } catch (e) {
-              console.error("SAF mkdir error:", e);
-            }
-          }
-        }
-
-        const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
-          targetDirUri,
-          filename,
-          mimeType,
-        );
-        await FileSystem.writeAsStringAsync(safUri, jsonString, {
-          encoding: "utf8",
-        });
-        return targetDirUri;
       }
     }
 
@@ -742,52 +689,7 @@ export const exportToPDF = async (
       const fileBase64 = await FileSystem.readAsStringAsync(uri, {
         encoding: "base64",
       });
-      let targetDirUri = savedDirectoryUri || undefined;
-
-      if (!targetDirUri) {
-        const initialUri =
-          "content://com.android.externalstorage.documents/tree/primary%3ADocuments";
-        const permissions =
-          await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
-            initialUri,
-          );
-
-        if (permissions.granted) {
-          targetDirUri = permissions.directoryUri;
-          if (!decodeURIComponent(targetDirUri).endsWith("LedgerLite")) {
-            let folderCreatedOrFound = false;
-            try {
-              const files =
-                await FileSystem.StorageAccessFramework.readDirectoryAsync(
-                  permissions.directoryUri,
-                );
-              const existingLedgerLite = files.find(
-                (f) =>
-                  decodeURIComponent(f).endsWith("/LedgerLite") ||
-                  decodeURIComponent(f).endsWith(":LedgerLite"),
-              );
-              if (existingLedgerLite) {
-                targetDirUri = existingLedgerLite;
-                folderCreatedOrFound = true;
-              }
-            } catch (e) {
-              console.error("SAF readDir error:", e);
-            }
-
-            if (!folderCreatedOrFound) {
-              try {
-                targetDirUri =
-                  await FileSystem.StorageAccessFramework.makeDirectoryAsync(
-                    permissions.directoryUri,
-                    "LedgerLite",
-                  );
-              } catch (e) {
-                console.error("SAF mkdir error:", e);
-              }
-            }
-          }
-        }
-      }
+      let targetDirUri = await getOrCreateSAFDirectory(savedDirectoryUri);
 
       if (targetDirUri) {
         try {
