@@ -12,9 +12,8 @@ describe('accountSlice', () => {
   const mockAccount: Account = {
     id: '1',
     name: 'Cash',
-    type: 'cash',
+    type: 'Cash',
     balance: 1000,
-    created_at: 1000,
     sync_status: 'synced',
     updated_at: 1000
   };

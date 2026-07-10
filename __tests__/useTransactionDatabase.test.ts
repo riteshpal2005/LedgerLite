@@ -81,7 +81,7 @@ describe('useTransactionDatabase', () => {
   describe('Category operations', () => {
     it('should update a category', async () => {
       const { result } = await renderHook(() => useTransactionDatabase());
-      await result.current.updateCategory('cat1', { name: 'Food', icon: 'icon', color: 'red', type: 'debit', created_at: 100 });
+      await result.current.updateCategory('cat1', { name: 'Food', icon: 'icon', color: 'red' });
       expect(mockDb.runAsync).toHaveBeenCalledWith(
         expect.stringContaining('UPDATE categories'),
         expect.arrayContaining(['Food', 'icon', 'red', 'pending'])
@@ -90,7 +90,7 @@ describe('useTransactionDatabase', () => {
 
     it('should add a category', async () => {
       const { result } = await renderHook(() => useTransactionDatabase());
-      const id = await result.current.addCategory({ name: 'Food', icon: 'icon', color: 'red', type: 'debit', created_at: 100 });
+      const id = await result.current.addCategory({ name: 'Food', icon: 'icon', color: 'red',  });
       expect(mockDb.runAsync).toHaveBeenCalledWith(
         expect.stringContaining('INSERT INTO categories'),
         expect.arrayContaining(['mock-uuid', 'Food', 'icon', 'red', 'pending'])
@@ -128,7 +128,7 @@ describe('useTransactionDatabase', () => {
     it('should restore category if newer', async () => {
       const { result } = await renderHook(() => useTransactionDatabase());
       mockDb.getFirstAsync.mockResolvedValue({ updated_at: 1000 }); // existing older
-      await result.current.restoreCategory({ id: 'cat1', name: 'Food', icon: 'x', color: 'red', type: 'debit', created_at: 100, sync_status: 'synced', updated_at: 2000 });
+      await result.current.restoreCategory({ id: 'cat1', name: 'Food', icon: 'x', color: 'red',  sync_status: 'synced', updated_at: 2000 });
       
       expect(mockDb.runAsync).toHaveBeenCalledWith(
         expect.stringContaining('INSERT OR REPLACE INTO categories'),
@@ -139,7 +139,7 @@ describe('useTransactionDatabase', () => {
     it('should not restore category if older', async () => {
       const { result } = await renderHook(() => useTransactionDatabase());
       mockDb.getFirstAsync.mockResolvedValue({ updated_at: 3000 }); // existing newer
-      await result.current.restoreCategory({ id: 'cat1', name: 'Food', icon: 'x', color: 'red', type: 'debit', created_at: 100, sync_status: 'synced', updated_at: 2000 });
+      await result.current.restoreCategory({ id: 'cat1', name: 'Food', icon: 'x', color: 'red',  sync_status: 'synced', updated_at: 2000 });
       
       expect(mockDb.runAsync).not.toHaveBeenCalledWith(
         expect.stringContaining('INSERT OR REPLACE INTO categories'),
@@ -163,20 +163,20 @@ describe('useTransactionDatabase', () => {
 
     it('should add an account', async () => {
       const { result } = await renderHook(() => useTransactionDatabase());
-      const id = await result.current.addAccount({ name: 'Cash', balance: 100, type: 'cash', created_at: 100 });
+      const id = await result.current.addAccount({ name: 'Cash', balance: 100, type: 'Cash' });
       expect(mockDb.runAsync).toHaveBeenCalledWith(
         expect.stringContaining('INSERT INTO accounts'),
-        expect.arrayContaining(['mock-uuid', 'Cash', 'cash', 100, 'pending'])
+        expect.arrayContaining(['mock-uuid', 'Cash', 'Cash', 100, 'pending'])
       );
       expect(id).toBe('mock-uuid');
     });
 
     it('should update an account', async () => {
       const { result } = await renderHook(() => useTransactionDatabase());
-      await result.current.updateAccount('acc1', { name: 'Bank', balance: 200, type: 'bank', created_at: 100 });
+      await result.current.updateAccount('acc1', { name: 'Bank', balance: 200, type: 'Bank' });
       expect(mockDb.runAsync).toHaveBeenCalledWith(
         expect.stringContaining('UPDATE accounts'),
-        expect.arrayContaining(['Bank', 'bank', 200, 'pending', expect.any(Number), 'acc1'])
+        expect.arrayContaining(['Bank', 'Bank', 200, 'pending', expect.any(Number), 'acc1'])
       );
     });
 
@@ -225,7 +225,7 @@ describe('useTransactionDatabase', () => {
     it('should restore account if newer', async () => {
       const { result } = await renderHook(() => useTransactionDatabase());
       mockDb.getFirstAsync.mockResolvedValue({ updated_at: 1000 });
-      await result.current.restoreAccount({ id: 'acc1', name: 'Cash', balance: 0, type: 'cash', created_at: 100, sync_status: 'synced', updated_at: 2000 });
+      await result.current.restoreAccount({ id: 'acc1', name: 'Cash', balance: 0, type: 'Cash', sync_status: 'synced', updated_at: 2000 });
       
       expect(mockDb.runAsync).toHaveBeenCalledWith(
         expect.stringContaining('INSERT OR REPLACE INTO accounts'),
@@ -245,7 +245,7 @@ describe('useTransactionDatabase', () => {
       ]); // nextTxs
 
       const id = await result.current.addTransaction({
-        amount: 100, description: 'Desc', date: 2000, categoryId: 'cat1', type: 'debit', accountId: 'acc1', created_at: 2000
+        amount: 100, description: 'Desc', date: 2000, categoryId: 'cat1', type: 'debit', accountId: 'acc1'
       });
 
       expect(mockDb.runAsync).toHaveBeenCalledWith(
@@ -270,7 +270,7 @@ describe('useTransactionDatabase', () => {
       mockDb.getAllAsync.mockResolvedValueOnce([]); // nextTxs
 
       await result.current.updateTransactionFull('t1', {
-        amount: 100, description: 'Desc', date: 2000, categoryId: 'cat1', type: 'debit', accountId: 'acc1', created_at: 2000
+        amount: 100, description: 'Desc', date: 2000, categoryId: 'cat1', type: 'debit', accountId: 'acc1'
       });
 
       expect(mockDb.runAsync).toHaveBeenCalledWith(
@@ -363,7 +363,7 @@ describe('useTransactionDatabase', () => {
       const { result } = await renderHook(() => useTransactionDatabase());
       mockDb.getFirstAsync.mockResolvedValueOnce(null); // not found
       
-      await result.current.restoreCategory({ id: 'cat1', name: 'Food', icon: 'x', color: 'red', type: 'debit', created_at: 100, sync_status: 'synced', updated_at: 2000 });
+      await result.current.restoreCategory({ id: 'cat1', name: 'Food', icon: 'x', color: 'red', sync_status: 'synced', updated_at: 2000 });
       
       expect(mockDb.runAsync).toHaveBeenCalledWith(
         expect.stringContaining('INSERT OR REPLACE INTO categories'),
@@ -375,7 +375,7 @@ describe('useTransactionDatabase', () => {
       const { result } = await renderHook(() => useTransactionDatabase());
       mockDb.getFirstAsync.mockResolvedValueOnce(null); // not found
       
-      await result.current.restoreAccount({ id: 'acc1', name: 'Cash', balance: 0, type: 'cash', created_at: 100, sync_status: 'synced', updated_at: 2000 });
+      await result.current.restoreAccount({ id: 'acc1', name: 'Cash', balance: 0, type: 'Cash', sync_status: 'synced', updated_at: 2000 });
       
       expect(mockDb.runAsync).toHaveBeenCalledWith(
         expect.stringContaining('INSERT OR REPLACE INTO accounts'),
@@ -395,7 +395,11 @@ describe('useTransactionDatabase', () => {
 
     it('should update account balance and propagate', async () => {
       const { result } = await renderHook(() => useTransactionDatabase());
-      await result.current.updateAccount('acc1', { balance: 500 });
+      await result.current.updateAccount('acc1', {
+        balance: 500,
+        type: 'Cash',
+        name: ''
+      });
       expect(mockDb.runAsync).toHaveBeenCalledWith(
         expect.stringContaining('UPDATE accounts SET'),
         expect.any(Array)

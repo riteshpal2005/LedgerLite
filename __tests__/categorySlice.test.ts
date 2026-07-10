@@ -13,8 +13,6 @@ describe('categorySlice', () => {
     name: 'Food',
     icon: 'restaurant',
     color: '#FF0000',
-    type: 'debit',
-    created_at: 1000,
     sync_status: 'synced',
     updated_at: 1000
   };

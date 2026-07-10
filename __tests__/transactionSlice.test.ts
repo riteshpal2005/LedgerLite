@@ -16,7 +16,6 @@ describe('transactionSlice', () => {
     categoryId: 'cat1',
     accountId: 'acc1',
     description: 'Salary',
-    created_at: 1000,
     sync_status: 'synced',
     updated_at: 1000
   };
