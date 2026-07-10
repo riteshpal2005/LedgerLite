@@ -53,6 +53,17 @@ export interface ImportedTransaction {
   _accountName?: string;
 }
 
+export interface DatabaseActions {
+  getAllTransactions(): Promise<Transaction[]>;
+  getAllCategories(): Promise<Category[]>;
+  getAllAccounts(): Promise<Account[]>;
+  restoreTransaction(t: Transaction): Promise<void>;
+  restoreCategory(c: Category): Promise<void>;
+  restoreAccount(a: Account): Promise<void>;
+  deleteCorruptedData(): Promise<void>;
+  markMultipleAsSynced(updates: { id: string; table: "transactions" | "categories" | "accounts" }[]): Promise<void>;
+}
+
 export const CREATE_CATEGORIES_TABLE = `
   CREATE TABLE IF NOT EXISTS categories (
     id TEXT PRIMARY KEY,

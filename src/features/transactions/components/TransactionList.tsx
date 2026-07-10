@@ -3,7 +3,7 @@ import { RootState } from "../../../core/store/store";
 import { View, Text, useWindowDimensions } from "react-native";
 import { SortMode } from "./TransactionSortFilter";
 import { FlashList } from "@shopify/flash-list";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { setTransactions } from "../../../core/store/transactionSlice";
 import { useDispatch } from "react-redux";
 import { useTransactionDatabase } from "../../../core/database/useTransactionDatabase";
@@ -13,7 +13,6 @@ import {
   setAccounts,
   selectAccountsWithBalances,
 } from "../../../core/store/accountSlice";
-import { useState } from "react";
 import { AccountSelectModal } from "../../accounts/components/AccountSelectModal";
 import { SkeletonTransactionRow } from "./SkeletonTransactionRow";
 import { Heading } from "../../../shared/components/ui/Typography";
@@ -56,7 +55,7 @@ export default function TransactionList({
       categories: state.categories.categories,
       showIcons: state.settings.showIcons,
       isGlobalSyncing: state.settings.isGlobalSyncing,
-      use24HourFormat: state.settings.use24HourFormat || false,
+      use24HourFormat: state.settings.use24HourFormat,
     }),
     shallowEqual
   );

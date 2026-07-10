@@ -8,8 +8,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { store } from "../store/store";
-import type { useTransactionDatabase } from "../database/useTransactionDatabase";
-import { Transaction, Category, Account } from "../database/schema";
+import { Transaction, Category, Account, DatabaseActions } from "../database/schema";
 import { setTransactions } from "../store/transactionSlice";
 import { setCategories } from "../store/categorySlice";
 import { setAccounts } from "../store/accountSlice";
@@ -33,7 +32,7 @@ export const SyncService = {
   },
   async pullFromFirebase(
     userId: string,
-    dbActions: ReturnType<typeof useTransactionDatabase>,
+    dbActions: DatabaseActions,
   ) {
     if (isPulling) return;
     isPulling = true;
@@ -91,7 +90,7 @@ export const SyncService = {
   },
   schedulePush(
     userId: string,
-    dbActions: ReturnType<typeof useTransactionDatabase>,
+    dbActions: DatabaseActions,
   ) {
     if (syncTimeout) {
       clearTimeout(syncTimeout);
@@ -103,7 +102,7 @@ export const SyncService = {
   },
   async pushToFirebase(
     userId: string,
-    dbActions: ReturnType<typeof useTransactionDatabase>,
+    dbActions: DatabaseActions,
   ) {
     if (isPushing) {
       pushPending = true;
@@ -188,7 +187,7 @@ export const SyncService = {
   },
   async syncAll(
     userId: string,
-    dbActions: ReturnType<typeof useTransactionDatabase>,
+    dbActions: DatabaseActions,
   ) {
     const now = Date.now();
     if (now - lastSyncTime < SYNC_COOLDOWN_MS) {

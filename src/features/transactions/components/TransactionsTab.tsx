@@ -119,7 +119,7 @@ export default function Home() {
   };
 
   const importProgress = useSelector(
-    (state: RootState) => state.settings.importProgress || 0
+    (state: RootState) => state.settings.importProgress
   );
 
   return (

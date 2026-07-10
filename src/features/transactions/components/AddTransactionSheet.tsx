@@ -95,7 +95,7 @@ export function AddTransactionSheet({
     (state: RootState) => state.settings.defaultAccountId,
   );
   const quickTemplates = useSelector(
-    (state: RootState) => state.settings.quickTemplates || []
+    (state: RootState) => state.settings.quickTemplates
   );
 
   const [accountId, setAccountId] = useState(defaultAccountId);
@@ -447,7 +447,7 @@ export function AddTransactionSheet({
                     return;
                   }
                   const newTemplate = {
-                    id: Date.now().toString(),
+                    id: Crypto.randomUUID(),
                     title: description,
                     amount,
                     description,
