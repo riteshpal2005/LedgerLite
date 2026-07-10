@@ -394,7 +394,7 @@ export const importData = async (
   }
 };
 
-const getOrCreateSAFDirectory = async (
+export const getOrCreateSAFDirectory = async (
   savedDirectoryUri?: string | null,
 ): Promise<string | undefined> => {
   if (savedDirectoryUri) {

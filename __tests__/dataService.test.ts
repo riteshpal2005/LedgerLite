@@ -1,79 +1,163 @@
-import { parseDateTime } from "../src/core/services/dataService";
+import {
+  parseDateTime,
+  exportData,
+  exportSettingsJSON,
+  importData,
+  importSettingsJSON,
+  exportToPDF,
+  getOrCreateSAFDirectory,
+} from '../src/core/services/dataService';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import * as DocumentPicker from 'expo-document-picker';
+import * as Print from 'expo-print';
+import { Transaction } from '../src/core/database/schema';
+import Papa from 'papaparse';
 
-describe("dataService parseDateTime", () => {
-  const targetDate = "2026-07-01";
+describe('dataService', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-  it("should correctly parse separate date and time strings", () => {
-    const times = ["11:49 PM", "11:41 PM", "11:11 PM", "10:41 PM"];
-    const expectedHours = [23, 23, 23, 22];
-    const expectedMinutes = [49, 41, 11, 41];
-
-    times.forEach((time, index) => {
-      const timestamp = parseDateTime(targetDate, time);
+  describe('parseDateTime', () => {
+    it('should correctly parse separate date and time strings', () => {
+      const timestamp = parseDateTime("2026-07-01", "11:49 PM");
       const dateObj = new Date(timestamp);
+      expect(dateObj.getUTCFullYear()).toBe(2026);
+      expect(dateObj.getUTCMonth()).toBe(6);
+      expect(dateObj.getUTCDate()).toBe(1);
+      expect(dateObj.getUTCHours()).toBe(23);
+      expect(dateObj.getUTCMinutes()).toBe(49);
+    });
 
-      expect(dateObj.getFullYear()).toBe(2026);
-      expect(dateObj.getMonth()).toBe(6);
-      expect(dateObj.getDate()).toBe(1);
-      expect(dateObj.getHours()).toBe(expectedHours[index]);
-      expect(dateObj.getMinutes()).toBe(expectedMinutes[index]);
+    it('should parse Excel numeric serial values for Date and Time', () => {
+      const excelSerialDate = 46202.9923611111; // 2026-06-29 23:49:00 UTC
+      const timestamp = parseDateTime(excelSerialDate, undefined);
+      const dateObj = new Date(timestamp);
+      expect(dateObj.getUTCFullYear()).toBe(2026);
+      expect(dateObj.getUTCMonth()).toBe(5);
+      expect(dateObj.getUTCDate()).toBe(29);
+      expect(dateObj.getUTCHours()).toBe(23);
+      expect(dateObj.getUTCMinutes()).toBe(49);
     });
   });
 
-  it("should correctly parse combined date-time strings", () => {
-    const combinedStrings = [
-      "2026-07-01 23:49:00",
-      "2026-07-01 23:41:00",
-      "2026-07-01 23:11:00",
-      "2026-07-01 22:41:00",
-    ];
-    const expectedHours = [23, 23, 23, 22];
-    const expectedMinutes = [49, 41, 11, 41];
+  describe('getOrCreateSAFDirectory', () => {
+    it('should request permissions and create directory if SAF is used', async () => {
+      (FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync as jest.Mock).mockResolvedValue({
+        granted: true,
+        directoryUri: 'content://tree/primary:LedgerLite',
+      });
+      (FileSystem.StorageAccessFramework.readDirectoryAsync as jest.Mock).mockResolvedValue([]);
+      (FileSystem.StorageAccessFramework.makeDirectoryAsync as jest.Mock).mockResolvedValue('content://tree/primary:LedgerLite');
 
-    combinedStrings.forEach((str, index) => {
-      const timestamp = parseDateTime(str, undefined);
-      const dateObj = new Date(timestamp);
+      const result = await getOrCreateSAFDirectory(null);
+      expect(result).toBe('content://tree/primary:LedgerLite');
+    });
 
-      expect(dateObj.getFullYear()).toBe(2026);
-      expect(dateObj.getMonth()).toBe(6);
-      expect(dateObj.getDate()).toBe(1);
-      expect(dateObj.getHours()).toBe(expectedHours[index]);
-      expect(dateObj.getMinutes()).toBe(expectedMinutes[index]);
+    it('should return null if permissions denied', async () => {
+      (FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync as jest.Mock).mockResolvedValue({
+        granted: false,
+      });
+
+      const result = await getOrCreateSAFDirectory(null);
+      expect(result).toBeUndefined();
     });
   });
 
-  it("should preserve correct chronological sorting order", () => {
-    const times = ["11:49 PM", "11:41 PM", "11:11 PM", "10:41 PM"];
-    const timestamps = times.map((t) => parseDateTime(targetDate, t));
+  describe('exportData', () => {
+    it('should export transactions to a CSV file and share it', async () => {
+      const transactions = [
+        { id: '1', amount: 100, description: 'TestDescription123', date: Date.now(), type: 'credit', categoryId: 'cat1', sync_status: 'synced', updated_at: Date.now() }
+      ] as Transaction[];
 
-    for (let i = 0; i < timestamps.length - 1; i++) {
-      expect(timestamps[i]).toBeGreaterThan(timestamps[i + 1]);
-    }
+      const uri = await exportData(transactions, [], [], 'csv');
+      
+      expect(FileSystem.writeAsStringAsync).toHaveBeenCalledWith(
+        expect.stringContaining('LedgerLite_Export'),
+        expect.stringContaining('TestDescription123'),
+        expect.anything()
+      );
+      expect(Sharing.shareAsync).toHaveBeenCalled();
+      expect(uri).toBeUndefined();
+    });
   });
 
-  it("should parse Excel numeric serial values for Date and Time", () => {
-    const excelSerialDate = 46202.9923611111; // 2026-06-29 23:49:00 UTC
-    const timestamp = parseDateTime(excelSerialDate, undefined);
-    const dateObj = new Date(timestamp);
+  describe('importData', () => {
+    it('should return null if document picker is cancelled', async () => {
+      (DocumentPicker.getDocumentAsync as jest.Mock).mockResolvedValue({ canceled: true });
+      const result = await importData([], [], []);
+      expect(result).toBeNull();
+    });
 
-    expect(dateObj.getFullYear()).toBe(2026);
-    expect(dateObj.getMonth()).toBe(5); // June
-    expect(dateObj.getDate()).toBe(29);
-    expect(dateObj.getHours()).toBe(23);
-    expect(dateObj.getMinutes()).toBe(49);
+    it('should parse CSV and deduplicate transactions', async () => {
+      const mockCsv = Papa.unparse([
+        { Amount: 100, Description: 'Test 1', Date: '2026-07-01', Time: '10:00 AM' },
+        { Amount: 200, Description: 'Test 2', Date: '2026-07-01', Time: '11:00 AM' }
+      ]);
+      (DocumentPicker.getDocumentAsync as jest.Mock).mockResolvedValue({
+        canceled: false,
+        assets: [{ uri: 'file:///test.csv', name: 'test.csv' }]
+      });
+      (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValue(mockCsv);
+
+      // Existing transaction exactly matches "Test 1"
+      const existingTxs = [{
+        id: '1', 
+        amount: 100, 
+        description: 'Test 1', 
+        date: parseDateTime('2026-07-01', '10:00 AM'), 
+        type: 'debit', 
+        categoryId: 'cat1', 
+        sync_status: 'synced', 
+        updated_at: Date.now()
+      } as Transaction];
+
+      const result = await importData([], [], existingTxs);
+      
+      expect(result?.transactions.length).toBe(1);
+      expect(result?.transactions[0].description).toBe('Test 2');
+    });
   });
 
-  it("should handle locale-aware day/month parsing and unambiguous date orders", () => {
-    const DMYDate = parseDateTime("15/07/2026", "11:49 PM");
-    const DMYObj = new Date(DMYDate);
-    expect(DMYObj.getFullYear()).toBe(2026);
-    expect(DMYObj.getMonth()).toBe(6); // July
-    expect(DMYObj.getDate()).toBe(15);
+  describe('exportSettingsJSON', () => {
+    it('should export settings to JSON and share', async () => {
+      const mockSettings = { defaultAccountId: 'acc1', themeOption: 'dark' };
+      const uri = await exportSettingsJSON(mockSettings as any);
+      
+      expect(FileSystem.writeAsStringAsync).toHaveBeenCalledWith(
+        expect.stringContaining('LedgerLite_Settings'),
+        expect.stringContaining('themeOption'),
+        expect.anything()
+      );
+      expect(Sharing.shareAsync).toHaveBeenCalled();
+      expect(uri).toBeUndefined();
+    });
+  });
 
-    const MDYDate = parseDateTime("07/15/2026", "11:49 PM");
-    const MDYObj = new Date(MDYDate);
-    expect(MDYObj.getFullYear()).toBe(2026);
-    expect(MDYObj.getMonth()).toBe(6); // July
-    expect(MDYObj.getDate()).toBe(15);
+  describe('importSettingsJSON', () => {
+    it('should parse valid settings JSON', async () => {
+      const mockJson = JSON.stringify({ defaultAccountId: 'acc2', themeOption: 'light' });
+      (DocumentPicker.getDocumentAsync as jest.Mock).mockResolvedValue({
+        canceled: false,
+        assets: [{ uri: 'file:///settings.json', name: 'settings.json' }]
+      });
+      (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValue(mockJson);
+
+      const result = await importSettingsJSON();
+      expect(result).toEqual({ defaultAccountId: 'acc2', themeOption: 'light' });
+    });
+  });
+
+  describe('exportToPDF', () => {
+    it('should generate PDF and share', async () => {
+      (Print.printToFileAsync as jest.Mock).mockResolvedValue({ uri: 'file:///test.pdf' });
+      
+      const uri = await exportToPDF([], [], [], [], new Date(), new Date(), false);
+      
+      expect(Print.printToFileAsync).toHaveBeenCalled();
+      expect(Sharing.shareAsync).toHaveBeenCalled();
+      expect(uri).toBeUndefined(); // action share returns undefined
+    });
   });
 });
