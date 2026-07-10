@@ -122,7 +122,8 @@ export async function initializeDatabase(db: SQLiteDatabase) {
     await db.execAsync("PRAGMA user_version = 2;");
     try {
       await db.execAsync("ALTER TABLE transactions ADD COLUMN balance_after REAL;");
-    } catch (e) {
+    } catch (e: any) {
+      if (!e.message?.includes('duplicate column name')) throw e;
     }
 
     const accounts = await db.getAllAsync<{ id: string; balance: number }>(
