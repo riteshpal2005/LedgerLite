@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import Animated from "react-native-reanimated";
-import { Transaction } from "../../../core/database/schema";
+import { Transaction, Category, AccountWithBalance } from "../../../core/database/schema";
 import { CategoryIcon } from "../../../shared/components/ui/CategoryIcon";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
@@ -24,8 +24,8 @@ function formatTransactionDate(ts: number, use24h: boolean): string {
 
 interface TransactionListItemProps {
   item: Transaction;
-  category: any;
-  account: any;
+  category: Category | undefined;
+  account: AccountWithBalance | undefined;
   showIcons: boolean;
   isCredit: boolean;
   onPress: () => void;

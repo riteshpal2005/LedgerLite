@@ -22,14 +22,15 @@ import Animated, { FadeIn } from "react-native-reanimated";
 import { useTheme } from "../../../core/theme/ThemeContext";
 
 import { FilterType, FilterAccountId } from "./TransactionSortFilter";
+import { Transaction } from "../../../core/database/schema";
 
 interface TransactionListProps {
   searchQuery: string;
   sortMode: SortMode;
   filterType: FilterType;
   filterAccountId: FilterAccountId;
-  onTransactionPress?: (transaction: any) => void;
-  onTransactionLongPress?: (transaction: any) => void;
+  onTransactionPress?: (transaction: Transaction) => void;
+  onTransactionLongPress?: (transaction: Transaction) => void;
 }
 
 

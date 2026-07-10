@@ -6,14 +6,14 @@ import {
   ScrollView,
   Platform,
 } from "react-native";
-import { Account } from "../../../core/database/schema";
+import { AccountWithBalance } from "../../../core/database/schema";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../core/theme/ThemeContext";
 
 interface AccountSelectModalProps {
   visible: boolean;
   onClose: () => void;
-  accounts: Account[];
+  accounts: AccountWithBalance[];
   onSelect: (id: string) => void;
 }
 

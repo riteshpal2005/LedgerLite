@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createSelector } from "@reduxjs/toolkit";
-import { Account } from "../database/schema";
+import { Account, AccountWithBalance } from "../database/schema";
 import { RootState } from "./store";
 
 interface AccountState {
@@ -46,7 +46,7 @@ export const {
 export const selectAccountsWithBalances = createSelector(
   (state: RootState) => state.accounts.accounts,
   (state: RootState) => state.transactions.transactions,
-  (accounts, transactions) => {
+  (accounts, transactions): AccountWithBalance[] => {
     return accounts.map((account) => {
       let currentBalance = account.balance;
       

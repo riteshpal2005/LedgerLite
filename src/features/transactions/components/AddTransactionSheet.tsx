@@ -18,6 +18,7 @@ import {
   BottomSheetTextInput,
   BottomSheetScrollView,
   BottomSheetBackdrop,
+  BottomSheetBackdropProps,
 } from "@gorhom/bottom-sheet";
 import { TransactionTypeToggle } from "./TransactionTypeToggle";
 import { CategoryPickerButton } from "./CategoryPickerButton";
@@ -87,7 +88,7 @@ export function AddTransactionSheet({
   } = useTheme();
 
   const renderBackdrop = useCallback(
-    (props: any) =>
+    (props: BottomSheetBackdropProps) =>
       React.createElement(BottomSheetBackdrop, {
         ...props,
         disappearsOnIndex: -1,
@@ -486,7 +487,7 @@ export function AddTransactionSheet({
       <CategorySelectModal
         visible={showCategoryPicker}
         onClose={() => setShowCategoryPicker(false)}
-        categories={categories as any[]}
+        categories={categories}
         onSelect={handleCategorySelect}
       />
 

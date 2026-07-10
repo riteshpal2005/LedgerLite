@@ -33,9 +33,24 @@ export interface Account {
   name: string;
   type: "Cash" | "Bank" | "Credit Card";
   balance: number;
-  currentBalance?: number;
   sync_status: SyncStatus;
   updated_at: number;
+}
+
+export interface AccountWithBalance extends Account {
+  currentBalance?: number;
+}
+
+export interface ImportedTransaction {
+  id: string;
+  amount: number;
+  description: string;
+  merchant: string | null;
+  date: number;
+  type: "credit" | "debit";
+  categoryId: string;
+  accountId?: string;
+  _accountName?: string;
 }
 
 export const CREATE_CATEGORIES_TABLE = `

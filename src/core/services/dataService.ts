@@ -5,7 +5,7 @@ import * as Print from "expo-print";
 import Papa from "papaparse";
 import * as Clipboard from "expo-clipboard";
 import * as Crypto from "expo-crypto";
-import { Transaction, Account, Category } from "../database/schema";
+import { Transaction, Account, Category, ImportedTransaction } from "../database/schema";
 import { Platform } from "react-native";
 
 export type ExportColumn =
@@ -321,7 +321,7 @@ export const importData = async (
   accounts: Account[],
   existingTransactions: Transaction[],
 ): Promise<{
-  transactions: any[];
+  transactions: ImportedTransaction[];
   missingAccounts: { name: string; initialBalance: number }[];
 } | null> => {
   try {

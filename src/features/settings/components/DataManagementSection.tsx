@@ -28,7 +28,7 @@ import {
   BulkAccountMappingModal,
   AccountMapping,
 } from "./BulkAccountMappingModal";
-import { Account } from "../../../core/database/schema";
+import { Account, ImportedTransaction } from "../../../core/database/schema";
 import { useState } from "react";
 import { ColumnSelectionModal, ExportColumn } from "./ColumnSelectionModal";
 import { triggerHaptic } from "../../../core/utils/haptics";
@@ -63,7 +63,7 @@ export function DataManagementSection() {
   const [missingAccountsForImport, setMissingAccountsForImport] = useState<
     { name: string; initialBalance: number }[]
   >([]);
-  const [pendingImportTransactions, setPendingImportTransactions] = useState<any[]>([]);
+  const [pendingImportTransactions, setPendingImportTransactions] = useState<ImportedTransaction[]>([]);
   const [accountMappingModalVisible, setAccountMappingModalVisible] =
     useState(false);
 

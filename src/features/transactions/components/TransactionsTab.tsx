@@ -20,7 +20,7 @@ import {
 import { AddTransactionSheet } from "../../../features/transactions/components/AddTransactionSheet";
 import { AddAccountModal } from "../../../features/accounts/components/AddAccountModal";
 import { Ionicons } from "@expo/vector-icons";
-import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
 import { useTheme } from "../../../core/theme/ThemeContext";
 import { Transaction } from "../../../core/database/schema";
 import Constants, { ExecutionEnvironment } from "expo-constants";
@@ -54,7 +54,7 @@ export default function Home() {
   } = useTheme();
 
   const renderBackdrop = useCallback(
-    (props: any) =>
+    (props: BottomSheetBackdropProps) =>
       React.createElement(BottomSheetBackdrop, {
         ...props,
         disappearsOnIndex: -1,

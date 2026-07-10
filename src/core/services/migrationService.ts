@@ -2,6 +2,7 @@ import * as SQLite from "expo-sqlite";
 import { Paths, File, Directory } from "expo-file-system";
 import type { useTransactionDatabase } from "../database/useTransactionDatabase";
 import { SyncService } from "./syncService";
+import { Transaction, Category, Account } from "../database/schema";
 
 export const MigrationService = {
   async migrateGuestDataToUser(
@@ -22,11 +23,11 @@ export const MigrationService = {
       const guestDb = await SQLite.openDatabaseAsync(guestDbName);
 
 
-      const transactions = await guestDb.getAllAsync<any>(`SELECT * FROM transactions`);
-      const categories = await guestDb.getAllAsync<any>(
+      const transactions = await guestDb.getAllAsync<Transaction>(`SELECT * FROM transactions`);
+      const categories = await guestDb.getAllAsync<Category>(
         `SELECT * FROM categories`,
       );
-      const accounts = await guestDb.getAllAsync<any>(`SELECT * FROM accounts`);
+      const accounts = await guestDb.getAllAsync<Account>(`SELECT * FROM accounts`);
 
       await guestDb.closeAsync();
 
