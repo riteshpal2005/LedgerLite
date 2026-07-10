@@ -52,3 +52,4 @@ release-keystore.base64.txt
 !README.md
 /scripts
 *.txt
+coverage/
