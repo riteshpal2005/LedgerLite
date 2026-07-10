@@ -5,39 +5,19 @@ import { Transaction, Category, Account } from "./schema";
 export function useTransactionDatabase() {
   const db = useSQLiteContext();
 
-  const propagateForward = async (
+  const _propagateForwardCore = async (
     accountId: string,
     minDate: number,
-    startRowid?: number,
-    baseBalance?: number
+    startRowid: number,
+    initialBalance: number
   ) => {
-    const account = await db.getFirstAsync<{ balance: number }>(
-      "SELECT balance FROM accounts WHERE id = ?",
-      [accountId]
-    );
-    if (!account) return;
-
-    let runningBalance = baseBalance !== undefined ? baseBalance : account.balance;
-
-    if (baseBalance === undefined) {
-      const prevTx = await db.getFirstAsync<{ balance_after: number }>(
-        `SELECT balance_after FROM transactions 
-         WHERE accountId = ? AND sync_status != 'deleted' 
-           AND (date < ? OR (date = ? AND rowid < ?))
-         ORDER BY date DESC, rowid DESC LIMIT 1`,
-        [accountId, minDate, minDate, startRowid || 0]
-      );
-      if (prevTx) {
-        runningBalance = prevTx.balance_after;
-      }
-    }
-
+    let runningBalance = initialBalance;
     const nextTxs = await db.getAllAsync<{ id: string; amount: number; type: string; categoryId: string; balance_after?: number }>(
       `SELECT id, amount, type, categoryId, balance_after FROM transactions 
        WHERE accountId = ? AND sync_status != 'deleted'
          AND (date > ? OR (date = ? AND rowid >= ?))
        ORDER BY date ASC, rowid ASC`,
-      [accountId, minDate, minDate, startRowid || 0]
+      [accountId, minDate, minDate, startRowid]
     );
 
     for (const tx of nextTxs) {
@@ -57,6 +37,43 @@ export function useTransactionDatabase() {
       }
     }
   };
+
+  const propagateForwardFromBalance = async (
+    accountId: string,
+    minDate: number,
+    baseBalance: number,
+    startRowid: number = 0
+  ) => {
+    await _propagateForwardCore(accountId, minDate, startRowid, baseBalance);
+  };
+
+  const propagateForwardFromPrevious = async (
+    accountId: string,
+    minDate: number,
+    startRowid: number = 0
+  ) => {
+    const account = await db.getFirstAsync<{ balance: number }>(
+      "SELECT balance FROM accounts WHERE id = ?",
+      [accountId]
+    );
+    if (!account) return;
+
+    let runningBalance = account.balance;
+
+    const prevTx = await db.getFirstAsync<{ balance_after: number }>(
+      `SELECT balance_after FROM transactions 
+       WHERE accountId = ? AND sync_status != 'deleted' 
+         AND (date < ? OR (date = ? AND rowid < ?))
+       ORDER BY date DESC, rowid DESC LIMIT 1`,
+      [accountId, minDate, minDate, startRowid]
+    );
+    if (prevTx) {
+      runningBalance = prevTx.balance_after;
+    }
+
+    await _propagateForwardCore(accountId, minDate, startRowid, runningBalance);
+  };
+
 
   const getAllTransactions = async () => {
     const result = await db.getAllAsync<Transaction>(
@@ -148,7 +165,7 @@ export function useTransactionDatabase() {
         [id]
       );
       if (newTx) {
-        await propagateForward(transaction.accountId, transaction.date, newTx.rowid);
+        await propagateForwardFromPrevious(transaction.accountId, transaction.date, newTx.rowid);
       }
     }
     return id;
@@ -205,7 +222,7 @@ export function useTransactionDatabase() {
       for (const accountId of affectedAccounts) {
         const minDate = accountMinDates[accountId];
         const minRowid = accountMinRowids[accountId] || 0;
-        await propagateForward(accountId, minDate, minRowid);
+        await propagateForwardFromPrevious(accountId, minDate, minRowid);
       }
     });
   };
@@ -267,9 +284,9 @@ export function useTransactionDatabase() {
       [accountId]
     );
     if (firstTx) {
-      await propagateForward(accountId, firstTx.date, firstTx.rowid);
+      await propagateForwardFromPrevious(accountId, firstTx.date, firstTx.rowid);
     } else {
-      await propagateForward(accountId, 0);
+      await propagateForwardFromPrevious(accountId, 0);
     }
   };
 
@@ -290,14 +307,14 @@ export function useTransactionDatabase() {
     if (oldTransaction) {
       if (oldTransaction.accountId === accountId) {
         if (accountId) {
-          await propagateForward(accountId, oldTransaction.date, oldTransaction.rowid);
+          await propagateForwardFromPrevious(accountId, oldTransaction.date, oldTransaction.rowid);
         }
       } else {
         if (oldTransaction.accountId) {
-          await propagateForward(oldTransaction.accountId, oldTransaction.date, oldTransaction.rowid);
+          await propagateForwardFromPrevious(oldTransaction.accountId, oldTransaction.date, oldTransaction.rowid);
         }
         if (accountId && newTransactionRow) {
-          await propagateForward(accountId, oldTransaction.date, newTransactionRow.rowid);
+          await propagateForwardFromPrevious(accountId, oldTransaction.date, newTransactionRow.rowid);
         }
       }
     }
@@ -337,14 +354,14 @@ export function useTransactionDatabase() {
         if (transaction.accountId) {
           const minDate = Math.min(oldTransaction.date, transaction.date);
           const minRowid = minDate === oldTransaction.date ? oldTransaction.rowid : (newTransactionRow?.rowid || 0);
-          await propagateForward(transaction.accountId, minDate, minRowid);
+          await propagateForwardFromPrevious(transaction.accountId, minDate, minRowid);
         }
       } else {
         if (oldTransaction.accountId) {
-          await propagateForward(oldTransaction.accountId, oldTransaction.date, oldTransaction.rowid);
+          await propagateForwardFromPrevious(oldTransaction.accountId, oldTransaction.date, oldTransaction.rowid);
         }
         if (transaction.accountId && newTransactionRow) {
-          await propagateForward(transaction.accountId, transaction.date, newTransactionRow.rowid);
+          await propagateForwardFromPrevious(transaction.accountId, transaction.date, newTransactionRow.rowid);
         }
       }
     }
@@ -375,7 +392,7 @@ export function useTransactionDatabase() {
       ],
     );
     if (transaction.accountId) {
-      await propagateForward(transaction.accountId, transaction.date);
+      await propagateForwardFromPrevious(transaction.accountId, transaction.date);
     }
   };
 
@@ -469,7 +486,7 @@ export function useTransactionDatabase() {
       ["deleted", Date.now(), id],
     );
     if (transaction.accountId) {
-      await propagateForward(transaction.accountId, transaction.date, transaction.rowid);
+      await propagateForwardFromPrevious(transaction.accountId, transaction.date, transaction.rowid);
     }
 
     if (transaction.linkedTransactionId) {
@@ -483,7 +500,7 @@ export function useTransactionDatabase() {
           ["deleted", Date.now(), partner.id],
         );
         if (partner.accountId) {
-          await propagateForward(partner.accountId, partner.date, partner.rowid);
+          await propagateForwardFromPrevious(partner.accountId, partner.date, partner.rowid);
         }
       }
     }
@@ -545,7 +562,7 @@ export function useTransactionDatabase() {
     }
 
     for (const accId of affectedAccounts) {
-      await propagateForward(accId, 0);
+      await propagateForwardFromPrevious(accId, 0);
     }
   };
 
@@ -571,8 +588,8 @@ export function useTransactionDatabase() {
       "UPDATE transactions SET accountId = ?, sync_status = ?, updated_at = ? WHERE accountId = ?",
       [newAccountId, "pending", Date.now(), oldAccountId],
     );
-    await propagateForward(oldAccountId, 0);
-    await propagateForward(newAccountId, 0);
+    await propagateForwardFromPrevious(oldAccountId, 0);
+    await propagateForwardFromPrevious(newAccountId, 0);
   };
 
   const deleteCategory = async (id: string) => {
