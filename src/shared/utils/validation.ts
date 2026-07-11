@@ -1,35 +1,37 @@
 import { z } from "zod";
 
+// Ref: validation-1
 export const TransactionSchema = z.object({
   id: z.string(),
   amount: z.number().nonnegative(),
   date: z.number().positive(),
   description: z.string(),
-  type: z.enum(["income", "expense", "transfer"]),
+  type: z.enum(["credit", "debit"]),
   categoryId: z.string(),
-  accountId: z.string(),
+  accountId: z.string().optional().nullable(),
   merchant: z.string().optional().nullable(),
-  sync_status: z.enum(["synced", "pending", "deleted", "unmapped"]).optional(),
+  sync_status: z.enum(["synced", "pending", "deleted"]).optional(),
   balance_after: z.number().optional().nullable(),
-  created_at: z.number().optional(),
+  linkedTransactionId: z.string().optional().nullable(),
+  updated_at: z.number().optional(),
 });
 
+// Ref: validation-2
 export const CategorySchema = z.object({
   id: z.string(),
   name: z.string(),
   icon: z.string(),
   color: z.string(),
-  type: z.enum(["income", "expense", "transfer", "system"]),
-  is_default: z.boolean().or(z.number()),
   sync_status: z.enum(["synced", "pending", "deleted"]).optional(),
-  created_at: z.number().optional(),
+  updated_at: z.number().optional(),
 });
 
+// Ref: validation-3
 export const AccountSchema = z.object({
   id: z.string(),
   name: z.string(),
-  type: z.enum(["Cash", "Bank", "Credit Card", "Wallet"]),
+  type: z.enum(["Cash", "Bank", "Credit Card"]),
   balance: z.number(),
   sync_status: z.enum(["synced", "pending", "deleted"]).optional(),
-  created_at: z.number().optional(),
+  updated_at: z.number().optional(),
 });
