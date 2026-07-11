@@ -25,11 +25,7 @@ import { AuthProvider, useAuth } from "../core/firebase/AuthContext";
 import * as SplashScreen from "expo-splash-screen";
 import { useState } from "react";
 import Constants, { ExecutionEnvironment } from "expo-constants";
-import * as QuickActions from "expo-quick-actions";
-import { useQuickAction } from "expo-quick-actions/hooks";
 import { createContext } from "react";
-
-import { setIsQuickAddEscaped } from "../core/store/settingsSlice";
 
 const isExpoGo =
   Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
@@ -121,8 +117,6 @@ import { useDispatch } from "react-redux";
 import { setUid } from "../core/store/settingsSlice";
 import { SyncService } from "../core/services/syncService";
 
-let lastProcessedQuickAction: any = null;
-
 function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
   const { user, isLoading } = useAuth();
   const dispatch = useDispatch();
@@ -175,37 +169,6 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
   const router = useRouter();
 
   useEffect(() => {
-    QuickActions.setItems([
-      {
-        title: "Quick Add",
-        subtitle: "Add transaction instantly",
-        icon: "ic_quick_add",
-        id: "quick-add",
-        params: { href: "/quick-add?isDirect=true" },
-      },
-    ]);
-  }, []);
-
-  const navigationState = useRootNavigationState();
-  const action = useQuickAction();
-  const segments = useSegments();
-
-  useEffect(() => {
-    if (
-      action?.id === "quick-add" &&
-      action !== lastProcessedQuickAction &&
-      isSettingsLoaded &&
-      !isLoading &&
-      navigationState?.key
-    ) {
-      lastProcessedQuickAction = action;
-      if (segments[0] !== "quick-add") {
-        router.push("/quick-add?isDirect=true");
-      }
-    }
-  }, [action, isSettingsLoaded, isLoading, navigationState?.key, segments]);
-
-  useEffect(() => {
     if (isSettingsLoaded && !isLoading) {
       SplashScreen.hideAsync().catch(console.warn);
     }
@@ -226,10 +189,6 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
         <Stack.Screen name="categories" />
         <Stack.Screen name="backdated" />
         <Stack.Screen name="onboarding" />
-        <Stack.Screen
-          name="quick-add"
-          options={{ presentation: "modal", animation: "slide_from_bottom" }}
-        />
       </Stack>
     </View>
   );

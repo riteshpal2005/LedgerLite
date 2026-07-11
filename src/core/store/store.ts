@@ -13,7 +13,7 @@ const persistSettingsMiddleware: Middleware = (storeAPI) => (next) => (action: a
     action.type !== "settings/setIsGlobalSyncing"
   ) {
     const state = storeAPI.getState() as RootState;
-    const { importProgress, isGlobalSyncing, isQuickAddEscaped, ...persistableSettings } = state.settings;
+    const { importProgress, isGlobalSyncing, ...persistableSettings } = state.settings;
     const settingsVal = JSON.stringify(persistableSettings);
     storage.set("ledgerLite_settings", settingsVal);
   }

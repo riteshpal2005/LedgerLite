@@ -12,7 +12,6 @@ import settingsReducer, {
   addQuickTemplate,
   removeQuickTemplate,
   setUid,
-  setIsQuickAddEscaped,
   QuickTemplate,
 } from '../src/core/store/settingsSlice';
 
@@ -29,7 +28,6 @@ describe('settingsSlice', () => {
     use24HourFormat: false,
     quickTemplates: [],
     uid: null,
-    isQuickAddEscaped: false,
   };
 
   it('should handle initial state', () => {
@@ -84,11 +82,6 @@ describe('settingsSlice', () => {
   it('should handle setUid', () => {
     const actual = settingsReducer(initialState, setUid('user123'));
     expect(actual.uid).toBe('user123');
-  });
-
-  it('should handle setIsQuickAddEscaped', () => {
-    const actual = settingsReducer(initialState, setIsQuickAddEscaped(true));
-    expect(actual.isQuickAddEscaped).toBe(true);
   });
 
   it('should handle addQuickTemplate and removeQuickTemplate', () => {
