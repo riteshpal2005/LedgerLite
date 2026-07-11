@@ -115,11 +115,16 @@ jest.mock('@gorhom/bottom-sheet', () => {
 });
 
 jest.mock('react-native-safe-area-context', () => {
+  const React = require('react');
   const inset = { top: 0, right: 0, bottom: 0, left: 0 };
   return {
-    SafeAreaProvider: jest.fn().mockImplementation(({ children }) => children),
-    SafeAreaConsumer: jest.fn().mockImplementation(({ children }) => children(inset)),
-    useSafeAreaInsets: jest.fn().mockImplementation(() => inset),
+    SafeAreaProvider: ({ children }) => <>{children}</>,
+    SafeAreaConsumer: ({ children }) => <>{children(inset)}</>,
+    useSafeAreaInsets: () => inset,
+    SafeAreaView: ({ children, ...props }) => {
+      const View = require('react-native').View;
+      return <View {...props}>{children}</View>;
+    },
   };
 });
 

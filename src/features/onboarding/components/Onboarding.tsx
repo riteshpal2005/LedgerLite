@@ -135,6 +135,7 @@ export default function OnboardingScreen() {
       </View>
 
       <ScrollView
+        testID="onboarding-scroll-view"
         ref={scrollRef}
         horizontal
         pagingEnabled
