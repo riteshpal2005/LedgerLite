@@ -89,7 +89,7 @@ describe('OnboardingScreen', () => {
   
   it('updates current index on scroll', () => {
     render(<OnboardingScreen />);
-    const scrollView = screen.UNSAFE_getByType(require('react-native').ScrollView);
+    const scrollView = screen.getByTestId('onboarding-scroll-view');
     
     fireEvent.scroll(scrollView, {
       nativeEvent: {
