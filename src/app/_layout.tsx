@@ -31,7 +31,7 @@ import { createContext } from "react";
 
 import { setIsQuickAddEscaped } from "../core/store/settingsSlice";
 
-export const QuickAddEscapeContext = createContext<{ escapeQuickAdd: () => void } | null>(null);
+export const QuickAddEscapeContext = createContext<{ escapeQuickAdd: () => void; isDirect: boolean } | null>(null);
 
 const isExpoGo =
   Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
@@ -49,14 +49,9 @@ if (!isExpoGo) {
   });
 }
 
-
 const isDirectQuickAddTopLevel = QuickActions.initial?.id === "quick-add";
 
 SplashScreen.preventAutoHideAsync().catch(console.warn);
-
-if (isDirectQuickAddTopLevel) {
-  SplashScreen.hideAsync().catch(console.warn);
-}
 
 import { UpdateChecker } from "../shared/components/UpdateChecker";
 import {
@@ -64,40 +59,14 @@ import {
   ReanimatedLogLevel,
 } from "react-native-reanimated";
 
-
 configureReanimatedLogger({
   level: ReanimatedLogLevel.warn,
   strict: false,
 });
 
 import { useTransactionDatabase } from "../core/database/useTransactionDatabase";
-
-
-
 import { DatabaseProvider } from "../core/database/DatabaseProvider";
 import { useProtectedRoute } from "../core/navigation/useProtectedRoute";
-
-
-
-
-
-function QuickAddOnlyLayout() {
-  return (
-    <Provider store={store}>
-      <DatabaseProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen
-              name="quick-add"
-              options={{ animation: "none" }}
-            />
-          </Stack>
-        </GestureHandlerRootView>
-      </DatabaseProvider>
-    </Provider>
-  );
-}
 
 export default function RootLayout() {
   const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
@@ -129,22 +98,9 @@ export default function RootLayout() {
     loadAppPref();
   }, []);
 
-
-
-  if (isDirectQuickAddTopLevel && !forceFullApp) {
-    return (
-      <QuickAddEscapeContext.Provider value={{
-        escapeQuickAdd: () => {
-          store.dispatch(setIsQuickAddEscaped(true));
-          setForceFullApp(true);
-        }
-      }}>
-        <QuickAddOnlyLayout />
-      </QuickAddEscapeContext.Provider>
-    );
-  }
-
   if (!isSettingsLoaded) return null;
+
+  const isDirect = isDirectQuickAddTopLevel && !forceFullApp;
 
   return (
     <Provider store={store}>
@@ -153,7 +109,15 @@ export default function RootLayout() {
           <ThemeProvider>
             <GestureHandlerRootView style={{ flex: 1 }}>
               <BottomSheetModalProvider>
-                <RootLayoutNav isSettingsLoaded={isSettingsLoaded} />
+                <QuickAddEscapeContext.Provider value={{
+                  escapeQuickAdd: () => {
+                    store.dispatch(setIsQuickAddEscaped(true));
+                    setForceFullApp(true);
+                  },
+                  isDirect
+                }}>
+                  <RootLayoutNav isSettingsLoaded={isSettingsLoaded} />
+                </QuickAddEscapeContext.Provider>
                 <UpdateChecker />
               </BottomSheetModalProvider>
             </GestureHandlerRootView>
@@ -163,6 +127,8 @@ export default function RootLayout() {
     </Provider>
   );
 }
+
+
 
 import { useTheme } from "../core/theme/ThemeContext";
 import { SyncingScreen } from "../shared/components/SyncingScreen";

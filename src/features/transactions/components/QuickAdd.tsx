@@ -78,14 +78,11 @@ export default function QuickAddScreen() {
 
   const handleClose = useCallback(() => {
     Keyboard.dismiss();
-    if (escapeContext) {
-      // Shortcut mode: transition to full app state in background, then kill activity.
-      escapeContext.escapeQuickAdd();
+    if (escapeContext?.isDirect) {
       setTimeout(() => {
         BackHandler.exitApp();
       }, 50);
     } else {
-      // Full app mode: just close the modal.
       router.back();
     }
   }, [escapeContext, router]);
@@ -131,7 +128,7 @@ export default function QuickAddScreen() {
       }
     }
 
-    if (escapeContext) {
+    if (escapeContext?.isDirect) {
       escapeContext.escapeQuickAdd();
       setTimeout(() => {
         router.replace("/?openAddTransaction=true");
@@ -153,14 +150,11 @@ export default function QuickAddScreen() {
       await saveQuickTransaction(amount, description, accountId);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       
-      if (escapeContext) {
-        // Shortcut mode: exit app after giving SQLite 100ms to flush
-        escapeContext.escapeQuickAdd();
+      if (escapeContext?.isDirect) {
         setTimeout(() => {
           BackHandler.exitApp();
         }, 100);
       } else {
-        // Full app mode: just go back
         router.back();
       }
     } catch (error) {
