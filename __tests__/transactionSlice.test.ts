@@ -3,8 +3,8 @@ import transactionReducer, {
   addTransaction,
   updateTransactionAction,
   deleteTransactionAction,
-} from '../src/core/store/transactionSlice';
-import { Transaction } from '../src/core/database/schema';
+} from '../src/store/transactionSlice';
+import { Transaction } from '../src/server/db/schema';
 
 describe('transactionSlice', () => {
   const initialState = { transactions: [] };

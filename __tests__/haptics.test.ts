@@ -1,6 +1,6 @@
-import { triggerHaptic } from '../src/core/utils/haptics';
+import { triggerHaptic } from '../src/utils/haptics';
 import * as Haptics from 'expo-haptics';
-import { store } from '../src/core/store/store';
+import { store } from '../src/store/store';
 
 // Mock expo-haptics
 jest.mock('expo-haptics', () => ({
@@ -16,7 +16,7 @@ jest.mock('expo-haptics', () => ({
 }));
 
 // Mock store
-jest.mock('../src/core/store/store', () => ({
+jest.mock('../src/store/store', () => ({
   store: {
     getState: jest.fn()
   }

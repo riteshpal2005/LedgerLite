@@ -4,8 +4,8 @@ import accountReducer, {
   updateAccountInRedux,
   removeAccountFromRedux,
   selectAccountsWithBalances,
-} from '../src/core/store/accountSlice';
-import { Account, Transaction } from '../src/core/database/schema';
+} from '../src/store/accountSlice';
+import { Account, Transaction } from '../src/server/db/schema';
 
 describe('accountSlice', () => {
   const initialState = { accounts: [] };

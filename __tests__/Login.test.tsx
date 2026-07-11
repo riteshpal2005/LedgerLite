@@ -1,15 +1,15 @@
 import React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react-native';
-import LoginScreen from '../src/features/auth/components/Login';
-import { AuthService } from '../src/core/services/authService';
+import LoginScreen from '../src/components/auth/Login';
+import { AuthService } from '../src/server/services/authService';
 import { useDispatch } from 'react-redux';
-import { completeOnboarding } from '../src/core/store/settingsSlice';
+import { completeOnboarding } from '../src/store/settingsSlice';
 
 // Mock dependencies
 jest.mock('expo-router', () => ({
   Link: ({ children }: any) => children,
 }));
-jest.mock('../src/core/services/authService', () => ({
+jest.mock('../src/server/services/authService', () => ({
   AuthService: {
     signInWithEmail: jest.fn(),
     signInWithGoogle: jest.fn(),
@@ -35,7 +35,7 @@ jest.mock('react-native-reanimated', () => {
 jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
 }));
-jest.mock('../src/core/store/settingsSlice', () => ({
+jest.mock('../src/store/settingsSlice', () => ({
   completeOnboarding: jest.fn(),
 }));
 

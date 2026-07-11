@@ -6,12 +6,12 @@ import {
   importSettingsJSON,
   exportToPDF,
   getOrCreateSAFDirectory,
-} from '../src/core/services/dataService';
+} from '../src/server/services/dataService';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Print from 'expo-print';
-import { Transaction } from '../src/core/database/schema';
+import { Transaction } from '../src/server/db/schema';
 import Papa from 'papaparse';
 
 describe('dataService', () => {

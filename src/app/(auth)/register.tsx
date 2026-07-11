@@ -1,1 +1,1 @@
-export { default } from '../../features/auth/components/Register';
+export { default } from '../../components/auth/Register';

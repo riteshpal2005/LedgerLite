@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react-native';
-import { useTransactionDatabase } from '../src/core/database/useTransactionDatabase';
+import { useTransactionDatabase } from '../src/server/db/useTransactionDatabase';
 import { useSQLiteContext } from 'expo-sqlite';
 import * as Crypto from 'expo-crypto';
 

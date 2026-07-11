@@ -1,1 +1,1 @@
-export { default } from '../../features/transactions/components/TransactionsTab';
+export { default } from '../../components/transactions/TransactionsTab';

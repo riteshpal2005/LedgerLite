@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react-native';
-import OnboardingScreen from '../src/features/onboarding/components/Onboarding';
+import OnboardingScreen from '../src/components/onboarding/Onboarding';
 import { useDispatch } from 'react-redux';
-import { completeOnboarding } from '../src/core/store/settingsSlice';
+import { completeOnboarding } from '../src/store/settingsSlice';
 import { router } from 'expo-router';
-import { triggerHaptic } from '../src/core/utils/haptics';
+import { triggerHaptic } from '../src/utils/haptics';
 
 // Mock dependencies
 jest.mock('expo-router', () => ({
@@ -16,10 +16,10 @@ jest.mock('expo-router', () => ({
 jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
 }));
-jest.mock('../src/core/store/settingsSlice', () => ({
+jest.mock('../src/store/settingsSlice', () => ({
   completeOnboarding: jest.fn(),
 }));
-jest.mock('../src/core/utils/haptics', () => ({
+jest.mock('../src/utils/haptics', () => ({
   triggerHaptic: {
     success: jest.fn(),
     light: jest.fn(),

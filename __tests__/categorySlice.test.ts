@@ -3,8 +3,8 @@ import categoryReducer, {
   addCategory,
   updateCategoryAction,
   removeCategory,
-} from '../src/core/store/categorySlice';
-import { Category } from '../src/core/database/schema';
+} from '../src/store/categorySlice';
+import { Category } from '../src/server/db/schema';
 
 describe('categorySlice', () => {
   const initialState = { categories: [] };

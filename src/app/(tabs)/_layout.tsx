@@ -2,13 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { withLayoutContext } from "expo-router";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "../../core/theme/ThemeContext";
+import { useTheme } from "../../hooks/theme/ThemeContext";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useEffect } from "react";
-import { useAuth } from "../../core/firebase/AuthContext";
-import { useTransactionDatabase } from "../../core/database/useTransactionDatabase";
-import { SyncService } from "../../core/services/syncService";
-import { MigrationService } from "../../core/services/migrationService";
+import { useAuth } from "../../server/firebase/AuthContext";
+import { useTransactionDatabase } from "../../server/db/useTransactionDatabase";
+import { SyncService } from "../../server/services/syncService";
+import { MigrationService } from "../../server/services/migrationService";
 
 const syncedSessions = new Set<string>();
 

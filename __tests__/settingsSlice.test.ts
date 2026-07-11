@@ -13,7 +13,7 @@ import settingsReducer, {
   removeQuickTemplate,
   setUid,
   QuickTemplate,
-} from '../src/core/store/settingsSlice';
+} from '../src/store/settingsSlice';
 
 describe('settingsSlice', () => {
   const initialState = {

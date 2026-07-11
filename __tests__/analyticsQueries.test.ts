@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react-native';
-import { useAnalyticsDatabase } from '../src/features/analytics/db/analyticsQueries';
+import { useAnalyticsDatabase } from '../src/server/db/analyticsQueries';
 import { useSQLiteContext } from 'expo-sqlite';
 
 // Mock dependencies

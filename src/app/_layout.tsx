@@ -5,23 +5,23 @@ import {
   useRootNavigationState,
 } from "expo-router";
 import { View } from "react-native";
-import { ThemeProvider } from "../core/theme/ThemeContext";
+import { ThemeProvider } from "../hooks/theme/ThemeContext";
 import "../global.css";
 import { SQLiteProvider } from "expo-sqlite";
-import { initializeDatabase } from "../core/database/schema";
+import { initializeDatabase } from "../server/db/schema";
 import { Provider } from "react-redux";
-import { store, RootState } from "../core/store/store";
+import { store, RootState } from "../store/store";
 import { useSelector } from "react-redux";
-import { setTransactions } from "../core/store/transactionSlice";
-import { setCategories } from "../core/store/categorySlice";
-import { setAccounts } from "../core/store/accountSlice";
+import { setTransactions } from "../store/transactionSlice";
+import { setCategories } from "../store/categorySlice";
+import { setAccounts } from "../store/accountSlice";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useEffect } from "react";
 import { Paths, File } from "expo-file-system";
-import { loadSettings } from "../core/store/settingsSlice";
-import { storage } from "../core/utils/storage";
-import { AuthProvider, useAuth } from "../core/firebase/AuthContext";
+import { loadSettings } from "../store/settingsSlice";
+import { storage } from "../utils/storage";
+import { AuthProvider, useAuth } from "../server/firebase/AuthContext";
 import * as SplashScreen from "expo-splash-screen";
 import { useState } from "react";
 import Constants, { ExecutionEnvironment } from "expo-constants";
@@ -45,7 +45,7 @@ if (!isExpoGo) {
 
 SplashScreen.preventAutoHideAsync().catch(console.warn);
 
-import { UpdateChecker } from "../shared/components/UpdateChecker";
+import { UpdateChecker } from "../components/ui/UpdateChecker";
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
@@ -56,9 +56,9 @@ configureReanimatedLogger({
   strict: false,
 });
 
-import { useTransactionDatabase } from "../core/database/useTransactionDatabase";
-import { DatabaseProvider } from "../core/database/DatabaseProvider";
-import { useProtectedRoute } from "../core/navigation/useProtectedRoute";
+import { useTransactionDatabase } from "../server/db/useTransactionDatabase";
+import { DatabaseProvider } from "../server/db/DatabaseProvider";
+import { useProtectedRoute } from "../hooks/navigation/useProtectedRoute";
 
 export default function RootLayout() {
   const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
@@ -111,11 +111,11 @@ export default function RootLayout() {
 
 
 
-import { useTheme } from "../core/theme/ThemeContext";
-import { SyncingScreen } from "../shared/components/SyncingScreen";
+import { useTheme } from "../hooks/theme/ThemeContext";
+import { SyncingScreen } from "../components/ui/SyncingScreen";
 import { useDispatch } from "react-redux";
-import { setUid } from "../core/store/settingsSlice";
-import { SyncService } from "../core/services/syncService";
+import { setUid } from "../store/settingsSlice";
+import { SyncService } from "../server/services/syncService";
 
 function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
   const { user, isLoading } = useAuth();

@@ -1,16 +1,16 @@
 import React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react-native';
-import RegisterScreen from '../src/features/auth/components/Register';
-import { AuthService } from '../src/core/services/authService';
+import RegisterScreen from '../src/components/auth/Register';
+import { AuthService } from '../src/server/services/authService';
 import { useDispatch } from 'react-redux';
-import { completeOnboarding } from '../src/core/store/settingsSlice';
+import { completeOnboarding } from '../src/store/settingsSlice';
 
 // Mock dependencies
 jest.mock('expo-router', () => ({
   Link: ({ children }: any) => children,
   useRouter: () => ({ back: jest.fn() }),
 }));
-jest.mock('../src/core/services/authService', () => ({
+jest.mock('../src/server/services/authService', () => ({
   AuthService: {
     registerWithEmail: jest.fn(),
   },
@@ -21,7 +21,7 @@ jest.mock('../src/core/theme/ThemeContext', () => ({
 jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
 }));
-jest.mock('../src/core/store/settingsSlice', () => ({
+jest.mock('../src/store/settingsSlice', () => ({
   completeOnboarding: jest.fn(),
 }));
 

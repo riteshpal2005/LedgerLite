@@ -1,6 +1,6 @@
 import { Redirect } from "expo-router";
 import { useSelector } from "react-redux";
-import { RootState } from "../core/store/store";
+import { RootState } from "../store/store";
 
 export default function Index() {
   const hasCompletedOnboarding = useSelector(

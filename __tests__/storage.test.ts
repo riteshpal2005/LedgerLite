@@ -1,4 +1,4 @@
-import { storage, isExpoGo } from '../src/core/utils/storage';
+import { storage, isExpoGo } from '../src/utils/storage';
 import { createMMKV } from 'react-native-mmkv';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 

@@ -1,1 +1,1 @@
-export { default } from '../features/onboarding/components/Onboarding';
+export { default } from '../components/onboarding/Onboarding';

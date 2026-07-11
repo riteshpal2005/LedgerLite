@@ -1,1 +1,1 @@
-export { default } from '../features/categories/components/Categories';
+export { default } from '../components/categories/Categories';
