@@ -30,6 +30,10 @@ export const SyncService = {
     isPulling = false;
     lastSyncTime = 0;
     storage.set('lastSyncTime', 0);
+    if (syncTimeout) {
+      clearTimeout(syncTimeout);
+      syncTimeout = null;
+    }
   },
   async pullFromFirebase(
     userId: string,
@@ -113,7 +117,11 @@ export const SyncService = {
     }
 
     syncTimeout = setTimeout(async () => {
-      await this.pushToFirebase(userId, dbActions);
+      try {
+        await this.pushToFirebase(userId, dbActions);
+      } catch (e) {
+        console.warn("[SyncService] Scheduled push aborted:", e);
+      }
     }, 3000);
   },
   async pushToFirebase(
