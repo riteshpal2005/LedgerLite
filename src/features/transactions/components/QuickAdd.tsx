@@ -16,8 +16,7 @@ import Animated, {
   useAnimatedStyle,
   withTiming
 } from "react-native-reanimated";
-import { QuickAddEscapeContext } from "../../../app/_layout";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { openDatabaseSync } from "expo-sqlite";
@@ -73,19 +72,20 @@ export default function QuickAddScreen() {
     opacity: opacity.value,
   }));
 
-  const escapeContext = useContext(QuickAddEscapeContext);
+  const { isDirect } = useLocalSearchParams<{ isDirect?: string }>();
+  const isDirectMode = isDirect === "true";
   const router = useRouter();
 
   const handleClose = useCallback(() => {
     Keyboard.dismiss();
-    if (escapeContext?.isDirect) {
+    if (isDirectMode) {
       setTimeout(() => {
         BackHandler.exitApp();
       }, 50);
     } else {
       router.back();
     }
-  }, [escapeContext, router]);
+  }, [isDirectMode, router]);
 
   useEffect(() => {
     opacity.value = withTiming(1, { duration: 180 });
@@ -128,15 +128,14 @@ export default function QuickAddScreen() {
       }
     }
 
-    if (escapeContext?.isDirect) {
-      escapeContext.escapeQuickAdd();
+    if (isDirectMode) {
       setTimeout(() => {
         router.replace("/?openAddTransaction=true");
       }, 50);
     } else {
       Linking.openURL("ledgerlite://?openAddTransaction=true");
     }
-  }, [escapeContext, router, parsedData]);
+  }, [isDirectMode, router, parsedData]);
 
   const handleSave = useCallback(async () => {
     const { amount, description } = parsedData;
@@ -150,7 +149,7 @@ export default function QuickAddScreen() {
       await saveQuickTransaction(amount, description, accountId);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       
-      if (escapeContext?.isDirect) {
+      if (isDirectMode) {
         setTimeout(() => {
           BackHandler.exitApp();
         }, 100);
@@ -161,7 +160,7 @@ export default function QuickAddScreen() {
       console.error("[QuickAdd] Save failed", error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
-  }, [parsedData, escapeContext, router]);
+  }, [parsedData, isDirectMode, router]);
 
   return (
     <View className="flex-1 bg-background">

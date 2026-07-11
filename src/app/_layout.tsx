@@ -31,8 +31,6 @@ import { createContext } from "react";
 
 import { setIsQuickAddEscaped } from "../core/store/settingsSlice";
 
-export const QuickAddEscapeContext = createContext<{ escapeQuickAdd: () => void; isDirect: boolean } | null>(null);
-
 const isExpoGo =
   Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
@@ -48,8 +46,6 @@ if (!isExpoGo) {
     }),
   });
 }
-
-const isDirectQuickAddTopLevel = QuickActions.initial?.id === "quick-add";
 
 SplashScreen.preventAutoHideAsync().catch(console.warn);
 
@@ -70,7 +66,6 @@ import { useProtectedRoute } from "../core/navigation/useProtectedRoute";
 
 export default function RootLayout() {
   const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
-  const [forceFullApp, setForceFullApp] = useState(false);
 
   useEffect(() => {
     const loadAppPref = async () => {
@@ -100,8 +95,6 @@ export default function RootLayout() {
 
   if (!isSettingsLoaded) return null;
 
-  const isDirect = isDirectQuickAddTopLevel && !forceFullApp;
-
   return (
     <Provider store={store}>
       <AuthProvider>
@@ -109,15 +102,7 @@ export default function RootLayout() {
           <ThemeProvider>
             <GestureHandlerRootView style={{ flex: 1 }}>
               <BottomSheetModalProvider>
-                <QuickAddEscapeContext.Provider value={{
-                  escapeQuickAdd: () => {
-                    store.dispatch(setIsQuickAddEscaped(true));
-                    setForceFullApp(true);
-                  },
-                  isDirect
-                }}>
-                  <RootLayoutNav isSettingsLoaded={isSettingsLoaded} />
-                </QuickAddEscapeContext.Provider>
+                <RootLayoutNav isSettingsLoaded={isSettingsLoaded} />
                 <UpdateChecker />
               </BottomSheetModalProvider>
             </GestureHandlerRootView>
@@ -135,6 +120,8 @@ import { SyncingScreen } from "../shared/components/SyncingScreen";
 import { useDispatch } from "react-redux";
 import { setUid } from "../core/store/settingsSlice";
 import { SyncService } from "../core/services/syncService";
+
+let lastProcessedQuickAction: any = null;
 
 function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
   const { user, isLoading } = useAuth();
@@ -206,12 +193,14 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
   useEffect(() => {
     if (
       action?.id === "quick-add" &&
+      action !== lastProcessedQuickAction &&
       isSettingsLoaded &&
       !isLoading &&
       navigationState?.key
     ) {
+      lastProcessedQuickAction = action;
       if (segments[0] !== "quick-add") {
-        router.push("/quick-add");
+        router.push("/quick-add?isDirect=true");
       }
     }
   }, [action, isSettingsLoaded, isLoading, navigationState?.key, segments]);
