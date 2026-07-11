@@ -195,7 +195,17 @@ export function AddTransactionSheet({
 
     if (initialTransaction) {
       await updateTransactionFull(initialTransaction.id, transactionData);
-
+      
+      if (isBackdatedMode) {
+        if (initialTransaction.accountId) {
+          const oldAdj = initialTransaction.type === "debit" ? -initialTransaction.amount : initialTransaction.amount;
+          await adjustAccountBalance(initialTransaction.accountId, oldAdj);
+        }
+        if (transactionData.accountId) {
+          const newAdj = transactionData.type === "debit" ? transactionData.amount : -transactionData.amount;
+          await adjustAccountBalance(transactionData.accountId, newAdj);
+        }
+      }
     } else {
       if (isSelfTransfer && destinationAccountId) {
         const destAccount = accounts.find((a) => a.id === destinationAccountId);
@@ -211,7 +221,6 @@ export function AddTransactionSheet({
         };
         await addTransaction(leg1Data);
 
-
         const leg2Data = {
           ...transactionData,
           id: leg2Id,
@@ -223,9 +232,20 @@ export function AddTransactionSheet({
         };
         await addTransaction(leg2Data);
 
+        if (isBackdatedMode) {
+          if (selectedAccount?.id) {
+            await adjustAccountBalance(selectedAccount.id, transactionData.amount);
+          }
+          if (destinationAccountId) {
+            await adjustAccountBalance(destinationAccountId, -transactionData.amount);
+          }
+        }
       } else {
         await addTransaction(transactionData);
-
+        if (isBackdatedMode && transactionData.accountId) {
+          const adj = transactionData.type === "debit" ? transactionData.amount : -transactionData.amount;
+          await adjustAccountBalance(transactionData.accountId, adj);
+        }
       }
     }
 
@@ -255,7 +275,25 @@ export function AddTransactionSheet({
 
   const handleDelete = async () => {
     if (!initialTransaction) return;
+    
+    let partnerTransaction = null;
+    if (initialTransaction.linkedTransactionId) {
+       const all = await getAllTransactions();
+       partnerTransaction = all.find(t => t.id === initialTransaction.linkedTransactionId);
+    }
+
     await deleteTransaction(initialTransaction.id);
+
+    if (isBackdatedMode) {
+       if (initialTransaction.accountId) {
+         const reverseAdj = initialTransaction.type === 'debit' ? -initialTransaction.amount : initialTransaction.amount;
+         await adjustAccountBalance(initialTransaction.accountId, reverseAdj);
+       }
+       if (partnerTransaction && partnerTransaction.accountId) {
+         const reversePartnerAdj = partnerTransaction.type === 'debit' ? -partnerTransaction.amount : partnerTransaction.amount;
+         await adjustAccountBalance(partnerTransaction.accountId, reversePartnerAdj);
+       }
+    }
 
     setShowDeleteModal(false);
 
