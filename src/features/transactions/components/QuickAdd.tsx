@@ -83,7 +83,11 @@ export default function QuickAddScreen() {
         BackHandler.exitApp();
       }, 50);
     } else {
-      router.back();
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace("/");
+      }
     }
   }, [isDirectMode, router]);
 
@@ -154,7 +158,11 @@ export default function QuickAddScreen() {
           BackHandler.exitApp();
         }, 100);
       } else {
-        router.back();
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.replace("/");
+        }
       }
     } catch (error) {
       console.error("[QuickAdd] Save failed", error);

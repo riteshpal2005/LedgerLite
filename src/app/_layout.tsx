@@ -181,7 +181,7 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
         subtitle: "Add transaction instantly",
         icon: "ic_quick_add",
         id: "quick-add",
-        params: { href: "/quick-add" },
+        params: { href: "/quick-add?isDirect=true" },
       },
     ]);
   }, []);
