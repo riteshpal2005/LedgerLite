@@ -1,1 +1,1 @@
-export { default } from '../../components/auth/Login';
+export { default } from '../../screens/auth/Login';

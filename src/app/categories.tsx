@@ -1,1 +1,1 @@
-export { default } from '../components/categories/Categories';
+export { default } from '../screens/categories/Categories';

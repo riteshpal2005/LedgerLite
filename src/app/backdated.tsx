@@ -1,1 +1,1 @@
-export { default } from '../components/transactions/Backdated';
+export { default } from '../screens/transactions/Backdated';
