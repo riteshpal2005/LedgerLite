@@ -18,7 +18,7 @@ export function useProtectedRoute(
     const isOnboarding = segments[0] === "onboarding";
 
     if (!hasCompletedOnboarding) {
-      if (!isOnboarding) {
+      if (!isOnboarding && !inAuthGroup) {
         router.replace("/onboarding");
       }
     } else {
