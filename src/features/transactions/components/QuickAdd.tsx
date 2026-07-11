@@ -134,10 +134,10 @@ export default function QuickAddScreen() {
 
     if (isDirectMode) {
       setTimeout(() => {
-        router.replace("/?openAddTransaction=true");
+        router.replace("/(tabs)/transactions");
       }, 50);
     } else {
-      Linking.openURL("ledgerlite://?openAddTransaction=true");
+      Linking.openURL("ledgerlite://(tabs)/transactions");
     }
   }, [isDirectMode, router, parsedData]);
 
