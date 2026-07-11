@@ -142,6 +142,7 @@ export function TransactionList({
             }}
             onEndReachedThreshold={0.5}
             keyExtractor={(item) => item.id}
+            getItemType={(item) => typeof item === "string" ? "header" : "transaction"}
             extraData={use24HourFormat}
             contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
             ListEmptyComponent={<EmptyTransactionState searchQuery={searchQuery} />}

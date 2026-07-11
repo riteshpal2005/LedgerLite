@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 
-// @ts-ignore
+// @ts-expect-error Firebase types don't export getReactNativePersistence properly in some versions
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { storage } from "../utils/storage";

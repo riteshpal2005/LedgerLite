@@ -174,7 +174,7 @@ export function useTransactionDatabase() {
   const addTransactionsBatch = async (
     transactionsList: (Omit<Transaction, "id" | "sync_status" | "updated_at"> & { id?: string })[]
   ) => {
-    await db.withTransactionAsync(async () => {
+    await db.withExclusiveTransactionAsync(async () => {
       const affectedAccounts = new Set<string>();
       const accountMinDates: Record<string, number> = {};
       const accountMinRowids: Record<string, number> = {};

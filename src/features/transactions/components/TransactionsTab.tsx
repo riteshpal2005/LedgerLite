@@ -5,6 +5,7 @@ import React, {
   useRef,
   useMemo,
   useEffect,
+  useLayoutEffect,
 } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
@@ -102,7 +103,7 @@ export default function Home() {
     return () => clearTimeout(timeoutId);
   }, [openAddTransaction]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (selectedTransactionToEdit || selectedTransactionToDuplicate) {
       bottomSheetModalRef.current?.present();
     }

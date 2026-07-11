@@ -16,6 +16,8 @@ const { Navigator } = createMaterialTopTabNavigator();
 
 const MaterialTabs = withLayoutContext(Navigator);
 
+export { ErrorBoundary } from "expo-router";
+
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const { activeThemeClass } = useTheme();

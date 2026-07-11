@@ -6,7 +6,7 @@ import { Category } from "../../../core/database/schema";
 import { CategoryIcon } from "../../../shared/components/ui/CategoryIcon";
 import { router } from "expo-router";
 import { CategoryEditSheet } from "../../../features/categories/components/CategoryEditSheet";
-import { useRef, useState } from "react";
+import { useRef, useState, useLayoutEffect } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../../core/theme/ThemeContext";
@@ -21,18 +21,19 @@ export default function CategoriesScreen() {
     Category | undefined
   >(undefined);
 
+  useLayoutEffect(() => {
+    if (selectedCategory !== undefined) {
+      bottomSheetModalRef.current?.present();
+    }
+  }, [selectedCategory]);
+
   const handleCategoryPress = (category: Category) => {
     setSelectedCategory(category);
-    setTimeout(() => {
-      bottomSheetModalRef.current?.present();
-    }, 0);
   };
 
   const handleAddPress = () => {
     setSelectedCategory(undefined);
-    setTimeout(() => {
-      bottomSheetModalRef.current?.present();
-    }, 0);
+    bottomSheetModalRef.current?.present();
   };
 
   return (

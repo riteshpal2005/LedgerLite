@@ -5,6 +5,7 @@ import { Transaction, Category, AccountWithBalance } from "../../../core/databas
 import { CategoryIcon } from "../../../shared/components/ui/CategoryIcon";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../core/store/store";
+import { formatCurrency } from "../../../shared/utils/currency";
 
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"] as const;
 
@@ -93,7 +94,7 @@ export const TransactionListItem = React.memo(function TransactionListItem({
                   {item.balance_after !== undefined && item.balance_after !== null && (
                     <View className="bg-blue-500/10 dark:bg-blue-400/10 px-2 py-0.5 rounded-md border border-blue-500/20 dark:border-blue-400/20 flex-shrink-0">
                       <Text className="text-blue-600 dark:text-blue-400 text-[10px] font-bold" numberOfLines={1}>
-                        Bal: ₹{item.balance_after.toFixed(2)}
+                        Bal: {formatCurrency(item.balance_after)}
                       </Text>
                     </View>
                   )}
@@ -115,7 +116,7 @@ export const TransactionListItem = React.memo(function TransactionListItem({
           <Text
             className={`font-bold text-lg ${isCredit ? "text-green-400" : "text-red-400"}`}
           >
-            {isCredit ? "+" : "-"}₹{item.amount.toFixed(2)}
+            {isCredit ? "+" : "-"}{formatCurrency(item.amount)}
           </Text>
           <Text className="text-tertiary text-xs mt-1">
             {formatTransactionDate(item.date, use24HourFormat)}

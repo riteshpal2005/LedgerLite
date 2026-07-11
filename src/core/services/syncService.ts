@@ -9,6 +9,7 @@ import {
 import { db } from "../firebase/config";
 import { store } from "../store/store";
 import { Transaction, Category, Account, DatabaseActions } from "../database/schema";
+import { TransactionSchema, CategorySchema, AccountSchema } from "../../shared/utils/validation";
 import { setTransactions } from "../store/transactionSlice";
 import { setCategories } from "../store/categorySlice";
 import { setAccounts } from "../store/accountSlice";
@@ -63,11 +64,26 @@ export const SyncService = {
                 transaction.date = new Date(d).getTime() || Date.now();
               }
             }
-            await dbActions.restoreTransaction(transaction as Transaction);
+            try {
+              TransactionSchema.parse(transaction);
+              await dbActions.restoreTransaction(transaction as Transaction);
+            } catch (e) {
+              console.warn(`[SyncService] Invalid transaction skipped: ${transaction.id}`, e);
+            }
           } else if (col === "categories") {
-            await dbActions.restoreCategory(localData as Category);
+            try {
+              CategorySchema.parse(localData);
+              await dbActions.restoreCategory(localData as Category);
+            } catch (e) {
+              console.warn(`[SyncService] Invalid category skipped: ${localData.id}`, e);
+            }
           } else if (col === "accounts") {
-            await dbActions.restoreAccount(localData as Account);
+            try {
+              AccountSchema.parse(localData);
+              await dbActions.restoreAccount(localData as Account);
+            } catch (e) {
+              console.warn(`[SyncService] Invalid account skipped: ${localData.id}`, e);
+            }
           }
         }
       }

@@ -9,6 +9,7 @@ import {
 import { AccountWithBalance } from "../../../core/database/schema";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../core/theme/ThemeContext";
+import { formatCurrency } from "../../../shared/utils/currency";
 
 interface AccountSelectModalProps {
   visible: boolean;
@@ -103,8 +104,7 @@ export function AccountSelectModal({
                         {account.name}
                       </Text>
                       <Text className="text-tertiary">
-                        {account.type} • ₹
-                        {(account.currentBalance ?? account.balance).toFixed(2)}
+                        {account.type} • {formatCurrency(account.currentBalance ?? account.balance)}
                       </Text>
                     </View>
                     <Ionicons

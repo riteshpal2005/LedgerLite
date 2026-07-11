@@ -11,6 +11,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Account } from "../../../core/database/schema";
 
 import { selectAccountsWithBalances } from "../../../core/store/accountSlice";
+import { formatCurrency } from "../../../shared/utils/currency";
 
 export function AccountsSection() {
   const accounts = useSelector(selectAccountsWithBalances);
@@ -72,8 +73,7 @@ export function AccountsSection() {
                       {account.name}
                     </Text>
                     <Text className="text-tertiary text-sm">
-                      {account.type} • ₹
-                      {(account.currentBalance ?? account.balance).toFixed(2)}
+                      {account.type} • {formatCurrency(account.currentBalance ?? account.balance)}
                     </Text>
                   </View>
                   <View className="flex-row items-center">

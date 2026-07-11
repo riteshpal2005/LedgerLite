@@ -12,6 +12,8 @@ import {
 import { useTheme } from "../../../core/theme/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
+import { z } from "zod";
+import { TransactionSchema, CategorySchema, AccountSchema } from "../../../shared/utils/validation";
 
 interface RestoreRawJsonModalProps {
   visible: boolean;
@@ -48,13 +50,24 @@ export function RestoreRawJsonModal({
 
     try {
       const parsed = JSON.parse(jsonText);
+      
+      const BackupSchema = z.object({
+        settings: z.any().optional(),
+        categories: z.array(CategorySchema).optional(),
+        accounts: z.array(AccountSchema).optional(),
+        transactions: z.array(TransactionSchema).optional(),
+      });
+
+      BackupSchema.parse(parsed);
+
       onRestore(parsed);
       setJsonText("");
       onClose();
-    } catch (e) {
+    } catch (e: any) {
+      console.log(e);
       Alert.alert(
-        "Invalid JSON",
-        "The text you pasted is not valid JSON. Please check and try again.",
+        "Invalid Backup Data",
+        "The text you pasted is either not valid JSON or is corrupted/missing required fields. Please check and try again.",
       );
     }
   };
