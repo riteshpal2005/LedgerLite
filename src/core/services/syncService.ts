@@ -40,7 +40,7 @@ export const SyncService = {
 
     try {
       const userDocRef = doc(db, "users", userId);
-      const collectionsToSync = ["transactions", "categories", "accounts"];
+      const collectionsToSync = ["transactions", "expenses", "categories", "accounts"];
       for (const col of collectionsToSync) {
         const q = query(collection(userDocRef, col));
         const snapshot = await getDocs(q);
@@ -51,7 +51,7 @@ export const SyncService = {
           const localData = { ...data, id: document.id, sync_status: "synced" };
           if (!document.id) continue; // Ref: syncService-1
 
-          if (col === "transactions") {
+          if (col === "transactions" || col === "expenses") {
             const transaction = { ...localData } as any;
             if (transaction.date !== undefined && transaction.date !== null) {
               const d = transaction.date;
