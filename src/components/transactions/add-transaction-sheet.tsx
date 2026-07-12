@@ -21,13 +21,15 @@ import {
   BottomSheetBackdropProps,
 } from "@gorhom/bottom-sheet";
 import { TransactionTypeToggle } from "./transaction-type-toggle";
-import { CategoryPickerButton } from "./category-picker-button";
 import { CategorySelectModal } from "./category-select-modal";
 import { AccountSelectModal } from "../accounts/account-select-modal";
 import { renderStandardBackdrop } from "../../components/ui/bottom-sheet-utils";
 import { DateTimePickerSection } from "./date-time-picker-section";
 import { BottomSheetFormField } from "../../components/ui/bottom-sheet-form-field";
 import { Transaction } from "../../server/db/schema";
+import { QuickTemplatesList } from "./quick-templates-list";
+import { TransactionActionButtons } from "./transaction-action-buttons";
+import { TransactionMetadataForm } from "./transaction-metadata-form";
 import {
   updateTransactionAction,
   deleteTransactionAction,
@@ -344,169 +346,56 @@ export function AddTransactionSheet({
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
         >
-          {quickTemplates.length > 0 && (
-            <View className="mb-6">
-              <Text className="text-secondary font-bold text-sm mb-2 uppercase">Quick Templates</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
-                {quickTemplates.map(template => (
-                  <Pressable
-                    key={template.id}
-                    onLongPress={() => {
-                      Alert.alert("Remove Template", `Remove "${template.title}"?`, [
-                        { text: "Cancel", style: "cancel" },
-                        { text: "Remove", style: "destructive", onPress: () => dispatch(removeQuickTemplate(template.id)) }
-                      ]);
-                    }}
-                    onPress={() => {
-                      setAmount(template.amount);
-                      setDescription(template.description);
-                      setMerchant(template.merchant);
-                      setCategoryId(template.categoryId);
-                      setType(template.type);
-                      if (template.accountId) setAccountId(template.accountId);
-                      setDestinationAccountId(undefined);
-                      setDate(new Date());
-                      setFormKey(prev => prev + 1);
-                    }}
-                    className="bg-brand-primary/10 px-4 py-2 rounded-xl mr-3 border border-brand-primary/20"
-                  >
-                    <Text className="text-brand-primary font-bold">{template.title}</Text>
-                    <Text className="text-brand-primary/80 text-xs text-center">{template.type === 'credit' ? '+' : '-'}₹{template.amount}</Text>
-                  </Pressable>
-                ))}
-              </ScrollView>
-            </View>
-          )}
-
-          <View className="flex-row gap-4 mb-4">
-            <View className="flex-1">
-              <CategoryPickerButton
-                selectedCategory={selectedCategory as any}
-                onPress={() => setShowCategoryPicker(true)}
-              />
-            </View>
-            <View className="flex-1">
-              <Pressable
-                onPress={() => setShowAccountPicker(true)}
-                className="bg-surface rounded-2xl p-4 border border-bordercolor h-[72px] justify-center active:bg-black/5 dark:active:bg-white/5"
-              >
-                <Text className="text-secondary text-sm mb-1">
-                  {selectedCategory?.name === "Self Transfer" ? "From Account" : "Account"}
-                </Text>
-                <View className="flex-row items-center justify-between">
-                  <Text
-                    className="text-primary font-bold text-lg flex-1"
-                    numberOfLines={1}
-                  >
-                    {selectedAccount?.name || "Select"}
-                  </Text>
-                </View>
-              </Pressable>
-            </View>
-          </View>
-
-          {selectedCategory?.name === "Self Transfer" && (
-            <View className="mb-4">
-              <Pressable
-                onPress={() => setShowDestinationPicker(true)}
-                className="bg-surface rounded-2xl p-4 border border-bordercolor h-[72px] justify-center active:bg-black/5 dark:active:bg-white/5"
-              >
-                <Text className="text-secondary text-sm mb-1">To Account</Text>
-                <View className="flex-row items-center justify-between">
-                  <Text
-                    className="text-primary font-bold text-lg flex-1"
-                    numberOfLines={1}
-                  >
-                    {accounts.find((a) => a.id === destinationAccountId)?.name || "Select Destination"}
-                  </Text>
-                </View>
-              </Pressable>
-            </View>
-          )}
-
-          <BottomSheetFormField
-            key={`amount-${formKey}`}
-            label="Amount"
-            defaultValue={amount}
-            onChangeText={setAmount}
-            placeholder="0.00"
-            keyboardType="decimal-pad"
-            inputClassName="text-primary text-4xl font-semibold"
+          <QuickTemplatesList 
+            quickTemplates={quickTemplates} 
+            onSelectTemplate={(template) => {
+              setAmount(template.amount);
+              setDescription(template.description);
+              setMerchant(template.merchant);
+              setCategoryId(template.categoryId);
+              setType(template.type);
+              if (template.accountId) setAccountId(template.accountId);
+              setDestinationAccountId(undefined);
+              setDate(new Date());
+              setFormKey(prev => prev + 1);
+            }} 
           />
 
-          <View className="flex-row gap-4 mb-4">
-            <View className="flex-1">
-              <BottomSheetFormField
-                key={`desc-${formKey}`}
-                label="Description"
-                defaultValue={description}
-                onChangeText={setDescription}
-                placeholder="e.g. Lunch..."
-                className="bg-surface rounded-2xl p-4 border border-bordercolor h-[76px]"
-              />
-            </View>
-            <View className="flex-1">
-              <BottomSheetFormField
-                key={`merchant-${formKey}`}
-                label="Merchant"
-                defaultValue={merchant}
-                onChangeText={setMerchant}
-                placeholder="e.g. Zomato..."
-                className="bg-surface rounded-2xl p-4 border border-bordercolor h-[76px]"
-              />
-            </View>
-          </View>
+          <TransactionMetadataForm
+            amount={amount} setAmount={setAmount}
+            description={description} setDescription={setDescription}
+            merchant={merchant} setMerchant={setMerchant}
+            selectedCategory={selectedCategory} setShowCategoryPicker={setShowCategoryPicker}
+            selectedAccount={selectedAccount} setShowAccountPicker={setShowAccountPicker}
+            destinationAccountId={destinationAccountId} setShowDestinationPicker={setShowDestinationPicker} accounts={accounts}
+            formKey={formKey}
+          />
 
           <DateTimePickerSection date={date} setDate={setDate} />
 
-          <Button
-            title={initialTransaction ? "Save Changes" : "Save Transaction"}
-            onPress={() => handleSave(false)}
-            className="mb-4 mt-4"
+          <TransactionActionButtons 
+            isEditing={!!initialTransaction}
+            onSave={handleSave}
+            onDelete={() => setShowDeleteModal(true)}
+            onSaveTemplate={() => {
+              if (!amount || !description || categoryId === undefined) {
+                Alert.alert("Missing Fields", "Please enter amount, description, and category.");
+                return;
+              }
+              const newTemplate = {
+                id: Crypto.randomUUID(),
+                title: description,
+                amount,
+                description,
+                merchant,
+                categoryId,
+                accountId: selectedAccount?.id,
+                type,
+              };
+              dispatch(addQuickTemplate(newTemplate));
+              Alert.alert("Template Saved", `Saved "${description}" as a template.`);
+            }}
           />
-
-          {!initialTransaction && (
-            <>
-              <Button
-                title="Save & Add Another"
-                onPress={() => handleSave(true)}
-                variant="secondary"
-                className="mb-4"
-              />
-              <Button
-                title="Save as Quick Template"
-                onPress={() => {
-                  if (!amount || !description || categoryId === undefined) {
-                    Alert.alert("Missing Fields", "Please enter amount, description, and category.");
-                    return;
-                  }
-                  const newTemplate = {
-                    id: Crypto.randomUUID(),
-                    title: description,
-                    amount,
-                    description,
-                    merchant,
-                    categoryId,
-                    accountId: selectedAccount?.id,
-                    type,
-                  };
-                  dispatch(addQuickTemplate(newTemplate));
-                  Alert.alert("Template Saved", `Saved "${description}" as a template.`);
-                }}
-                variant="ghost"
-                className="mb-4"
-              />
-            </>
-          )}
-
-          {initialTransaction && (
-            <Button
-              title="Delete Transaction"
-              variant="danger"
-              onPress={() => setShowDeleteModal(true)}
-              className="mb-8"
-            />
-          )}
         </BottomSheetScrollView>
       </BottomSheetView>
 
