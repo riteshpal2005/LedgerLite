@@ -4,7 +4,7 @@ import { useAuth } from "../../server/firebase/AuthContext";
 import { AuthService } from "../../server/services/authService";
 import { triggerHaptic } from "../../utils/haptics";
 import { useState } from "react";
-import { CustomAlert } from "../../components/ui/CustomAlert";
+import { CustomAlert } from "../../components/ui/custom-alert";
 import { useRouter } from "expo-router";
 
 export function AccountSection() {

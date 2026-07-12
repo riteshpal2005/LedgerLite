@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react-native';
-import OnboardingScreen from '../src/screens/onboarding/Onboarding';
+import OnboardingScreen from '../src/screens/onboarding/onboarding';
 import { useDispatch } from 'react-redux';
 import { completeOnboarding } from '../src/store/settingsSlice';
 import { router } from 'expo-router';

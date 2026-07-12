@@ -14,7 +14,7 @@ import {
   updateCategoryAction,
   addCategory as addCategoryAction,
 } from "../../store/categorySlice";
-import { BottomSheetFormField } from "../../components/ui/BottomSheetFormField";
+import { BottomSheetFormField } from "../../components/ui/bottom-sheet-form-field";
 import { Category } from "../../server/db/schema";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 import ColorPicker, {
@@ -23,10 +23,10 @@ import ColorPicker, {
   OpacitySlider,
   Preview,
 } from "reanimated-color-picker";
-import { CategoryDeleteModal } from "./CategoryDeleteModal";
+import { CategoryDeleteModal } from "./category-delete-modal";
 import { useAuth } from "../../server/firebase/AuthContext";
 import { SyncService } from "../../server/services/syncService";
-import { CategoryIcon } from "../../components/ui/CategoryIcon";
+import { CategoryIcon } from "../../components/ui/category-icon";
 
 interface CategoryEditSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;

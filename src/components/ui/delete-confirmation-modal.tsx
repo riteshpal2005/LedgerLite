@@ -1,5 +1,5 @@
 import React from "react";
-import { CustomAlert } from "./CustomAlert";
+import { CustomAlert } from "./custom-alert";
 
 interface DeleteConfirmationModalProps {
   visible: boolean;

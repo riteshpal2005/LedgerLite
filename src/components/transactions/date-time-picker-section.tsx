@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { View, Text, Pressable } from "react-native";
-import { CustomDateTimePickerModal } from "./CustomDateTimePickerModal";
+import { CustomDateTimePickerModal } from "./custom-date-time-picker-modal";
 import { Ionicons } from "@expo/vector-icons";
 
 import { useSelector } from "react-redux";

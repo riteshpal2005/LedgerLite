@@ -1,6 +1,6 @@
 import { View, Text, Pressable, ScrollView } from "react-native";
 import { Category } from "../../server/db/schema";
-import { CategoryIcon } from "../../components/ui/CategoryIcon";
+import { CategoryIcon } from "../../components/ui/category-icon";
 
 interface CategoryGridProps {
   categories: Category[];

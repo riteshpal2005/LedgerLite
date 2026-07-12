@@ -45,7 +45,7 @@ if (!isExpoGo) {
 
 SplashScreen.preventAutoHideAsync().catch(console.warn);
 
-import { UpdateChecker } from "../components/ui/UpdateChecker";
+import { UpdateChecker } from "../components/ui/update-checker";
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
@@ -112,7 +112,7 @@ export default function RootLayout() {
 
 
 import { useTheme } from "../hooks/theme/ThemeContext";
-import { SyncingScreen } from "../components/ui/SyncingScreen";
+import { SyncingScreen } from "../components/ui/syncing-screen";
 import { useDispatch } from "react-redux";
 import { setUid } from "../store/settingsSlice";
 import { SyncService } from "../server/services/syncService";

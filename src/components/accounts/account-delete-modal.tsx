@@ -7,7 +7,7 @@ import { useTransactionDatabase } from "../../server/db/useTransactionDatabase";
 import { useDispatch } from "react-redux";
 import { setTransactions } from "../../store/transactionSlice";
 import { removeAccountFromRedux } from "../../store/accountSlice";
-import { CustomAlert } from "../../components/ui/CustomAlert";
+import { CustomAlert } from "../../components/ui/custom-alert";
 
 interface AccountDeleteModalProps {
   visible: boolean;

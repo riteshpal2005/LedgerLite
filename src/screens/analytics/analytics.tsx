@@ -5,9 +5,9 @@ import {
   useAnalyticsDatabase,
   CategorySpending,
 } from "../../server/db/analyticsQueries";
-import { AnalyticsFilter } from "../../components/analytics/AnalyticsFilter";
-import { TransactionPieChart } from "../../components/analytics/TransactionPieChart";
-import { TotalSpentCard } from "../../components/analytics/TotalSpentCard";
+import { AnalyticsFilter } from "../../components/analytics/analytics-filter";
+import { TransactionPieChart } from "../../components/analytics/transaction-pie-chart";
+import { TotalSpentCard } from "../../components/analytics/total-spent-card";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 import Animated, {

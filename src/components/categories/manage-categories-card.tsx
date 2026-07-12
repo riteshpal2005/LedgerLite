@@ -1,6 +1,6 @@
 import { View, Text, Pressable } from "react-native";
-import { Label } from "../../components/ui/Typography";
-import { IconWrapper } from "../../components/ui/IconWrapper";
+import { Label } from "../../components/ui/typography";
+import { IconWrapper } from "../../components/ui/icon-wrapper";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 

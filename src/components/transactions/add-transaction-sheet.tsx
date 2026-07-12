@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { View, Text, Pressable, Alert, ScrollView } from "react-native";
 import * as Crypto from "expo-crypto";
-import { Button } from "../../components/ui/Button";
-import { Heading } from "../../components/ui/Typography";
+import { Button } from "../../components/ui/button";
+import { Heading } from "../../components/ui/typography";
 import { useTransactionDatabase } from "../../server/db/useTransactionDatabase";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -20,20 +20,20 @@ import {
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
 } from "@gorhom/bottom-sheet";
-import { TransactionTypeToggle } from "./TransactionTypeToggle";
-import { CategoryPickerButton } from "./CategoryPickerButton";
-import { CategorySelectModal } from "./CategorySelectModal";
-import { AccountSelectModal } from "../accounts/AccountSelectModal";
-import { renderStandardBackdrop } from "../../components/ui/BottomSheetUtils";
-import { DateTimePickerSection } from "./DateTimePickerSection";
-import { BottomSheetFormField } from "../../components/ui/BottomSheetFormField";
+import { TransactionTypeToggle } from "./transaction-type-toggle";
+import { CategoryPickerButton } from "./category-picker-button";
+import { CategorySelectModal } from "./category-select-modal";
+import { AccountSelectModal } from "../accounts/account-select-modal";
+import { renderStandardBackdrop } from "../../components/ui/bottom-sheet-utils";
+import { DateTimePickerSection } from "./date-time-picker-section";
+import { BottomSheetFormField } from "../../components/ui/bottom-sheet-form-field";
 import { Transaction } from "../../server/db/schema";
 import {
   updateTransactionAction,
   deleteTransactionAction,
   setTransactions,
 } from "../../store/transactionSlice";
-import { DeleteConfirmationModal } from "../../components/ui/DeleteConfirmationModal";
+import { DeleteConfirmationModal } from "../../components/ui/delete-confirmation-modal";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 import { useAuth } from "../../server/firebase/AuthContext";
 import { SyncService } from "../../server/services/syncService";

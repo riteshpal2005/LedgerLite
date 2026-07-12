@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../hooks/theme/ThemeContext";
-import { CategoryIcon } from "../../components/ui/CategoryIcon";
+import { CategoryIcon } from "../../components/ui/category-icon";
 
 type Category = { id: string; name: string; color: string; icon: string };
 

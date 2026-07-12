@@ -10,25 +10,25 @@ import React, {
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { useFocusEffect, useGlobalSearchParams, useRouter } from "expo-router";
-import { TransactionList } from "../../components/transactions/TransactionList";
-import { TransactionSearchBar } from "../../components/transactions/TransactionSearchBar";
+import { TransactionList } from "../../components/transactions/transaction-list";
+import { TransactionSearchBar } from "../../components/transactions/transaction-search-bar";
 import {
   TransactionSortFilter,
   SortMode,
   FilterType,
   FilterAccountId,
-} from "../../components/transactions/TransactionSortFilter";
-import { AddTransactionSheet } from "../../components/transactions/AddTransactionSheet";
-import { AddAccountModal } from "../../components/accounts/AddAccountModal";
+} from "../../components/transactions/transaction-sort-filter";
+import { AddTransactionSheet } from "../../components/transactions/add-transaction-sheet";
+import { AddAccountModal } from "../../components/accounts/add-account-modal";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
-import { renderStandardBackdrop } from "../../components/ui/BottomSheetUtils";
+import { renderStandardBackdrop } from "../../components/ui/bottom-sheet-utils";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 import { Transaction } from "../../server/db/schema";
 import Constants, { ExecutionEnvironment } from "expo-constants";
 import { Alert } from "react-native";
-import { CustomAlert } from "../../components/ui/CustomAlert";
-import { FAB } from "../../components/ui/FAB";
+import { CustomAlert } from "../../components/ui/custom-alert";
+import { FAB } from "../../components/ui/fab";
 import { storage } from "../../utils/storage";
 
 export default function Home() {

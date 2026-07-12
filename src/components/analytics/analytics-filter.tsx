@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { View, Text, Pressable, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { CustomDateTimePickerModal } from "../transactions/CustomDateTimePickerModal";
+import { CustomDateTimePickerModal } from "../transactions/custom-date-time-picker-modal";
 
 export type FilterType = "day" | "week" | "month" | "current_month" | "custom";
 

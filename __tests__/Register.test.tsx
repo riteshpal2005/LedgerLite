@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react-native';
-import RegisterScreen from '../src/screens/auth/Register';
+import RegisterScreen from '../src/screens/auth/register';
 import { AuthService } from '../src/server/services/authService';
 import { useDispatch } from 'react-redux';
 import { completeOnboarding } from '../src/store/settingsSlice';

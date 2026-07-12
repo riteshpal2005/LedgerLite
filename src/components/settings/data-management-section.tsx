@@ -20,19 +20,19 @@ import {
 } from "../../server/services/dataService";
 import { SyncService } from "../../server/services/syncService";
 import { useAuth } from "../../server/firebase/AuthContext";
-import { ExportActionRow } from "./ExportActionRow";
-import { ImportActionRow } from "./ImportActionRow";
-import { RestoreRawJsonModal } from "./RestoreRawJsonModal";
+import { ExportActionRow } from "./export-action-row";
+import { ImportActionRow } from "./import-action-row";
+import { RestoreRawJsonModal } from "./restore-raw-json-modal";
 import { isExpoGo } from "../../utils/storage";
 import {
   BulkAccountMappingModal,
   AccountMapping,
-} from "./BulkAccountMappingModal";
+} from "./bulk-account-mapping-modal";
 import { Account, ImportedTransaction } from "../../server/db/schema";
 import { useState } from "react";
-import { ColumnSelectionModal, ExportColumn } from "./ColumnSelectionModal";
+import { ColumnSelectionModal, ExportColumn } from "./column-selection-modal";
 import { triggerHaptic } from "../../utils/haptics";
-import { CustomAlert, useAlert } from "../../components/ui/CustomAlert";
+import { CustomAlert, useAlert } from "../../components/ui/custom-alert";
 
 export function DataManagementSection() {
   const dispatch = useDispatch();

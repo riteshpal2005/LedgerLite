@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { Category } from "../../server/db/schema";
-import { CategoryIcon } from "../../components/ui/CategoryIcon";
+import { CategoryIcon } from "../../components/ui/category-icon";
 
 interface CategoryPickerButtonProps {
   selectedCategory?: Category;

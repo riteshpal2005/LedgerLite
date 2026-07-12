@@ -1,7 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Card } from "../../components/ui/Card";
-import { Label } from "../../components/ui/Typography";
+import { Card } from "../../components/ui/card";
+import { Label } from "../../components/ui/typography";
 import * as Linking from "expo-linking";
 import Constants from "expo-constants";
 

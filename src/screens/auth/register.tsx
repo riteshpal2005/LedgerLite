@@ -7,9 +7,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import * as Linking from "expo-linking";
-import { AuthInput } from "../../components/ui/AuthInput";
-import { AuthButton } from "../../components/ui/AuthButton";
-import { useAlert, CustomAlert } from "../../components/ui/CustomAlert";
+import { AuthInput } from "../../components/ui/auth-input";
+import { AuthButton } from "../../components/ui/auth-button";
+import { useAlert, CustomAlert } from "../../components/ui/custom-alert";
 import { useDispatch } from "react-redux";
 import { completeOnboarding } from "../../store/settingsSlice";
 

@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { View, Text, Modal, Pressable, ScrollView } from "react-native";
-import { Card } from "./Card";
-import { IconWrapper } from "./IconWrapper";
-import { Heading, SubText, Label } from "./Typography";
-import { Button } from "./Button";
+import { Card } from "./card";
+import { IconWrapper } from "./icon-wrapper";
+import { Heading, SubText, Label } from "./typography";
+import { Button } from "./button";
 import * as Linking from "expo-linking";
 import Constants from "expo-constants";
 import { Paths, File, Directory } from "expo-file-system";

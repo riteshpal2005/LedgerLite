@@ -1,1 +1,1 @@
-export { default } from '../screens/categories/Categories';
+export { default } from '../screens/categories/categories';

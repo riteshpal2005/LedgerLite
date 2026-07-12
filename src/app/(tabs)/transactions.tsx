@@ -1,1 +1,1 @@
-export { default } from '../../screens/transactions/TransactionsTab';
+export { default } from '../../screens/transactions/transactions-tab';

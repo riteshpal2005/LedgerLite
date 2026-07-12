@@ -13,9 +13,9 @@ import {
   Alert,
   Platform,
 } from "react-native";
-import { Button } from "../../components/ui/Button";
-import { Heading, Label } from "../../components/ui/Typography";
-import { Card } from "../../components/ui/Card";
+import { Button } from "../../components/ui/button";
+import { Heading, Label } from "../../components/ui/typography";
+import { Card } from "../../components/ui/card";
 import { useDispatch } from "react-redux";
 import { useTransactionDatabase } from "../../server/db/useTransactionDatabase";
 import {

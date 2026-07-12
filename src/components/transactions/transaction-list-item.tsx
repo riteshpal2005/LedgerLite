@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Pressable } from "react-native";
 import Animated from "react-native-reanimated";
 import { Transaction, Category, AccountWithBalance } from "../../server/db/schema";
-import { CategoryIcon } from "../../components/ui/CategoryIcon";
+import { CategoryIcon } from "../../components/ui/category-icon";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { formatCurrency } from "../../utils/currency";
