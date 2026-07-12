@@ -6,12 +6,14 @@ import { useTheme } from "../../hooks/theme/ThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import * as Linking from "expo-linking";
 import { AuthInput } from "../../components/ui/auth-input";
 import { AuthButton } from "../../components/ui/auth-button";
 import { useAlert, CustomAlert } from "../../components/ui/custom-alert";
 import { useDispatch } from "react-redux";
 import { completeOnboarding } from "../../store/settingsSlice";
+import { AuthHeader } from "../../components/auth/auth-header";
+import { AuthDivider } from "../../components/auth/auth-divider";
+import { AuthFooter } from "../../components/auth/auth-footer";
 
 export default function RegisterScreen() {
   const { activeThemeClass } = useTheme();
@@ -22,6 +24,7 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const isSubmitting = useRef(false);
   const { showAlert, hideAlert, alertConfig } = useAlert();
   const dispatch = useDispatch();
@@ -67,39 +70,32 @@ export default function RegisterScreen() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    if (isSubmitting.current) return;
+    
+    isSubmitting.current = true;
+    setIsGoogleLoading(true);
+    
+    const { error } = await AuthService.signInWithGoogle();
+    
+    setIsGoogleLoading(false);
+    isSubmitting.current = false;
+
+    if (error) {
+      showAlert("Google Sign-Up Failed", error);
+    } else {
+      dispatch(completeOnboarding());
+    }
+  };
+
   return (
     <SafeAreaView className={`flex-1 ${isDark ? "bg-gray-900" : "bg-gray-50"}`}>
-      <View className="flex-1 px-6 mt-4">
-        <Animated.View entering={FadeInDown.duration(600).springify()}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className={`w-12 h-12 items-center justify-center rounded-2xl border ${isDark ? "border-gray-800 bg-gray-800/50" : "border-gray-200 bg-white shadow-sm"}`}
-          >
-            <Ionicons
-              name="arrow-back"
-              size={24}
-              color={isDark ? "white" : "black"}
-            />
-          </TouchableOpacity>
-        </Animated.View>
-
-        <View className="flex-1" />
-
-        <Animated.View
-          entering={FadeInDown.delay(100).duration(600).springify()}
-          className="mb-10"
-        >
-          <Text
-            className={`text-4xl font-extrabold ${isDark ? "text-white" : "text-gray-900"}`}
-          >
-            Create Account
-          </Text>
-          <Text
-            className={`text-base mt-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}
-          >
-            Start syncing your financial journey
-          </Text>
-        </Animated.View>
+      <View className="flex-1 px-6">
+        <AuthHeader
+          isDark={isDark}
+          title="Create Account"
+          subtitle="Join LedgerLite to sync your data"
+        />
 
         <Animated.View
           entering={FadeInDown.delay(200).duration(600).springify()}
@@ -141,50 +137,26 @@ export default function RegisterScreen() {
         </Animated.View>
 
         <Animated.View
-          entering={FadeInDown.delay(300).duration(600).springify()}
+          entering={FadeInDown.delay(200).duration(600).springify()}
         >
-          <View className="flex-row justify-center mt-10">
-            <Text
-              className={`text-base ${isDark ? "text-gray-400" : "text-gray-600"}`}
-            >
-              Already have an account?{" "}
-            </Text>
-            <Link href="/(auth)/login" asChild>
-              <TouchableOpacity activeOpacity={0.6}>
-                <Text className="text-blue-500 font-bold text-base">
-                  Sign In
-                </Text>
-              </TouchableOpacity>
-            </Link>
-          </View>
+          <AuthDivider isDark={isDark} />
 
-          <View className="mt-12 items-center px-4">
-            <Text
-              className={`text-center text-xs ${isDark ? "text-gray-500" : "text-gray-400"} leading-5`}
-            >
-              By continuing, you agree to our{" "}
-              <Text
-                onPress={() =>
-                  Linking.openURL("https://riteshpal2005.github.io/terms.html")
-                }
-                className="text-blue-500"
-              >
-                Terms of Service
-              </Text>{" "}
-              and{" "}
-              <Text
-                onPress={() =>
-                  Linking.openURL(
-                    "https://riteshpal2005.github.io/privacy.html",
-                  )
-                }
-                className="text-blue-500"
-              >
-                Privacy Policy
-              </Text>
-              .
-            </Text>
-          </View>
+          <AuthButton
+            label="Sign up with Google"
+            variant="outline"
+            icon="logo-google"
+            onPress={handleGoogleLogin}
+            disabled={isLoading || isGoogleLoading}
+            isLoading={isGoogleLoading}
+            isDark={isDark}
+          />
+
+          <AuthFooter
+            isDark={isDark}
+            promptText="Already have an account?"
+            linkText="Sign In"
+            linkHref="/(auth)/login"
+          />
         </Animated.View>
       </View>
       <CustomAlert

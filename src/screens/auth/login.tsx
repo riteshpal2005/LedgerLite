@@ -6,12 +6,14 @@ import { useTheme } from "../../hooks/theme/ThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import * as Linking from "expo-linking";
 import { AuthInput } from "../../components/ui/auth-input";
 import { AuthButton } from "../../components/ui/auth-button";
 import { useAlert, CustomAlert } from "../../components/ui/custom-alert";
 import { useDispatch } from "react-redux";
 import { completeOnboarding } from "../../store/settingsSlice";
+import { AuthHeader } from "../../components/auth/auth-header";
+import { AuthDivider } from "../../components/auth/auth-divider";
+import { AuthFooter } from "../../components/auth/auth-footer";
 
 export default function LoginScreen() {
   const { activeThemeClass } = useTheme();
@@ -83,33 +85,11 @@ export default function LoginScreen() {
   return (
     <SafeAreaView className={`flex-1 ${isDark ? "bg-gray-900" : "bg-gray-50"}`}>
       <View className="flex-1 px-6">
-        <Animated.View
-          entering={FadeInDown.duration(600).springify()}
-          className="items-center mb-10 mt-24"
-        >
-          <View className="w-32 h-32 items-center justify-center mb-2">
-            <Image
-              source={require("../../../../assets/splash-icon.png")}
-              style={{
-                width: "100%",
-                height: "100%",
-                resizeMode: "contain",
-                transform: [{ scale: 1.8 }],
-                tintColor: "#2563eb",
-              }}
-            />
-          </View>
-          <Text
-            className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}
-          >
-            Welcome Back
-          </Text>
-          <Text
-            className={`text-base mt-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}
-          >
-            Sign in to sync your transactions
-          </Text>
-        </Animated.View>
+        <AuthHeader
+          isDark={isDark}
+          title="Welcome Back"
+          subtitle="Sign in to sync your transactions"
+        />
 
         <Animated.View
           entering={FadeInDown.delay(100).duration(600).springify()}
@@ -145,19 +125,7 @@ export default function LoginScreen() {
         <Animated.View
           entering={FadeInDown.delay(200).duration(600).springify()}
         >
-          <View className="flex-row items-center my-8">
-            <View
-              className={`flex-1 h-px ${isDark ? "bg-gray-800" : "bg-gray-200"}`}
-            />
-            <Text
-              className={`px-4 text-sm font-medium ${isDark ? "text-gray-500" : "text-gray-400"}`}
-            >
-              OR
-            </Text>
-            <View
-              className={`flex-1 h-px ${isDark ? "bg-gray-800" : "bg-gray-200"}`}
-            />
-          </View>
+          <AuthDivider isDark={isDark} />
 
           <AuthButton
             label="Sign in with Google"
@@ -169,48 +137,12 @@ export default function LoginScreen() {
             isDark={isDark}
           />
 
-          <View className="flex-row justify-center mt-10">
-            <Text
-              className={`text-base ${isDark ? "text-gray-400" : "text-gray-600"}`}
-            >
-              Don't have an account?{" "}
-            </Text>
-            <Link href="/(auth)/register" asChild>
-              <TouchableOpacity activeOpacity={0.6}>
-                <Text className="text-blue-500 font-bold text-base">
-                  Sign Up
-                </Text>
-              </TouchableOpacity>
-            </Link>
-          </View>
-
-          <View className="mt-12 items-center px-4">
-            <Text
-              className={`text-center text-xs ${isDark ? "text-gray-500" : "text-gray-400"} leading-5`}
-            >
-              By continuing, you agree to our{" "}
-              <Text
-                onPress={() =>
-                  Linking.openURL("https://riteshpal2005.github.io/terms.html")
-                }
-                className="text-blue-500"
-              >
-                Terms of Service
-              </Text>{" "}
-              and{" "}
-              <Text
-                onPress={() =>
-                  Linking.openURL(
-                    "https://riteshpal2005.github.io/privacy.html",
-                  )
-                }
-                className="text-blue-500"
-              >
-                Privacy Policy
-              </Text>
-              .
-            </Text>
-          </View>
+          <AuthFooter
+            isDark={isDark}
+            promptText="Don't have an account?"
+            linkText="Sign Up"
+            linkHref="/(auth)/register"
+          />
         </Animated.View>
       </View>
 
