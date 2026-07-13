@@ -133,31 +133,36 @@ export default function HomeScreen() {
         {/* Monthly Summary */}
         <Text className="text-white text-lg font-bold mb-4">Monthly Summary</Text>
         <View className="flex-row justify-between items-center mb-10 pl-2 pr-4">
-          <View className="w-40 h-24 overflow-hidden relative justify-end items-center">
-             <Svg width="160" height="160" viewBox="0 0 160 160" style={{ position: 'absolute', top: 0 }}>
+          <View className="w-32 h-32 relative justify-center items-center">
+             <Svg width="128" height="128" viewBox="0 0 160 160" style={{ transform: [{ rotate: '-90deg' }] }}>
                {/* Background Track */}
-               <Path
-                 d="M 10 150 A 70 70 0 0 1 150 150"
-                 stroke="#1b1b1c"
-                 strokeWidth="20"
-                 fill="none"
-                 strokeLinecap="butt"
+               <Circle 
+                 cx="80" cy="80" r="70" 
+                 stroke="#1b1b1c" 
+                 strokeWidth="20" 
+                 fill="none" 
                />
-               {/* Income (Blue) - Mocked path */}
-               <Path
-                 d="M 10 150 A 70 70 0 0 1 80 80"
+               
+               {/* Income (Blue) - 72% */}
+               <Circle
+                 cx="80" cy="80" r="70"
                  stroke="#3b82f6"
                  strokeWidth="20"
                  fill="none"
-                 strokeLinecap="butt"
+                 strokeDasharray="316 440"
+                 strokeDashoffset="0"
+                 strokeLinecap="round"
                />
-               {/* Expense (Purple) - Mocked path */}
-               <Path
-                 d="M 80 80 A 70 70 0 0 1 148 135"
+               
+               {/* Expense (Purple) - 28% */}
+               <Circle
+                 cx="80" cy="80" r="70"
                  stroke="#8b5cf6"
                  strokeWidth="20"
                  fill="none"
-                 strokeLinecap="butt"
+                 strokeDasharray="124 440"
+                 strokeDashoffset="-316"
+                 strokeLinecap="round"
                />
              </Svg>
           </View>
