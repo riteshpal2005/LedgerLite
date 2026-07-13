@@ -14,6 +14,7 @@ export default function DeveloperScreen() {
     { name: "Settings (More)", route: "/(tabs)/settings" },
     { name: "Add Transaction", route: "/add-transaction" },
     { name: "Login (LockScreen)", route: "/(auth)/login" },
+    { name: "Sign Up", route: "/(auth)/register" },
   ];
 
   return (
