@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Path, Circle } from "react-native-svg";
 
 export default function HomeScreen() {
+  const [isBalanceVisible, setIsBalanceVisible] = useState(false);
+
   return (
     <SafeAreaView className="flex-1 bg-[#0a0b0d]">
       {/* Header */}
@@ -39,21 +41,29 @@ export default function HomeScreen() {
         <View className="bg-[#0f1011] rounded-2xl p-5 mb-8">
           <View className="flex-row justify-between items-center mb-1">
             <Text className="text-gray-400 text-sm">Total Balance</Text>
-            <Ionicons name="eye-outline" size={24} color="#d1d5db" />
+            <TouchableOpacity onPress={() => setIsBalanceVisible(!isBalanceVisible)}>
+              <Ionicons name={isBalanceVisible ? "eye-outline" : "eye-off-outline"} size={24} color="#d1d5db" />
+            </TouchableOpacity>
           </View>
-          <Text className="text-white text-4xl font-bold mb-4">₹48,650.00</Text>
+          <Text className="text-white text-4xl font-bold mb-4">
+            {isBalanceVisible ? "₹48,650.00" : "••••••••"}
+          </Text>
           
           <View className="h-px bg-[#1b1b1c] w-full mb-4" />
           
           <View className="flex-row justify-between items-center">
             <View className="flex-1">
               <Text className="text-green-500 text-sm mb-1">Income</Text>
-              <Text className="text-green-500 text-lg font-bold">₹80,240.00</Text>
+              <Text className="text-green-500 text-lg font-bold">
+                {isBalanceVisible ? "₹80,240.00" : "••••••••"}
+              </Text>
             </View>
             <View className="w-px h-10 bg-[#1b1b1c] mx-4" />
             <View className="flex-1">
               <Text className="text-red-500 text-sm mb-1">Expense</Text>
-              <Text className="text-white text-lg font-bold">₹31,590.00</Text>
+              <Text className="text-white text-lg font-bold">
+                {isBalanceVisible ? "₹31,590.00" : "••••••••"}
+              </Text>
             </View>
           </View>
         </View>
