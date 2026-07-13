@@ -16,6 +16,9 @@ export function useProtectedRoute(
 
     const inAuthGroup = segments[0] === "(auth)";
     const isOnboarding = segments[0] === "onboarding";
+    const isDeveloper = segments[0] === "developer";
+
+    if (isDeveloper) return; // Allow access to developer menu
 
     if (!hasCompletedOnboarding) {
       if (!isOnboarding && !inAuthGroup) {

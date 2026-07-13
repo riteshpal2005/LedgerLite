@@ -189,6 +189,7 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
         <Stack.Screen name="categories" />
         <Stack.Screen name="backdated" />
         <Stack.Screen name="onboarding" />
+        <Stack.Screen name="developer" />
       </Stack>
     </View>
   );
