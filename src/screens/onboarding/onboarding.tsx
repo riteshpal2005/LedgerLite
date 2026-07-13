@@ -21,11 +21,11 @@ const SLIDES = [
   },
   {
     id: "2",
-    titleStart: "Placeholder ",
-    titleHighlight: "Slide 2",
+    titleStart: "Understand your\nmoney ",
+    titleHighlight: "better",
     titleEnd: "",
-    description: "Slide 2 description.",
-    icon: "pie-chart-outline" as any,
+    description: "Visual insights and reports help you\nanalyze your spending and\ngrow your savings.",
+    icon: "pie-chart" as any,
   },
   {
     id: "3",
