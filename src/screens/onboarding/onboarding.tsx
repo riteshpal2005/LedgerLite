@@ -37,11 +37,11 @@ const SLIDES = [
   },
   {
     id: "4",
-    titleStart: "Placeholder ",
-    titleHighlight: "Slide 4",
+    titleStart: "Your finances,\nyour ",
+    titleHighlight: "future.",
     titleEnd: "",
-    description: "Slide 4 description.",
-    icon: "cloud-done-outline" as any,
+    description: "Let's get started and build\na better tomorrow.",
+    icon: "journal" as any,
   },
 ];
 
@@ -70,6 +70,11 @@ export default function OnboardingScreen() {
       x: width * (SLIDES.length - 1),
       animated: true,
     });
+  };
+
+  const handleLogin = () => {
+    triggerHaptic.light();
+    router.replace("/signin");
   };
 
   const handleNext = () => {
@@ -147,7 +152,7 @@ export default function OnboardingScreen() {
       <View className="px-6 pb-10">
         
         {/* Pagination Dots */}
-        <View className="flex-row justify-center items-center mb-3">
+        <View className={`flex-row justify-center items-center ${isLastSlide ? "mb-8" : "mb-3"}`}>
           {SLIDES.map((_, index) => (
             <View
               key={index}
@@ -158,38 +163,63 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
-        {/* Dynamic Slide Counter */}
-        <Text className="text-gray-500 text-center text-xs font-bold mb-10 tracking-widest">
-          {currentIndex + 1} / {SLIDES.length}
-        </Text>
-
-        {/* Action Buttons Row */}
-        <View className="flex-row items-center justify-between mb-8">
-          <TouchableOpacity 
-            onPress={handlePrev}
-            className="w-14 h-14 bg-[#0f1011] rounded-full items-center justify-center border border-[#1b1b1c]"
-            style={{ opacity: currentIndex === 0 ? 0.3 : 1 }}
-            disabled={currentIndex === 0}
-          >
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            onPress={handleNext}
-            className="flex-1 ml-4 h-14 bg-[#6642f8] rounded-full flex-row items-center justify-center"
-          >
-            <Text className="text-white font-bold text-base mr-2">
-              {isLastSlide ? "Get Started" : "Next"}
+        {!isLastSlide ? (
+          <>
+            {/* Dynamic Slide Counter */}
+            <Text className="text-gray-500 text-center text-xs font-bold mb-10 tracking-widest">
+              {currentIndex + 1} / {SLIDES.length}
             </Text>
-            <Ionicons name="arrow-forward" size={20} color="white" />
-          </TouchableOpacity>
-        </View>
 
-        {/* Swipe to explore footer */}
-        <View className="flex-row justify-center items-center">
-           <MaterialCommunityIcons name="gesture-swipe-horizontal" size={20} color="#4b5563" className="mr-2" />
-           <Text className="text-gray-600 text-xs">Swipe to explore</Text>
-        </View>
+            {/* Action Buttons Row */}
+            <View className="flex-row items-center justify-between mb-8">
+              <TouchableOpacity 
+                onPress={handlePrev}
+                className="w-14 h-14 bg-[#0f1011] rounded-full items-center justify-center border border-[#1b1b1c]"
+                style={{ opacity: currentIndex === 0 ? 0.3 : 1 }}
+                disabled={currentIndex === 0}
+              >
+                <Ionicons name="arrow-back" size={24} color="white" />
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                onPress={handleNext}
+                className="flex-1 ml-4 h-14 bg-[#6642f8] rounded-full flex-row items-center justify-center"
+              >
+                <Text className="text-white font-bold text-base mr-2">Next</Text>
+                <Ionicons name="arrow-forward" size={20} color="white" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Swipe to explore footer */}
+            <View className="flex-row justify-center items-center">
+               <MaterialCommunityIcons name="gesture-swipe-horizontal" size={20} color="#4b5563" className="mr-2" />
+               <Text className="text-gray-600 text-xs">Swipe to explore</Text>
+            </View>
+          </>
+        ) : (
+          <View className="w-full">
+            <TouchableOpacity 
+              onPress={handleComplete}
+              className="w-full h-14 bg-[#6642f8] rounded-xl flex-row items-center justify-center mb-4"
+            >
+              <Ionicons name="person-outline" size={20} color="white" className="mr-2" />
+              <Text className="text-white font-bold text-base">Continue as Guest</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              onPress={handleLogin}
+              className="w-full h-14 bg-[#0a0b0d] rounded-xl flex-row items-center justify-center border border-[#4c358f] mb-8"
+            >
+              <Ionicons name="log-in-outline" size={20} color="#6642f8" className="mr-2 transform rotate-180" />
+              <Text className="text-white font-bold text-base">Sign In</Text>
+            </TouchableOpacity>
+
+            <View className="flex-row justify-center items-center">
+               <Ionicons name="lock-closed-outline" size={14} color="#6b7280" className="mr-1" />
+               <Text className="text-gray-500 text-xs">Your data is secure and private</Text>
+            </View>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
