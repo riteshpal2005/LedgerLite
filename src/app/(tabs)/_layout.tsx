@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { withLayoutContext } from "expo-router";
+import { withLayoutContext, useRouter } from "expo-router";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../hooks/theme/ThemeContext";
@@ -22,6 +22,7 @@ export { ErrorBoundary } from "expo-router";
 
 function CustomTabBar({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   return (
     <View 
       className="flex-row bg-[#0a0b0d] items-center justify-between border-t border-[#1b1b1c]" 
@@ -38,7 +39,10 @@ function CustomTabBar({ state, navigation }: any) {
       </TouchableOpacity>
 
       <View className="flex-1 items-center justify-center relative z-50">
-        <TouchableOpacity className="w-14 h-14 bg-[#6642f8] rounded-full items-center justify-center absolute -top-8 border-4 border-[#0a0b0d]">
+        <TouchableOpacity 
+          className="w-14 h-14 bg-[#6642f8] rounded-full items-center justify-center absolute -top-8 border-4 border-[#0a0b0d]"
+          onPress={() => router.push("/add-transaction")}
+        >
           <Ionicons name="add" size={32} color="white" />
         </TouchableOpacity>
       </View>
