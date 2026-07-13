@@ -20,7 +20,8 @@ import { View, Text, TouchableOpacity } from "react-native";
 
 export { ErrorBoundary } from "expo-router";
 
-function CustomTabBar({ state, navigation, insets }: any) {
+function CustomTabBar({ state, navigation }: any) {
+  const insets = useSafeAreaInsets();
   return (
     <View 
       className="flex-row bg-[#0a0b0d] items-center justify-between border-t border-[#1b1b1c]" 
