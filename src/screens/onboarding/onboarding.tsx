@@ -29,11 +29,11 @@ const SLIDES = [
   },
   {
     id: "3",
-    titleStart: "Placeholder ",
-    titleHighlight: "Slide 3",
+    titleStart: "Keep every transaction\n",
+    titleHighlight: "organized",
     titleEnd: "",
-    description: "Slide 3 description.",
-    icon: "wallet-outline" as any,
+    description: "Add and categorize your income and\nexpenses in seconds. Simple, fast\nand effortless.",
+    icon: "list" as any,
   },
   {
     id: "4",
