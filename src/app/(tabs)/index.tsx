@@ -12,12 +12,12 @@ export default function HomeScreen() {
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 mt-4 mb-2">
         <View className="flex-row items-center">
-          <View className="w-12 h-12 bg-[#7a51ee] rounded-xl items-center justify-center mr-3">
+          <View className="w-12 h-12 bg-[#6642f8] rounded-xl items-center justify-center mr-3">
             <Ionicons name="book" size={24} color="white" />
           </View>
           <View>
             <Text className="text-white text-2xl font-bold">
-              Ledger<Text className="text-[#7a51ee]">Lite</Text>
+              Ledger<Text className="text-[#6642f8]">Lite</Text>
             </Text>
             <Text className="text-gray-400 text-xs">Transaction Tracker</Text>
           </View>
@@ -72,7 +72,7 @@ export default function HomeScreen() {
         <View className="flex-row justify-between items-end mb-3">
           <Text className="text-white text-lg font-bold">Recent Transactions</Text>
           <TouchableOpacity>
-            <Text className="text-[#7a51ee] text-sm font-bold">See all</Text>
+            <Text className="text-[#6642f8] text-sm font-bold">See all</Text>
           </TouchableOpacity>
         </View>
 
@@ -167,7 +167,7 @@ export default function HomeScreen() {
                {/* Expense (Purple) - 28% */}
                <Circle
                  cx="80" cy="80" r="70"
-                 stroke="#7a51ee"
+                 stroke="#6642f8"
                  strokeWidth="20"
                  fill="none"
                  strokeDasharray="124 440"

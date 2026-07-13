@@ -9,22 +9,22 @@ export default function TransactionsScreen() {
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 mt-4 mb-2">
         <View className="flex-row items-center">
-          <View className="w-12 h-12 bg-[#7a51ee] rounded-xl items-center justify-center mr-3">
+          <View className="w-12 h-12 bg-[#6642f8] rounded-xl items-center justify-center mr-3">
             <Ionicons name="book" size={24} color="white" />
           </View>
           <View>
             <Text className="text-white text-2xl font-bold">
-              Ledger<Text className="text-[#7a51ee]">Lite</Text>
+              Ledger<Text className="text-[#6642f8]">Lite</Text>
             </Text>
             <Text className="text-gray-400 text-xs">Transaction Tracker</Text>
           </View>
         </View>
         <View className="flex-row items-center">
           <TouchableOpacity className="mr-4">
-            <Ionicons name="search-outline" size={28} color="white" />
+            <Ionicons name="search-outline" size={24} color="white" />
           </TouchableOpacity>
           <TouchableOpacity>
-            <Ionicons name="filter-outline" size={28} color="white" />
+            <Ionicons name="funnel-outline" size={24} color="white" />
           </TouchableOpacity>
         </View>
       </View>
@@ -34,8 +34,8 @@ export default function TransactionsScreen() {
 
         {/* Filter Tabs */}
         <View className="flex-row bg-[#0f1011] rounded-xl p-1 mb-6">
-          <TouchableOpacity className="flex-1 items-center justify-center py-2 bg-[#1b1b1c] rounded-lg border border-[#7a51ee]/30">
-            <Text className="text-[#7a51ee] font-bold">All</Text>
+          <TouchableOpacity className="flex-1 items-center justify-center py-2 bg-[#1b1b1c] rounded-lg border border-[#6642f8]/30">
+            <Text className="text-[#6642f8] font-bold">All</Text>
           </TouchableOpacity>
           <TouchableOpacity className="flex-1 items-center justify-center py-2">
             <Text className="text-green-500 font-bold">Income</Text>
@@ -49,8 +49,8 @@ export default function TransactionsScreen() {
         <View className="flex-row justify-between items-center mb-3">
           <Text className="text-white text-base font-bold">June 2025</Text>
           <View className="flex-row items-center">
-            <Text className="text-[#7a51ee] text-sm font-bold mr-1">₹13,450.00</Text>
-            <Ionicons name="chevron-up" size={16} color="#7a51ee" />
+            <Text className="text-[#6642f8] text-sm font-bold mr-1">₹13,450.00</Text>
+            <Ionicons name="chevron-up" size={16} color="#6642f8" />
           </View>
         </View>
 
@@ -246,11 +246,11 @@ export default function TransactionsScreen() {
 
           <View className="flex-row items-center">
             <View className="w-10 h-10 bg-[#1a1428] rounded-full items-center justify-center mr-2">
-              <Ionicons name="trending-up-outline" size={18} color="#7a51ee" />
+              <Ionicons name="trending-up-outline" size={18} color="#6642f8" />
             </View>
             <View>
               <Text className="text-gray-400 text-[10px] mb-0.5">Net Balance</Text>
-              <Text className="text-[#7a51ee] text-xs font-bold">₹48,650.00</Text>
+              <Text className="text-[#6642f8] text-xs font-bold">₹48,650.00</Text>
             </View>
           </View>
         </View>
