@@ -7,24 +7,25 @@ import Svg, { Path, Circle } from "react-native-svg";
 export default function HomeScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#0a0b0d]">
-      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View className="flex-row items-center justify-between mt-4 mb-6">
-          <View className="flex-row items-center">
-            <View className="w-12 h-12 bg-[#8b5cf6] rounded-xl items-center justify-center mr-3">
-              <Ionicons name="book" size={24} color="white" />
-            </View>
-            <View>
-              <Text className="text-white text-2xl font-bold">
-                Ledger<Text className="text-[#8b5cf6]">Lite</Text>
-              </Text>
-              <Text className="text-gray-400 text-xs">Transaction Tracker</Text>
-            </View>
+      {/* Header */}
+      <View className="flex-row items-center justify-between px-4 mt-4 mb-2">
+        <View className="flex-row items-center">
+          <View className="w-12 h-12 bg-[#8b5cf6] rounded-xl items-center justify-center mr-3">
+            <Ionicons name="book" size={24} color="white" />
           </View>
-          <TouchableOpacity>
-            <Ionicons name="menu" size={32} color="white" />
-          </TouchableOpacity>
+          <View>
+            <Text className="text-white text-2xl font-bold">
+              Ledger<Text className="text-[#8b5cf6]">Lite</Text>
+            </Text>
+            <Text className="text-gray-400 text-xs">Transaction Tracker</Text>
+          </View>
         </View>
+        <TouchableOpacity>
+          <Ionicons name="menu" size={32} color="white" />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
 
         {/* Overview */}
         <View className="flex-row justify-between items-end mb-3">
