@@ -16,7 +16,44 @@ const { Navigator } = createMaterialTopTabNavigator();
 
 const MaterialTabs = withLayoutContext(Navigator);
 
+import { View, Text, TouchableOpacity } from "react-native";
+
 export { ErrorBoundary } from "expo-router";
+
+function CustomTabBar({ state, navigation, insets }: any) {
+  return (
+    <View 
+      className="flex-row bg-[#0a0b0d] items-center justify-between border-t border-[#1b1b1c]" 
+      style={{ height: 70 + insets.bottom, paddingBottom: insets.bottom, paddingHorizontal: 10 }}
+    >
+      <TouchableOpacity onPress={() => navigation.navigate("index")} className="items-center flex-1">
+        <Ionicons name={state.index === 0 ? "home" : "home-outline"} size={24} color={state.index === 0 ? "#8b5cf6" : "#6b7280"} />
+        <Text style={{ color: state.index === 0 ? "#8b5cf6" : "#6b7280", fontSize: 10, marginTop: 4, fontWeight: "bold" }}>Home</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate("transactions")} className="items-center flex-1">
+        <Ionicons name={state.index === 1 ? "layers" : "layers-outline"} size={24} color={state.index === 1 ? "#8b5cf6" : "#6b7280"} />
+        <Text style={{ color: state.index === 1 ? "#8b5cf6" : "#6b7280", fontSize: 10, marginTop: 4, fontWeight: "bold" }}>Transactions</Text>
+      </TouchableOpacity>
+
+      <View className="flex-1 items-center justify-center relative z-50">
+        <TouchableOpacity className="w-14 h-14 bg-[#8b5cf6] rounded-full items-center justify-center absolute -top-8 border-4 border-[#0a0b0d]">
+          <Ionicons name="add" size={32} color="white" />
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity onPress={() => navigation.navigate("analytics")} className="items-center flex-1">
+        <Ionicons name={state.index === 2 ? "bar-chart" : "bar-chart-outline"} size={24} color={state.index === 2 ? "#8b5cf6" : "#6b7280"} />
+        <Text style={{ color: state.index === 2 ? "#8b5cf6" : "#6b7280", fontSize: 10, marginTop: 4, fontWeight: "bold" }}>Analytics</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate("settings")} className="items-center flex-1">
+        <Ionicons name={state.index === 3 ? "options" : "options-outline"} size={24} color={state.index === 3 ? "#8b5cf6" : "#6b7280"} />
+        <Text style={{ color: state.index === 3 ? "#8b5cf6" : "#6b7280", fontSize: 10, marginTop: 4, fontWeight: "bold" }}>More</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
@@ -51,25 +88,10 @@ export default function TabLayout() {
   return (
     <MaterialTabs
       tabBarPosition="bottom"
+      initialRouteName="index"
+      tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
         swipeEnabled: true,
-        tabBarStyle: {
-          backgroundColor: getBackgroundColor(),
-          borderTopWidth: 0,
-          height: 60 + insets.bottom,
-          paddingBottom: insets.bottom,
-        },
-        tabBarActiveTintColor: "#2563eb",
-        tabBarInactiveTintColor: "#a1a1aa",
-        tabBarIndicatorStyle: {
-          backgroundColor: "#2563eb",
-          height: 3,
-        },
-        tabBarShowIcon: true,
-        tabBarLabelStyle: {
-          fontSize: 10,
-          fontWeight: "bold",
-        },
       }}
     >
       <MaterialTabs.Screen
