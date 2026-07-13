@@ -73,6 +73,15 @@ export default function TabLayout() {
       }}
     >
       <MaterialTabs.Screen
+        name="index"
+        options={{
+          title: "Home",
+          tabBarIcon: ({ color }: { color: string }) => (
+            <Ionicons name="home" size={24} color={color} />
+          ),
+        }}
+      />
+      <MaterialTabs.Screen
         name="transactions"
         options={{
           title: "Transactions",
