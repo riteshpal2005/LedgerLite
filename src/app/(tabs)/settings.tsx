@@ -7,7 +7,7 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#0a0b0d]">
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 mt-4 mb-6">
+      <View className="flex-row items-center justify-between px-6 mt-4 mb-6">
         <View className="flex-row items-center">
           <View className="w-12 h-12 bg-[#6642f8] rounded-xl items-center justify-center mr-3">
             <Ionicons name="book" size={24} color="white" />
@@ -25,7 +25,7 @@ export default function SettingsScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
         {/* Profile Card */}
         <TouchableOpacity className="bg-[#0f1011] rounded-2xl p-4 flex-row items-center justify-between mb-6 border border-[#1b1b1c]">
           <View className="flex-row items-center">

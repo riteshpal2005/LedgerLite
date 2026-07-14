@@ -8,7 +8,7 @@ export default function AnalyticsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#0a0b0d]">
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 mt-4 mb-2">
+      <View className="flex-row items-center justify-between px-6 mt-4 mb-2">
         <View className="flex-row items-center">
           <View className="w-12 h-12 bg-[#6642f8] rounded-xl items-center justify-center mr-3">
             <Ionicons name="book" size={24} color="white" />
@@ -27,7 +27,7 @@ export default function AnalyticsScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
         <Text className="text-white text-2xl font-bold mb-4">Analytics</Text>
 
         {/* Filter Tabs */}
