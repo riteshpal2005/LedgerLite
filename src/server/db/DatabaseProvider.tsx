@@ -1,21 +1,20 @@
-import React, { useContext } from "react";
-import { SQLiteProvider } from "expo-sqlite";
-import { initializeDatabase } from "./schema";
+import React, { useContext, useMemo } from "react";
+import WatermelonDatabaseProvider from '@nozbe/watermelondb/DatabaseProvider'
+import { createDatabase } from "./index";
 import { AuthContext } from "../firebase/AuthContext";
 
 // Ref: DatabaseProvider-1
 export function DatabaseProvider({ children }: { children: React.ReactNode }) {
   const auth = useContext(AuthContext);
   const user = auth?.user ?? null;
-  const dbName = user ? `ledgerlite_${user.uid}.db` : "ledgerlite_guest.db";
+  const dbName = user ? `ledgerlite_${user.uid}` : "ledgerlite_guest";
+
+  const database = useMemo(() => createDatabase(dbName), [dbName]);
 
   return (
-    <SQLiteProvider
-      key={dbName}
-      databaseName={dbName}
-      onInit={initializeDatabase}
-    >
+    // @ts-ignore: WatermelonDB types for DatabaseProvider are incompatible with React 19 JSX
+    <WatermelonDatabaseProvider database={database} key={dbName}>
       {children}
-    </SQLiteProvider>
+    </WatermelonDatabaseProvider>
   );
 }
