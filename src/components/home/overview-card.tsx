@@ -1,10 +1,25 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import withObservables from "@nozbe/watermelondb/react/withObservables";
+import { withDatabase } from "@nozbe/watermelondb/react";
+import { Database } from "@nozbe/watermelondb";
+import Transaction from "../../server/db/models/Transaction";
+
+interface OverviewCardProps {
+  transactions: Transaction[];
+}
 
 // Ref: OverviewCard-1
-export function OverviewCard() {
+const OverviewCardComponent = ({ transactions }: OverviewCardProps) => {
   const [isBalanceVisible, setIsBalanceVisible] = useState(false);
+
+  // Dynamic calculations based on observable transaction stream
+  const income = transactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
+  const expense = transactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
+  const totalBalance = income - expense;
+
+  const formatCurrency = (amount: number) => `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
     <View>
@@ -24,7 +39,7 @@ export function OverviewCard() {
           </TouchableOpacity>
         </View>
         <Text className="text-white text-4xl font-bold mb-4">
-          {isBalanceVisible ? "₹48,650.00" : "••••••••"}
+          {isBalanceVisible ? formatCurrency(totalBalance) : "••••••••"}
         </Text>
         
         <View className="h-px bg-[#1b1b1c] w-full mb-4" />
@@ -33,14 +48,14 @@ export function OverviewCard() {
           <View className="flex-1">
             <Text className="text-green-500 text-sm mb-1">Income</Text>
             <Text className="text-green-500 text-lg font-bold">
-              {isBalanceVisible ? "₹80,240.00" : "••••••••"}
+              {isBalanceVisible ? formatCurrency(income) : "••••••••"}
             </Text>
           </View>
           <View className="w-px h-10 bg-[#1b1b1c] mx-4" />
           <View className="flex-1">
             <Text className="text-red-500 text-sm mb-1">Expense</Text>
             <Text className="text-white text-lg font-bold">
-              {isBalanceVisible ? "₹31,590.00" : "••••••••"}
+              {isBalanceVisible ? formatCurrency(expense) : "••••••••"}
             </Text>
           </View>
         </View>
@@ -48,3 +63,9 @@ export function OverviewCard() {
     </View>
   );
 }
+
+const enhance = withObservables(['database'], ({ database }: { database: Database }) => ({
+  transactions: database.collections.get<Transaction>('transactions').query().observe(),
+}));
+
+export const OverviewCard = withDatabase(enhance(OverviewCardComponent));
