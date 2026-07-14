@@ -1,140 +1,55 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
-import Animated from "react-native-reanimated";
-import { Transaction, Category, AccountWithBalance } from "../../server/db/schema";
-import { CategoryIcon } from "../../components/ui/category-icon";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
-import { formatCurrency } from "../../utils/currency";
-
-const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"] as const;
-
-function formatTransactionDate(ts: number, use24h: boolean): string {
-  const d = new Date(ts);
-  const mm = String(d.getMinutes()).padStart(2, "0");
-  const day = d.getDate();
-  const mon = MONTHS[d.getMonth()];
-  if (use24h) {
-    return `${String(d.getHours()).padStart(2, "0")}:${mm}, ${day} ${mon}`;
-  }
-  const h = d.getHours();
-  const ampm = h >= 12 ? "PM" : "AM";
-  const h12 = h % 12 || 12;
-  return `${h12}:${mm} ${ampm}, ${day} ${mon}`;
-}
+import { View, Text } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import withObservables from "@nozbe/watermelondb/react/withObservables";
+import Transaction from "../../server/db/models/Transaction";
+import Category from "../../server/db/models/Category";
+import { format } from "date-fns";
 
 interface TransactionListItemProps {
-  item: Transaction;
-  category: Category | undefined;
-  account: AccountWithBalance | undefined;
-  showIcons: boolean;
-  isCredit: boolean;
-  onPress: () => void;
-  onLongPress?: () => void;
-  onAssignAccountPress: () => void;
-  use24HourFormat: boolean;
+  transaction: Transaction;
+  category: Category;
 }
 
-export const TransactionListItem = React.memo(function TransactionListItem({
-  item,
-  category,
-  account,
-  showIcons,
-  isCredit,
-  onPress,
-  onLongPress,
-  onAssignAccountPress,
-  use24HourFormat,
-}: TransactionListItemProps) {
+// Ref: TransactionListItem-1
+const TransactionListItemComponent = ({ transaction, category }: TransactionListItemProps) => {
+  const isIncome = transaction.type === "credit";
+  const amountColor = isIncome ? "text-green-500" : "text-red-500";
+  const sign = isIncome ? "+" : "-";
+  
+  const formatCurrency = (amount: number) => `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
   return (
-    <>
-      <Pressable
-        onPress={onPress}
-        onLongPress={onLongPress}
-        delayLongPress={500}
-        className="bg-surface p-4 rounded-xl mb-3 flex-row justify-between items-center border border-bordercolor active:opacity-80"
-      >
-        <View className="flex-row items-center flex-1">
-          {showIcons && (
-            <View
-              style={{ backgroundColor: category?.color || "#71717a" }}
-              className="w-10 h-10 rounded-full mr-4 items-center justify-center"
-            >
-              {category ? (
-                <CategoryIcon
-                  name={category?.icon as any}
-                  size={20}
-                  color="white"
-                />
-              ) : (
-                <Text className="text-white font-bold text-lg">?</Text>
-              )}
-            </View>
-          )}
-
-          <View className="flex-1 pr-2">
-            <Text className="text-primary font-bold text-lg">
-              {category?.name || "Unknown"}
-            </Text>
-
-            <View className="flex-row items-center mt-1 pr-2">
-              <Text
-                className="text-secondary text-sm flex-shrink"
-                numberOfLines={1}
-              >
-                {item.description}
-              </Text>
-              {account ? (
-                <View className="flex-row items-center ml-2">
-                  <View className="bg-white/5 px-2 py-0.5 rounded-md border border-white/10 mr-1.5 flex-shrink-1">
-                    <Text className="text-tertiary text-xs" numberOfLines={1}>
-                      {account.name}
-                    </Text>
-                  </View>
-                  {item.balance_after !== undefined && item.balance_after !== null && (
-                    <View className="bg-blue-500/10 dark:bg-blue-400/10 px-2 py-0.5 rounded-md border border-blue-500/20 dark:border-blue-400/20 flex-shrink-0">
-                      <Text className="text-blue-600 dark:text-blue-400 text-[10px] font-bold" numberOfLines={1}>
-                        Bal: {formatCurrency(item.balance_after)}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-              ) : (
-                <Pressable
-                  className="ml-2 bg-yellow-500/20 px-2 py-0.5 rounded-md border border-yellow-500/30 flex-shrink-0"
-                  onPress={onAssignAccountPress}
-                >
-                  <Text className="text-yellow-500 text-xs font-bold whitespace-nowrap" numberOfLines={1}>
-                    Assign Account
-                  </Text>
-                </Pressable>
-              )}
+    <View>
+      <View className="flex-row justify-between items-center p-3">
+        <View className="flex-row items-center">
+          <View 
+            className="w-12 h-12 rounded-full items-center justify-center mr-3"
+            style={{ backgroundColor: `${category.color}30` }}
+          >
+            <Ionicons name={category.icon as any} size={20} color={category.color} />
+          </View>
+          <View>
+            <Text className="text-white text-base font-bold">{transaction.description || category.name}</Text>
+            <View className="flex-row items-center mt-1">
+              <View className={`w-1.5 h-1.5 rounded-full mr-1.5 ${isIncome ? 'bg-green-500' : 'bg-red-500'}`} />
+              <Text className="text-gray-400 text-xs">{category.name}</Text>
             </View>
           </View>
         </View>
         <View className="items-end">
-          <Text
-            className={`font-bold text-lg ${isCredit ? "text-green-400" : "text-red-400"}`}
-          >
-            {isCredit ? "+" : "-"}{formatCurrency(item.amount)}
-          </Text>
-          <Text className="text-tertiary text-xs mt-1">
-            {formatTransactionDate(item.date, use24HourFormat)}
-          </Text>
+          <Text className="text-gray-400 text-xs mb-1">{format(new Date(transaction.date), 'MMM d, yyyy')}</Text>
+          <Text className={`${amountColor} text-base font-bold`}>{sign} {formatCurrency(transaction.amount)}</Text>
         </View>
-      </Pressable>
-    </>
+      </View>
+      <View className="h-px bg-[#1b1b1c] mx-3" />
+    </View>
   );
-}, (prev, next) => {
-  return (
-    prev.item === next.item &&
-    prev.category === next.category &&
-    prev.account === next.account &&
-    prev.showIcons === next.showIcons &&
-    prev.isCredit === next.isCredit &&
-    prev.use24HourFormat === next.use24HourFormat &&
-    prev.onPress === next.onPress &&
-    prev.onLongPress === next.onLongPress &&
-    prev.onAssignAccountPress === next.onAssignAccountPress
-  );
-});
+};
+
+const enhance = withObservables(['transaction'], ({ transaction }: { transaction: Transaction }) => ({
+  transaction,
+  category: transaction.category,
+}));
+
+export const TransactionListItem = enhance(TransactionListItemComponent);
