@@ -10,7 +10,7 @@ export default function AddTransactionScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#0a0b0d]">
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 mt-4 mb-6">
+      <View className="flex-row items-center justify-between px-6 mt-4 mb-6">
         <TouchableOpacity onPress={() => router.back()} className="w-10">
           <Ionicons name="chevron-back" size={28} color="white" />
         </TouchableOpacity>
@@ -20,7 +20,7 @@ export default function AddTransactionScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
         
         {/* Transaction Type Tabs */}
         <View className="flex-row bg-[#0f1011] rounded-xl p-1 mb-6 border border-[#1b1b1c]">
@@ -139,7 +139,7 @@ export default function AddTransactionScreen() {
       </ScrollView>
 
       {/* Sticky Save Button */}
-      <View className="px-4 pb-6 pt-2 bg-[#0a0b0d]">
+      <View className="px-6 pb-6 pt-2 bg-[#0a0b0d]">
         <TouchableOpacity className="bg-[#6642f8] rounded-2xl p-4 items-center justify-center">
           <Text className="text-white text-base font-bold">Save Transaction</Text>
         </TouchableOpacity>
