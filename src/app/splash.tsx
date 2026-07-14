@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 export default function SplashScreenMock() {
   return (
     <SafeAreaView className="flex-1 bg-[#0a0b0d]">
-      <View className="flex-1 items-center justify-center">
+      <View className="flex-1 px-6 items-center justify-center">
         {/* App Logo & Branding */}
         <Ionicons name="journal" size={90} color="#6642f8" className="mb-6" />
         <Text className="text-white text-5xl font-bold mb-3 tracking-tight">
