@@ -39,11 +39,15 @@ export async function seedDatabase(database: Database) {
     });
 
     // 3. Create Transactions
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.toLocaleString('default', { month: 'short' }); // e.g. "Jul"
+    
     const txData = [
-      { amount: 329.53, desc: "Pizza Domino's", dateStr: "15 Jul, 2025 02:26 AM", cat: foodCat },
-      { amount: 283.00, desc: "Thali EatClub", dateStr: "14 Jul, 2025 10:04 PM", cat: foodCat },
-      { amount: 80.00, desc: "Exchange Arshad", dateStr: "14 Jul, 2025 08:22 PM", cat: friendCat },
-      { amount: 210.00, desc: "Kushka Reshma Bhanu", dateStr: "14 Jul, 2025 02:19 PM", cat: foodCat },
+      { amount: 329.53, desc: "Pizza Domino's", dateStr: `15 ${currentMonth}, ${currentYear} 02:26 AM`, cat: foodCat },
+      { amount: 283.00, desc: "Thali EatClub", dateStr: `14 ${currentMonth}, ${currentYear} 10:04 PM`, cat: foodCat },
+      { amount: 80.00, desc: "Exchange Arshad", dateStr: `14 ${currentMonth}, ${currentYear} 08:22 PM`, cat: friendCat },
+      { amount: 210.00, desc: "Kushka Reshma Bhanu", dateStr: `14 ${currentMonth}, ${currentYear} 02:19 PM`, cat: foodCat },
     ];
 
     for (const tx of txData) {
