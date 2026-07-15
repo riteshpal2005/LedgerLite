@@ -64,7 +64,12 @@ const TransactionGroupedListComponent = ({ transactions, filter }: TransactionGr
     setCollapsedGroups(prev => ({ ...prev, [title]: !prev[title] }));
   };
 
-  const formatCurrency = (amount: number) => `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formatNetBalance = (amount: number) => {
+    const isNegative = amount < 0;
+    const absValue = Math.abs(amount);
+    const formatted = absValue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return isNegative ? `- ₹${formatted}` : `₹${formatted}`;
+  };
 
   if (groupedData.length === 0) {
     return (
@@ -78,32 +83,43 @@ const TransactionGroupedListComponent = ({ transactions, filter }: TransactionGr
     <View>
       {groupedData.map((group) => {
         const isCollapsed = collapsedGroups[group.title];
+        const netBalance = group.income - group.expense;
+        const isPositive = netBalance >= 0;
+        const colorClass = isPositive ? "text-[#6642f8]" : "text-[#ef4444]";
+        const iconColor = isPositive ? "#6642f8" : "#ef4444";
+        
         return (
-          <View key={group.title} className="mb-6">
+          <View key={group.title} className="mb-2">
             <TouchableOpacity 
               onPress={() => toggleGroup(group.title)}
-              className="flex-row justify-between items-center mb-3 bg-[#0f1011] p-4 rounded-2xl border border-[#1b1b1c]"
+              className="flex-row justify-between items-center mb-3 px-1 mt-2"
             >
-              <View>
-                <Text className="text-white text-base font-bold">{group.title}</Text>
-                <Text className="text-gray-400 text-xs mt-1">Expense: <Text className="text-red-500">{formatCurrency(group.expense)}</Text></Text>
-              </View>
-              <View className="bg-[#1b1b1c] w-8 h-8 rounded-full items-center justify-center">
-                <Ionicons name={isCollapsed ? "chevron-down" : "chevron-up"} size={16} color="white" />
+              <Text className="text-gray-200 text-sm font-semibold">{group.title}</Text>
+              
+              <View className="flex-row items-center">
+                <Text className={`${colorClass} text-sm font-semibold mr-1`}>
+                  {formatNetBalance(netBalance)}
+                </Text>
+                <Ionicons 
+                  name={isCollapsed ? "chevron-down" : "chevron-up"} 
+                  size={16} 
+                  color={iconColor} 
+                />
               </View>
             </TouchableOpacity>
             
-            {!isCollapsed && (
-              <>
-                <View className="bg-[#0f1011] rounded-2xl p-2 mb-4">
-                  {group.transactions.map((t) => (
-                    <React.Fragment key={t.id}>
-                      <TransactionListItem transaction={t} />
-                    </React.Fragment>
-                  ))}
-                </View>
+            {!isCollapsed ? (
+              <View className="bg-[#0f1011] rounded-3xl p-2 mb-4 border border-[#1b1b1c]">
+                {group.transactions.map((t) => (
+                  <React.Fragment key={t.id}>
+                    <TransactionListItem transaction={t} />
+                  </React.Fragment>
+                ))}
+              </View>
+            ) : (
+              <View className="mb-4">
                 <GroupSummaryCard transactions={group.transactions} />
-              </>
+              </View>
             )}
           </View>
         );
