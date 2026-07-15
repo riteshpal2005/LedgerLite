@@ -213,6 +213,8 @@ export const SyncService = {
     userId: string,
     dbActions: DatabaseActions,
   ) {
+    // Temporarily disabled during WatermelonDB migration
+    return;
     const now = Date.now();
     if (now - lastSyncTime < SYNC_COOLDOWN_MS) {
 

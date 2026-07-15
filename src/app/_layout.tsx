@@ -56,7 +56,6 @@ configureReanimatedLogger({
   strict: false,
 });
 
-import { useTransactionDatabase } from "../server/db/useTransactionDatabase";
 import { DatabaseProvider } from "../server/db/DatabaseProvider";
 import { useProtectedRoute } from "../hooks/navigation/useProtectedRoute";
 
@@ -94,16 +93,18 @@ export default function RootLayout() {
   return (
     <Provider store={store}>
       <AuthProvider>
-        <DatabaseProvider>
-          <ThemeProvider>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <BottomSheetModalProvider>
-                <RootLayoutNav isSettingsLoaded={isSettingsLoaded} />
-                <UpdateChecker />
-              </BottomSheetModalProvider>
-            </GestureHandlerRootView>
-          </ThemeProvider>
-        </DatabaseProvider>
+        <SQLiteProvider databaseName="ledger.db" onInit={initializeDatabase}>
+          <DatabaseProvider>
+            <ThemeProvider>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <BottomSheetModalProvider>
+                  <RootLayoutNav isSettingsLoaded={isSettingsLoaded} />
+                  <UpdateChecker />
+                </BottomSheetModalProvider>
+              </GestureHandlerRootView>
+            </ThemeProvider>
+          </DatabaseProvider>
+        </SQLiteProvider>
       </AuthProvider>
     </Provider>
   );
@@ -128,36 +129,7 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
     }
   }, [user?.uid, isLoading]);
 
-  const {
-    getAllTransactions,
-    getAllCategories,
-    getAllAccounts,
-  } = useTransactionDatabase();
-
-  useEffect(() => {
-    let isMounted = true;
-    const loadData = async () => {
-      try {
-        const transactionData = await getAllTransactions();
-        if (!isMounted) return;
-        dispatch(setTransactions(transactionData));
-
-        const categoryData = await getAllCategories();
-        if (!isMounted) return;
-        dispatch(setCategories(categoryData));
-
-        const accountsData = await getAllAccounts();
-        if (!isMounted) return;
-        dispatch(setAccounts(accountsData));
-      } catch (error) {
-        console.warn("Global load failed", error);
-      }
-    };
-    loadData();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  // Legacy Redux loading removed - Screens now use WatermelonDB withObservables directly
 
   const { activeThemeClass } = useTheme();
   const hasCompletedOnboarding = useSelector(

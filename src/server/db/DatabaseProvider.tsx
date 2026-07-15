@@ -1,7 +1,8 @@
-import React, { useContext, useMemo } from "react";
-import WatermelonDatabaseProvider from '@nozbe/watermelondb/DatabaseProvider'
+import React, { useContext, useMemo, useEffect } from "react";
+import { DatabaseProvider as WatermelonDatabaseProvider } from '@nozbe/watermelondb/react';
 import { createDatabase } from "./index";
 import { AuthContext } from "../firebase/AuthContext";
+import { seedDatabase } from "./seed";
 
 // Ref: DatabaseProvider-1
 export function DatabaseProvider({ children }: { children: React.ReactNode }) {
@@ -10,6 +11,10 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
   const dbName = user ? `ledgerlite_${user.uid}` : "ledgerlite_guest";
 
   const database = useMemo(() => createDatabase(dbName), [dbName]);
+
+  useEffect(() => {
+    seedDatabase(database).catch(console.error);
+  }, [database]);
 
   return (
     // @ts-ignore: WatermelonDB types for DatabaseProvider are incompatible with React 19 JSX
