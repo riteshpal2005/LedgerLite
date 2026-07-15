@@ -1,0 +1,136 @@
+import React, { useMemo } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import Svg, { Circle } from "react-native-svg";
+import withObservables from "@nozbe/watermelondb/react/withObservables";
+import { withDatabase } from "@nozbe/watermelondb/react";
+import { Database, Q } from "@nozbe/watermelondb";
+import Transaction from "../../server/db/models/Transaction";
+import Category from "../../server/db/models/Category";
+
+interface CategorySpendingChartProps {
+  transactions: Transaction[];
+  categories: Category[];
+}
+
+// Ref: CategorySpendingChart-1
+const CategorySpendingChartComponent = ({ transactions, categories }: CategorySpendingChartProps) => {
+  const chartData = useMemo(() => {
+    const expenses = transactions.filter(t => t.type === 'debit');
+    const totalExpense = expenses.reduce((sum, t) => sum + t.amount, 0);
+
+    if (totalExpense === 0) return { totalExpense: 0, slices: [] };
+
+    const categoryTotals: Record<string, number> = {};
+    expenses.forEach(t => {
+      const catId = (t as any)._raw.category_id;
+      if (!categoryTotals[catId]) categoryTotals[catId] = 0;
+      categoryTotals[catId] += t.amount;
+    });
+
+    const circumference = 2 * Math.PI * 45; // r=45
+    let currentOffset = 0;
+
+    const slices = Object.entries(categoryTotals)
+      .map(([id, amount]) => {
+        const cat = categories.find(c => c.id === id);
+        const percentage = amount / totalExpense;
+        const strokeLength = percentage * circumference;
+        const dashOffset = currentOffset;
+        
+        currentOffset -= strokeLength;
+
+        return {
+          id,
+          name: cat?.name || "Unknown",
+          color: cat?.color || "#52525b",
+          icon: cat?.icon || "ellipse",
+          amount,
+          percentage: (percentage * 100).toFixed(1),
+          strokeDasharray: `${strokeLength} ${circumference}`,
+          strokeDashoffset: dashOffset
+        };
+      })
+      .sort((a, b) => b.amount - a.amount);
+
+    return { totalExpense, slices };
+  }, [transactions, categories]);
+
+  const formatCurrency = (amount: number) => `₹${amount.toLocaleString('en-IN')}`;
+
+  if (chartData.totalExpense === 0) {
+    return (
+      <View className="bg-[#0f1011] rounded-2xl p-4 mb-6 border border-[#1b1b1c] items-center justify-center h-48">
+        <Text className="text-gray-400">No expenses in this period.</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View className="bg-[#0f1011] rounded-2xl p-4 mb-6 border border-[#1b1b1c]">
+      <View className="flex-row justify-between items-center mb-6">
+        <Text className="text-white text-base font-bold">Spending by Category</Text>
+      </View>
+
+      <View className="flex-row items-center">
+        {/* Donut Chart */}
+        <View className="w-[140px] h-[140px] relative justify-center items-center">
+          <Svg width="140" height="140" viewBox="0 0 120 120" style={{ transform: [{ rotate: '-90deg' }] }}>
+            {chartData.slices.map((slice, index) => (
+              <Circle
+                key={slice.id}
+                cx="60"
+                cy="60"
+                r="45"
+                stroke={slice.color}
+                strokeWidth="16"
+                fill="none"
+                strokeDasharray={slice.strokeDasharray}
+                strokeDashoffset={slice.strokeDashoffset}
+              />
+            ))}
+          </Svg>
+          <View className="absolute items-center justify-center">
+            <Text className="text-white font-bold text-sm">{formatCurrency(chartData.totalExpense)}</Text>
+            <Text className="text-gray-400 text-[10px]">Total Expense</Text>
+          </View>
+        </View>
+
+        {/* Legend List */}
+        <View className="flex-1 ml-4">
+          {chartData.slices.slice(0, 5).map((slice) => (
+            <View key={slice.id} className="flex-row justify-between items-center mb-3">
+              <View className="flex-row items-center">
+                <View 
+                  className="w-5 h-5 rounded-full items-center justify-center mr-2"
+                  style={{ backgroundColor: slice.color }}
+                >
+                  <Ionicons name={slice.icon as any} size={10} color="white" />
+                </View>
+                <Text className="text-gray-300 text-xs truncate w-20" numberOfLines={1}>{slice.name}</Text>
+              </View>
+              <View className="flex-row items-center">
+                <Text className="text-white text-xs mr-2">{formatCurrency(slice.amount)}</Text>
+                <Text className="text-gray-500 text-[10px] w-8 text-right">{slice.percentage}%</Text>
+              </View>
+            </View>
+          ))}
+          {chartData.slices.length > 5 && (
+            <Text className="text-gray-500 text-[10px] text-center mt-2">
+              + {chartData.slices.length - 5} more categories
+            </Text>
+          )}
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const enhance = withObservables(['startDate', 'endDate'], ({ database, startDate, endDate }: { database: Database, startDate: number, endDate: number }) => ({
+  transactions: database.collections.get<Transaction>('transactions').query(
+    Q.where('date', Q.between(startDate, endDate))
+  ).observe(),
+  categories: database.collections.get<Category>('categories').query().observe(),
+}));
+
+export const CategorySpendingChart = withDatabase(enhance(CategorySpendingChartComponent));
