@@ -1,81 +1,88 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { withDatabase } from "@nozbe/watermelondb/react";
+import withObservables from "@nozbe/watermelondb/react/withObservables";
+import Transaction from "../../server/db/models/Transaction";
+import Category from "../../server/db/models/Category";
+import { format } from "date-fns";
+import { Q } from "@nozbe/watermelondb";
+import { useRouter } from "expo-router";
+
+const RecentTransactionRowComponent = ({ tx, category, isLast }: { tx: Transaction, category: Category, isLast: boolean }) => {
+  const isIncome = tx.type === "credit";
+  return (
+    <>
+      <View className="flex-row justify-between items-center p-3">
+        <View className="flex-row items-center flex-1">
+          <View 
+            className="w-12 h-12 rounded-full items-center justify-center mr-3"
+            style={{ backgroundColor: `${category.color}30` }}
+          >
+            <Ionicons name={category.icon as any} size={20} color={category.color} />
+          </View>
+          <View className="flex-1 mr-2">
+            <Text className="text-white text-base font-bold" numberOfLines={1}>{tx.description || category.name}</Text>
+            <Text className="text-gray-400 text-xs mt-1">{format(new Date(tx.date), "MMM d, yyyy")}</Text>
+          </View>
+        </View>
+        <Text className={`${isIncome ? 'text-green-500' : 'text-red-500'} text-base font-bold`}>
+          {isIncome ? "+" : "-"} ₹{tx.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </Text>
+      </View>
+      {!isLast && <View className="h-px bg-[#1b1b1c] mx-3" />}
+    </>
+  );
+};
+
+const RecentTransactionRow = withObservables(['tx'], ({ tx }: { tx: Transaction }) => ({
+  tx,
+  category: tx.category,
+}))(RecentTransactionRowComponent);
 
 // Ref: RecentTransactions-1
-export function RecentTransactions() {
+function RecentTransactionsComponent({ transactions }: { transactions: Transaction[] }) {
+  const router = useRouter();
+  
+  if (!transactions || transactions.length === 0) {
+    return (
+      <View>
+        <Text className="text-white text-lg font-bold mb-3">Recent Transactions</Text>
+        <View className="bg-[#0f1011] rounded-2xl p-6 items-center justify-center mb-8">
+          <Text className="text-gray-400">No recent transactions.</Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View>
       <View className="flex-row justify-between items-end mb-3">
         <Text className="text-white text-lg font-bold">Recent Transactions</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/(tabs)/transactions")}>
           <Text className="text-[#6642f8] text-sm font-bold">See all</Text>
         </TouchableOpacity>
       </View>
 
       <View className="bg-[#0f1011] rounded-2xl p-2 mb-8">
-        {/* Transaction 1 */}
-        <View className="flex-row justify-between items-center p-3">
-          <View className="flex-row items-center">
-            <View className="w-12 h-12 bg-[#12281a] rounded-full items-center justify-center mr-3">
-              <Ionicons name="cash" size={20} color="#22c55e" />
-            </View>
-            <View>
-              <Text className="text-white text-base font-bold">Salary</Text>
-              <Text className="text-gray-400 text-xs mt-1">Jun 12, 2025</Text>
-            </View>
-          </View>
-          <Text className="text-green-500 text-base font-bold">+ ₹45,000.00</Text>
-        </View>
-        
-        <View className="h-px bg-[#1b1b1c] mx-3" />
-
-        {/* Transaction 2 */}
-        <View className="flex-row justify-between items-center p-3">
-          <View className="flex-row items-center">
-            <View className="w-12 h-12 bg-[#1b1b1c] rounded-full items-center justify-center mr-3">
-              <Ionicons name="cart" size={20} color="white" />
-            </View>
-            <View>
-              <Text className="text-white text-base font-bold">Grocery</Text>
-              <Text className="text-gray-400 text-xs mt-1">Jun 11, 2025</Text>
-            </View>
-          </View>
-          <Text className="text-red-500 text-base font-bold">- ₹1,250.00</Text>
-        </View>
-
-        <View className="h-px bg-[#1b1b1c] mx-3" />
-
-        {/* Transaction 3 */}
-        <View className="flex-row justify-between items-center p-3">
-          <View className="flex-row items-center">
-            <View className="w-12 h-12 bg-blue-600 rounded-full items-center justify-center mr-3">
-              <Ionicons name="briefcase" size={20} color="white" />
-            </View>
-            <View>
-              <Text className="text-white text-base font-bold">Freelance</Text>
-              <Text className="text-gray-400 text-xs mt-1">Jun 10, 2025</Text>
-            </View>
-          </View>
-          <Text className="text-green-500 text-base font-bold">+ ₹8,000.00</Text>
-        </View>
-        
-        <View className="h-px bg-[#1b1b1c] mx-3" />
-
-        {/* Transaction 4 */}
-        <View className="flex-row justify-between items-center p-3">
-          <View className="flex-row items-center">
-            <View className="w-12 h-12 bg-[#2d2208] rounded-full items-center justify-center mr-3">
-              <Ionicons name="flash" size={20} color="#eab308" />
-            </View>
-            <View>
-              <Text className="text-white text-base font-bold">Electricity Bill</Text>
-              <Text className="text-gray-400 text-xs mt-1">Jun 9, 2025</Text>
-            </View>
-          </View>
-          <Text className="text-red-500 text-base font-bold">- ₹1,890.00</Text>
-        </View>
+        {transactions.map((tx, index) => (
+          <RecentTransactionRow 
+            key={tx.id} 
+            tx={tx} 
+            isLast={index === transactions.length - 1} 
+          />
+        ))}
       </View>
     </View>
   );
 }
+
+export const RecentTransactions = withDatabase(
+  withObservables([], ({ database }: any) => ({
+    transactions: database.collections.get('transactions').query(
+      Q.where('sync_status', Q.notEq('deleted')),
+      Q.sortBy('date', Q.desc),
+      Q.take(4)
+    ).observe(),
+  }))(RecentTransactionsComponent)
+);

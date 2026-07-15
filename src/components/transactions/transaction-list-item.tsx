@@ -19,18 +19,20 @@ const TransactionListItemComponent = ({ transaction, category }: TransactionList
   
   const formatCurrency = (amount: number) => `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
+  const title = transaction.description || category.name;
+
   return (
     <View>
       <View className="flex-row justify-between items-center p-3">
-        <View className="flex-row items-center">
+        <View className="flex-row items-center flex-1">
           <View 
             className="w-12 h-12 rounded-full items-center justify-center mr-3"
             style={{ backgroundColor: `${category.color}30` }}
           >
             <Ionicons name={category.icon as any} size={20} color={category.color} />
           </View>
-          <View>
-            <Text className="text-white text-base font-bold">{transaction.description || category.name}</Text>
+          <View className="flex-1 mr-2">
+            <Text className="text-white text-base font-bold" numberOfLines={1}>{title}</Text>
             <View className="flex-row items-center mt-1">
               <View className={`w-1.5 h-1.5 rounded-full mr-1.5 ${isIncome ? 'bg-green-500' : 'bg-red-500'}`} />
               <Text className="text-gray-400 text-xs">{category.name}</Text>
@@ -39,6 +41,7 @@ const TransactionListItemComponent = ({ transaction, category }: TransactionList
         </View>
         <View className="items-end">
           <Text className="text-gray-400 text-xs mb-1">{format(new Date(transaction.date), 'MMM d, yyyy')}</Text>
+          <Text className="text-gray-500 text-[10px] mb-1">{format(new Date(transaction.date), 'hh:mm a')}</Text>
           <Text className={`${amountColor} text-base font-bold`}>{sign} {formatCurrency(transaction.amount)}</Text>
         </View>
       </View>
