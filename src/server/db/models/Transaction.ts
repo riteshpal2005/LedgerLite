@@ -12,6 +12,7 @@ export default class Transaction extends Model {
   @date('date') date!: number
   @text('type') type!: TransactionType
   @text('merchant') merchant?: string
+  @text('receiver') receiver?: string
   @field('balance_after') balanceAfter?: number
   @text('linked_transaction_id') linkedTransactionId?: string
   @text('sync_status') appSyncStatus!: SyncStatus

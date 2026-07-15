@@ -33,6 +33,7 @@ export const mySchema = appSchema({
         { name: 'category_id', type: 'string', isIndexed: true },
         { name: 'type', type: 'string' },
         { name: 'merchant', type: 'string', isOptional: true },
+        { name: 'receiver', type: 'string', isOptional: true },
         { name: 'account_id', type: 'string', isOptional: true, isIndexed: true },
         { name: 'balance_after', type: 'number', isOptional: true },
         { name: 'linked_transaction_id', type: 'string', isOptional: true },
