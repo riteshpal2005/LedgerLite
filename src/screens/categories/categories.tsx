@@ -37,12 +37,12 @@ export default function CategoriesScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-[#0f1011]" edges={["top"]}>
       <View className="px-6 py-4 flex-row items-center">
         <Pressable onPress={() => router.back()} className="mr-4 p-2 -ml-2">
-          <Ionicons name="arrow-back" size={24} color="#71717a" />
+          <Ionicons name="arrow-back" size={24} color="#a1a1aa" />
         </Pressable>
-        <Text className="text-2xl font-bold text-primary">Categories</Text>
+        <Text className="text-2xl font-bold text-white">Categories</Text>
       </View>
 
       <FlatList
@@ -55,20 +55,20 @@ export default function CategoriesScreen() {
         renderItem={({ item: category }) => (
           <Pressable
             onPress={() => handleCategoryPress(category)}
-            className="w-1/4 items-center"
+            className="w-1/4 items-center mb-4"
           >
             <View
-              style={{ backgroundColor: category.color || "#3b82f6" }}
-              className="w-14 h-14 rounded-full items-center justify-center mb-2 shadow-sm"
+              style={{ backgroundColor: `${category.color || "#3b82f6"}30` }}
+              className="w-16 h-16 rounded-full items-center justify-center mb-3"
             >
               <CategoryIcon
                 name={(category.icon as any) || "pricetag"}
                 size={28}
-                color="white"
+                color={category.color || "#3b82f6"}
               />
             </View>
             <Text
-              className="text-primary text-xs font-semibold text-center"
+              className="text-gray-200 text-xs font-semibold text-center"
               numberOfLines={1}
             >
               {category.name}
