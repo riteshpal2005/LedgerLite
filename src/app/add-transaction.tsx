@@ -47,7 +47,7 @@ export default function AddTransactionScreen() {
             </View>
             <View>
               <Text className="text-white text-sm font-bold">SBI Bank Account</Text>
-              <Text className="text-gray-400 text-xs mt-0.5">₹1,20,300.00</Text>
+              <Text className="text-gray-400 text-xs mt-0.5">₹2,000.00</Text>
             </View>
           </View>
           <Ionicons name="chevron-down" size={20} color="#9ca3af" />

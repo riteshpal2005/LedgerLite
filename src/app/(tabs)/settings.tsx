@@ -81,25 +81,6 @@ export default function SettingsScreen() {
         </View>
 
         <View className="bg-[#0f1011] rounded-2xl p-2 mb-8 border border-[#1b1b1c]">
-          {/* Cash */}
-          <TouchableOpacity className="flex-row justify-between items-center p-3">
-            <View className="flex-row items-center">
-              <View className="w-10 h-10 bg-purple-900/30 rounded-full items-center justify-center mr-3">
-                <Ionicons name="wallet-outline" size={18} color="#a855f7" />
-              </View>
-              <View>
-                <Text className="text-white text-sm font-bold">Cash</Text>
-                <Text className="text-gray-400 text-xs mt-0.5">Main Wallet</Text>
-              </View>
-            </View>
-            <View className="flex-row items-center">
-              <Text className="text-green-500 text-sm font-bold mr-2">₹18,450.00</Text>
-              <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
-            </View>
-          </TouchableOpacity>
-
-          <View className="h-px bg-[#1b1b1c] mx-3" />
-
           {/* Bank Account */}
           <TouchableOpacity className="flex-row justify-between items-center p-3">
             <View className="flex-row items-center">
@@ -112,45 +93,7 @@ export default function SettingsScreen() {
               </View>
             </View>
             <View className="flex-row items-center">
-              <Text className="text-green-500 text-sm font-bold mr-2">₹1,20,300.00</Text>
-              <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
-            </View>
-          </TouchableOpacity>
-
-          <View className="h-px bg-[#1b1b1c] mx-3" />
-
-          {/* Credit Card */}
-          <TouchableOpacity className="flex-row justify-between items-center p-3">
-            <View className="flex-row items-center">
-              <View className="w-10 h-10 bg-orange-900/30 rounded-full items-center justify-center mr-3">
-                <Ionicons name="card-outline" size={18} color="#f97316" />
-              </View>
-              <View>
-                <Text className="text-white text-sm font-bold">Credit Card</Text>
-                <Text className="text-gray-400 text-xs mt-0.5">HDFC •••• 8901</Text>
-              </View>
-            </View>
-            <View className="flex-row items-center">
-              <Text className="text-red-500 text-sm font-bold mr-2">- ₹12,650.00</Text>
-              <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
-            </View>
-          </TouchableOpacity>
-
-          <View className="h-px bg-[#1b1b1c] mx-3" />
-
-          {/* UPI */}
-          <TouchableOpacity className="flex-row justify-between items-center p-3">
-            <View className="flex-row items-center">
-              <View className="w-10 h-10 bg-gray-800 rounded-full items-center justify-center mr-3">
-                <Ionicons name="phone-portrait-outline" size={18} color="#9ca3af" />
-              </View>
-              <View>
-                <Text className="text-white text-sm font-bold">UPI / Others</Text>
-                <Text className="text-gray-400 text-xs mt-0.5">Wallet, UPI, etc.</Text>
-              </View>
-            </View>
-            <View className="flex-row items-center">
-              <Text className="text-green-500 text-sm font-bold mr-2">₹5,850.00</Text>
+              <Text className="text-green-500 text-sm font-bold mr-2">₹2,000.00</Text>
               <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
             </View>
           </TouchableOpacity>

@@ -14,9 +14,9 @@ export async function seedDatabase(database: Database) {
   await database.write(async () => {
     // 1. Create Default Account
     const account = await database.get<Account>('accounts').create(acc => {
-      acc.name = 'Main Account';
+      acc.name = 'SBI';
       acc.type = 'checking';
-      acc.balance = 5000;
+      acc.balance = 2000;
       acc.appSyncStatus = 'synced';
       acc.updatedAt = Date.now();
     });
