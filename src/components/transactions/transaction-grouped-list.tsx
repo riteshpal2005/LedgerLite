@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { View, Text } from "react-native";
+import React, { useMemo, useState } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import withObservables from "@nozbe/watermelondb/react/withObservables";
 import { withDatabase } from "@nozbe/watermelondb/react";
@@ -18,6 +18,8 @@ interface TransactionGroupedListProps {
 interface GroupedData {
   title: string;
   transactions: Transaction[];
+  expense: number;
+  income: number;
 }
 
 // Ref: TransactionGroupedList-1
@@ -31,40 +33,38 @@ const TransactionGroupedListComponent = ({ transactions, filter }: TransactionGr
 
   // Group the transactions dynamically
   const groupedData = useMemo(() => {
-    const today = startOfDay(new Date());
-    const weekAgo = subDays(today, 7);
-    const monthAgo = subDays(today, 30);
-
-    const groups: Record<string, Transaction[]> = {
-      "Today": [],
-      "Last 7 Days": [],
-      "Last 30 Days": [],
-    };
+    const groups: Record<string, Transaction[]> = {};
 
     filteredTransactions.forEach(t => {
       const tDate = new Date(t.date);
-      
-      if (isToday(tDate)) {
-        groups["Today"].push(t);
-      } else if (isAfter(tDate, weekAgo)) {
-        groups["Last 7 Days"].push(t);
-      } else if (isAfter(tDate, monthAgo)) {
-        groups["Last 30 Days"].push(t);
-      } else {
-        const monthName = format(tDate, "MMMM yyyy");
-        if (!groups[monthName]) groups[monthName] = [];
-        groups[monthName].push(t);
-      }
+      const monthName = format(tDate, "MMMM yyyy");
+      if (!groups[monthName]) groups[monthName] = [];
+      groups[monthName].push(t);
     });
 
     // Remove empty groups and format into array
     return Object.keys(groups)
       .filter(key => groups[key].length > 0)
-      .map(key => ({
-        title: key,
-        transactions: groups[key].sort((a, b) => b.date - a.date) // Sort desc within group
-      }));
+      .map(key => {
+        const groupTxs = groups[key].sort((a, b) => b.date - a.date);
+        const expense = groupTxs.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
+        const income = groupTxs.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
+        return {
+          title: key,
+          transactions: groupTxs,
+          expense,
+          income
+        };
+      });
   }, [filteredTransactions]);
+
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+
+  const toggleGroup = (title: string) => {
+    setCollapsedGroups(prev => ({ ...prev, [title]: !prev[title] }));
+  };
+
+  const formatCurrency = (amount: number) => `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   if (groupedData.length === 0) {
     return (
@@ -76,26 +76,38 @@ const TransactionGroupedListComponent = ({ transactions, filter }: TransactionGr
 
   return (
     <View>
-      {groupedData.map((group) => (
-        <View key={group.title} className="mb-6">
-          <View className="flex-row justify-between items-center mb-3">
-            <Text className="text-white text-base font-bold">{group.title}</Text>
+      {groupedData.map((group) => {
+        const isCollapsed = collapsedGroups[group.title];
+        return (
+          <View key={group.title} className="mb-6">
+            <TouchableOpacity 
+              onPress={() => toggleGroup(group.title)}
+              className="flex-row justify-between items-center mb-3 bg-[#0f1011] p-4 rounded-2xl border border-[#1b1b1c]"
+            >
+              <View>
+                <Text className="text-white text-base font-bold">{group.title}</Text>
+                <Text className="text-gray-400 text-xs mt-1">Expense: <Text className="text-red-500">{formatCurrency(group.expense)}</Text></Text>
+              </View>
+              <View className="bg-[#1b1b1c] w-8 h-8 rounded-full items-center justify-center">
+                <Ionicons name={isCollapsed ? "chevron-down" : "chevron-up"} size={16} color="white" />
+              </View>
+            </TouchableOpacity>
+            
+            {!isCollapsed && (
+              <>
+                <View className="bg-[#0f1011] rounded-2xl p-2 mb-4">
+                  {group.transactions.map((t) => (
+                    <React.Fragment key={t.id}>
+                      <TransactionListItem transaction={t} />
+                    </React.Fragment>
+                  ))}
+                </View>
+                <GroupSummaryCard transactions={group.transactions} />
+              </>
+            )}
           </View>
-          
-          <View className="bg-[#0f1011] rounded-2xl p-2 mb-4">
-            {group.transactions.map((t, index) => (
-              <React.Fragment key={t.id}>
-                <TransactionListItem transaction={t} />
-              </React.Fragment>
-            ))}
-          </View>
-
-          {/* Render Summary Card only for Named Months (Older than 30 days) */}
-          {group.title !== "Today" && group.title !== "Last 7 Days" && group.title !== "Last 30 Days" && (
-            <GroupSummaryCard transactions={group.transactions} />
-          )}
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 };
