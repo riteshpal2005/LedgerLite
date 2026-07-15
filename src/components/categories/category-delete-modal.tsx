@@ -1,24 +1,19 @@
-import { View, Text, Pressable, ScrollView, Alert, Modal } from "react-native";
-import { useState, useEffect } from "react";
-import { useTheme } from "../../hooks/theme/ThemeContext";
+import React, { useState, useEffect } from "react";
+import { View, Text, Pressable, ScrollView, Modal, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Category } from "../../server/db/schema";
 import { useTransactionDatabase } from "../../server/db/useTransactionDatabase";
-import { useDispatch } from "react-redux";
-import { setTransactions } from "../../store/transactionSlice";
-import { removeCategory } from "../../store/categorySlice";
+import CategoryModel from "../../server/db/models/Category";
+import { useTheme } from "../../hooks/theme/ThemeContext";
 import { CustomAlert } from "../../components/ui/custom-alert";
 
 interface CategoryDeleteModalProps {
   visible: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-  category: Category | null;
-  categories: Category[];
+  category: CategoryModel | null | undefined;
+  categories: CategoryModel[];
   linkedTransactionCount: number;
 }
-
-type ActionOption = "delete" | "reassign";
 
 export function CategoryDeleteModal({
   visible,
@@ -28,7 +23,7 @@ export function CategoryDeleteModal({
   categories,
   linkedTransactionCount,
 }: CategoryDeleteModalProps) {
-  const [option, setOption] = useState<ActionOption>("delete");
+  const [option, setOption] = useState<"delete" | "reassign">("delete");
   const [selectedExistingCategoryId, setSelectedExistingCategoryId] = useState<
     string | null
   >(null);
@@ -37,9 +32,7 @@ export function CategoryDeleteModal({
     deleteCategory,
     deleteTransactionsByCategory,
     reassignTransactionsCategory,
-    getAllTransactions,
   } = useTransactionDatabase();
-  const dispatch = useDispatch();
 
   const { bottomSheetBackgroundColor, bottomSheetBorderColor, colors } =
     useTheme();
@@ -71,10 +64,6 @@ export function CategoryDeleteModal({
       }
 
       await deleteCategory(category.id);
-      dispatch(removeCategory(category.id));
-
-      const updatedTransactions = await getAllTransactions();
-      dispatch(setTransactions(updatedTransactions));
 
       if (onSuccess) {
         onSuccess();
@@ -204,13 +193,13 @@ export function CategoryDeleteModal({
                       >
                         <View className="flex-row items-center">
                           <View
-                            style={{ backgroundColor: cat.color }}
+                            style={{ backgroundColor: `${cat.color}30` }}
                             className="w-8 h-8 rounded-full items-center justify-center mr-3"
                           >
                             <Ionicons
                               name={cat.icon as any}
                               size={16}
-                              color="white"
+                              color={cat.color}
                             />
                           </View>
                           <Text

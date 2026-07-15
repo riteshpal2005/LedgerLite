@@ -1,38 +1,32 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
-import { View, Text, Pressable, ScrollView, Modal, PanResponder } from "react-native";
+import { View, Text, Pressable, ScrollView, Modal } from "react-native";
 import {
   BottomSheetModal,
-  BottomSheetView,
   BottomSheetScrollView,
   BottomSheetBackdrop,
 } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import { useTransactionDatabase } from "../../server/db/useTransactionDatabase";
-import {
-  updateCategoryAction,
-  addCategory as addCategoryAction,
-} from "../../store/categorySlice";
 import { BottomSheetFormField } from "../../components/ui/bottom-sheet-form-field";
-import { Category } from "../../server/db/schema";
+import CategoryModel from "../../server/db/models/Category";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 import { CategoryDeleteModal } from "./category-delete-modal";
 import { useAuth } from "../../server/firebase/AuthContext";
 import { SyncService } from "../../server/services/syncService";
 import { CategoryIcon } from "../../components/ui/category-icon";
+import { ColorSelector, PRESET_COLORS } from "./color-selector";
+import { IconSelector, PRESET_ICONS } from "./icon-selector";
 
 interface CategoryEditSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
-  initialCategory?: Category;
+  initialCategory?: CategoryModel;
+  categories: CategoryModel[];
 }
-
-import { ColorSelector, PRESET_COLORS } from "./color-selector";
-import { IconSelector, PRESET_ICONS } from "./icon-selector";
 
 export function CategoryEditSheet({
   bottomSheetRef,
   initialCategory,
+  categories,
 }: CategoryEditSheetProps) {
   const [name, setName] = useState("");
   const [color, setColor] = useState(PRESET_COLORS[0]);
@@ -40,17 +34,7 @@ export function CategoryEditSheet({
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [formKey, setFormKey] = useState(0);
-
-  const dispatch = useDispatch();
-  const categories = useSelector(
-    (state: RootState) => state.categories.categories,
-  );
-  const transactions = useSelector((state: RootState) => state.transactions.transactions);
-
-  const linkedTransactionCount = useMemo(() => {
-    if (!initialCategory) return 0;
-    return transactions.filter((e) => e.categoryId === initialCategory.id).length;
-  }, [initialCategory, transactions]);
+  const [linkedTransactionCount, setLinkedTransactionCount] = useState(0);
 
   const dbActions = useTransactionDatabase();
   const { updateCategory, addCategory } = dbActions;
@@ -65,12 +49,20 @@ export function CategoryEditSheet({
   useEffect(() => {
     if (initialCategory) {
       setName(initialCategory.name);
-      setColor(initialCategory.color);
-      setIcon(initialCategory.icon);
+      setColor(initialCategory.color || PRESET_COLORS[0]);
+      setIcon(initialCategory.icon || PRESET_ICONS[0]);
+      
+      // Fetch linked transactions directly from WatermelonDB relation
+      if (initialCategory.transactions) {
+        initialCategory.transactions.fetchCount().then(setLinkedTransactionCount).catch(console.error);
+      } else {
+        setLinkedTransactionCount(0);
+      }
     } else {
       setName("");
       setColor(PRESET_COLORS[0]);
       setIcon(PRESET_ICONS[0]);
+      setLinkedTransactionCount(0);
     }
     setFormKey((prev) => prev + 1);
   }, [initialCategory]);
@@ -117,24 +109,8 @@ export function CategoryEditSheet({
 
     if (initialCategory) {
       await updateCategory(initialCategory.id, categoryData);
-      dispatch(
-        updateCategoryAction({
-          ...categoryData,
-          id: initialCategory.id,
-          sync_status: "pending",
-          updated_at: Date.now(),
-        }),
-      );
     } else {
-      const insertedId = await addCategory(categoryData);
-      dispatch(
-        addCategoryAction({
-          ...categoryData,
-          id: insertedId,
-          sync_status: "pending",
-          updated_at: Date.now(),
-        }),
-      );
+      await addCategory(categoryData);
     }
 
     if (user) {
@@ -174,10 +150,10 @@ export function CategoryEditSheet({
 
           <View className="items-center mb-6">
             <View
-              style={{ backgroundColor: color || "#3b82f6" }}
+              style={{ backgroundColor: `${color || "#3b82f6"}30` }}
               className="w-20 h-20 rounded-full items-center justify-center mb-2 shadow-sm"
             >
-              <CategoryIcon name={icon as any} size={40} color="white" />
+              <CategoryIcon name={icon as any} size={40} color={color || "#3b82f6"} />
             </View>
             <Text className="text-secondary text-sm">Preview</Text>
           </View>
@@ -229,12 +205,10 @@ export function CategoryEditSheet({
             bottomSheetRef.current?.dismiss();
           }, 300);
         }}
-        category={initialCategory || null}
+        category={initialCategory}
         categories={categories}
         linkedTransactionCount={linkedTransactionCount}
       />
-
-
     </BottomSheetModal>
   );
 }

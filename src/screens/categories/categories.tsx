@@ -1,8 +1,6 @@
 import { View, Text, Pressable, FlatList } from "react-native";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import { Ionicons } from "@expo/vector-icons";
-import { Category } from "../../server/db/schema";
+import CategoryModel from "../../server/db/models/Category";
 import { CategoryIcon } from "../../components/ui/category-icon";
 import { router } from "expo-router";
 import { CategoryEditSheet } from "../../components/categories/category-edit-sheet";
@@ -10,15 +8,15 @@ import { useRef, useState, useLayoutEffect } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../hooks/theme/ThemeContext";
+import withObservables from "@nozbe/watermelondb/react/withObservables";
+import { withDatabase } from "@nozbe/watermelondb/react";
+import { Database, Q } from "@nozbe/watermelondb";
 
-export default function CategoriesScreen() {
-  const categories = useSelector(
-    (state: RootState) => state.categories.categories,
-  );
+function CategoriesScreenComponent({ categories }: { categories: CategoryModel[] }) {
   const { colors } = useTheme();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [selectedCategory, setSelectedCategory] = useState<
-    Category | undefined
+    CategoryModel | undefined
   >(undefined);
 
   useLayoutEffect(() => {
@@ -27,7 +25,7 @@ export default function CategoriesScreen() {
     }
   }, [selectedCategory]);
 
-  const handleCategoryPress = (category: Category) => {
+  const handleCategoryPress = (category: CategoryModel) => {
     setSelectedCategory(category);
   };
 
@@ -86,8 +84,17 @@ export default function CategoriesScreen() {
 
       <CategoryEditSheet
         bottomSheetRef={bottomSheetModalRef}
-        initialCategory={selectedCategory}
+        initialCategory={selectedCategory as any} // Temporary cast until we update CategoryEditSheet
+        categories={categories}
       />
     </SafeAreaView>
   );
 }
+
+const enhance = withObservables([], ({ database }: { database: Database }) => ({
+  categories: database.collections.get<CategoryModel>('categories').query(
+    Q.where('sync_status', Q.notEq('deleted'))
+  ).observe(),
+}));
+
+export default withDatabase(enhance(CategoriesScreenComponent));
