@@ -28,12 +28,34 @@ const CategorySpendingChartComponent = ({ transactions, categories }: CategorySp
       categoryTotals[catId] += t.amount;
     });
 
+
+
+    const sortedCategories = Object.entries(categoryTotals)
+      .map(([id, amount]) => ({
+        id,
+        amount,
+        cat: categories.find(c => c.id === id)
+      }))
+      .sort((a, b) => b.amount - a.amount);
+
+    let finalCategories = sortedCategories;
+    if (sortedCategories.length > 4) {
+      const top4 = sortedCategories.slice(0, 4);
+      const otherAmount = sortedCategories.slice(4).reduce((sum, item) => sum + item.amount, 0);
+      finalCategories = [
+        ...top4,
+        {
+          id: 'other',
+          amount: otherAmount,
+          cat: { name: 'Other', color: '#52525b', icon: 'ellipsis-horizontal' } as any
+        }
+      ];
+    }
+
     const circumference = 2 * Math.PI * 45; // r=45
     let currentOffset = 0;
 
-    const slices = Object.entries(categoryTotals)
-      .map(([id, amount]) => {
-        const cat = categories.find(c => c.id === id);
+    const slices = finalCategories.map(({ id, amount, cat }) => {
         const percentage = amount / totalExpense;
         const strokeLength = percentage * circumference;
         const dashOffset = currentOffset;
@@ -50,8 +72,7 @@ const CategorySpendingChartComponent = ({ transactions, categories }: CategorySp
           strokeDasharray: `${strokeLength} ${circumference}`,
           strokeDashoffset: dashOffset
         };
-      })
-      .sort((a, b) => b.amount - a.amount);
+      });
 
     return { totalExpense, slices };
   }, [transactions, categories]);
@@ -98,7 +119,7 @@ const CategorySpendingChartComponent = ({ transactions, categories }: CategorySp
 
         {/* Legend List */}
         <View className="flex-1 ml-4">
-          {chartData.slices.slice(0, 5).map((slice) => (
+          {chartData.slices.map((slice) => (
             <View key={slice.id} className="flex-row justify-between items-center mb-3">
               <View className="flex-row items-center">
                 <View 
@@ -115,11 +136,6 @@ const CategorySpendingChartComponent = ({ transactions, categories }: CategorySp
               </View>
             </View>
           ))}
-          {chartData.slices.length > 5 && (
-            <Text className="text-gray-500 text-[10px] text-center mt-2">
-              + {chartData.slices.length - 5} more categories
-            </Text>
-          )}
         </View>
       </View>
     </View>
