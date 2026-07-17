@@ -45,18 +45,28 @@ const OverviewCardComponent = ({ transactions }: OverviewCardProps) => {
         <View className="h-px bg-[#1b1b1c] w-full mb-4" />
         
         <View className="flex-row justify-between items-center">
-          <View className="flex-1">
-            <Text className="text-green-500 text-sm mb-1">Income</Text>
-            <Text className="text-green-500 text-lg font-bold">
-              {isBalanceVisible ? formatCurrency(income) : "••••••••"}
-            </Text>
+          <View className="flex-1 flex-row justify-between items-center">
+            <View>
+              <Text className="text-green-500 text-xs mb-1">Income</Text>
+              <Text className="text-green-500 text-lg font-bold">
+                {isBalanceVisible ? formatCurrency(income) : "••••••••"}
+              </Text>
+            </View>
+            <View className="w-10 h-10 rounded-full bg-[#112417] items-center justify-center mr-2">
+              <Ionicons name="trending-up" size={18} color="#22c55e" />
+            </View>
           </View>
-          <View className="w-px h-10 bg-[#1b1b1c] mx-4" />
-          <View className="flex-1">
-            <Text className="text-red-500 text-sm mb-1">Expense</Text>
-            <Text className="text-white text-lg font-bold">
-              {isBalanceVisible ? formatCurrency(expense) : "••••••••"}
-            </Text>
+          <View className="w-px h-12 bg-[#1b1b1c] mx-2" />
+          <View className="flex-1 flex-row justify-between items-center pl-2">
+            <View>
+              <Text className="text-red-500 text-xs mb-1">Expense</Text>
+              <Text className="text-red-500 text-lg font-bold">
+                {isBalanceVisible ? formatCurrency(expense) : "••••••••"}
+              </Text>
+            </View>
+            <View className="w-10 h-10 rounded-full bg-[#271416] items-center justify-center">
+              <Ionicons name="trending-down" size={18} color="#ef4444" />
+            </View>
           </View>
         </View>
       </View>
