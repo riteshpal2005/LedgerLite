@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AnalyticsHeader } from "../../components/analytics/analytics-header";
 import { AnalyticsTabs, AnalyticsTabType } from "../../components/analytics/analytics-tabs";
@@ -19,6 +19,7 @@ export default function AnalyticsScreen() {
       />
       
       <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
+        <Text className="text-white text-2xl font-bold mb-4">Analytics</Text>
         <AnalyticsTabs activeTab={activeTab} onChange={setActiveTab} />
         
         {dateRange.start > 0 && (
