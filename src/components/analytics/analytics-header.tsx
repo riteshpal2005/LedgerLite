@@ -104,12 +104,12 @@ export function AnalyticsHeader({ onDateRangeChange }: AnalyticsHeaderProps) {
         </View>
 
         <TouchableOpacity 
-          className="flex-row items-center"
+          className="flex-row items-center px-3 py-1.5 rounded-full border border-[#1b1b1c] bg-[#0f1011]"
           onPress={() => setDropdownVisible(true)}
         >
-          <Ionicons name="calendar-outline" size={20} color="white" className="mr-1" />
-          <Text className="text-gray-200 ml-1">{selectedLabel}</Text>
-          <Ionicons name="chevron-down" size={16} color="white" className="ml-1" />
+          <Ionicons name="calendar-outline" size={16} color="white" className="mr-1.5" />
+          <Text className="text-gray-200 text-xs font-semibold mr-1.5">{selectedLabel}</Text>
+          <Ionicons name="chevron-down" size={14} color="white" />
         </TouchableOpacity>
       </View>
 
