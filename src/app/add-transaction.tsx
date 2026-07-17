@@ -129,7 +129,7 @@ export default function AddTransactionScreen() {
 
         {/* Attach Receipt */}
         <Text className="text-gray-400 text-xs mb-2 ml-1">Attach Receipt (Optional)</Text>
-        <TouchableOpacity className="bg-[#0f1011] rounded-2xl p-6 items-center justify-center mb-8 border border-dashed border-[#1b1b1c]">
+        <TouchableOpacity className="bg-[#0f1011] rounded-2xl p-6 items-center justify-center mb-8 border border-dashed border-[#a855f7]/30">
           <View className="flex-row items-center mb-2">
             <Ionicons name="cloud-upload-outline" size={20} color="#6642f8" className="mr-2" />
             <Text className="text-white text-sm font-bold">Upload Receipt</Text>
@@ -141,7 +141,12 @@ export default function AddTransactionScreen() {
 
       {/* Sticky Save Button */}
       <View className="px-6 pb-6 pt-2 bg-[#0a0b0d]">
-        <TouchableOpacity className="bg-[#6642f8] rounded-2xl p-4 items-center justify-center">
+        <View className="flex-row items-center justify-center mb-4">
+          <Ionicons name="shield-checkmark-outline" size={14} color="#a855f7" className="mr-1.5" />
+          <Text className="text-gray-400 text-xs text-center">Your data is stored securely on your device and works offline.</Text>
+        </View>
+        <TouchableOpacity className="bg-[#6642f8] rounded-2xl p-4 flex-row items-center justify-center">
+          <Ionicons name="save-outline" size={20} color="white" className="mr-2" />
           <Text className="text-white text-base font-bold">Save Transaction</Text>
         </TouchableOpacity>
       </View>
