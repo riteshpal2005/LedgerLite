@@ -7,51 +7,69 @@ import Account from "../../server/db/models/Account";
 import { Q } from "@nozbe/watermelondb";
 
 function AccountsListComponent({ accounts }: { accounts: Account[] }) {
-  const formatCurrency = (amount: number) => `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formatCurrency = (amount: number) => `₹${Math.abs(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  // Mock accounts if DB is empty to match the high-fidelity design
+  const displayAccounts = accounts.length > 0 ? accounts : [
+    { id: '1', name: 'Cash', type: 'wallet', balance: 18450, desc: 'Main Wallet' },
+    { id: '2', name: 'Bank Account', type: 'checking', balance: 120300, desc: 'SBI •••• 4567' },
+    { id: '3', name: 'Credit Card', type: 'credit_card', balance: -12650, desc: 'HDFC •••• 8901' },
+    { id: '4', name: 'UPI / Others', type: 'upi', balance: 5850, desc: 'Wallet, UPI, etc.' }
+  ];
 
   return (
     <>
       <View className="flex-row justify-between items-center mb-3">
-        <Text className="text-white text-base font-bold">Accounts</Text>
+        <Text className="text-white text-base font-bold">Accounts & Wallets</Text>
         <TouchableOpacity>
-          <Text className="text-[#6642f8] text-sm font-bold">Manage {'>'}</Text>
+          <Text className="text-[#a855f7] text-sm font-bold">Manage {'>'}</Text>
         </TouchableOpacity>
       </View>
 
       <View className="bg-[#0f1011] rounded-2xl p-2 mb-8 border border-[#1b1b1c]">
-        {accounts.length === 0 ? (
-          <View className="p-4 items-center">
-            <Text className="text-gray-400 text-sm">No accounts found.</Text>
-          </View>
-        ) : (
-          accounts.map((account, index) => {
-            const isBank = account.type === 'checking' || account.type === 'savings';
-            const iconName = isBank ? "business-outline" : "wallet-outline";
-            const iconColor = isBank ? "#3b82f6" : "#a855f7";
-            const iconBg = isBank ? "bg-blue-900/30" : "bg-purple-900/30";
+        {displayAccounts.map((account: any, index: number) => {
+          let iconName = "wallet-outline";
+          let iconColor = "#a855f7";
+          let iconBg = "bg-[#a855f7]/10";
+          let typeDesc = account.desc || `${account.type} Account`;
 
-            return (
-              <React.Fragment key={account.id}>
-                <TouchableOpacity className="flex-row justify-between items-center p-3">
-                  <View className="flex-row items-center">
-                    <View className={`w-10 h-10 ${iconBg} rounded-full items-center justify-center mr-3`}>
-                      <Ionicons name={iconName} size={18} color={iconColor} />
-                    </View>
-                    <View>
-                      <Text className="text-white text-sm font-bold">{account.name}</Text>
-                      <Text className="text-gray-400 text-xs mt-0.5 capitalize">{account.type} Account</Text>
-                    </View>
+          if (account.type === 'checking' || account.type === 'savings' || account.name.includes('Bank')) {
+            iconName = "business-outline";
+            iconColor = "#3b82f6";
+            iconBg = "bg-[#3b82f6]/10";
+          } else if (account.type === 'credit_card' || account.name.includes('Credit')) {
+            iconName = "card-outline";
+            iconColor = "#f97316";
+            iconBg = "bg-[#f97316]/10";
+          } else if (account.type === 'upi' || account.name.includes('UPI')) {
+            iconName = "wallet-outline";
+            iconColor = "#94a3b8";
+            iconBg = "bg-slate-700/30";
+          }
+
+          return (
+            <React.Fragment key={account.id}>
+              <TouchableOpacity className="flex-row justify-between items-center p-3">
+                <View className="flex-row items-center">
+                  <View className={`w-10 h-10 ${iconBg} rounded-full items-center justify-center mr-3`}>
+                    <Ionicons name={iconName as any} size={18} color={iconColor} />
                   </View>
-                  <View className="flex-row items-center">
-                    <Text className="text-green-500 text-sm font-bold mr-2">{formatCurrency(account.balance)}</Text>
-                    <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
+                  <View>
+                    <Text className="text-white text-sm font-bold">{account.name}</Text>
+                    <Text className="text-gray-400 text-xs mt-0.5 capitalize">{typeDesc}</Text>
                   </View>
-                </TouchableOpacity>
-                {index < accounts.length - 1 && <View className="h-px bg-[#1b1b1c] mx-3" />}
-              </React.Fragment>
-            );
-          })
-        )}
+                </View>
+                <View className="flex-row items-center">
+                  <Text className={`${account.balance >= 0 ? 'text-green-500' : 'text-red-500'} text-sm font-bold mr-2`}>
+                    {account.balance < 0 ? '-' : ''}{formatCurrency(account.balance)}
+                  </Text>
+                  <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
+                </View>
+              </TouchableOpacity>
+              {index < displayAccounts.length - 1 && <View className="h-px bg-[#1b1b1c] mx-3" />}
+            </React.Fragment>
+          );
+        })}
       </View>
     </>
   );
