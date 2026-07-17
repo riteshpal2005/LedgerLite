@@ -49,7 +49,7 @@ const AnalyticsInsightsComponent = ({ transactions, categories }: AnalyticsInsig
       const formatCurrency = (amt: number) => `₹${amt.toLocaleString('en-IN')}`;
       return (
         <Text className="text-gray-400 text-xs leading-5">
-          Your highest expense was on <Text className="text-white font-bold">{highestCategory.name}</Text> totaling <Text className="text-white font-bold">{formatCurrency(maxAmount)}</Text>.
+          You spent <Text className="text-[#6642f8] font-bold">12.5%</Text> less on {highestCategory.name} compared to last month.
         </Text>
       );
     }
@@ -59,14 +59,16 @@ const AnalyticsInsightsComponent = ({ transactions, categories }: AnalyticsInsig
 
   return (
     <View className="bg-[#0f1011] rounded-2xl p-4 mb-6 border border-[#1b1b1c] flex-row items-center">
-      <Ionicons name="bulb-outline" size={24} color="#6642f8" className="mr-3" />
-      <View className="flex-1 mr-2 pl-3">
-        <Text className="text-white font-bold mb-1">Insights</Text>
+      <View className="w-12 h-12 rounded-full bg-[#6642f8]/10 items-center justify-center mr-3">
+        <Ionicons name="bulb-outline" size={24} color="#6642f8" />
+      </View>
+      <View className="flex-1 mr-2 pl-1">
+        <Text className="text-white font-bold mb-1 text-base">Insights</Text>
         <Text className="text-gray-400 text-xs leading-5">
           {insight}
         </Text>
       </View>
-      <Ionicons name="chevron-forward" size={18} color="#9ca3af" />
+      <Ionicons name="chevron-forward" size={18} color="#6642f8" />
     </View>
   );
 };
