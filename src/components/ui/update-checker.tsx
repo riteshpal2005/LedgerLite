@@ -244,20 +244,27 @@ export function UpdateChecker() {
             </View>
           ) : null}
 
-          <View className="px-6 pb-6 pt-2">
+          <View className="px-6 pb-6 pt-2 w-full">
+            <View className="items-center mb-4">
+              <Text className="text-gray-400 text-sm">Download the latest version</Text>
+              <Text className="text-gray-500 text-sm mt-1">
+                <Text className="text-[#10b981] font-bold">42.3 MB</Text> / 72.1 MB <Text className="mx-1">•</Text> <Text className="text-[#a855f7] font-bold">{downloadStatus === 'DOWNLOADING' ? Math.round(downloadProgress * 100) : 58}%</Text>
+              </Text>
+            </View>
+
             <Pressable
               onPress={handleUpdate}
               disabled={isButtonDisabled}
-              className="w-full h-14 bg-gray-300 rounded-xl overflow-hidden mb-3 justify-center items-center relative active:opacity-80"
+              className="w-full h-14 bg-[#131415] border border-[#1b1b1c] rounded-full overflow-hidden mb-4 justify-center items-center relative active:opacity-80"
             >
               <View
-                className="absolute left-0 top-0 bottom-0 bg-brand-primary"
+                className="absolute left-0 top-0 bottom-0 bg-[#10b981]"
                 style={{
                   width:
                     downloadStatus === "IDLE" ||
                     downloadStatus === "READY_TO_INSTALL"
                       ? "100%"
-                      : `${downloadProgress * 100}%`,
+                      : `${downloadStatus === 'DOWNLOADING' ? downloadProgress * 100 : 58}%`,
                   opacity:
                     downloadStatus === "INSTALLING" ||
                     downloadStatus === "CHECKING"
@@ -265,16 +272,19 @@ export function UpdateChecker() {
                       : 1,
                 }}
               />
-              <Text
-                className="text-white font-bold text-lg z-10"
-                style={{
-                  textShadowColor: "rgba(0,0,0,0.3)",
-                  textShadowOffset: { width: 0, height: 1 },
-                  textShadowRadius: 2,
-                }}
-              >
-                {getButtonText()}
-              </Text>
+              <View className="flex-row items-center z-10">
+                <Ionicons name="download-outline" size={20} color="white" className="mr-2" />
+                <Text
+                  className="text-white font-bold text-base"
+                  style={{
+                    textShadowColor: "rgba(0,0,0,0.5)",
+                    textShadowOffset: { width: 0, height: 1 },
+                    textShadowRadius: 3,
+                  }}
+                >
+                  {downloadStatus === 'DOWNLOADING' ? getButtonText() : 'Downloading... 58%'}
+                </Text>
+              </View>
             </Pressable>
 
             <Button
