@@ -16,7 +16,7 @@ export default function AddTransactionScreen() {
         </TouchableOpacity>
         <Text className="text-white text-lg font-bold">Add Transaction</Text>
         <TouchableOpacity className="w-10 items-end">
-          <Text className="text-[#6642f8] font-bold text-base">Save</Text>
+          <Text className="text-[#a855f7] font-bold text-base">Save</Text>
         </TouchableOpacity>
       </View>
 
@@ -24,7 +24,7 @@ export default function AddTransactionScreen() {
         
         {/* Transaction Type Tabs */}
         <View className="flex-row bg-[#0f1011] rounded-xl p-1 mb-6 border border-[#1b1b1c]">
-          <TouchableOpacity className="flex-1 flex-row items-center justify-center py-2.5 bg-[#1b1b1c] rounded-lg border border-[#6642f8]/30">
+          <TouchableOpacity className="flex-1 flex-row items-center justify-center py-2.5 bg-[#a855f7]/10 rounded-lg border border-[#a855f7]">
             <Ionicons name="arrow-down" size={16} color="#ef4444" className="mr-1.5" />
             <Text className="text-white font-bold text-xs">Expense</Text>
           </TouchableOpacity>
