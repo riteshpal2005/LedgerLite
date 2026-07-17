@@ -287,12 +287,25 @@ export function UpdateChecker() {
               </View>
             </Pressable>
 
-            <Button
-              title="Maybe Later"
-              variant="ghost"
+            <Text className="text-gray-400 text-[13px] text-center mb-6 leading-5">
+              The update will download in the background.{'\n'}You'll be prompted to install when it's ready.
+            </Text>
+
+            <Pressable
               onPress={handleDismiss}
               disabled={isButtonDisabled}
-            />
+              className="w-full h-14 border border-[#a855f7]/50 rounded-full justify-center items-center flex-row active:bg-[#a855f7]/10"
+            >
+              <Ionicons name="time-outline" size={20} color="#a855f7" className="mr-2" />
+              <Text className="text-[#a855f7] font-bold text-base">Maybe Later</Text>
+            </Pressable>
+
+            <View className="flex-row items-center justify-center mt-6 mb-2">
+              <Ionicons name="shield-checkmark-outline" size={20} color="#10b981" className="mr-3" />
+              <Text className="text-gray-400 text-xs text-left leading-4">
+                This update is safe and secure.{'\n'}Your data is always protected.
+              </Text>
+            </View>
           </View>
         </View>
       </View>
