@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { View, Text } from "react-native";
 import Svg, { Path, Circle } from "react-native-svg";
+import { Ionicons } from "@expo/vector-icons";
 import withObservables from "@nozbe/watermelondb/react/withObservables";
 import { withDatabase } from "@nozbe/watermelondb/react";
 import { Database, Q } from "@nozbe/watermelondb";
@@ -11,7 +12,6 @@ interface CashFlowChartProps {
   transactions: Transaction[];
 }
 
-// Ref: CashFlowChart-1
 const CashFlowChartComponent = ({ transactions }: CashFlowChartProps) => {
   const chartPaths = useMemo(() => {
     if (transactions.length === 0) return null;
@@ -78,15 +78,20 @@ const CashFlowChartComponent = ({ transactions }: CashFlowChartProps) => {
     <View className="bg-[#0f1011] rounded-2xl p-4 mb-6 border border-[#1b1b1c]">
       <View className="flex-row justify-between items-center mb-3">
         <Text className="text-white text-base font-bold">Cash Flow Trend</Text>
+        <View className="flex-row items-center">
+            <Text className="text-gray-400 text-xs mr-1">This Month</Text>
+            <Ionicons name="chevron-down" size={12} color="#9ca3af" className="mr-3" />
+            <Ionicons name="ellipsis-vertical" size={16} color="#9ca3af" />
+        </View>
       </View>
       
-      <View className="flex-row items-center mb-4">
+      <View className="flex-row items-center mb-6">
         <View className="flex-row items-center mr-4">
-          <View className="w-2 h-2 rounded-full bg-green-500 mr-1.5" />
+          <View className="w-2 h-2 rounded-full bg-[#22c55e] mr-1.5" />
           <Text className="text-gray-400 text-xs">Income</Text>
         </View>
         <View className="flex-row items-center mr-4">
-          <View className="w-2 h-2 rounded-full bg-red-500 mr-1.5" />
+          <View className="w-2 h-2 rounded-full bg-[#ef4444] mr-1.5" />
           <Text className="text-gray-400 text-xs">Expense</Text>
         </View>
         <View className="flex-row items-center">
@@ -100,9 +105,9 @@ const CashFlowChartComponent = ({ transactions }: CashFlowChartProps) => {
           <Text className="text-gray-500 text-xs">No data for this period</Text>
         </View>
       ) : (
-        <View className="h-40 relative flex-row">
+        <View className="h-48 relative flex-row">
           {/* Y-Axis */}
-          <View className="w-10 justify-between items-end pb-5 pr-2">
+          <View className="w-10 justify-between items-end pb-8 pr-2 pt-1">
             <Text className="text-gray-500 text-[10px]">{formatShortLabel(chartPaths.maxVal)}</Text>
             <Text className="text-gray-500 text-[10px]">{formatShortLabel(chartPaths.maxVal * 0.75)}</Text>
             <Text className="text-gray-500 text-[10px]">{formatShortLabel(chartPaths.maxVal * 0.5)}</Text>
@@ -112,14 +117,14 @@ const CashFlowChartComponent = ({ transactions }: CashFlowChartProps) => {
 
           <View className="flex-1">
             {/* Horizontal Grid Lines */}
-            <View className="absolute w-full h-full justify-between pb-5">
+            <View className="absolute w-full h-full justify-between pb-8 pt-2">
               {[0, 1, 2, 3, 4].map(i => (
                 <View key={i} className="w-full h-px bg-[#1b1b1c] border-dashed border-[#1b1b1c]" style={{borderWidth: 0.5, borderStyle: 'dashed'}}/>
               ))}
             </View>
 
             {/* Lines */}
-            <View className="absolute w-full h-full pb-5">
+            <View className="absolute w-full h-full pb-8 pt-2">
               <Svg width="100%" height="100%" viewBox="0 0 300 100" preserveAspectRatio="none">
                 {/* Income */}
                 <Path d={chartPaths.incomePath} stroke="#22c55e" strokeWidth="2" fill="none" />
@@ -133,6 +138,15 @@ const CashFlowChartComponent = ({ transactions }: CashFlowChartProps) => {
                 <Path d={chartPaths.expensePath} stroke="#ef4444" strokeWidth="2" fill="none" />
                 <Circle cx={chartPaths.lastPointX} cy={chartPaths.lastExpenseY} r="3" fill="#ef4444" />
               </Svg>
+            </View>
+            
+            {/* X-Axis Labels */}
+            <View className="absolute bottom-0 w-full flex-row justify-between px-1">
+                <Text className="text-gray-500 text-[10px]">1 Jun</Text>
+                <Text className="text-gray-500 text-[10px]">8 Jun</Text>
+                <Text className="text-gray-500 text-[10px]">15 Jun</Text>
+                <Text className="text-gray-500 text-[10px]">22 Jun</Text>
+                <Text className="text-gray-500 text-[10px]">30 Jun</Text>
             </View>
           </View>
         </View>
