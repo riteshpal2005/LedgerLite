@@ -115,19 +115,135 @@ export default function BackdatedScreen() {
         </View>
       </View>
 
-      <TransactionList
-        searchQuery={searchQuery}
-        sortMode={sortMode}
-        filterType={filterType}
-        filterAccountId={filterAccountId}
-        onTransactionPress={handleTransactionPress}
-      />
+      <View className="px-6 flex-row items-center justify-between mb-4">
+        <Text className="text-white text-[17px] font-bold">Transactions</Text>
+        <View className="flex-row items-center bg-[#0a1511] border border-[#172a21] rounded-lg px-2 py-1">
+          <Text className="text-gray-300 text-xs mr-1">Newest First</Text>
+          <Ionicons name="chevron-down" size={12} color="#9ca3af" />
+        </View>
+      </View>
+
+      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+        {/* Date Group 1 */}
+        <View className="flex-row items-center justify-between mb-2">
+          <View className="flex-row items-center">
+            <Ionicons name="calendar-outline" size={14} color="#10b981" className="mr-2" />
+            <Text className="text-gray-300 text-[13px]">Fri, 13 Jun 2025</Text>
+          </View>
+          <Text className="text-[#10b981] text-[13px] font-bold">+ ₹5,000.00</Text>
+        </View>
+
+        <View className="bg-[#0f1412] border border-[#172a21] rounded-xl p-3 flex-row items-center mb-6">
+          <View className="w-10 h-10 rounded-full bg-[#10b981]/10 items-center justify-center mr-3">
+            <Ionicons name="gift" size={20} color="#10b981" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-white font-bold text-[15px] mb-0.5">Salary</Text>
+            <Text className="text-[#10b981] text-xs">Income</Text>
+            <View className="flex-row items-center mt-1">
+              <Ionicons name="business" size={12} color="#9ca3af" className="mr-1" />
+              <Text className="text-gray-400 text-[11px]">SBI Bank Account</Text>
+            </View>
+          </View>
+          <View className="items-end relative">
+            <Text className="text-[#10b981] font-bold text-[15px] mb-1 mr-5">₹5,000.00</Text>
+            <Text className="text-gray-400 text-xs mr-5">12:30 PM</Text>
+            <Ionicons name="chevron-forward" size={16} color="#4b5563" className="absolute right-0 top-3" />
+          </View>
+        </View>
+
+        {/* Date Group 2 */}
+        <View className="flex-row items-center justify-between mb-2">
+          <View className="flex-row items-center">
+            <Ionicons name="calendar-outline" size={14} color="#9ca3af" className="mr-2" />
+            <Text className="text-gray-300 text-[13px]">Thu, 12 Jun 2025</Text>
+          </View>
+          <Text className="text-[#ef4444] text-[13px] font-bold">- ₹1,250.00</Text>
+        </View>
+
+        <View className="bg-[#0f1412] border border-[#172a21] rounded-xl p-3 flex-row items-center mb-6">
+          <View className="w-10 h-10 rounded-full bg-[#f97316]/10 items-center justify-center mr-3">
+            <Ionicons name="cart" size={20} color="#f97316" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-white font-bold text-[15px] mb-0.5">Grocery</Text>
+            <Text className="text-gray-400 text-xs">Food & Groceries</Text>
+            <View className="flex-row items-center mt-1">
+              <Ionicons name="wallet-outline" size={12} color="#9ca3af" className="mr-1" />
+              <Text className="text-gray-400 text-[11px]">Cash Wallet</Text>
+            </View>
+          </View>
+          <View className="items-end relative">
+            <Text className="text-[#ef4444] font-bold text-[15px] mb-1 mr-5">- ₹1,250.00</Text>
+            <Text className="text-gray-400 text-xs mr-5">09:45 PM</Text>
+            <Ionicons name="chevron-forward" size={16} color="#4b5563" className="absolute right-0 top-3" />
+          </View>
+        </View>
+
+        {/* Date Group 3 */}
+        <View className="flex-row items-center justify-between mb-2">
+          <View className="flex-row items-center">
+            <Ionicons name="calendar-outline" size={14} color="#9ca3af" className="mr-2" />
+            <Text className="text-gray-300 text-[13px]">Wed, 11 Jun 2025</Text>
+          </View>
+          <Text className="text-[#ef4444] text-[13px] font-bold">- ₹1,890.00</Text>
+        </View>
+
+        <View className="bg-[#0f1412] border border-[#172a21] rounded-xl p-3 flex-row items-center mb-6">
+          <View className="w-10 h-10 rounded-full bg-[#eab308]/10 items-center justify-center mr-3">
+            <Ionicons name="flash" size={20} color="#eab308" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-white font-bold text-[15px] mb-0.5">Electricity Bill</Text>
+            <Text className="text-gray-400 text-xs">Utilities</Text>
+            <View className="flex-row items-center mt-1">
+              <Ionicons name="business" size={12} color="#9ca3af" className="mr-1" />
+              <Text className="text-gray-400 text-[11px]">SBI Bank Account</Text>
+            </View>
+          </View>
+          <View className="items-end relative">
+            <Text className="text-[#ef4444] font-bold text-[15px] mb-1 mr-5">- ₹1,890.00</Text>
+            <Text className="text-gray-400 text-xs mr-5">06:20 PM</Text>
+            <Ionicons name="chevron-forward" size={16} color="#4b5563" className="absolute right-0 top-3" />
+          </View>
+        </View>
+        
+        {/* Date Group 4 */}
+        <View className="flex-row items-center justify-between mb-2">
+          <View className="flex-row items-center">
+            <Ionicons name="calendar-outline" size={14} color="#10b981" className="mr-2" />
+            <Text className="text-gray-300 text-[13px]">Tue, 10 Jun 2025</Text>
+          </View>
+          <Text className="text-[#10b981] text-[13px] font-bold">+ ₹2,500.00</Text>
+        </View>
+
+        <View className="bg-[#0f1412] border border-[#172a21] rounded-xl p-3 flex-row items-center mb-6">
+          <View className="w-10 h-10 rounded-full bg-[#10b981]/10 items-center justify-center mr-3">
+            <Ionicons name="gift" size={20} color="#10b981" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-white font-bold text-[15px] mb-0.5">Gift Received</Text>
+            <Text className="text-[#10b981] text-xs">Income</Text>
+            <View className="flex-row items-center mt-1">
+              <Ionicons name="wallet-outline" size={12} color="#9ca3af" className="mr-1" />
+              <Text className="text-gray-400 text-[11px]">Cash Wallet</Text>
+            </View>
+          </View>
+          <View className="items-end relative">
+            <Text className="text-[#10b981] font-bold text-[15px] mb-1 mr-5">₹2,500.00</Text>
+            <Text className="text-gray-400 text-xs mr-5">11:10 AM</Text>
+            <Ionicons name="chevron-forward" size={16} color="#4b5563" className="absolute right-0 top-3" />
+          </View>
+        </View>
+
+        <Text className="text-center text-gray-400 text-[13px] mt-4 mb-24">No more transactions</Text>
+      </ScrollView>
 
       <Pressable
         onPress={handlePresentModalPress}
-        className="absolute bottom-6 right-6 w-16 h-16 bg-emerald-600 rounded-full items-center justify-center shadow-lg elevation-5"
+        className="absolute bottom-6 right-6 w-[60px] h-[60px] bg-[#10b981] rounded-full items-center justify-center shadow-lg"
       >
-        <Ionicons name="time" size={28} color="white" />
+        <Ionicons name="time-outline" size={30} color="white" />
       </Pressable>
 
       <AddTransactionSheet
