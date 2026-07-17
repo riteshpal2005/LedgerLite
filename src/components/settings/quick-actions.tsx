@@ -12,34 +12,34 @@ export function QuickActions() {
       <View className="flex-row justify-between mb-8">
         <TouchableOpacity 
           onPress={() => router.push("/add-transaction")}
-          className="bg-[#0f1011] py-4 px-2 rounded-2xl flex-1 items-center justify-center mr-2 border border-[#1b1b1c]"
+          className="bg-[#0f1011] py-4 px-1 rounded-2xl flex-1 items-center justify-center mr-2 border border-[#1b1b1c]"
         >
-          <View className="w-10 h-10 rounded-full border border-purple-500/30 items-center justify-center mb-2">
-            <Ionicons name="add" size={20} color="#a855f7" />
+          <View className="w-10 h-10 rounded-full border border-[#a855f7]/50 items-center justify-center mb-2">
+            <Ionicons name="add" size={24} color="#a855f7" />
           </View>
           <Text className="text-gray-300 text-[10px] text-center">Add Transaction</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
           onPress={() => router.push("/categories")}
-          className="bg-[#0f1011] py-4 px-2 rounded-2xl flex-1 items-center justify-center mr-2 border border-[#1b1b1c]"
+          className="bg-[#0f1011] py-4 px-1 rounded-2xl flex-1 items-center justify-center mr-2 border border-[#1b1b1c]"
         >
-          <View className="w-10 h-10 rounded-full border border-blue-500/30 items-center justify-center mb-2">
-            <Ionicons name="document-text-outline" size={18} color="#3b82f6" />
+          <View className="w-10 h-10 rounded-full border border-[#3b82f6]/50 items-center justify-center mb-2">
+            <Ionicons name="pricetag-outline" size={20} color="#3b82f6" />
           </View>
           <Text className="text-gray-300 text-[10px] text-center">Add Category</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="bg-[#0f1011] py-4 px-2 rounded-2xl flex-1 items-center justify-center mr-2 border border-[#1b1b1c]">
-          <View className="w-10 h-10 rounded-full border border-green-500/30 items-center justify-center mb-2">
-            <Ionicons name="download-outline" size={18} color="#22c55e" />
+        <TouchableOpacity className="bg-[#0f1011] py-4 px-1 rounded-2xl flex-1 items-center justify-center mr-2 border border-[#1b1b1c]">
+          <View className="w-10 h-10 rounded-full border border-[#22c55e]/50 items-center justify-center mb-2">
+            <Ionicons name="download-outline" size={20} color="#22c55e" />
           </View>
           <Text className="text-gray-300 text-[10px] text-center">Export Data</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="bg-[#0f1011] py-4 px-2 rounded-2xl flex-1 items-center justify-center border border-[#1b1b1c]">
-          <View className="w-10 h-10 rounded-full border border-purple-500/30 items-center justify-center mb-2">
-            <Ionicons name="pie-chart-outline" size={18} color="#a855f7" />
+        <TouchableOpacity className="bg-[#0f1011] py-4 px-1 rounded-2xl flex-1 items-center justify-center border border-[#1b1b1c]">
+          <View className="w-10 h-10 rounded-full border border-[#a855f7]/50 items-center justify-center mb-2">
+            <Ionicons name="pie-chart-outline" size={20} color="#a855f7" />
           </View>
           <Text className="text-gray-300 text-[10px] text-center">Reports</Text>
         </TouchableOpacity>
