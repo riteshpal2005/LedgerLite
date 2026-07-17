@@ -37,22 +37,27 @@ export default function BackdatedScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background dark:bg-[#062016] p-6 pt-12">
-      <View className="flex-row items-center mb-6 mt-2">
-        <Pressable
-          onPress={() => router.back()}
-          className="mr-4 p-2 bg-surface rounded-xl border border-bordercolor"
-        >
-          <Ionicons name="arrow-back" size={24} color="#f4f4f5" />
+    <View className="flex-1 bg-[#0a1511] pt-12">
+      <View className="flex-row items-center justify-between px-6 mb-6 mt-2">
+        <Pressable onPress={() => router.back()} className="w-10">
+          <Ionicons name="arrow-back" size={24} color="white" />
         </Pressable>
-        <View>
-          <Text className="text-2xl font-bold text-primary">
+        <View className="items-center">
+          <Text className="text-xl font-bold text-white mb-1.5">
             Backdated Ledger
           </Text>
-          <Text className="text-emerald-500 text-xs font-bold uppercase tracking-wider">
-            Time Travel Mode Active
-          </Text>
+          <View className="bg-[#10b981]/15 px-3 py-1 rounded-full flex-row items-center">
+            <Ionicons name="time" size={12} color="#10b981" className="mr-1.5" />
+            <Text className="text-[#10b981] text-[10px] font-bold uppercase tracking-wider">
+              Time Travel Mode Active
+            </Text>
+          </View>
         </View>
+        <Pressable className="w-10 items-end">
+          <View className="w-6 h-6 rounded-full border-2 border-[#10b981] items-center justify-center">
+            <Ionicons name="information" size={14} color="#10b981" />
+          </View>
+        </Pressable>
       </View>
 
       <View className="flex-row items-center mb-6 z-50 relative">
