@@ -23,12 +23,17 @@ const RecentTransactionRowComponent = ({ tx, category, isLast }: { tx: Transacti
           </View>
           <View className="flex-1 mr-2">
             <Text className="text-white text-base font-bold" numberOfLines={1}>{tx.description || category.name}</Text>
-            <Text className="text-gray-400 text-xs mt-1">{format(new Date(tx.date), "MMM d, yyyy")}</Text>
+            <Text className="text-gray-400 text-xs mt-1">
+              {format(new Date(tx.date), "MMM d, yyyy")} • <Text className={isIncome ? 'text-green-500' : 'text-red-500'}>{isIncome ? "Income" : "Expense"}</Text>
+            </Text>
           </View>
         </View>
-        <Text className={`${isIncome ? 'text-green-500' : 'text-red-500'} text-base font-bold`}>
-          {isIncome ? "+" : "-"} ₹{tx.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-        </Text>
+        <View className="flex-row items-center">
+          <Text className={`${isIncome ? 'text-green-500' : 'text-red-500'} text-base font-bold mr-2`}>
+            {isIncome ? "+" : "-"} ₹{tx.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </Text>
+          <Ionicons name="chevron-forward" size={16} color="#6b7280" />
+        </View>
       </View>
       {!isLast && <View className="h-px bg-[#1b1b1c] mx-3" />}
     </>
