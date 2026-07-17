@@ -40,7 +40,8 @@ function CustomTabBar({ state, navigation }: any) {
 
       <View className="flex-1 items-center justify-center relative z-50">
         <TouchableOpacity 
-          className="w-14 h-14 bg-[#6642f8] rounded-full items-center justify-center absolute -top-8 border-4 border-[#0a0b0d]"
+          className="w-16 h-16 bg-[#6642f8] rounded-full items-center justify-center absolute -top-8 border-[6px] border-[#0a0b0d]"
+          style={{ shadowColor: "#6642f8", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.5, shadowRadius: 10, elevation: 10 }}
           onPress={() => router.push("/add-transaction")}
         >
           <Ionicons name="add" size={32} color="white" />
@@ -53,7 +54,7 @@ function CustomTabBar({ state, navigation }: any) {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate("settings")} className="items-center flex-1">
-        <Ionicons name={state.index === 3 ? "options" : "options-outline"} size={24} color={state.index === 3 ? "#6642f8" : "#6b7280"} />
+        <Ionicons name={state.index === 3 ? "list" : "list-outline"} size={24} color={state.index === 3 ? "#6642f8" : "#6b7280"} />
         <Text style={{ color: state.index === 3 ? "#6642f8" : "#6b7280", fontSize: 10, marginTop: 4, fontWeight: "bold" }}>More</Text>
       </TouchableOpacity>
     </View>
