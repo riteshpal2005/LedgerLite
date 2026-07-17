@@ -15,27 +15,43 @@ import { Ionicons } from "@expo/vector-icons";
 import Markdown from "react-native-markdown-display";
 
 const markdownStyles = {
-  body: { color: "#4b5563", fontSize: 14, lineHeight: 20 },
-  heading1: {
-    color: "#1f2937",
-    fontWeight: "bold" as "bold",
-    fontSize: 20,
-    marginVertical: 8,
-  },
+  body: { color: "#9ca3af", fontSize: 13, lineHeight: 20 },
   heading2: {
-    color: "#1f2937",
+    color: "#10b981",
     fontWeight: "bold" as "bold",
-    fontSize: 18,
-    marginVertical: 6,
+    fontSize: 14,
+    marginTop: 16,
+    marginBottom: 8,
   },
   heading3: {
-    color: "#1f2937",
+    color: "#a855f7",
     fontWeight: "bold" as "bold",
-    fontSize: 16,
-    marginVertical: 4,
+    fontSize: 14,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  heading4: {
+    color: "#eab308",
+    fontWeight: "bold" as "bold",
+    fontSize: 14,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  hr: {
+    backgroundColor: '#1b1b1c',
+    height: 1,
+    marginTop: 12,
+    marginBottom: 4,
   },
   link: { color: "#10b981" },
-  list_item: { marginBottom: 4 },
+  list_item: { marginBottom: 6, flexDirection: 'row' as 'row', alignItems: 'flex-start' as 'flex-start' },
+  bullet_list: { marginLeft: 0 },
+  bullet_list_icon: {
+    color: "#9ca3af",
+    fontSize: 14,
+    marginRight: 6,
+    marginTop: 0,
+  },
 };
 
 export function UpdateChecker() {
@@ -210,15 +226,21 @@ export function UpdateChecker() {
           </View>
 
           {updateInfo.releaseNotes ? (
-            <View className="max-h-48 px-6 mb-4">
-              <Card padding="sm" className="bg-background">
-                <Label>Release Notes</Label>
-                <ScrollView showsVerticalScrollIndicator={false}>
+            <View className="px-6 mb-6 max-h-72">
+              <View className="bg-[#131415] border border-[#1b1b1c] rounded-2xl overflow-hidden flex-1">
+                <View className="flex-row items-center p-4 border-b border-[#1b1b1c]">
+                  <Ionicons name="document-text-outline" size={20} color="#10b981" className="mr-3" />
+                  <View>
+                    <Text className="text-white font-bold text-sm">What's New</Text>
+                    <Text className="text-gray-500 text-[11px]">Check out what's been improved</Text>
+                  </View>
+                </View>
+                <ScrollView showsVerticalScrollIndicator={false} className="px-4 pb-4">
                   <Markdown style={markdownStyles}>
                     {updateInfo.releaseNotes}
                   </Markdown>
                 </ScrollView>
-              </Card>
+              </View>
             </View>
           ) : null}
 
