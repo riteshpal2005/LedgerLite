@@ -91,6 +91,10 @@ const CategorySpendingChartComponent = ({ transactions, categories }: CategorySp
     <View className="bg-[#0f1011] rounded-2xl p-4 mb-6 border border-[#1b1b1c]">
       <View className="flex-row justify-between items-center mb-6">
         <Text className="text-white text-base font-bold">Spending by Category</Text>
+        <View className="flex-row items-center">
+            <Text className="text-gray-400 text-xs mr-1">This Month</Text>
+            <Ionicons name="chevron-down" size={12} color="#9ca3af" />
+        </View>
       </View>
 
       <View className="flex-row items-center">
@@ -112,7 +116,7 @@ const CategorySpendingChartComponent = ({ transactions, categories }: CategorySp
             ))}
           </Svg>
           <View className="absolute items-center justify-center">
-            <Text className="text-white font-bold text-sm">{formatCurrency(chartData.totalExpense)}</Text>
+            <Text className="text-white font-bold text-base mb-0.5">{formatCurrency(chartData.totalExpense)}</Text>
             <Text className="text-gray-400 text-[10px]">Total Expense</Text>
           </View>
         </View>
@@ -126,9 +130,9 @@ const CategorySpendingChartComponent = ({ transactions, categories }: CategorySp
                   className="w-5 h-5 rounded-full items-center justify-center mr-2"
                   style={{ backgroundColor: slice.color }}
                 >
-                  <Ionicons name={slice.icon as any} size={10} color="white" />
+                  <Ionicons name={slice.icon as any} size={12} color="white" />
                 </View>
-                <Text className="text-gray-300 text-xs truncate w-20" numberOfLines={1}>{slice.name}</Text>
+                <Text className="text-gray-300 text-xs truncate w-[88px]" numberOfLines={1}>{slice.name}</Text>
               </View>
               <View className="flex-row items-center">
                 <Text className="text-white text-xs mr-2">{formatCurrency(slice.amount)}</Text>
