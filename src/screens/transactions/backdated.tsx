@@ -98,6 +98,23 @@ export default function BackdatedScreen() {
         </View>
       </View>
 
+      <View className="px-6 mb-6">
+        <View className="bg-[#0f1412] border border-[#172a21] rounded-xl flex-row items-center py-4 px-2">
+          <View className="flex-1 items-center justify-center border-r border-[#172a21]">
+            <Text className="text-gray-400 text-xs mb-1">Total Income</Text>
+            <Text className="text-[#10b981] font-bold text-[15px]">₹28,450.00</Text>
+          </View>
+          <View className="flex-1 items-center justify-center border-r border-[#172a21]">
+            <Text className="text-gray-400 text-xs mb-1">Total Expenses</Text>
+            <Text className="text-[#ef4444] font-bold text-[15px]">-₹21,890.00</Text>
+          </View>
+          <View className="flex-1 items-center justify-center">
+            <Text className="text-gray-400 text-xs mb-1">Net Balance</Text>
+            <Text className="text-[#10b981] font-bold text-[15px]">₹6,560.00</Text>
+          </View>
+        </View>
+      </View>
+
       <TransactionList
         searchQuery={searchQuery}
         sortMode={sortMode}
