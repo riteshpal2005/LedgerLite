@@ -182,19 +182,31 @@ export function UpdateChecker() {
       animationType="fade"
       onRequestClose={handleDismiss}
     >
-      <View className="flex-1 justify-center items-center bg-black/60 px-6">
-        <Card
-          padding="none"
-          className="w-full rounded-3xl overflow-hidden shadow-xl"
-        >
-          <View className="items-center pt-8 pb-4">
-            <IconWrapper size="lg" className="mb-4">
-              <Ionicons name="cloud-download" size={32} color="#10b981" />
-            </IconWrapper>
-            <Heading className="text-center">Update Available!</Heading>
-            <SubText className="text-center mt-2 px-4">
-              Version {updateInfo.latestVersion} is ready to download.
-            </SubText>
+      <View className="flex-1 justify-center items-center bg-black/80 px-6">
+        <View className="w-full bg-[#0f1011] border border-[#1b1b1c] rounded-[32px] overflow-hidden shadow-xl pb-6">
+          
+          <Pressable 
+            onPress={handleDismiss} 
+            className="absolute top-4 right-4 w-8 h-8 bg-[#1b1b1c] rounded-full items-center justify-center z-10"
+          >
+            <Ionicons name="close" size={18} color="#9ca3af" />
+          </Pressable>
+
+          <View className="items-center pt-8 pb-4 relative">
+            <View className="relative w-24 h-24 items-center justify-center mb-4">
+              <View className="absolute top-2 left-4"><Text className="text-[#10b981] text-xs">✦</Text></View>
+              <View className="absolute top-0 right-4"><Text className="text-[#10b981] text-[10px]">✦</Text></View>
+              <View className="absolute bottom-6 left-0"><Text className="text-[#10b981] text-[10px]">✦</Text></View>
+              <View className="absolute bottom-4 right-0"><Text className="text-[#10b981] text-xs">✦</Text></View>
+              
+              <View className="w-16 h-16 rounded-full border border-[#10b981]/50 bg-[#10b981]/10 items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                <Ionicons name="cloud-download-outline" size={30} color="#10b981" />
+              </View>
+            </View>
+            <Text className="text-white text-2xl font-bold text-center">Update Available!</Text>
+            <Text className="text-gray-400 text-sm text-center mt-2 px-4">
+              Version <Text className="text-[#10b981]">{updateInfo.latestVersion}</Text> is ready to install
+            </Text>
           </View>
 
           {updateInfo.releaseNotes ? (
@@ -250,7 +262,7 @@ export function UpdateChecker() {
               disabled={isButtonDisabled}
             />
           </View>
-        </Card>
+        </View>
       </View>
     </Modal>
   );
