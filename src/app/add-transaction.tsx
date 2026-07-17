@@ -47,7 +47,7 @@ export default function AddTransactionScreen() {
             </View>
             <View>
               <Text className="text-white text-sm font-bold">SBI Bank Account</Text>
-              <Text className="text-gray-400 text-xs mt-0.5">₹2,000.00</Text>
+              <Text className="text-gray-400 text-xs mt-0.5">₹1,20,300.00</Text>
             </View>
           </View>
           <Ionicons name="chevron-down" size={20} color="#9ca3af" />
@@ -57,11 +57,11 @@ export default function AddTransactionScreen() {
         <Text className="text-gray-400 text-xs mb-2 ml-1">Amount</Text>
         <View className="bg-[#0f1011] rounded-2xl p-4 flex-row items-center justify-between mb-6 border border-[#1b1b1c]">
           <View className="flex-row items-center">
-            <Text className="text-red-500 text-2xl font-bold mr-2">₹</Text>
+            <Text className="text-[#ef4444] text-2xl font-bold mr-2">₹</Text>
             <Text className="text-white text-3xl font-bold tracking-wider">1,250.00</Text>
           </View>
           <TouchableOpacity>
-            <Ionicons name="calculator-outline" size={24} color="#6642f8" />
+            <Ionicons name="calculator-outline" size={24} color="#a855f7" />
           </TouchableOpacity>
         </View>
 
