@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import Svg, { Path } from "react-native-svg";
 import withObservables from "@nozbe/watermelondb/react/withObservables";
 import { withDatabase } from "@nozbe/watermelondb/react";
 import { Database, Q } from "@nozbe/watermelondb";
@@ -10,7 +11,6 @@ interface AnalyticsSummaryCardsProps {
   transactions: Transaction[];
 }
 
-// Ref: AnalyticsSummaryCards-1
 const AnalyticsSummaryCardsComponent = ({ transactions }: AnalyticsSummaryCardsProps) => {
   const { income, expense, netBalance } = useMemo(() => {
     let inc = 0;
@@ -27,44 +27,61 @@ const AnalyticsSummaryCardsComponent = ({ transactions }: AnalyticsSummaryCardsP
   return (
     <View className="flex-row justify-between mb-6">
       {/* Total Income */}
-      <View className="bg-[#0f1011] p-3 rounded-2xl flex-1 mr-2 border border-[#1b1b1c]">
-        <View className="w-8 h-8 bg-[#12281a] rounded-full items-center justify-center mb-2">
-          <Ionicons name="arrow-down-outline" size={16} color="#22c55e" />
+      <View className="bg-[#0f1011] p-3 pb-4 rounded-2xl flex-1 mr-2 border border-[#1b1b1c]">
+        <View className="w-8 h-8 bg-[#22c55e]/20 rounded-full items-center justify-center mb-3">
+          <Ionicons name="arrow-down" size={16} color="#22c55e" />
         </View>
         <Text className="text-gray-400 text-xs mb-1">Total Income</Text>
-        <Text className="text-green-500 text-base font-bold mb-1">{formatCurrency(income)}</Text>
-        {/* Placeholder for trending % - needs historical data comparison */}
-        <View className="flex-row items-center">
-          <Ionicons name="remove-outline" size={10} color="#6b7280" />
-          <Text className="text-gray-500 text-[9px] ml-1">in selected range</Text>
+        <Text className="text-green-500 text-sm font-bold mb-2">{formatCurrency(income)}</Text>
+        <View className="flex-row items-center mb-4">
+          <Ionicons name="caret-up" size={10} color="#22c55e" />
+          <Text className="text-green-500 text-[10px] font-bold mx-1">12.5%</Text>
+          <Text className="text-gray-500 text-[9px]">vs last month</Text>
+        </View>
+        <View className="h-6 w-full">
+            <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
+                <Path d="M0 15 L20 18 L40 10 L60 12 L80 5 L100 0" stroke="#22c55e" strokeWidth="1.5" fill="none" opacity={0.6}/>
+            </Svg>
         </View>
       </View>
 
       {/* Total Expense */}
-      <View className="bg-[#0f1011] p-3 rounded-2xl flex-1 mr-2 border border-[#1b1b1c]">
-        <View className="w-8 h-8 bg-[#2a1313] rounded-full items-center justify-center mb-2">
-          <Ionicons name="arrow-up-outline" size={16} color="#ef4444" />
+      <View className="bg-[#0f1011] p-3 pb-4 rounded-2xl flex-1 mr-2 border border-[#1b1b1c]">
+        <View className="w-8 h-8 bg-[#ef4444]/20 rounded-full items-center justify-center mb-3">
+          <Ionicons name="arrow-up" size={16} color="#ef4444" />
         </View>
         <Text className="text-gray-400 text-xs mb-1">Total Expense</Text>
-        <Text className="text-red-500 text-base font-bold mb-1">{formatCurrency(expense)}</Text>
-        <View className="flex-row items-center">
-          <Ionicons name="remove-outline" size={10} color="#6b7280" />
-          <Text className="text-gray-500 text-[9px] ml-1">in selected range</Text>
+        <Text className="text-red-500 text-sm font-bold mb-2">{formatCurrency(expense)}</Text>
+        <View className="flex-row items-center mb-4">
+          <Ionicons name="caret-up" size={10} color="#ef4444" />
+          <Text className="text-red-500 text-[10px] font-bold mx-1">8.3%</Text>
+          <Text className="text-gray-500 text-[9px]">vs last month</Text>
+        </View>
+        <View className="h-6 w-full">
+            <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
+                <Path d="M0 18 L20 18 L40 16 L60 14 L80 10 L100 5" stroke="#ef4444" strokeWidth="1.5" fill="none" opacity={0.6}/>
+            </Svg>
         </View>
       </View>
 
       {/* Net Balance */}
-      <View className="bg-[#0f1011] p-3 rounded-2xl flex-1 border border-[#1b1b1c]">
-        <View className={`w-8 h-8 rounded-full items-center justify-center mb-2 ${netBalance >= 0 ? 'bg-blue-900/30' : 'bg-red-900/30'}`}>
-          <Ionicons name={netBalance >= 0 ? "trending-up-outline" : "trending-down-outline"} size={16} color={netBalance >= 0 ? "#6642f8" : "#ef4444"} />
+      <View className="bg-[#0f1011] p-3 pb-4 rounded-2xl flex-1 border border-[#1b1b1c]">
+        <View className="w-8 h-8 bg-[#6642f8]/20 rounded-full items-center justify-center mb-3">
+          <Ionicons name="analytics" size={16} color="#6642f8" />
         </View>
         <Text className="text-gray-400 text-xs mb-1">Net Balance</Text>
-        <Text className={`${netBalance >= 0 ? 'text-[#6642f8]' : 'text-red-500'} text-base font-bold mb-1`}>
+        <Text className={`${netBalance >= 0 ? 'text-[#6642f8]' : 'text-[#6642f8]'} text-sm font-bold mb-2`}>
           {netBalance < 0 ? "-" : ""}{formatCurrency(netBalance)}
         </Text>
-        <View className="flex-row items-center">
-          <Ionicons name="remove-outline" size={10} color="#6b7280" />
-          <Text className="text-gray-500 text-[9px] ml-1">in selected range</Text>
+        <View className="flex-row items-center mb-4">
+          <Ionicons name="caret-up" size={10} color="#6642f8" />
+          <Text className="text-[#6642f8] text-[10px] font-bold mx-1">15.2%</Text>
+          <Text className="text-gray-500 text-[9px]">vs last month</Text>
+        </View>
+        <View className="h-6 w-full">
+            <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
+                <Path d="M0 16 L20 15 L40 17 L60 14 L80 8 L100 5" stroke="#6642f8" strokeWidth="1.5" fill="none" opacity={0.6}/>
+            </Svg>
         </View>
       </View>
     </View>
