@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TransactionsHeader } from "../../components/transactions/transactions-header";
 import { TransactionsFilterTabs, FilterType } from "../../components/transactions/transactions-filter-tabs";
@@ -13,6 +13,7 @@ export default function TransactionsScreen() {
       <TransactionsHeader />
       
       <View className="flex-1 px-6 pt-4">
+        <Text className="text-white text-2xl font-bold mb-4">Transactions</Text>
         <TransactionsFilterTabs activeFilter={activeFilter} onFilterChange={setActiveFilter} />
         
         {/* The List Component contains the ScrollView and Observables internally */}
