@@ -1,13 +1,12 @@
-import React, { useMemo, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import React, { useMemo } from "react";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import withObservables from "@nozbe/watermelondb/react/withObservables";
 import { withDatabase } from "@nozbe/watermelondb/react";
 import { Database, Q } from "@nozbe/watermelondb";
 import Transaction from "../../server/db/models/Transaction";
 import { TransactionListItem } from "./transaction-list-item";
-import { GroupSummaryCard } from "./group-summary-card";
-import { isToday, subDays, startOfDay, format, isAfter } from "date-fns";
+import { isToday, startOfDay, format } from "date-fns";
 import { FilterType } from "./transactions-filter-tabs";
 
 interface TransactionGroupedListProps {
@@ -15,61 +14,60 @@ interface TransactionGroupedListProps {
   filter: FilterType;
 }
 
-interface GroupedData {
-  title: string;
-  transactions: Transaction[];
-  expense: number;
-  income: number;
-}
-
-// Ref: TransactionGroupedList-1
 const TransactionGroupedListComponent = ({ transactions, filter }: TransactionGroupedListProps) => {
-  // Apply the selected filter first
+  // Apply the selected filter
   const filteredTransactions = useMemo(() => {
     if (filter === "All") return transactions;
     const targetType = filter === "Income" ? "credit" : "debit";
     return transactions.filter(t => t.type === targetType);
   }, [transactions, filter]);
 
-  // Group the transactions dynamically
+  const currentMonthString = format(new Date(), "MMMM yyyy");
+  
+  const currentMonthTotal = useMemo(() => {
+    // For simplicity, summing up amounts. In a real app, this would be total income/expense based on filter
+    let expense = 0;
+    filteredTransactions.forEach(t => {
+      if (t.type === 'debit') expense += t.amount;
+    });
+    return expense; // Using expense for the total to match the purple styling commonly used for totals in this app
+  }, [filteredTransactions]);
+
+  // Group the transactions dynamically by day
   const groupedData = useMemo(() => {
     const groups: Record<string, Transaction[]> = {};
 
     filteredTransactions.forEach(t => {
       const tDate = new Date(t.date);
-      const monthName = format(tDate, "MMMM yyyy");
-      if (!groups[monthName]) groups[monthName] = [];
-      groups[monthName].push(t);
+      const dayKey = format(startOfDay(tDate), "yyyy-MM-dd");
+      if (!groups[dayKey]) groups[dayKey] = [];
+      groups[dayKey].push(t);
     });
 
-    // Remove empty groups and format into array
     return Object.keys(groups)
-      .filter(key => groups[key].length > 0)
+      .sort((a, b) => b.localeCompare(a)) // Sort by date descending
       .map(key => {
+        const tDate = new Date(key);
+        let title = format(tDate, "MMM d, yyyy");
+        
+        // Helper to check yesterday (timezone safe-ish)
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        
+        if (isToday(tDate)) {
+            title = `Today • ${title}`;
+        } else if (format(startOfDay(yesterday), "yyyy-MM-dd") === key) {
+            title = `Yesterday • ${title}`;
+        }
+        
         const groupTxs = groups[key].sort((a, b) => b.date - a.date);
-        const expense = groupTxs.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
-        const income = groupTxs.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
         return {
-          title: key,
+          title,
           transactions: groupTxs,
-          expense,
-          income
+          count: groupTxs.length
         };
       });
   }, [filteredTransactions]);
-
-  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
-
-  const toggleGroup = (title: string) => {
-    setCollapsedGroups(prev => ({ ...prev, [title]: !prev[title] }));
-  };
-
-  const formatNetBalance = (amount: number) => {
-    const isNegative = amount < 0;
-    const absValue = Math.abs(amount);
-    const formatted = absValue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    return isNegative ? `- ₹${formatted}` : `₹${formatted}`;
-  };
 
   if (groupedData.length === 0) {
     return (
@@ -80,58 +78,63 @@ const TransactionGroupedListComponent = ({ transactions, filter }: TransactionGr
   }
 
   return (
-    <View>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      {/* Month Header */}
+      <View className="flex-row justify-between items-center mb-4 px-1">
+        <TouchableOpacity className="flex-row items-center">
+          <Text className="text-gray-200 text-base font-bold mr-1">{currentMonthString}</Text>
+          <Ionicons name="chevron-down" size={16} color="#6642f8" />
+        </TouchableOpacity>
+        <TouchableOpacity className="flex-row items-center">
+          <Text className="text-[#6642f8] text-base font-bold mr-1">
+            ₹{currentMonthTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </Text>
+          <Ionicons name="chevron-down" size={16} color="#6642f8" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Grouped List */}
       {groupedData.map((group) => {
-        const isCollapsed = collapsedGroups[group.title];
-        const netBalance = group.income - group.expense;
-        const isPositive = netBalance >= 0;
-        const colorClass = isPositive ? "text-[#6642f8]" : "text-[#ef4444]";
-        const iconColor = isPositive ? "#6642f8" : "#ef4444";
-        
         return (
-          <View key={group.title} className="mb-2">
-            <TouchableOpacity 
-              onPress={() => toggleGroup(group.title)}
-              className="flex-row justify-between items-center mb-3 px-1 mt-2"
-            >
-              <Text className="text-gray-200 text-sm font-semibold">{group.title}</Text>
-              
+          <View key={group.title} className="mb-4 bg-[#0f1011] rounded-2xl p-2 border border-[#1b1b1c]">
+            <View className="flex-row justify-between items-center mb-2 px-3 pt-2">
               <View className="flex-row items-center">
-                <Text className={`${colorClass} text-sm font-semibold mr-1`}>
-                  {formatNetBalance(netBalance)}
-                </Text>
-                <Ionicons 
-                  name={isCollapsed ? "chevron-down" : "chevron-up"} 
-                  size={16} 
-                  color={iconColor} 
-                />
+                <Ionicons name="calendar-outline" size={14} color="#6b7280" className="mr-2" />
+                <Text className="text-gray-200 text-xs font-semibold ml-1">{group.title}</Text>
               </View>
-            </TouchableOpacity>
+              <Text className="text-gray-500 text-xs">{group.count} item{group.count !== 1 ? 's' : ''}</Text>
+            </View>
             
-            {!isCollapsed ? (
-              <View className="bg-[#0f1011] rounded-3xl p-2 mb-4 border border-[#1b1b1c]">
-                {group.transactions.map((t) => (
-                  <React.Fragment key={t.id}>
-                    <TransactionListItem transaction={t} />
-                  </React.Fragment>
-                ))}
-              </View>
-            ) : (
-              <View className="mb-4">
-                <GroupSummaryCard transactions={group.transactions} />
-              </View>
-            )}
+            <View>
+              {group.transactions.map((t, index) => (
+                <React.Fragment key={t.id}>
+                  <TransactionListItem transaction={t} isLast={index === group.transactions.length - 1} />
+                </React.Fragment>
+              ))}
+            </View>
           </View>
         );
       })}
-    </View>
+
+      {/* End of list footer */}
+      <View className="items-center justify-center py-6 mb-24 bg-[#0f1011] rounded-2xl border border-[#1b1b1c]">
+         <View className="flex-row items-center">
+           <Ionicons name="cube-outline" size={32} color="#6642f8" className="mr-4" opacity={0.8} />
+           <View>
+             <Text className="text-white text-base font-bold">No more transactions</Text>
+             <Text className="text-gray-400 text-xs mt-1 mb-1">You've reached the end of your history.</Text>
+             <TouchableOpacity className="flex-row items-center">
+               <Text className="text-[#6642f8] text-xs font-bold">Add a new transaction</Text>
+               <Ionicons name="chevron-forward" size={12} color="#6642f8" className="ml-1" />
+             </TouchableOpacity>
+           </View>
+         </View>
+      </View>
+    </ScrollView>
   );
 };
 
 const enhance = withObservables(['database'], ({ database }: { database: Database }) => ({
-  // We fetch ALL transactions descending and filter/group them in JS
-  // For massive datasets (10,000+), we would use WatermelonDB query filters, 
-  // but for the UI grouping logic to be fluid, subscribing to all is acceptable for local DBs.
   transactions: database.collections.get<Transaction>('transactions').query(Q.sortBy('date', Q.desc)).observe(),
 }));
 

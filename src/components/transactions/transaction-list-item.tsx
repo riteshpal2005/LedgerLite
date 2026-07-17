@@ -9,20 +9,21 @@ import { format } from "date-fns";
 interface TransactionListItemProps {
   transaction: Transaction;
   category: Category;
+  isLast?: boolean;
 }
 
-// Ref: TransactionListItem-1
-const TransactionListItemComponent = ({ transaction, category }: TransactionListItemProps) => {
+const TransactionListItemComponent = ({ transaction, category, isLast }: TransactionListItemProps) => {
   const isIncome = transaction.type === "credit";
   const amountColor = isIncome ? "text-green-500" : "text-red-500";
   const sign = isIncome ? "+" : "-";
   
   const formatCurrency = (amount: number) => `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-  const title = transaction.description || category.name;
+  const title = category.name;
+  const subtitle = transaction.description || transaction.merchant || "Transaction";
 
   return (
-    <View>
+    <>
       <View className="flex-row justify-between items-center p-3">
         <View className="flex-row items-center flex-1">
           <View 
@@ -33,20 +34,23 @@ const TransactionListItemComponent = ({ transaction, category }: TransactionList
           </View>
           <View className="flex-1 mr-2">
             <Text className="text-white text-base font-bold" numberOfLines={1}>{title}</Text>
+            <Text className="text-gray-400 text-xs mt-0.5" numberOfLines={1}>{subtitle}</Text>
             <View className="flex-row items-center mt-1">
               <View className={`w-1.5 h-1.5 rounded-full mr-1.5 ${isIncome ? 'bg-green-500' : 'bg-red-500'}`} />
-              <Text className="text-gray-400 text-xs">{category.name}</Text>
+              <Text className={isIncome ? 'text-green-500 text-[10px]' : 'text-red-500 text-[10px]'}>{isIncome ? 'Income' : 'Expense'}</Text>
             </View>
           </View>
         </View>
-        <View className="items-end">
-          <Text className="text-gray-400 text-xs mb-1">{format(new Date(transaction.date), 'MMM d, yyyy')}</Text>
-          <Text className="text-gray-500 text-[10px] mb-1">{format(new Date(transaction.date), 'hh:mm a')}</Text>
-          <Text className={`${amountColor} text-base font-bold`}>{sign} {formatCurrency(transaction.amount)}</Text>
+        <View className="items-center flex-row">
+          <View className="items-end mr-3">
+            <Text className={`${amountColor} text-base font-bold`}>{sign} {formatCurrency(transaction.amount)}</Text>
+            <Text className="text-gray-500 text-[10px] mt-1">{format(new Date(transaction.date), 'hh:mm a')}</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={16} color="#6b7280" />
         </View>
       </View>
-      <View className="h-px bg-[#1b1b1c] mx-3" />
-    </View>
+      {!isLast && <View className="h-px bg-[#1b1b1c] mx-3" />}
+    </>
   );
 };
 
