@@ -69,8 +69,8 @@ export default function AddTransactionScreen() {
         <Text className="text-gray-400 text-xs mb-2 ml-1">Category</Text>
         <TouchableOpacity className="bg-[#0f1011] rounded-2xl p-3 flex-row items-center justify-between mb-6 border border-[#1b1b1c]">
           <View className="flex-row items-center">
-            <View className="w-10 h-10 bg-red-500 rounded-full items-center justify-center mr-3">
-              <Ionicons name="cart-outline" size={20} color="white" />
+            <View className="w-10 h-10 bg-[#ea580c] rounded-full items-center justify-center mr-3">
+              <Ionicons name="cart" size={20} color="white" />
             </View>
             <Text className="text-white text-sm font-bold">Food & Groceries</Text>
           </View>
@@ -87,6 +87,7 @@ export default function AddTransactionScreen() {
                 <Ionicons name="calendar-outline" size={18} color="#9ca3af" className="mr-2" />
                 <Text className="text-white text-sm">13 Jun 2025</Text>
               </View>
+              <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
             </TouchableOpacity>
           </View>
 
