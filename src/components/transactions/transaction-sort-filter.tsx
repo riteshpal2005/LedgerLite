@@ -5,10 +5,11 @@ import {
   BottomSheetModal,
   BottomSheetView,
   BottomSheetBackdrop,
+  BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
 import { useSelector } from "react-redux";
 import { selectAccountsWithBalances } from "../../store/accountSlice";
-import { useTheme } from "../../hooks/theme/ThemeContext";
+
 export type SortMode = "newest" | "oldest" | "highest" | "lowest";
 export type FilterType = "all" | "debit" | "credit";
 export type FilterAccountId = string | "all";
@@ -32,54 +33,42 @@ export function TransactionSortFilter({
 }: TransactionSortFilterProps) {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const accounts = useSelector(selectAccountsWithBalances);
-  const { bottomSheetBackgroundColor, bottomSheetIndicatorColor } = useTheme();
 
   const openSheet = () => bottomSheetRef.current?.present();
+  const closeSheet = () => bottomSheetRef.current?.dismiss();
 
-  const snapPoints = useMemo(() => ["65%"], []);
+  const snapPoints = useMemo(() => ["90%"], []);
   const renderBackdrop = useCallback(
     (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-      />
+      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.7} />
     ),
     [],
   );
 
-  const getSortLabel = (mode: SortMode) => {
-    switch (mode) {
-      case "newest":
-        return "Newest";
-      case "oldest":
-        return "Oldest";
-      case "highest":
-        return "Highest";
-      case "lowest":
-        return "Lowest";
-    }
-  };
-
   const hasActiveFilters =
     sortMode !== "newest" || filterType !== "all" || filterAccountId !== "all";
 
+  const getAccountIcon = (type?: string) => {
+    switch (type) {
+      case "bank": return "business";
+      case "wallet": return "wallet";
+      case "credit_card": return "card";
+      default: return "cash";
+    }
+  };
+
   return (
     <View className="relative z-50 ml-3">
+      {/* Trigger Button */}
       <Pressable
         onPress={openSheet}
-        className={`h-[46px] px-3 rounded-2xl flex-row items-center justify-center border ${hasActiveFilters ? "bg-blue-500/10 border-blue-500/30" : "bg-surface border-bordercolor"}`}
+        className={`h-[48px] w-[48px] rounded-2xl flex-row items-center justify-center border ${hasActiveFilters ? "bg-[#3b82f6]/10 border-[#3b82f6]/30" : "bg-[#131415] border-[#27272a]"}`}
       >
         <Ionicons
           name="filter"
-          size={16}
-          color={hasActiveFilters ? "#3b82f6" : "#2563eb"}
+          size={20}
+          color={hasActiveFilters ? "#3b82f6" : "#71717a"}
         />
-        <Text
-          className={`text-xs font-bold ml-1.5 ${hasActiveFilters ? "text-blue-500" : "text-primary"}`}
-        >
-          Filter & Sort
-        </Text>
       </Pressable>
 
       <BottomSheetModal
@@ -87,103 +76,169 @@ export function TransactionSortFilter({
         index={0}
         snapPoints={snapPoints}
         backdropComponent={renderBackdrop}
-        backgroundStyle={{ backgroundColor: bottomSheetBackgroundColor }}
-        handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
+        backgroundStyle={{ backgroundColor: "#131415" }}
+        handleIndicatorStyle={{ backgroundColor: "#52525b" }}
       >
-        <BottomSheetView style={{ flex: 1, padding: 24 }}>
-          <View className="flex-row justify-between items-center mb-6">
-            <Text className="text-primary text-xl font-bold">
+        <BottomSheetScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
+          {/* Header */}
+          <View className="flex-row justify-between items-center mb-8 relative">
+            <View className="flex-1" />
+            <Text className="text-white text-lg font-bold absolute w-full text-center pointer-events-none">
               Filter & Sort
             </Text>
-            {hasActiveFilters && (
+            {hasActiveFilters ? (
               <Pressable
                 onPress={() => {
                   setSortMode("newest");
                   setFilterType("all");
                   setFilterAccountId("all");
                 }}
+                className="flex-1 items-end"
               >
-                <Text className="text-blue-500 font-bold text-sm">Reset</Text>
+                <Text className="text-[#3b82f6] font-semibold text-sm">Reset</Text>
               </Pressable>
+            ) : (
+              <View className="flex-1" />
             )}
           </View>
 
-          <Text className="text-secondary text-sm font-bold mb-3">SORT BY</Text>
-          <View className="flex-row flex-wrap gap-2 mb-6">
-            {(["newest", "oldest", "highest", "lowest"] as SortMode[]).map(
-              (mode) => (
+          {/* Sort By */}
+          <Text className="text-gray-400 text-sm font-semibold mb-3">Sort By</Text>
+          <View className="flex-row gap-2 mb-8">
+            {[
+              { id: "newest", label: "Newest", icon: "time-outline" },
+              { id: "oldest", label: "Oldest", icon: "time" },
+              { id: "highest", label: "Highest", icon: "trending-up" },
+              { id: "lowest", label: "Lowest", icon: "trending-down" },
+            ].map((mode) => {
+              const isActive = sortMode === mode.id;
+              return (
                 <Pressable
-                  key={mode}
-                  onPress={() => setSortMode(mode)}
-                  className={`px-4 py-2 rounded-xl border ${sortMode === mode ? "bg-blue-500/20 border-blue-500" : "bg-surface border-bordercolor"}`}
+                  key={mode.id}
+                  onPress={() => setSortMode(mode.id as SortMode)}
+                  className={`flex-1 items-center justify-center py-3 rounded-xl border ${isActive ? "bg-[#4338ca]/10 border-[#7c3aed]" : "bg-transparent border-[#27272a]"}`}
                 >
-                  <Text
-                    className={`font-bold ${sortMode === mode ? "text-blue-500" : "text-primary"}`}
-                  >
-                    {getSortLabel(mode)}
+                  <Ionicons name={mode.icon as any} size={20} color={isActive ? "#7c3aed" : "#71717a"} />
+                  <Text className={`text-xs mt-2 font-medium ${isActive ? "text-white" : "text-gray-400"}`}>
+                    {mode.label}
                   </Text>
                 </Pressable>
-              ),
-            )}
+              );
+            })}
           </View>
 
-          <Text className="text-secondary text-sm font-bold mb-3">
-            TRANSACTION TYPE
-          </Text>
-          <View className="flex-row flex-wrap gap-2 mb-6">
-            {[
-              { id: "all", label: "All" },
-              { id: "debit", label: "Transaction" },
-              { id: "credit", label: "Income" },
-            ].map((type) => (
-              <Pressable
-                key={type.id}
-                onPress={() => setFilterType(type.id as FilterType)}
-                className={`px-4 py-2 rounded-xl border ${filterType === type.id ? "bg-blue-500/20 border-blue-500" : "bg-surface border-bordercolor"}`}
-              >
-                <Text
-                  className={`font-bold ${filterType === type.id ? "text-blue-500" : "text-primary"}`}
-                >
-                  {type.label}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-
-          <Text className="text-secondary text-sm font-bold mb-3">ACCOUNT</Text>
-          <View>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingRight: 20 }}
+          {/* Transaction Type */}
+          <Text className="text-gray-400 text-sm font-semibold mb-3">Transaction Type</Text>
+          <View className="flex-row gap-2 mb-8">
+            <Pressable
+              onPress={() => setFilterType("all")}
+              className={`flex-1 items-center justify-center py-3 rounded-xl border ${filterType === "all" ? "bg-[#4338ca] border-[#4338ca]" : "bg-transparent border-[#27272a]"}`}
             >
+              <Text className={`font-semibold ${filterType === "all" ? "text-white" : "text-gray-400"}`}>All</Text>
+            </Pressable>
+            
+            <Pressable
+              onPress={() => setFilterType("credit")}
+              className={`flex-1 flex-row items-center justify-center py-3 rounded-xl border ${filterType === "credit" ? "bg-[#4338ca] border-[#4338ca]" : "bg-transparent border-[#27272a]"}`}
+            >
+              <Ionicons name="arrow-up" size={16} color={filterType === "credit" ? "white" : "#22c55e"} style={{ marginRight: 4 }} />
+              <Text className={`font-semibold ${filterType === "credit" ? "text-white" : "text-gray-400"}`}>Income</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => setFilterType("debit")}
+              className={`flex-1 flex-row items-center justify-center py-3 rounded-xl border ${filterType === "debit" ? "bg-[#4338ca] border-[#4338ca]" : "bg-transparent border-[#27272a]"}`}
+            >
+              <Ionicons name="arrow-down" size={16} color={filterType === "debit" ? "white" : "#ef4444"} style={{ marginRight: 4 }} />
+              <Text className={`font-semibold ${filterType === "debit" ? "text-white" : "text-gray-400"}`}>Expense</Text>
+            </Pressable>
+          </View>
+
+          {/* Accounts */}
+          <Text className="text-gray-400 text-sm font-semibold mb-3">Accounts</Text>
+          <View className="mb-8 -mx-5">
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20 }}>
               <Pressable
                 onPress={() => setFilterAccountId("all")}
-                className={`px-4 py-2 mr-2 rounded-xl border ${filterAccountId === "all" ? "bg-blue-500/20 border-blue-500" : "bg-surface border-bordercolor"}`}
+                className={`w-24 h-24 items-center justify-center mr-3 rounded-2xl border ${filterAccountId === "all" ? "bg-[#4338ca]/10 border-[#7c3aed]" : "bg-transparent border-[#27272a]"}`}
               >
-                <Text
-                  className={`font-bold ${filterAccountId === "all" ? "text-blue-500" : "text-primary"}`}
-                >
-                  All Accounts
-                </Text>
+                <Ionicons name="layers" size={24} color={filterAccountId === "all" ? "#7c3aed" : "#a1a1aa"} />
+                <Text className={`text-xs mt-2 text-center font-medium ${filterAccountId === "all" ? "text-white" : "text-gray-400"}`}>All Accounts</Text>
               </Pressable>
 
               {accounts.map((account) => (
                 <Pressable
                   key={account.id}
                   onPress={() => setFilterAccountId(account.id)}
-                  className={`px-4 py-2 mr-2 rounded-xl border ${filterAccountId === account.id ? "bg-blue-500/20 border-blue-500" : "bg-surface border-bordercolor"}`}
+                  className={`w-24 h-24 items-center justify-center mr-3 rounded-2xl border ${filterAccountId === account.id ? "bg-[#4338ca]/10 border-[#7c3aed]" : "bg-transparent border-[#27272a]"}`}
                 >
-                  <Text
-                    className={`font-bold ${filterAccountId === account.id ? "text-blue-500" : "text-primary"}`}
-                  >
+                  <Ionicons name={getAccountIcon(account.type)} size={24} color={filterAccountId === account.id ? "#7c3aed" : "#a1a1aa"} />
+                  <Text className={`text-xs mt-2 text-center font-medium ${filterAccountId === account.id ? "text-white" : "text-gray-400"}`} numberOfLines={2}>
                     {account.name}
                   </Text>
                 </Pressable>
               ))}
             </ScrollView>
           </View>
-        </BottomSheetView>
+
+          {/* Date Range & Amount Range (Mock UI placeholders as requested) */}
+          <Text className="text-gray-400 text-sm font-semibold mb-3">Date Range</Text>
+          <Pressable className="flex-row items-center justify-between p-4 mb-6 rounded-2xl border border-[#27272a]">
+            <View className="flex-row items-center">
+              <Ionicons name="calendar-outline" size={20} color="#7c3aed" />
+              <Text className="text-white ml-3 font-medium">Custom Range</Text>
+            </View>
+            <View className="flex-row items-center">
+              <Text className="text-gray-400 mr-2 text-xs">01 Jun 2025 - 13 Jun 2025</Text>
+              <Ionicons name="chevron-forward" size={16} color="#71717a" />
+            </View>
+          </Pressable>
+
+          <Text className="text-gray-400 text-sm font-semibold mb-3">Amount Range</Text>
+          <Pressable className="flex-row items-center justify-between p-4 mb-8 rounded-2xl border border-[#27272a]">
+            <View className="flex-row items-center">
+              <Ionicons name="cash-outline" size={20} color="#7c3aed" />
+              <Text className="text-white ml-3 font-medium">All Amounts</Text>
+            </View>
+            <View className="flex-row items-center">
+              <Text className="text-gray-400 mr-2 text-xs">Min - Max</Text>
+              <Ionicons name="chevron-forward" size={16} color="#71717a" />
+            </View>
+          </Pressable>
+
+          {/* Active Filters List */}
+          {hasActiveFilters && (
+            <>
+              <Text className="text-gray-400 text-sm font-semibold mb-3">Active Filters</Text>
+              <View className="flex-row flex-wrap gap-2 mb-6">
+                {sortMode !== "newest" && (
+                  <View className="flex-row items-center px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+                    <Text className="text-xs text-gray-300 mr-1">Sort: {sortMode}</Text>
+                    <Ionicons name="close" size={12} color="#a1a1aa" onPress={() => setSortMode("newest")} />
+                  </View>
+                )}
+                {filterType !== "all" && (
+                  <View className="flex-row items-center px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+                    <Text className="text-xs text-gray-300 mr-1">Type: {filterType}</Text>
+                    <Ionicons name="close" size={12} color="#a1a1aa" onPress={() => setFilterType("all")} />
+                  </View>
+                )}
+                {filterAccountId !== "all" && (
+                  <View className="flex-row items-center px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+                    <Text className="text-xs text-gray-300 mr-1">Account: Selected</Text>
+                    <Ionicons name="close" size={12} color="#a1a1aa" onPress={() => setFilterAccountId("all")} />
+                  </View>
+                )}
+              </View>
+            </>
+          )}
+
+          {/* Apply Button */}
+          <Pressable onPress={closeSheet} className="w-full bg-[#4338ca] h-14 rounded-2xl flex-row items-center justify-center">
+            <Ionicons name="filter" size={20} color="white" />
+            <Text className="text-white font-bold text-[16px] ml-2">Apply Filters</Text>
+          </Pressable>
+        </BottomSheetScrollView>
       </BottomSheetModal>
     </View>
   );
