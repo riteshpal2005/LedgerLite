@@ -191,17 +191,30 @@ function EmptyTransactionState({ searchQuery }: { searchQuery: string }) {
         entering={FadeIn.duration(300)}
         className="flex-1 items-center justify-center pt-10 pb-20"
       >
-        <View
-          className="w-20 h-20 rounded-full items-center justify-center mb-5"
-          style={{ backgroundColor: colors.surface }}
-        >
-          <Ionicons name="search-outline" size={36} color={colors.textTertiary} />
+        {/* Custom Illustration */}
+        <View className="w-24 h-24 mb-6 items-center justify-center relative">
+          {/* Stars */}
+          <Text className="absolute top-2 left-0 text-[#facc15] text-[18px]">✦</Text>
+          <Text className="absolute bottom-6 right-0 text-[#facc15] text-[12px]">✦</Text>
+
+          {/* Magnifying Glass */}
+          <View className="relative w-16 h-16 mr-3 mb-3">
+            {/* Handle */}
+            <View className="absolute -bottom-3 -right-3 w-[26px] h-[8px] bg-[#d4d4d8] rounded-full rotate-45 z-0" />
+            
+            {/* Lens */}
+            <View className="w-full h-full rounded-full border-[5px] border-[#7c3aed] bg-[#1e1b4b] z-10 overflow-hidden relative">
+              {/* Lens Reflection */}
+              <View className="absolute top-1 left-2 w-10 h-10 rounded-full border-t-4 border-l-4 border-white/20 -rotate-12" />
+            </View>
+          </View>
         </View>
-        <Text className="font-bold text-xl mb-2" style={{ color: colors.text }}>
-          No Results Found
+
+        <Text className="font-bold text-[17px] text-white mb-2">
+          No transactions found
         </Text>
-        <Text className="text-center text-sm px-10" style={{ color: colors.textSecondary }}>
-          No transactions match "{searchQuery}". Try a different keyword.
+        <Text className="text-center text-[13px] text-gray-400 px-10">
+          Try adjusting your search or filters
         </Text>
       </Animated.View>
     );
