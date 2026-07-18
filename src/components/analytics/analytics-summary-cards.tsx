@@ -6,12 +6,14 @@ import withObservables from "@nozbe/watermelondb/react/withObservables";
 import { withDatabase } from "@nozbe/watermelondb/react";
 import { Database, Q } from "@nozbe/watermelondb";
 import Transaction from "../../server/db/models/Transaction";
+import Account from "../../server/db/models/Account";
 
 interface AnalyticsSummaryCardsProps {
   transactions: Transaction[];
+  accounts: Account[];
 }
 
-const AnalyticsSummaryCardsComponent = ({ transactions }: AnalyticsSummaryCardsProps) => {
+const AnalyticsSummaryCardsComponent = ({ transactions, accounts }: AnalyticsSummaryCardsProps) => {
   const { income, expense, netBalance } = useMemo(() => {
     let inc = 0;
     let exp = 0;
@@ -19,8 +21,10 @@ const AnalyticsSummaryCardsComponent = ({ transactions }: AnalyticsSummaryCardsP
       if (t.type === 'credit') inc += t.amount;
       else if (t.type === 'debit') exp += t.amount;
     });
-    return { income: inc, expense: exp, netBalance: inc - exp };
-  }, [transactions]);
+    
+    const currentTotalBalance = accounts.reduce((acc, a) => acc + (a.currentBalance ?? a.balance), 0);
+    return { income: inc, expense: exp, netBalance: currentTotalBalance - exp };
+  }, [transactions, accounts]);
 
   const formatCurrency = (amount: number) => `₹${Math.abs(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
@@ -89,10 +93,11 @@ const AnalyticsSummaryCardsComponent = ({ transactions }: AnalyticsSummaryCardsP
 };
 
 // We receive startDate and endDate as props from the parent
-const enhance = withObservables(['startDate', 'endDate'], ({ database, startDate, endDate }: { database: Database, startDate: number, endDate: number }) => ({
-  transactions: database.collections.get<Transaction>('transactions').query(
+const enhance = withObservables(['startDate', 'endDate'], ({ database, startDate, endDate }: { database: any, startDate: number, endDate: number }) => ({
+  transactions: database.collections.get('transactions').query(
     Q.where('date', Q.between(startDate, endDate))
   ).observe(),
+  accounts: database.collections.get('accounts').query().observe(),
 }));
 
-export const AnalyticsSummaryCards = withDatabase(enhance(AnalyticsSummaryCardsComponent));
+export const AnalyticsSummaryCards = withDatabase(enhance(AnalyticsSummaryCardsComponent as any));
