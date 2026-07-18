@@ -1,16 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import {
   View,
   Text,
   Pressable,
-  TextInput,
   Modal,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { useTheme } from "../../hooks/theme/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
-
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { DatePickerCalendar } from "./date-picker-calendar";
@@ -34,37 +31,51 @@ export function CustomDateTimePickerModal({
   const is24Hour = useSelector(
     (state: RootState) => state.settings.use24HourFormat || false
   );
-  
-  const { bottomSheetBackgroundColor, bottomSheetBorderColor } = useTheme();
+
+  const title = mode === "date" ? "Select Date" : "Select Time";
+  const subtitle = mode === "date" 
+    ? "Select a date for your transaction" 
+    : "Select a time for your transaction";
+  const iconName = mode === "date" ? "calendar-outline" : "time-outline";
 
   return (
     <Modal
       visible={visible}
       transparent={true}
-      animationType="slide"
+      animationType="fade"
       onRequestClose={onClose}
       statusBarTranslucent={true}
     >
-      <Pressable
-        style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.65)" }}
-        onPress={onClose}
-      >
+      <View className="flex-1 bg-black/70 justify-center items-center px-4">
+        <Pressable className="absolute inset-0" onPress={onClose} />
+        
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1, justifyContent: "flex-end" }}
+          className="w-full"
         >
-          <Pressable
-            onPress={(e) => e.stopPropagation()}
-            style={{
-              backgroundColor: bottomSheetBackgroundColor,
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-              borderTopWidth: 1,
-              borderTopColor: bottomSheetBorderColor,
-              paddingBottom: Platform.OS === "ios" ? 40 : 20,
-            }}
-          >
-            <View style={{ padding: 24, paddingTop: 30 }}>
+          <View className="w-full bg-[#131415] rounded-[24px] border border-[#27272a] p-5 shadow-xl">
+            
+            {/* Header */}
+            <View className="flex-row items-center justify-between mb-6">
+              <View className="w-10 h-10 rounded-full border border-[#7c3aed]/30 bg-[#7c3aed]/10 items-center justify-center">
+                <Ionicons name={iconName} size={20} color="#7c3aed" />
+              </View>
+              
+              <View className="flex-1 items-center px-2">
+                <Text className="text-white font-bold text-[17px] mb-0.5">{title}</Text>
+                <Text className="text-gray-400 text-[11px]">{subtitle}</Text>
+              </View>
+
+              <Pressable
+                onPress={onClose}
+                className="w-8 h-8 rounded-full bg-white/5 items-center justify-center active:opacity-70"
+              >
+                <Ionicons name="close" size={18} color="#a1a1aa" />
+              </Pressable>
+            </View>
+
+            {/* Body */}
+            <View className="mb-6">
               {mode === "date" ? (
                 <DatePickerCalendar date={date} setDate={setDate} onClose={onClose} />
               ) : (
@@ -72,19 +83,25 @@ export function CustomDateTimePickerModal({
               )}
             </View>
 
-            <View
-              style={{
-                position: "absolute",
-                top: "100%",
-                left: 0,
-                right: 0,
-                height: 1000,
-                backgroundColor: bottomSheetBackgroundColor,
-              }}
-            />
-          </Pressable>
+            {/* Footer */}
+            <View className="flex-row justify-between w-full">
+              <Pressable
+                onPress={onClose}
+                className="flex-1 h-[48px] border border-[#27272a] rounded-xl justify-center items-center mr-3 active:bg-[#27272a]/50"
+              >
+                <Text className="text-white font-bold text-[15px]">Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={onClose}
+                className="flex-1 h-[48px] bg-[#7c3aed] rounded-xl justify-center items-center active:opacity-80"
+              >
+                <Text className="text-white font-bold text-[15px]">Done</Text>
+              </Pressable>
+            </View>
+
+          </View>
         </KeyboardAvoidingView>
-      </Pressable>
+      </View>
     </Modal>
   );
 }
