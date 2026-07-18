@@ -50,7 +50,7 @@ export function SyncingScreen() {
 
     const DELAY = 200;
     const DURATION = 400;
-    const timeouts: NodeJS.Timeout[] = [];
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
     const startDot = (sv: typeof dot1, delay: number) => {
       const t = setTimeout(() => {
         sv.value = withRepeat(

@@ -34,7 +34,7 @@ export function IconSelector({ icon, setIcon, color }: IconSelectorProps) {
   const layoutsRef = useRef<Record<string, { x: number; y: number; w: number; h: number }>>({});
   const containerRef = useRef<View>(null);
   const containerPageRef = useRef<{ x: number; y: number } | null>(null);
-  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isPreviewActiveRef = useRef(false);
   const hoveredIconRef = useRef<string | null>(null);
   const touchStartIconRef = useRef<string | null>(null);

@@ -20,7 +20,7 @@ import { storage } from "../../utils/storage";
 let isPushing = false;
 let isPulling = false;
 let pushPending = false;
-let syncTimeout: NodeJS.Timeout | null = null;
+let syncTimeout: ReturnType<typeof setTimeout> | null = null;
 let lastSyncTime = storage.getNumber('lastSyncTime') || 0;
 const SYNC_COOLDOWN_MS = 10000;
 

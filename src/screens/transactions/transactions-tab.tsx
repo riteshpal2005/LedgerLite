@@ -47,6 +47,7 @@ export default function Home() {
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const addAccountSheetRef = useRef<BottomSheetModal>(null);
+  const searchTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     bottomSheetBackgroundColor,
