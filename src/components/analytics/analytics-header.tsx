@@ -3,10 +3,10 @@ import { View, Text, TouchableOpacity, Modal, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { CustomDateTimePickerModal } from "../transactions/custom-date-time-picker-modal";
 
-export type DateFilterType = "day" | "week" | "month" | "current_month" | "custom";
+export type DateFilterType = "day" | "week" | "month" | "current_week" | "current_month" | "custom";
 
 interface AnalyticsHeaderProps {
-  onDateRangeChange: (startDate: number, endDate: number, label: string) => void;
+  onDateRangeChange: (startDate: number, endDate: number, label: string, prevStartDate: number, prevEndDate: number, prevLabel: string) => void;
 }
 
 const MONTHS = [
@@ -27,6 +27,7 @@ export function AnalyticsHeader({ onDateRangeChange }: AnalyticsHeaderProps) {
   const filterOptions: { label: string; value: DateFilterType }[] = [
     { label: "Day", value: "day" },
     { label: "Week", value: "week" },
+    { label: "This Week", value: "current_week" },
     { label: "Month", value: "month" },
     { label: "This Month", value: "current_month" },
     { label: "Custom", value: "custom" },
@@ -37,36 +38,89 @@ export function AnalyticsHeader({ onDateRangeChange }: AnalyticsHeaderProps) {
     const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).getTime();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).getTime();
 
-    let result = { startDate: startOfDay, endDate: endOfDay };
+    let result = { startDate: startOfDay, endDate: endOfDay, prevStartDate: 0, prevEndDate: 0, prevLabel: "" };
     const label = filterOptions.find(o => o.value === selectedFilter)?.label || "Custom";
+
+    const DAY_MS = 24 * 60 * 60 * 1000;
 
     switch (selectedFilter) {
       case "day":
-        result = { startDate: startOfDay, endDate: endOfDay };
+        result = { 
+          startDate: startOfDay, 
+          endDate: endOfDay,
+          prevStartDate: startOfDay - DAY_MS,
+          prevEndDate: endOfDay - DAY_MS,
+          prevLabel: "vs yesterday"
+        };
         break;
       case "week":
         const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6, 0, 0, 0, 0).getTime();
-        result = { startDate: startOfWeek, endDate: endOfDay };
+        result = { 
+          startDate: startOfWeek, 
+          endDate: endOfDay,
+          prevStartDate: startOfWeek - 7 * DAY_MS,
+          prevEndDate: endOfDay - 7 * DAY_MS,
+          prevLabel: "vs previous 7 days"
+        };
+        break;
+      case "current_week":
+        const offsetToMonday = (now.getDay() + 6) % 7;
+        const startOfCurrentWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - offsetToMonday, 0, 0, 0, 0).getTime();
+        
+        // previous week is the full 7 days from last week's Monday
+        const prevWeekStart = startOfCurrentWeek - 7 * DAY_MS;
+        const prevWeekEnd = prevWeekStart + 6 * DAY_MS + (DAY_MS - 1);
+        
+        result = {
+          startDate: startOfCurrentWeek,
+          endDate: endOfDay,
+          prevStartDate: prevWeekStart,
+          prevEndDate: prevWeekEnd,
+          prevLabel: "vs last week"
+        };
         break;
       case "month":
         const startOfMonthRange = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30, 0, 0, 0, 0).getTime();
-        result = { startDate: startOfMonthRange, endDate: endOfDay };
+        result = { 
+          startDate: startOfMonthRange, 
+          endDate: endOfDay,
+          prevStartDate: startOfMonthRange - 30 * DAY_MS,
+          prevEndDate: endOfDay - 30 * DAY_MS,
+          prevLabel: "vs previous 30 days"
+        };
         break;
       case "current_month":
-        const startOfCurrent = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0).getTime();
-        const endOfCurrent = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
-        result = { startDate: startOfCurrent, endDate: endOfCurrent };
+        const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0).getTime();
+        const endOfCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
+        
+        const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1, 0, 0, 0, 0).getTime();
+        const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999).getTime();
+        
+        result = { 
+          startDate: startOfCurrentMonth, 
+          endDate: endOfCurrentMonth,
+          prevStartDate: startOfLastMonth,
+          prevEndDate: endOfLastMonth,
+          prevLabel: "vs last month"
+        };
         break;
       case "custom":
         if (start && end) {
+          const s = new Date(start.getFullYear(), start.getMonth(), start.getDate(), 0, 0, 0, 0).getTime();
+          const e = new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 59, 999).getTime();
+          const duration = e - s + 1; // +1 to include the whole end day
+          
           result = {
-            startDate: new Date(start.getFullYear(), start.getMonth(), start.getDate(), 0, 0, 0, 0).getTime(),
-            endDate: new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 59, 999).getTime(),
+            startDate: s,
+            endDate: e,
+            prevStartDate: s - duration,
+            prevEndDate: e - duration,
+            prevLabel: "vs previous period"
           };
         }
         break;
     }
-    onDateRangeChange(result.startDate, result.endDate, label);
+    onDateRangeChange(result.startDate, result.endDate, label, result.prevStartDate, result.prevEndDate, result.prevLabel);
   };
 
   useEffect(() => {

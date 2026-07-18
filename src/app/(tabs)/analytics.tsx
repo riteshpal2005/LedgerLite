@@ -9,16 +9,18 @@ import { CategorySpendingChart } from "../../components/analytics/category-spend
 import { AnalyticsInsights } from "../../components/analytics/analytics-insights";
 
 export default function AnalyticsScreen() {
-  const [dateRange, setDateRange] = useState({ start: 0, end: 0 });
+  const [dateRange, setDateRange] = useState({ start: 0, end: 0, prevStart: 0, prevEnd: 0 });
   const [dateLabel, setDateLabel] = useState("This Month");
+  const [prevDateLabel, setPrevDateLabel] = useState("vs last month");
   const [activeTab, setActiveTab] = useState<AnalyticsTabType>("Overview");
 
   return (
     <SafeAreaView className="flex-1 bg-[#0a0b0d]">
       <AnalyticsHeader 
-        onDateRangeChange={(start, end, label) => {
-          setDateRange({ start, end });
+        onDateRangeChange={(start, end, label, prevStart, prevEnd, prevLabel) => {
+          setDateRange({ start, end, prevStart, prevEnd });
           setDateLabel(label);
+          setPrevDateLabel(prevLabel);
         }} 
       />
       
@@ -28,7 +30,13 @@ export default function AnalyticsScreen() {
         
         {dateRange.start > 0 && (
           <>
-            <AnalyticsSummaryCards startDate={dateRange.start} endDate={dateRange.end} />
+            <AnalyticsSummaryCards 
+              startDate={dateRange.start} 
+              endDate={dateRange.end}
+              prevStartDate={dateRange.prevStart}
+              prevEndDate={dateRange.prevEnd}
+              prevDateLabel={prevDateLabel}
+            />
             
             {/* We could conditionally render these based on activeTab, but let's show all for "Overview" */}
             {(activeTab === "Overview" || activeTab === "Income" || activeTab === "Expense") && (

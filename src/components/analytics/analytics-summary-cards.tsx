@@ -10,11 +10,13 @@ import Account from "../../server/db/models/Account";
 
 interface AnalyticsSummaryCardsProps {
   transactions: Transaction[];
+  prevTransactions: Transaction[];
   accounts: Account[];
+  prevDateLabel?: string;
 }
 
-const AnalyticsSummaryCardsComponent = ({ transactions, accounts }: AnalyticsSummaryCardsProps) => {
-  const { income, expense, netBalance } = useMemo(() => {
+const AnalyticsSummaryCardsComponent = ({ transactions, prevTransactions, accounts, prevDateLabel = "vs previous period" }: AnalyticsSummaryCardsProps) => {
+  const { income, expense, netBalance, incomeChange, expenseChange, netChange } = useMemo(() => {
     let inc = 0;
     let exp = 0;
     transactions.forEach(t => {
@@ -23,8 +25,35 @@ const AnalyticsSummaryCardsComponent = ({ transactions, accounts }: AnalyticsSum
     });
     
     const currentTotalBalance = accounts.reduce((acc, a) => acc + (a.currentBalance ?? a.balance), 0);
-    return { income: inc, expense: exp, netBalance: currentTotalBalance - exp };
-  }, [transactions, accounts]);
+    const net = currentTotalBalance - exp;
+
+    let pInc = 0;
+    let pExp = 0;
+    prevTransactions.forEach(t => {
+      if (t.type === 'credit') pInc += t.amount;
+      else if (t.type === 'debit') pExp += t.amount;
+    });
+
+    const calcChange = (curr: number, prev: number) => {
+      if (prev === 0) return curr > 0 ? 100 : (curr < 0 ? -100 : 0);
+      return ((curr - prev) / prev) * 100;
+    };
+
+    // To properly calculate the previous net balance from accounts we'd need historical snapshots,
+    // which we don't have. So we approximate the "net change" by looking at the change in net cash flow
+    // (Income - Expense) instead for the comparative period.
+    const currCashFlow = inc - exp;
+    const prevCashFlow = pInc - pExp;
+
+    return { 
+      income: inc, 
+      expense: exp, 
+      netBalance: net,
+      incomeChange: calcChange(inc, pInc),
+      expenseChange: calcChange(exp, pExp),
+      netChange: calcChange(currCashFlow, prevCashFlow)
+    };
+  }, [transactions, prevTransactions, accounts]);
 
   const formatCurrency = (amount: number) => `₹${Math.abs(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
@@ -38,9 +67,11 @@ const AnalyticsSummaryCardsComponent = ({ transactions, accounts }: AnalyticsSum
         <Text className="text-gray-400 text-xs mb-1">Total Income</Text>
         <Text className="text-green-500 text-sm font-bold mb-2">{formatCurrency(income)}</Text>
         <View className="flex-row items-center mb-4">
-          <Ionicons name="caret-up" size={10} color="#22c55e" />
-          <Text className="text-green-500 text-[10px] font-bold mx-1">12.5%</Text>
-          <Text className="text-gray-500 text-[9px]">vs last month</Text>
+          <Ionicons name={incomeChange >= 0 ? "caret-up" : "caret-down"} size={10} color={incomeChange >= 0 ? "#22c55e" : "#ef4444"} />
+          <Text className={`${incomeChange >= 0 ? 'text-green-500' : 'text-red-500'} text-[10px] font-bold mx-1`}>
+            {Math.abs(incomeChange).toFixed(1)}%
+          </Text>
+          <Text className="text-gray-500 text-[9px]">{prevDateLabel}</Text>
         </View>
         <View className="h-6 w-full">
             <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
@@ -57,9 +88,11 @@ const AnalyticsSummaryCardsComponent = ({ transactions, accounts }: AnalyticsSum
         <Text className="text-gray-400 text-xs mb-1">Total Expense</Text>
         <Text className="text-red-500 text-sm font-bold mb-2">{formatCurrency(expense)}</Text>
         <View className="flex-row items-center mb-4">
-          <Ionicons name="caret-up" size={10} color="#ef4444" />
-          <Text className="text-red-500 text-[10px] font-bold mx-1">8.3%</Text>
-          <Text className="text-gray-500 text-[9px]">vs last month</Text>
+          <Ionicons name={expenseChange >= 0 ? "caret-up" : "caret-down"} size={10} color={expenseChange >= 0 ? "#ef4444" : "#22c55e"} />
+          <Text className={`${expenseChange >= 0 ? 'text-red-500' : 'text-green-500'} text-[10px] font-bold mx-1`}>
+            {Math.abs(expenseChange).toFixed(1)}%
+          </Text>
+          <Text className="text-gray-500 text-[9px]">{prevDateLabel}</Text>
         </View>
         <View className="h-6 w-full">
             <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
@@ -78,9 +111,11 @@ const AnalyticsSummaryCardsComponent = ({ transactions, accounts }: AnalyticsSum
           {netBalance < 0 ? "-" : ""}{formatCurrency(netBalance)}
         </Text>
         <View className="flex-row items-center mb-4">
-          <Ionicons name="caret-up" size={10} color="#6642f8" />
-          <Text className="text-[#6642f8] text-[10px] font-bold mx-1">15.2%</Text>
-          <Text className="text-gray-500 text-[9px]">vs last month</Text>
+          <Ionicons name={netChange >= 0 ? "caret-up" : "caret-down"} size={10} color={netChange >= 0 ? "#6642f8" : "#ef4444"} />
+          <Text className={`${netChange >= 0 ? 'text-[#6642f8]' : 'text-red-500'} text-[10px] font-bold mx-1`}>
+            {Math.abs(netChange).toFixed(1)}%
+          </Text>
+          <Text className="text-gray-500 text-[9px]">{prevDateLabel}</Text>
         </View>
         <View className="h-6 w-full">
             <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
@@ -93,9 +128,12 @@ const AnalyticsSummaryCardsComponent = ({ transactions, accounts }: AnalyticsSum
 };
 
 // We receive startDate and endDate as props from the parent
-const enhance = withObservables(['startDate', 'endDate'], ({ database, startDate, endDate }: { database: any, startDate: number, endDate: number }) => ({
+const enhance = withObservables(['startDate', 'endDate', 'prevStartDate', 'prevEndDate'], ({ database, startDate, endDate, prevStartDate, prevEndDate }: { database: any, startDate: number, endDate: number, prevStartDate: number, prevEndDate: number }) => ({
   transactions: database.collections.get('transactions').query(
     Q.where('date', Q.between(startDate, endDate))
+  ).observe(),
+  prevTransactions: database.collections.get('transactions').query(
+    Q.where('date', Q.between(prevStartDate, prevEndDate))
   ).observe(),
   accounts: database.collections.get('accounts').query().observe(),
 }));
