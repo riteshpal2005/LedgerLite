@@ -94,7 +94,6 @@ const CategorySpendingChartComponent = ({ transactions, categories, dateLabel = 
         <Text className="text-white text-base font-bold">Spending by Category</Text>
         <View className="flex-row items-center">
             <Text className="text-gray-400 text-xs mr-1">{dateLabel}</Text>
-            <Ionicons name="chevron-down" size={12} color="#9ca3af" />
         </View>
       </View>
 

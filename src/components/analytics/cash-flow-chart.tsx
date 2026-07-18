@@ -81,8 +81,6 @@ const CashFlowChartComponent = ({ transactions, dateLabel = "This Month" }: Cash
         <Text className="text-white text-base font-bold">Cash Flow Trend</Text>
         <View className="flex-row items-center">
             <Text className="text-gray-400 text-xs mr-1">{dateLabel}</Text>
-            <Ionicons name="chevron-down" size={12} color="#9ca3af" className="mr-3" />
-            <Ionicons name="ellipsis-vertical" size={16} color="#9ca3af" />
         </View>
       </View>
       
