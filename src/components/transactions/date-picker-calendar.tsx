@@ -17,95 +17,97 @@ export function DatePickerCalendar({ date, setDate, onClose }: DatePickerCalenda
     setCurrentMonth(new Date(date.getFullYear(), date.getMonth(), 1));
   }, [date]);
 
-  const daysInMonth = new Date(
-    currentMonth.getFullYear(),
-    currentMonth.getMonth() + 1,
-    0,
-  ).getDate();
-  const firstDayOfMonth = new Date(
-    currentMonth.getFullYear(),
-    currentMonth.getMonth(),
-    1,
-  ).getDay();
+  const year = currentMonth.getFullYear();
+  const month = currentMonth.getMonth();
+
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDayOfMonth = new Date(year, month, 1).getDay();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
 
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December",
   ];
 
-  const handlePrevMonth = () =>
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
-  const handleNextMonth = () =>
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+  const handlePrevMonth = () => setCurrentMonth(new Date(year, month - 1, 1));
+  const handleNextMonth = () => setCurrentMonth(new Date(year, month + 1, 1));
 
-  const handleDateSelect = (day: number) => {
+  const handleDateSelect = (day: number, monthOffset: number = 0) => {
     const newDate = new Date(date);
-    newDate.setFullYear(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    newDate.setFullYear(year, month + monthOffset, day);
     setDate(newDate);
-    onClose();
+    // Don't close automatically so user can press "Done"
+  };
+
+  const renderDays = () => {
+    const days = [];
+    const totalSlots = 42; // 6 weeks * 7 days
+
+    // Previous month days
+    for (let i = firstDayOfMonth - 1; i >= 0; i--) {
+      const day = daysInPrevMonth - i;
+      days.push(
+        <Pressable key={`prev-${day}`} onPress={() => handleDateSelect(day, -1)} className="w-[14.28%] h-[46px] justify-center items-center">
+          <Text className="text-gray-600 font-semibold">{day}</Text>
+        </Pressable>
+      );
+    }
+
+    // Current month days
+    for (let i = 1; i <= daysInMonth; i++) {
+      const isSelected =
+        i === date.getDate() &&
+        month === date.getMonth() &&
+        year === date.getFullYear();
+
+      days.push(
+        <Pressable key={`current-${i}`} onPress={() => handleDateSelect(i, 0)} className="w-[14.28%] h-[46px] justify-center items-center">
+          <View className={`w-8 h-8 justify-center items-center rounded-full ${isSelected ? "bg-[#7c3aed]" : ""}`}>
+            <Text className={`font-semibold ${isSelected ? "text-white" : "text-gray-200"}`}>{i}</Text>
+          </View>
+          {/* Mock active dot indicator under date if selected */}
+          {isSelected && <View className="absolute bottom-1 w-1 h-1 rounded-full bg-[#7c3aed]" />}
+        </Pressable>
+      );
+    }
+
+    // Next month days
+    const remainingSlots = totalSlots - days.length;
+    for (let i = 1; i <= remainingSlots; i++) {
+      days.push(
+        <Pressable key={`next-${i}`} onPress={() => handleDateSelect(i, 1)} className="w-[14.28%] h-[46px] justify-center items-center">
+          <Text className="text-gray-600 font-semibold">{i}</Text>
+        </Pressable>
+      );
+    }
+
+    return days;
   };
 
   return (
     <View>
-      <View className="flex-row justify-between items-center mb-6">
-        <Pressable
-          onPress={handlePrevMonth}
-          className="p-2 bg-white/5 rounded-full border border-bordercolor"
-        >
-          <Ionicons name="chevron-back" size={24} color="#a1a1aa" />
+      <View className="flex-row justify-between items-center mb-5 px-4">
+        <Pressable onPress={handlePrevMonth} className="w-8 h-8 rounded-full bg-white/5 items-center justify-center active:bg-white/10">
+          <Ionicons name="chevron-back" size={16} color="#a1a1aa" />
         </Pressable>
-        <Text className="text-primary text-xl font-bold">
-          {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+        <Text className="text-white text-[15px] font-bold">
+          {monthNames[month]} {year}
         </Text>
-        <Pressable
-          onPress={handleNextMonth}
-          className="p-2 bg-white/5 rounded-full border border-bordercolor"
-        >
-          <Ionicons name="chevron-forward" size={24} color="#a1a1aa" />
+        <Pressable onPress={handleNextMonth} className="w-8 h-8 rounded-full bg-white/5 items-center justify-center active:bg-white/10">
+          <Ionicons name="chevron-forward" size={16} color="#a1a1aa" />
         </Pressable>
       </View>
 
-      <View className="flex-row justify-around mb-4">
-        {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-          <Text key={i} className="text-secondary font-bold w-10 text-center">
+      <View className="flex-row justify-around mb-2">
+        {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d, i) => (
+          <Text key={i} className="text-gray-500 text-[10px] font-bold w-[14.28%] text-center">
             {d}
           </Text>
         ))}
       </View>
 
       <View className="flex-row flex-wrap justify-start">
-        {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-          <View key={`empty-${i}`} className="w-[14.28%] h-12" />
-        ))}
-        {Array.from({ length: daysInMonth }).map((_, i) => {
-          const day = i + 1;
-          const isSelected =
-            day === date.getDate() &&
-            currentMonth.getMonth() === date.getMonth() &&
-            currentMonth.getFullYear() === date.getFullYear();
-          const isToday =
-            day === new Date().getDate() &&
-            currentMonth.getMonth() === new Date().getMonth() &&
-            currentMonth.getFullYear() === new Date().getFullYear();
-
-          return (
-            <Pressable
-              key={`day-${day}`}
-              onPress={() => handleDateSelect(day)}
-              className="w-[14.28%] h-12 justify-center items-center"
-            >
-              <View
-                className={`w-10 h-10 justify-center items-center rounded-full ${isSelected ? "bg-brand-primary" : isToday ? "border border-brand-primary/50" : ""}`}
-              >
-                <Text
-                  className={`font-semibold ${isSelected ? "text-brand-primary-content" : isToday ? "text-brand-primary" : "text-primary"}`}
-                >
-                  {day}
-                </Text>
-              </View>
-            </Pressable>
-          );
-        })}
+        {renderDays()}
       </View>
     </View>
   );
