@@ -10,12 +10,16 @@ import { AnalyticsInsights } from "../../components/analytics/analytics-insights
 
 export default function AnalyticsScreen() {
   const [dateRange, setDateRange] = useState({ start: 0, end: 0 });
+  const [dateLabel, setDateLabel] = useState("This Month");
   const [activeTab, setActiveTab] = useState<AnalyticsTabType>("Overview");
 
   return (
     <SafeAreaView className="flex-1 bg-[#0a0b0d]">
       <AnalyticsHeader 
-        onDateRangeChange={(start, end) => setDateRange({ start, end })} 
+        onDateRangeChange={(start, end, label) => {
+          setDateRange({ start, end });
+          setDateLabel(label);
+        }} 
       />
       
       <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
@@ -28,11 +32,11 @@ export default function AnalyticsScreen() {
             
             {/* We could conditionally render these based on activeTab, but let's show all for "Overview" */}
             {(activeTab === "Overview" || activeTab === "Income" || activeTab === "Expense") && (
-              <CashFlowChart startDate={dateRange.start} endDate={dateRange.end} />
+              <CashFlowChart startDate={dateRange.start} endDate={dateRange.end} dateLabel={dateLabel} />
             )}
             
             {(activeTab === "Overview" || activeTab === "Categories") && (
-              <CategorySpendingChart startDate={dateRange.start} endDate={dateRange.end} />
+              <CategorySpendingChart startDate={dateRange.start} endDate={dateRange.end} dateLabel={dateLabel} />
             )}
             
             <AnalyticsInsights startDate={dateRange.start} endDate={dateRange.end} />

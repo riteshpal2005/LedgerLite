@@ -10,9 +10,10 @@ import { format } from "date-fns";
 
 interface CashFlowChartProps {
   transactions: Transaction[];
+  dateLabel?: string;
 }
 
-const CashFlowChartComponent = ({ transactions }: CashFlowChartProps) => {
+const CashFlowChartComponent = ({ transactions, dateLabel = "This Month" }: CashFlowChartProps) => {
   const chartPaths = useMemo(() => {
     if (transactions.length === 0) return null;
 
@@ -79,7 +80,7 @@ const CashFlowChartComponent = ({ transactions }: CashFlowChartProps) => {
       <View className="flex-row justify-between items-center mb-3">
         <Text className="text-white text-base font-bold">Cash Flow Trend</Text>
         <View className="flex-row items-center">
-            <Text className="text-gray-400 text-xs mr-1">This Month</Text>
+            <Text className="text-gray-400 text-xs mr-1">{dateLabel}</Text>
             <Ionicons name="chevron-down" size={12} color="#9ca3af" className="mr-3" />
             <Ionicons name="ellipsis-vertical" size={16} color="#9ca3af" />
         </View>

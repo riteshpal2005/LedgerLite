@@ -6,7 +6,7 @@ import { CustomDateTimePickerModal } from "../transactions/custom-date-time-pick
 export type DateFilterType = "day" | "week" | "month" | "current_month" | "custom";
 
 interface AnalyticsHeaderProps {
-  onDateRangeChange: (startDate: number, endDate: number) => void;
+  onDateRangeChange: (startDate: number, endDate: number, label: string) => void;
 }
 
 const MONTHS = [
@@ -24,8 +24,6 @@ export function AnalyticsHeader({ onDateRangeChange }: AnalyticsHeaderProps) {
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
 
-  const currentMonthName = MONTHS[new Date().getMonth()];
-
   const filterOptions: { label: string; value: DateFilterType }[] = [
     { label: "Day", value: "day" },
     { label: "Week", value: "week" },
@@ -40,6 +38,7 @@ export function AnalyticsHeader({ onDateRangeChange }: AnalyticsHeaderProps) {
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).getTime();
 
     let result = { startDate: startOfDay, endDate: endOfDay };
+    const label = filterOptions.find(o => o.value === selectedFilter)?.label || "Custom";
 
     switch (selectedFilter) {
       case "day":
@@ -67,7 +66,7 @@ export function AnalyticsHeader({ onDateRangeChange }: AnalyticsHeaderProps) {
         }
         break;
     }
-    onDateRangeChange(result.startDate, result.endDate);
+    onDateRangeChange(result.startDate, result.endDate, label);
   };
 
   useEffect(() => {

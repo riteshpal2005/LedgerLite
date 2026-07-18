@@ -11,10 +11,11 @@ import Category from "../../server/db/models/Category";
 interface CategorySpendingChartProps {
   transactions: Transaction[];
   categories: Category[];
+  dateLabel?: string;
 }
 
 // Ref: CategorySpendingChart-1
-const CategorySpendingChartComponent = ({ transactions, categories }: CategorySpendingChartProps) => {
+const CategorySpendingChartComponent = ({ transactions, categories, dateLabel = "This Month" }: CategorySpendingChartProps) => {
   const chartData = useMemo(() => {
     const expenses = transactions.filter(t => t.type === 'debit');
     const totalExpense = expenses.reduce((sum, t) => sum + t.amount, 0);
@@ -92,7 +93,7 @@ const CategorySpendingChartComponent = ({ transactions, categories }: CategorySp
       <View className="flex-row justify-between items-center mb-6">
         <Text className="text-white text-base font-bold">Spending by Category</Text>
         <View className="flex-row items-center">
-            <Text className="text-gray-400 text-xs mr-1">This Month</Text>
+            <Text className="text-gray-400 text-xs mr-1">{dateLabel}</Text>
             <Ionicons name="chevron-down" size={12} color="#9ca3af" />
         </View>
       </View>
