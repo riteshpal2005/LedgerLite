@@ -13,6 +13,28 @@ interface CashFlowChartProps {
   dateLabel?: string;
 }
 
+const createBezierPath = (points: {x: number, y: number}[]) => {
+  if (points.length === 0) return "";
+  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+  
+  let path = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = i === 0 ? points[0] : points[i - 1];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = i + 2 < points.length ? points[i + 2] : p2;
+    
+    const cp1x = p1.x + (p2.x - p0.x) * 0.2;
+    const cp1y = p1.y + (p2.y - p0.y) * 0.2;
+    
+    const cp2x = p2.x - (p3.x - p1.x) * 0.2;
+    const cp2y = p2.y - (p3.y - p1.y) * 0.2;
+    
+    path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+  }
+  return path;
+};
+
 const CashFlowChartComponent = ({ transactions, dateLabel = "This Month" }: CashFlowChartProps) => {
   const chartPaths = useMemo(() => {
     if (transactions.length === 0) return null;
@@ -39,7 +61,8 @@ const CashFlowChartComponent = ({ transactions, dateLabel = "This Month" }: Cash
 
     const maxVal = Math.max(
       ...dataPoints.map(d => Math.max(d.income, d.expense, Math.abs(d.net)))
-    ) || 1; // avoid division by zero
+    );
+    if (maxVal === 0) return null;
 
     const svgWidth = 300;
     const svgHeight = 100;
@@ -47,17 +70,13 @@ const CashFlowChartComponent = ({ transactions, dateLabel = "This Month" }: Cash
 
     const mapY = (val: number) => svgHeight - ((val / maxVal) * svgHeight);
 
-    let incomePath = "";
-    let expensePath = "";
-    let netPath = "";
+    const incomePoints = dataPoints.map((p, i) => ({ x: i * stepX, y: mapY(p.income) }));
+    const expensePoints = dataPoints.map((p, i) => ({ x: i * stepX, y: mapY(p.expense) }));
+    const netPoints = dataPoints.map((p, i) => ({ x: i * stepX, y: mapY(p.net) }));
 
-    dataPoints.forEach((p, i) => {
-      const x = i * stepX;
-      const cmd = i === 0 ? "M" : "L";
-      incomePath += `${cmd} ${x} ${mapY(p.income)} `;
-      expensePath += `${cmd} ${x} ${mapY(p.expense)} `;
-      netPath += `${cmd} ${x} ${mapY(p.net)} `;
-    });
+    const incomePath = createBezierPath(incomePoints);
+    const expensePath = createBezierPath(expensePoints);
+    const netPath = createBezierPath(netPoints);
 
     const lastPoint = dataPoints[dataPoints.length - 1];
     

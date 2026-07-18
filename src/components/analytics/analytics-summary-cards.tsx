@@ -44,7 +44,7 @@ const AnalyticsSummaryCardsComponent = ({ transactions, accounts }: AnalyticsSum
         </View>
         <View className="h-6 w-full">
             <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
-                <Path d="M0 15 L20 18 L40 10 L60 12 L80 5 L100 0" stroke="#22c55e" strokeWidth="1.5" fill="none" opacity={0.6}/>
+                <Path d="M0 15 C 10 15, 10 18, 20 18 C 30 18, 30 10, 40 10 C 50 10, 50 12, 60 12 C 70 12, 70 5, 80 5 C 90 5, 90 0, 100 0" stroke="#22c55e" strokeWidth="1.5" fill="none" opacity={0.6}/>
             </Svg>
         </View>
       </View>
@@ -63,7 +63,7 @@ const AnalyticsSummaryCardsComponent = ({ transactions, accounts }: AnalyticsSum
         </View>
         <View className="h-6 w-full">
             <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
-                <Path d="M0 18 L20 18 L40 16 L60 14 L80 10 L100 5" stroke="#ef4444" strokeWidth="1.5" fill="none" opacity={0.6}/>
+                <Path d="M0 18 C 10 18, 10 18, 20 18 C 30 18, 30 16, 40 16 C 50 16, 50 14, 60 14 C 70 14, 70 10, 80 10 C 90 10, 90 5, 100 5" stroke="#ef4444" strokeWidth="1.5" fill="none" opacity={0.6}/>
             </Svg>
         </View>
       </View>
@@ -84,7 +84,7 @@ const AnalyticsSummaryCardsComponent = ({ transactions, accounts }: AnalyticsSum
         </View>
         <View className="h-6 w-full">
             <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
-                <Path d="M0 16 L20 15 L40 17 L60 14 L80 8 L100 5" stroke="#6642f8" strokeWidth="1.5" fill="none" opacity={0.6}/>
+                <Path d="M0 16 C 10 16, 10 15, 20 15 C 30 15, 30 17, 40 17 C 50 17, 50 14, 60 14 C 70 14, 70 8, 80 8 C 90 8, 90 5, 100 5" stroke="#6642f8" strokeWidth="1.5" fill="none" opacity={0.6}/>
             </Svg>
         </View>
       </View>
