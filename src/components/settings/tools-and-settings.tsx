@@ -4,22 +4,48 @@ import { Ionicons } from "@expo/vector-icons";
 
 export function ToolsAndSettings() {
   const [hapticsEnabled, setHapticsEnabled] = useState(true);
+  const [appearance, setAppearance] = useState<"System" | "Light" | "Dark">("Dark");
+  const [isAppearanceDropdownOpen, setIsAppearanceDropdownOpen] = useState(false);
 
   return (
     <>
       <Text className="text-white text-base font-bold mb-3">Tools & Settings</Text>
-      <View className="bg-[#0f1011] rounded-2xl p-2 mb-6 border border-[#1b1b1c]">
+      <View className="bg-[#0f1011] rounded-2xl p-2 mb-6 border border-[#1b1b1c] z-50">
         
-        <TouchableOpacity className="flex-row justify-between items-center p-3">
-          <View className="flex-row items-center">
-            <Ionicons name="color-palette-outline" size={20} color="#a855f7" className="mr-4" />
-            <View>
-              <Text className="text-white text-sm font-bold">App Appearance</Text>
-              <Text className="text-gray-400 text-xs mt-0.5">Dark (Pitch Black)</Text>
+        <View className="relative z-50">
+          <TouchableOpacity 
+            className="flex-row justify-between items-center p-3"
+            onPress={() => setIsAppearanceDropdownOpen(!isAppearanceDropdownOpen)}
+          >
+            <View className="flex-row items-center">
+              <Ionicons name="color-palette-outline" size={20} color="#a855f7" className="mr-4" />
+              <View>
+                <Text className="text-white text-sm font-bold">App Appearance</Text>
+                <Text className="text-gray-400 text-xs mt-0.5">{appearance === "Dark" ? "Dark (Pitch Black)" : appearance}</Text>
+              </View>
             </View>
-          </View>
-          <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
-        </TouchableOpacity>
+            <View className="flex-row items-center">
+              <Text className="text-gray-400 text-xs mr-2">{appearance}</Text>
+              <Ionicons name={isAppearanceDropdownOpen ? "chevron-up" : "chevron-down"} size={16} color="#9ca3af" />
+            </View>
+          </TouchableOpacity>
+
+          {isAppearanceDropdownOpen && (
+            <View className="absolute top-full right-3 mt-1 bg-[#18181b] w-40 rounded-2xl border border-[#27272a] overflow-hidden shadow-2xl z-50">
+              {(["System", "Light", "Dark"] as const).map((item, index) => (
+                <TouchableOpacity
+                  key={item}
+                  className={`px-4 py-3 ${index !== 2 ? 'border-b border-[#27272a]' : ''} ${appearance === item ? 'bg-[#a855f7]/10' : ''}`}
+                  onPress={() => { setAppearance(item); setIsAppearanceDropdownOpen(false); }}
+                >
+                  <Text className={`text-sm ${appearance === item ? 'text-[#a855f7] font-bold' : 'text-gray-300'}`}>
+                    {item}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
 
         <View className="h-px bg-[#1b1b1c] mx-3" />
 
