@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
 import Svg, { Circle } from "react-native-svg";
 import { Ionicons } from "@expo/vector-icons";
 import { withDatabase } from "@nozbe/watermelondb/react";
@@ -9,6 +10,8 @@ import Category from "../../server/db/models/Category";
 import { Q } from "@nozbe/watermelondb";
 
 function MonthlySummaryChartComponent({ transactions, categories }: { transactions: Transaction[], categories: Category[] }) {
+  const router = useRouter();
+  
   const { totalExpense, categoryTotals } = useMemo(() => {
     let total = 0;
     const totals: Record<string, number> = {};
@@ -42,7 +45,7 @@ function MonthlySummaryChartComponent({ transactions, categories }: { transactio
     <View>
       <View className="flex-row justify-between items-end mb-4">
         <Text className="text-white text-lg font-bold">Spending by Category</Text>
-        <TouchableOpacity className="flex-row items-center">
+        <TouchableOpacity className="flex-row items-center" onPress={() => router.push("/(tabs)/analytics")}>
           <Text className="text-[#6642f8] text-sm font-bold mr-1">View analytics</Text>
           <Ionicons name="chevron-forward" size={16} color="#6642f8" />
         </TouchableOpacity>
