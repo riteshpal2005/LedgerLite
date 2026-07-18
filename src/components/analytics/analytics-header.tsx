@@ -90,7 +90,7 @@ export function AnalyticsHeader({ onDateRangeChange }: AnalyticsHeaderProps) {
 
   return (
     <View className="z-50 px-6 mt-4 mb-2">
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row items-center justify-between z-50 relative">
         <View className="flex-row items-center">
           <View className="w-12 h-12 bg-[#6642f8] rounded-xl items-center justify-center mr-3">
             <Ionicons name="book" size={24} color="white" />
@@ -105,28 +105,23 @@ export function AnalyticsHeader({ onDateRangeChange }: AnalyticsHeaderProps) {
 
         <TouchableOpacity 
           className="flex-row items-center px-3 py-1.5 rounded-full border border-[#1b1b1c] bg-[#0f1011]"
-          onPress={() => setDropdownVisible(true)}
+          onPress={() => setDropdownVisible(!dropdownVisible)}
         >
           <Ionicons name="calendar-outline" size={16} color="white" className="mr-1.5" />
           <Text className="text-gray-200 text-xs font-semibold mr-1.5">{selectedLabel}</Text>
-          <Ionicons name="chevron-down" size={14} color="white" />
+          <Ionicons name={dropdownVisible ? "chevron-up" : "chevron-down"} size={14} color="white" />
         </TouchableOpacity>
-      </View>
 
-      <Modal visible={dropdownVisible} transparent animationType="fade">
-        <Pressable
-          className="flex-1 bg-black/70 justify-center items-center p-6"
-          onPress={() => setDropdownVisible(false)}
-        >
-          <Pressable className="bg-[#0f1011] w-full rounded-3xl p-2 border border-[#1b1b1c]">
-            {filterOptions.map((option) => (
+        {dropdownVisible && (
+          <View className="absolute top-full right-0 mt-2 bg-[#18181b] w-64 rounded-2xl border border-[#27272a] overflow-hidden shadow-2xl z-50">
+            {filterOptions.map((option, index) => (
               <TouchableOpacity
                 key={option.value}
                 onPress={() => handleSelectFilter(option.value)}
-                className={`p-4 rounded-2xl ${filter === option.value ? "bg-[#1b1b1c]" : ""}`}
+                className={`px-4 py-3 ${index !== filterOptions.length - 1 || filter === "custom" ? "border-b border-[#27272a]" : ""} ${filter === option.value ? "bg-[#6642f8]/10" : ""}`}
               >
                 <Text
-                  className={`text-center font-bold text-lg ${filter === option.value ? "text-[#6642f8]" : "text-white"}`}
+                  className={`text-sm ${filter === option.value ? "text-[#6642f8] font-bold" : "text-gray-300"}`}
                 >
                   {option.label}
                 </Text>
@@ -134,28 +129,30 @@ export function AnalyticsHeader({ onDateRangeChange }: AnalyticsHeaderProps) {
             ))}
 
             {filter === "custom" && (
-              <View className="flex-row justify-between mt-4 px-2 pb-4 gap-4">
-                <View className="flex-1 bg-[#1b1b1c] rounded-2xl p-4 border border-[#2b2b2b]">
-                  <Text className="text-gray-400 text-xs mb-1">From Date</Text>
-                  <TouchableOpacity onPress={() => setShowStartPicker(true)}>
-                    <Text className="text-white font-semibold">
-                      {customStart.toLocaleDateString()}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-                <View className="flex-1 bg-[#1b1b1c] rounded-2xl p-4 border border-[#2b2b2b]">
-                  <Text className="text-gray-400 text-xs mb-1">To Date</Text>
-                  <TouchableOpacity onPress={() => setShowEndPicker(true)}>
-                    <Text className="text-white font-semibold">
-                      {customEnd.toLocaleDateString()}
-                    </Text>
-                  </TouchableOpacity>
+              <View className="p-4 bg-[#18181b]">
+                <View className="flex-row justify-between gap-4">
+                  <View className="flex-1 bg-[#1b1b1c] rounded-xl p-3 border border-[#2b2b2b]">
+                    <Text className="text-gray-400 text-[10px] mb-1">From Date</Text>
+                    <TouchableOpacity onPress={() => setShowStartPicker(true)}>
+                      <Text className="text-white text-xs font-semibold">
+                        {customStart.toLocaleDateString()}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View className="flex-1 bg-[#1b1b1c] rounded-xl p-3 border border-[#2b2b2b]">
+                    <Text className="text-gray-400 text-[10px] mb-1">To Date</Text>
+                    <TouchableOpacity onPress={() => setShowEndPicker(true)}>
+                      <Text className="text-white text-xs font-semibold">
+                        {customEnd.toLocaleDateString()}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             )}
-          </Pressable>
-        </Pressable>
-      </Modal>
+          </View>
+        )}
+      </View>
 
       <CustomDateTimePickerModal
         visible={showStartPicker}
