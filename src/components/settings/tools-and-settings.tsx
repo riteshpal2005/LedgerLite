@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Switch } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { useCurrency } from "../../hooks/useCurrency";
 
 export function ToolsAndSettings() {
   const [hapticsEnabled, setHapticsEnabled] = useState(true);
   const [appearance, setAppearance] = useState<"System" | "Light" | "Dark">("Dark");
   const [isAppearanceDropdownOpen, setIsAppearanceDropdownOpen] = useState(false);
+  const router = useRouter();
+  const { currencyConfig } = useCurrency();
 
   return (
     <>
@@ -21,11 +25,10 @@ export function ToolsAndSettings() {
               <Ionicons name="color-palette-outline" size={20} color="#a855f7" className="mr-4" />
               <View>
                 <Text className="text-white text-sm font-bold">App Appearance</Text>
-                <Text className="text-gray-400 text-xs mt-0.5">{appearance === "Dark" ? "Dark (Pitch Black)" : appearance}</Text>
+                <Text className="text-gray-400 text-xs mt-0.5">{appearance}</Text>
               </View>
             </View>
             <View className="flex-row items-center">
-              <Text className="text-gray-400 text-xs mr-2">{appearance}</Text>
               <Ionicons name={isAppearanceDropdownOpen ? "chevron-up" : "chevron-down"} size={16} color="#9ca3af" />
             </View>
           </TouchableOpacity>
@@ -67,12 +70,15 @@ export function ToolsAndSettings() {
 
         <View className="h-px bg-[#1b1b1c] mx-3" />
 
-        <TouchableOpacity className="flex-row justify-between items-center p-3">
+        <TouchableOpacity 
+          className="flex-row justify-between items-center p-3"
+          onPress={() => router.push("/settings/currency")}
+        >
           <View className="flex-row items-center">
             <Ionicons name="logo-usd" size={20} color="#f97316" className="mr-4" />
             <View>
               <Text className="text-white text-sm font-bold">Currency</Text>
-              <Text className="text-gray-400 text-xs mt-0.5">Indian Rupee (INR)</Text>
+              <Text className="text-gray-400 text-xs mt-0.5">{currencyConfig.name} ({currencyConfig.code})</Text>
             </View>
           </View>
           <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
