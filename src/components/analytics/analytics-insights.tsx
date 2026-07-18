@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import withObservables from "@nozbe/watermelondb/react/withObservables";
 import { withDatabase } from "@nozbe/watermelondb/react";
@@ -14,6 +15,7 @@ interface AnalyticsInsightsProps {
 
 // Ref: AnalyticsInsights-1
 const AnalyticsInsightsComponent = ({ transactions, categories }: AnalyticsInsightsProps) => {
+  const router = useRouter();
   const insight = useMemo(() => {
     if (transactions.length === 0) {
       return "No transactions in this period to generate insights.";
@@ -58,7 +60,11 @@ const AnalyticsInsightsComponent = ({ transactions, categories }: AnalyticsInsig
   }, [transactions, categories]);
 
   return (
-    <View className="bg-[#0f1011] rounded-2xl p-4 mb-6 border border-[#1b1b1c] flex-row items-center">
+    <TouchableOpacity 
+      activeOpacity={0.7}
+      onPress={() => router.push("/insights")}
+      className="bg-[#0f1011] rounded-2xl p-4 mb-6 border border-[#1b1b1c] flex-row items-center"
+    >
       <View className="w-12 h-12 rounded-full bg-[#6642f8]/10 items-center justify-center mr-3">
         <Ionicons name="bulb-outline" size={24} color="#6642f8" />
       </View>
@@ -69,7 +75,7 @@ const AnalyticsInsightsComponent = ({ transactions, categories }: AnalyticsInsig
         </Text>
       </View>
       <Ionicons name="chevron-forward" size={18} color="#6642f8" />
-    </View>
+    </TouchableOpacity>
   );
 };
 
