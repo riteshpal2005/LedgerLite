@@ -4,7 +4,10 @@ import { Ionicons } from "@expo/vector-icons";
 import withObservables from "@nozbe/watermelondb/react/withObservables";
 import { withDatabase } from "@nozbe/watermelondb/react";
 import { Database, Q } from "@nozbe/watermelondb";
+import { switchMap } from "rxjs/operators";
+import { of } from "rxjs";
 import Transaction from "../../server/db/models/Transaction";
+import Category from "../../server/db/models/Category";
 import { TransactionListItem } from "./transaction-list-item";
 import { isToday, startOfDay, format } from "date-fns";
 import { FilterType } from "./transactions-filter-tabs";
@@ -151,34 +154,66 @@ const TransactionGroupedListComponent = ({ transactions, sortMode }: Transaction
 };
 
 const enhance = withObservables(['filter', 'searchQuery', 'sortMode', 'filterAccountId'], ({ database, filter, searchQuery, sortMode, filterAccountId }: { database: Database; filter: FilterType; searchQuery: string; sortMode: SortMode; filterAccountId: string }) => {
-  const conditions: Q.Clause[] = [];
-
-  if (filter && filter !== "All") {
-    conditions.push(Q.where('type', filter === "Income" ? "credit" : "debit"));
-  }
+  const getBaseConditions = () => {
+    const conditions: Q.Clause[] = [];
+    if (filter && filter !== "All") {
+      conditions.push(Q.where('type', filter === "Income" ? "credit" : "debit"));
+    }
+    if (filterAccountId && filterAccountId !== "all") {
+      conditions.push(Q.where('account_id', filterAccountId));
+    }
+    if (sortMode === "newest") {
+      conditions.push(Q.sortBy('date', Q.desc));
+    } else if (sortMode === "oldest") {
+      conditions.push(Q.sortBy('date', Q.asc));
+    } else if (sortMode === "highest") {
+      conditions.push(Q.sortBy('amount', Q.desc));
+    } else if (sortMode === "lowest") {
+      conditions.push(Q.sortBy('amount', Q.asc));
+    } else {
+      conditions.push(Q.sortBy('date', Q.desc)); // fallback default
+    }
+    return conditions;
+  };
 
   if (searchQuery && searchQuery.trim() !== "") {
-    conditions.push(Q.where('description', Q.like(`%${searchQuery.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`)));
+    const sanitizedSearch = searchQuery.replace(/%/g, '\\%').replace(/_/g, '\\_');
+    const searchNumber = Number(searchQuery);
+
+    // Observe categories matching the search query
+    const categoriesObservable = database.collections.get<Category>('categories')
+      .query(Q.where('name', Q.like(`%${sanitizedSearch}%`)))
+      .observe();
+
+    return {
+      transactions: categoriesObservable.pipe(
+        switchMap(categories => {
+          const categoryIds = categories.map(c => c.id);
+          const orConditions: Q.Where[] = [
+            Q.where('description', Q.like(`%${sanitizedSearch}%`))
+          ];
+          
+          if (categoryIds.length > 0) {
+            orConditions.push(Q.where('category_id', Q.oneOf(categoryIds)));
+          }
+
+          if (!isNaN(searchNumber)) {
+            // Also search by amount if it's a number
+            orConditions.push(Q.where('amount', searchNumber));
+          }
+
+          const conditions = getBaseConditions();
+          conditions.push(Q.or(...orConditions));
+
+          return database.collections.get<Transaction>('transactions').query(...conditions).observe();
+        })
+      )
+    };
   }
 
-  if (filterAccountId && filterAccountId !== "all") {
-    conditions.push(Q.where('account_id', filterAccountId));
-  }
-
-  if (sortMode === "newest") {
-    conditions.push(Q.sortBy('date', Q.desc));
-  } else if (sortMode === "oldest") {
-    conditions.push(Q.sortBy('date', Q.asc));
-  } else if (sortMode === "highest") {
-    conditions.push(Q.sortBy('amount', Q.desc));
-  } else if (sortMode === "lowest") {
-    conditions.push(Q.sortBy('amount', Q.asc));
-  } else {
-    conditions.push(Q.sortBy('date', Q.desc)); // fallback default
-  }
-
+  // No search query
   return {
-    transactions: database.collections.get<Transaction>('transactions').query(...conditions).observe(),
+    transactions: database.collections.get<Transaction>('transactions').query(...getBaseConditions()).observe(),
   };
 });
 
