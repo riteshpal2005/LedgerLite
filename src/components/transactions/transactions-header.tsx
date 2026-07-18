@@ -2,8 +2,14 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
+interface TransactionsHeaderProps {
+  onSearchPress?: () => void;
+  onFilterPress?: () => void;
+  hasActiveFilters?: boolean;
+}
+
 // Ref: TransactionsHeader-1
-export function TransactionsHeader() {
+export function TransactionsHeader({ onSearchPress, onFilterPress, hasActiveFilters }: TransactionsHeaderProps) {
   return (
     <View className="flex-row items-center justify-between px-6 mt-4 mb-2">
       <View className="flex-row items-center">
@@ -18,11 +24,11 @@ export function TransactionsHeader() {
         </View>
       </View>
       <View className="flex-row items-center">
-        <TouchableOpacity className="mr-4">
+        <TouchableOpacity className="mr-4" onPress={onSearchPress}>
           <Ionicons name="search-outline" size={24} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Ionicons name="funnel-outline" size={24} color="white" />
+        <TouchableOpacity onPress={onFilterPress}>
+          <Ionicons name="funnel-outline" size={24} color={hasActiveFilters ? "#3b82f6" : "white"} />
         </TouchableOpacity>
       </View>
     </View>

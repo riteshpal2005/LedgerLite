@@ -1,6 +1,6 @@
 import { View, Text, Pressable, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useRef, useMemo, useCallback } from "react";
+import { forwardRef, useImperativeHandle, useRef, useMemo, useCallback } from "react";
 import {
   BottomSheetModal,
   BottomSheetView,
@@ -23,19 +23,33 @@ interface TransactionSortFilterProps {
   setFilterAccountId: (id: FilterAccountId) => void;
 }
 
-export function TransactionSortFilter({
-  sortMode,
-  setSortMode,
-  filterType,
-  setFilterType,
-  filterAccountId,
-  setFilterAccountId,
-}: TransactionSortFilterProps) {
+export interface TransactionSortFilterRef {
+  present: () => void;
+  dismiss: () => void;
+}
+
+export const TransactionSortFilter = forwardRef<TransactionSortFilterRef, TransactionSortFilterProps>(
+  (
+    {
+      sortMode,
+      setSortMode,
+      filterType,
+      setFilterType,
+      filterAccountId,
+      setFilterAccountId,
+    },
+    ref
+  ) => {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const accounts = useSelector(selectAccountsWithBalances);
 
   const openSheet = () => bottomSheetRef.current?.present();
   const closeSheet = () => bottomSheetRef.current?.dismiss();
+
+  useImperativeHandle(ref, () => ({
+    present: openSheet,
+    dismiss: closeSheet,
+  }));
 
   const snapPoints = useMemo(() => ["90%"], []);
   const renderBackdrop = useCallback(
@@ -58,18 +72,7 @@ export function TransactionSortFilter({
   };
 
   return (
-    <View className="relative z-50 ml-3">
-      {/* Trigger Button */}
-      <Pressable
-        onPress={openSheet}
-        className={`h-[48px] w-[48px] rounded-2xl flex-row items-center justify-center border ${hasActiveFilters ? "bg-[#3b82f6]/10 border-[#3b82f6]/30" : "bg-[#131415] border-[#27272a]"}`}
-      >
-        <Ionicons
-          name="filter"
-          size={20}
-          color={hasActiveFilters ? "#3b82f6" : "#71717a"}
-        />
-      </Pressable>
+    <>
 
       <BottomSheetModal
         ref={bottomSheetRef}
@@ -240,6 +243,6 @@ export function TransactionSortFilter({
           </Pressable>
         </BottomSheetScrollView>
       </BottomSheetModal>
-    </View>
+    </>
   );
-}
+});

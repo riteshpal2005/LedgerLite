@@ -10,21 +10,22 @@ import { isToday, startOfDay, format } from "date-fns";
 import { FilterType } from "./transactions-filter-tabs";
 import { useRouter } from "expo-router";
 
+import { SortMode, FilterAccountId } from "./transaction-sort-filter";
+
 interface TransactionGroupedListProps {
   transactions: Transaction[];
   filter: FilterType;
+  searchQuery?: string;
+  sortMode?: SortMode;
+  filterAccountId?: FilterAccountId;
 }
 
-const TransactionGroupedListComponent = ({ transactions, filter }: TransactionGroupedListProps) => {
+const TransactionGroupedListComponent = ({ transactions }: TransactionGroupedListProps) => {
   const [isListOpen, setIsListOpen] = useState(true);
   const router = useRouter();
 
-  // Apply the selected filter
-  const filteredTransactions = useMemo(() => {
-    if (filter === "All") return transactions;
-    const targetType = filter === "Income" ? "credit" : "debit";
-    return transactions.filter(t => t.type === targetType);
-  }, [transactions, filter]);
+  // The transactions are already filtered and sorted by the WatermelonDB query
+  const filteredTransactions = transactions;
 
   const currentMonthString = format(new Date(), "MMMM yyyy");
   
@@ -141,8 +142,36 @@ const TransactionGroupedListComponent = ({ transactions, filter }: TransactionGr
   );
 };
 
-const enhance = withObservables(['database'], ({ database }: { database: Database }) => ({
-  transactions: database.collections.get<Transaction>('transactions').query(Q.sortBy('date', Q.desc)).observe(),
-}));
+const enhance = withObservables(['filter', 'searchQuery', 'sortMode', 'filterAccountId'], ({ database, filter, searchQuery, sortMode, filterAccountId }: { database: Database; filter: FilterType; searchQuery: string; sortMode: SortMode; filterAccountId: string }) => {
+  const conditions: Q.Clause[] = [];
+
+  if (filter && filter !== "All") {
+    conditions.push(Q.where('type', filter === "Income" ? "credit" : "debit"));
+  }
+
+  if (searchQuery && searchQuery.trim() !== "") {
+    conditions.push(Q.where('description', Q.like(`%${searchQuery.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`)));
+  }
+
+  if (filterAccountId && filterAccountId !== "all") {
+    conditions.push(Q.where('account_id', filterAccountId));
+  }
+
+  if (sortMode === "newest") {
+    conditions.push(Q.sortBy('date', Q.desc));
+  } else if (sortMode === "oldest") {
+    conditions.push(Q.sortBy('date', Q.asc));
+  } else if (sortMode === "highest") {
+    conditions.push(Q.sortBy('amount', Q.desc));
+  } else if (sortMode === "lowest") {
+    conditions.push(Q.sortBy('amount', Q.asc));
+  } else {
+    conditions.push(Q.sortBy('date', Q.desc)); // fallback default
+  }
+
+  return {
+    transactions: database.collections.get<Transaction>('transactions').query(...conditions).observe(),
+  };
+});
 
 export const TransactionGroupedList = withDatabase(enhance(TransactionGroupedListComponent));
