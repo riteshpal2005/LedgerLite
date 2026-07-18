@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { View, Text, TouchableOpacity, Modal, Pressable } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import withObservables from "@nozbe/watermelondb/react/withObservables";
 import { withDatabase } from "@nozbe/watermelondb/react";
@@ -41,36 +41,31 @@ const OverviewCardComponent = ({ transactions }: OverviewCardProps) => {
   const formatCurrency = (amount: number) => `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
-    <View>
-      <View className="flex-row justify-between items-end mb-3 z-10 relative">
+    <View className="z-50">
+      <View className="flex-row justify-between items-end mb-3 z-50 relative">
         <Text className="text-white text-lg font-bold">Overview</Text>
-        <TouchableOpacity className="flex-row items-center" onPress={() => setIsTrayOpen(true)}>
+        <TouchableOpacity className="flex-row items-center" onPress={() => setIsTrayOpen(!isTrayOpen)}>
           <Text className="text-gray-300 text-sm mr-1">{timeframe}</Text>
-          <Ionicons name="chevron-down" size={16} color="#d1d5db" />
+          <Ionicons name={isTrayOpen ? "chevron-up" : "chevron-down"} size={16} color="#d1d5db" />
         </TouchableOpacity>
-      </View>
 
-      {/* Timeframe Tray Modal */}
-      <Modal visible={isTrayOpen} transparent animationType="fade">
-        <Pressable 
-          className="flex-1 bg-black/50 justify-center items-center" 
-          onPress={() => setIsTrayOpen(false)}
-        >
-          <View className="bg-[#131415] w-64 rounded-2xl border border-[#27272a] overflow-hidden">
+        {/* Timeframe Dropdown */}
+        {isTrayOpen && (
+          <View className="absolute top-full right-0 mt-2 bg-[#18181b] w-40 rounded-2xl border border-[#27272a] overflow-hidden shadow-2xl z-50">
             {(["This Month", "This Week", "Today"] as const).map((item, index) => (
               <TouchableOpacity
                 key={item}
-                className={`px-4 py-4 ${index !== 2 ? 'border-b border-[#1b1b1c]' : ''} ${timeframe === item ? 'bg-[#3b82f6]/10' : ''}`}
+                className={`px-4 py-3 ${index !== 2 ? 'border-b border-[#27272a]' : ''} ${timeframe === item ? 'bg-[#3b82f6]/10' : ''}`}
                 onPress={() => { setTimeframe(item); setIsTrayOpen(false); }}
               >
-                <Text className={`text-center ${timeframe === item ? 'text-[#3b82f6] font-bold' : 'text-gray-300'}`}>
+                <Text className={`text-sm ${timeframe === item ? 'text-[#3b82f6] font-bold' : 'text-gray-300'}`}>
                   {item}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
-        </Pressable>
-      </Modal>
+        )}
+      </View>
 
       <View className="bg-[#0f1011] rounded-2xl p-5 mb-8">
         <View className="flex-row justify-between items-center mb-1">
