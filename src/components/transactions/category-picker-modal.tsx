@@ -16,39 +16,36 @@ interface CategoryPickerModalProps {
 
 const CategoryPickerModalComponent = ({ visible, onClose, onSelect, categories, selectedCategoryId }: CategoryPickerModalProps) => {
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 justify-end bg-black/60">
-        <View className="bg-[#0f1011] rounded-t-3xl border-t border-[#1b1b1c] max-h-[70%]">
-          <View className="flex-row justify-between items-center p-6 border-b border-[#1b1b1c]">
-            <Text className="text-white text-lg font-bold">Select Category</Text>
-            <TouchableOpacity onPress={onClose} className="w-8 h-8 bg-[#1b1b1c] rounded-full items-center justify-center">
-              <Ionicons name="close" size={20} color="#9ca3af" />
-            </TouchableOpacity>
-          </View>
-          
-          <ScrollView className="p-4" showsVerticalScrollIndicator={false}>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <TouchableOpacity 
+        className="flex-1 bg-black/50 justify-center items-center p-6" 
+        activeOpacity={1} 
+        onPress={onClose}
+      >
+        <View className="bg-[#0f1011] w-full rounded-3xl p-2 border border-[#1b1b1c]">
+          <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 300 }}>
             {categories.map(category => {
               const isSelected = category.id === selectedCategoryId;
               return (
                 <TouchableOpacity 
                   key={category.id}
                   onPress={() => { onSelect(category); onClose(); }}
-                  className={`flex-row items-center justify-between p-4 mb-3 rounded-2xl border ${isSelected ? 'bg-[#6642f8]/10 border-[#6642f8]' : 'bg-[#1b1b1c]/50 border-transparent'}`}
+                  className={`flex-row items-center justify-between p-4 rounded-2xl ${isSelected ? 'bg-[#1b1b1c]' : ''}`}
                 >
                   <View className="flex-row items-center">
-                    <View className="w-10 h-10 rounded-full items-center justify-center mr-3" style={{ backgroundColor: `${category.color}30` }}>
-                      <Ionicons name={category.icon as any} size={20} color={category.color} />
+                    <View className="w-6 h-6 rounded-full items-center justify-center mr-3" style={{ backgroundColor: `${category.color}30` }}>
+                      <Ionicons name={category.icon as any} size={12} color={category.color} />
                     </View>
-                    <Text className="text-white text-sm font-bold">{category.name}</Text>
+                    <Text className={`font-bold text-base ${isSelected ? 'text-[#a855f7]' : 'text-white'}`}>
+                      {category.name}
+                    </Text>
                   </View>
-                  {isSelected && <Ionicons name="checkmark-circle" size={24} color="#6642f8" />}
                 </TouchableOpacity>
               );
             })}
-            <View className="h-10" />
           </ScrollView>
         </View>
-      </View>
+      </TouchableOpacity>
     </Modal>
   );
 };
