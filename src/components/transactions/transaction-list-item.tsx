@@ -7,6 +7,7 @@ import Category from "../../server/db/models/Category";
 import { format } from "date-fns";
 import { useRouter } from "expo-router";
 import { TouchableOpacity } from "react-native";
+import { useCurrency } from "../../hooks/useCurrency";
 
 interface TransactionListItemProps {
   transaction: Transaction;
@@ -19,7 +20,7 @@ const TransactionListItemComponent = ({ transaction, category, isLast }: Transac
   const amountColor = isIncome ? "text-green-500" : "text-red-500";
   const sign = isIncome ? "+" : "-";
   
-  const formatCurrency = (amount: number) => `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const { formatCurrency } = useCurrency();
 
   const title = category.name;
   const subtitle = transaction.description || transaction.merchant || "Transaction";
