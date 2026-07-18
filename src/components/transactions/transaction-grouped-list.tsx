@@ -8,6 +8,7 @@ import Transaction from "../../server/db/models/Transaction";
 import { TransactionListItem } from "./transaction-list-item";
 import { isToday, startOfDay, format } from "date-fns";
 import { FilterType } from "./transactions-filter-tabs";
+import { useRouter } from "expo-router";
 
 interface TransactionGroupedListProps {
   transactions: Transaction[];
@@ -16,6 +17,7 @@ interface TransactionGroupedListProps {
 
 const TransactionGroupedListComponent = ({ transactions, filter }: TransactionGroupedListProps) => {
   const [isListOpen, setIsListOpen] = useState(true);
+  const router = useRouter();
 
   // Apply the selected filter
   const filteredTransactions = useMemo(() => {
@@ -87,11 +89,11 @@ const TransactionGroupedListComponent = ({ transactions, filter }: TransactionGr
           <Text className="text-gray-200 text-base font-bold mr-1">{currentMonthString}</Text>
           <Ionicons name={isListOpen ? "chevron-up" : "chevron-down"} size={16} color="#6642f8" />
         </TouchableOpacity>
-        <TouchableOpacity className="flex-row items-center">
+        <View className="flex-row items-center">
           <Text className="text-[#6642f8] text-base font-bold mr-1">
             ₹{currentMonthTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </Text>
-        </TouchableOpacity>
+        </View>
       </View>
 
       {/* Grouped List */}
@@ -126,7 +128,7 @@ const TransactionGroupedListComponent = ({ transactions, filter }: TransactionGr
                <View>
                  <Text className="text-white text-base font-bold">No more transactions</Text>
                  <Text className="text-gray-400 text-xs mt-1 mb-1">You've reached the end of your history.</Text>
-                 <TouchableOpacity className="flex-row items-center">
+                 <TouchableOpacity className="flex-row items-center" onPress={() => router.push('/add-transaction')}>
                    <Text className="text-[#6642f8] text-xs font-bold">Add a new transaction</Text>
                    <Ionicons name="chevron-forward" size={12} color="#6642f8" className="ml-1" />
                  </TouchableOpacity>
