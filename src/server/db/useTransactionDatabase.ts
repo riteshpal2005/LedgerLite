@@ -36,6 +36,12 @@ export function useTransactionDatabase() {
         );
       }
     }
+
+    // Update the account's current_balance to the final calculated balance
+    await db.runAsync(
+      "UPDATE accounts SET current_balance = ?, updated_at = ? WHERE id = ?",
+      [runningBalance, Date.now(), accountId]
+    );
   };
 
   const propagateForwardFromBalance = async (
@@ -141,33 +147,35 @@ export function useTransactionDatabase() {
     transaction: Omit<Transaction, "id" | "sync_status" | "updated_at"> & { id?: string },
   ) => {
     const id = transaction.id || Crypto.randomUUID();
-    const updated_at = Date.now();
-    await db.runAsync(
-      "INSERT INTO transactions (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, linkedTransactionId, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      [
-        id,
-        transaction.amount,
-        transaction.description,
-        transaction.date,
-        transaction.categoryId,
-        transaction.type,
-        transaction.merchant || null,
-        transaction.accountId || null,
-        null,
-        transaction.linkedTransactionId || null,
-        "pending",
-        updated_at,
-      ],
-    );
-    if (transaction.accountId) {
-      const newTx = await db.getFirstAsync<{ rowid: number }>(
-        "SELECT rowid FROM transactions WHERE id = ?",
-        [id]
+    await db.withExclusiveTransactionAsync(async () => {
+      const updated_at = Date.now();
+      await db.runAsync(
+        "INSERT INTO transactions (id, amount, description, date, categoryId, type, merchant, accountId, balance_after, linkedTransactionId, sync_status, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [
+          id,
+          transaction.amount,
+          transaction.description,
+          transaction.date,
+          transaction.categoryId,
+          transaction.type,
+          transaction.merchant || null,
+          transaction.accountId || null,
+          null,
+          transaction.linkedTransactionId || null,
+          "pending",
+          updated_at,
+        ],
       );
-      if (newTx) {
-        await propagateForwardFromPrevious(transaction.accountId, transaction.date, newTx.rowid);
+      if (transaction.accountId) {
+        const newTx = await db.getFirstAsync<{ rowid: number }>(
+          "SELECT rowid FROM transactions WHERE id = ?",
+          [id]
+        );
+        if (newTx) {
+          await propagateForwardFromPrevious(transaction.accountId, transaction.date, newTx.rowid);
+        }
       }
-    }
+    });
     return id;
   };
 
@@ -275,96 +283,102 @@ export function useTransactionDatabase() {
   };
 
   const adjustAccountBalance = async (accountId: string, amount: number) => {
-    await db.runAsync(
-      "UPDATE accounts SET balance = balance + ?, sync_status = ?, updated_at = ? WHERE id = ?",
-      [amount, "pending", Date.now(), accountId],
-    );
-    const firstTx = await db.getFirstAsync<{ date: number; rowid: number }>(
-      "SELECT date, rowid FROM transactions WHERE accountId = ? AND sync_status != 'deleted' ORDER BY date ASC, rowid ASC LIMIT 1",
-      [accountId]
-    );
-    if (firstTx) {
-      await propagateForwardFromPrevious(accountId, firstTx.date, firstTx.rowid);
-    } else {
-      await propagateForwardFromPrevious(accountId, 0);
-    }
+    await db.withExclusiveTransactionAsync(async () => {
+      await db.runAsync(
+        "UPDATE accounts SET balance = balance + ?, sync_status = ?, updated_at = ? WHERE id = ?",
+        [amount, "pending", Date.now(), accountId],
+      );
+      const firstTx = await db.getFirstAsync<{ date: number; rowid: number }>(
+        "SELECT date, rowid FROM transactions WHERE accountId = ? AND sync_status != 'deleted' ORDER BY date ASC, rowid ASC LIMIT 1",
+        [accountId]
+      );
+      if (firstTx) {
+        await propagateForwardFromPrevious(accountId, firstTx.date, firstTx.rowid);
+      } else {
+        await propagateForwardFromPrevious(accountId, 0);
+      }
+    });
   };
 
   const updateTransactionAccount = async (transactionId: string, accountId: string) => {
-    const oldTransaction = await db.getFirstAsync<{ rowid: number; accountId: string; date: number }>(
-      "SELECT rowid, accountId, date FROM transactions WHERE id = ?",
-      [transactionId]
-    );
-    await db.runAsync(
-      "UPDATE transactions SET accountId = ?, sync_status = ?, updated_at = ? WHERE id = ?",
-      [accountId, "pending", Date.now(), transactionId],
-    );
-    const newTransactionRow = await db.getFirstAsync<{ rowid: number }>(
-      "SELECT rowid FROM transactions WHERE id = ?",
-      [transactionId]
-    );
+    await db.withExclusiveTransactionAsync(async () => {
+      const oldTransaction = await db.getFirstAsync<{ rowid: number; accountId: string; date: number }>(
+        "SELECT rowid, accountId, date FROM transactions WHERE id = ?",
+        [transactionId]
+      );
+      await db.runAsync(
+        "UPDATE transactions SET accountId = ?, sync_status = ?, updated_at = ? WHERE id = ?",
+        [accountId, "pending", Date.now(), transactionId],
+      );
+      const newTransactionRow = await db.getFirstAsync<{ rowid: number }>(
+        "SELECT rowid FROM transactions WHERE id = ?",
+        [transactionId]
+      );
 
-    if (oldTransaction) {
-      if (oldTransaction.accountId === accountId) {
-        if (accountId) {
-          await propagateForwardFromPrevious(accountId, oldTransaction.date, oldTransaction.rowid);
-        }
-      } else {
-        if (oldTransaction.accountId) {
-          await propagateForwardFromPrevious(oldTransaction.accountId, oldTransaction.date, oldTransaction.rowid);
-        }
-        if (accountId && newTransactionRow) {
-          await propagateForwardFromPrevious(accountId, oldTransaction.date, newTransactionRow.rowid);
+      if (oldTransaction) {
+        if (oldTransaction.accountId === accountId) {
+          if (accountId) {
+            await propagateForwardFromPrevious(accountId, oldTransaction.date, oldTransaction.rowid);
+          }
+        } else {
+          if (oldTransaction.accountId) {
+            await propagateForwardFromPrevious(oldTransaction.accountId, oldTransaction.date, oldTransaction.rowid);
+          }
+          if (accountId && newTransactionRow) {
+            await propagateForwardFromPrevious(accountId, oldTransaction.date, newTransactionRow.rowid);
+          }
         }
       }
-    }
+    });
   };
 
   const updateTransactionFull = async (
     id: string,
     transaction: Omit<Transaction, "id" | "sync_status" | "updated_at">,
   ) => {
-    const oldTransaction = await db.getFirstAsync<{ rowid: number; accountId: string; date: number }>(
-      "SELECT rowid, accountId, date FROM transactions WHERE id = ?",
-      [id]
-    );
-    await db.runAsync(
-      "UPDATE transactions SET amount = ?, description = ?, date = ?, categoryId = ?, type = ?, merchant = ?, accountId = ?, linkedTransactionId = ?, sync_status = ?, updated_at = ? WHERE id = ?",
-      [
-        transaction.amount,
-        transaction.description,
-        transaction.date,
-        transaction.categoryId,
-        transaction.type,
-        transaction.merchant || null,
-        transaction.accountId || null,
-        transaction.linkedTransactionId || null,
-        "pending",
-        Date.now(),
-        id,
-      ],
-    );
-    const newTransactionRow = await db.getFirstAsync<{ rowid: number }>(
-      "SELECT rowid FROM transactions WHERE id = ?",
-      [id]
-    );
+    await db.withExclusiveTransactionAsync(async () => {
+      const oldTransaction = await db.getFirstAsync<{ rowid: number; accountId: string; date: number }>(
+        "SELECT rowid, accountId, date FROM transactions WHERE id = ?",
+        [id]
+      );
+      await db.runAsync(
+        "UPDATE transactions SET amount = ?, description = ?, date = ?, categoryId = ?, type = ?, merchant = ?, accountId = ?, linkedTransactionId = ?, sync_status = ?, updated_at = ? WHERE id = ?",
+        [
+          transaction.amount,
+          transaction.description,
+          transaction.date,
+          transaction.categoryId,
+          transaction.type,
+          transaction.merchant || null,
+          transaction.accountId || null,
+          transaction.linkedTransactionId || null,
+          "pending",
+          Date.now(),
+          id,
+        ],
+      );
+      const newTransactionRow = await db.getFirstAsync<{ rowid: number }>(
+        "SELECT rowid FROM transactions WHERE id = ?",
+        [id]
+      );
 
-    if (oldTransaction) {
-      if (oldTransaction.accountId === transaction.accountId) {
-        if (transaction.accountId) {
-          const minDate = Math.min(oldTransaction.date, transaction.date);
-          const minRowid = minDate === oldTransaction.date ? oldTransaction.rowid : (newTransactionRow?.rowid || 0);
-          await propagateForwardFromPrevious(transaction.accountId, minDate, minRowid);
-        }
-      } else {
-        if (oldTransaction.accountId) {
-          await propagateForwardFromPrevious(oldTransaction.accountId, oldTransaction.date, oldTransaction.rowid);
-        }
-        if (transaction.accountId && newTransactionRow) {
-          await propagateForwardFromPrevious(transaction.accountId, transaction.date, newTransactionRow.rowid);
+      if (oldTransaction) {
+        if (oldTransaction.accountId === transaction.accountId) {
+          if (transaction.accountId) {
+            const minDate = Math.min(oldTransaction.date, transaction.date);
+            const minRowid = minDate === oldTransaction.date ? oldTransaction.rowid : (newTransactionRow?.rowid || 0);
+            await propagateForwardFromPrevious(transaction.accountId, minDate, minRowid);
+          }
+        } else {
+          if (oldTransaction.accountId) {
+            await propagateForwardFromPrevious(oldTransaction.accountId, oldTransaction.date, oldTransaction.rowid);
+          }
+          if (transaction.accountId && newTransactionRow) {
+            await propagateForwardFromPrevious(transaction.accountId, transaction.date, newTransactionRow.rowid);
+          }
         }
       }
-    }
+    });
   };
 
   const restoreTransaction = async (transaction: Transaction) => {
@@ -475,35 +489,37 @@ export function useTransactionDatabase() {
   };
 
   const deleteTransaction = async (id: string) => {
-    const transaction = await db.getFirstAsync<{ rowid: number; accountId: string; date: number; categoryId: string; amount: number; type: string; description: string; linkedTransactionId: string | null }>(
-      "SELECT rowid, accountId, date, categoryId, amount, type, description, linkedTransactionId FROM transactions WHERE id = ?",
-      [id]
-    );
-    if (!transaction) return;
-
-    await db.runAsync(
-      "UPDATE transactions SET sync_status = ?, updated_at = ? WHERE id = ?",
-      ["deleted", Date.now(), id],
-    );
-    if (transaction.accountId) {
-      await propagateForwardFromPrevious(transaction.accountId, transaction.date, transaction.rowid);
-    }
-
-    if (transaction.linkedTransactionId) {
-      const partner = await db.getFirstAsync<{ id: string; rowid: number; accountId: string; date: number }>(
-        "SELECT id, rowid, accountId, date FROM transactions WHERE id = ? AND sync_status != 'deleted'",
-        [transaction.linkedTransactionId]
+    await db.withExclusiveTransactionAsync(async () => {
+      const transaction = await db.getFirstAsync<{ rowid: number; accountId: string; date: number; categoryId: string; amount: number; type: string; description: string; linkedTransactionId: string | null }>(
+        "SELECT rowid, accountId, date, categoryId, amount, type, description, linkedTransactionId FROM transactions WHERE id = ?",
+        [id]
       );
-      if (partner) {
-        await db.runAsync(
-          "UPDATE transactions SET sync_status = ?, updated_at = ? WHERE id = ?",
-          ["deleted", Date.now(), partner.id],
+      if (!transaction) return;
+
+      await db.runAsync(
+        "UPDATE transactions SET sync_status = ?, updated_at = ? WHERE id = ?",
+        ["deleted", Date.now(), id],
+      );
+      if (transaction.accountId) {
+        await propagateForwardFromPrevious(transaction.accountId, transaction.date, transaction.rowid);
+      }
+
+      if (transaction.linkedTransactionId) {
+        const partner = await db.getFirstAsync<{ id: string; rowid: number; accountId: string; date: number }>(
+          "SELECT id, rowid, accountId, date FROM transactions WHERE id = ? AND sync_status != 'deleted'",
+          [transaction.linkedTransactionId]
         );
-        if (partner.accountId) {
-          await propagateForwardFromPrevious(partner.accountId, partner.date, partner.rowid);
+        if (partner) {
+          await db.runAsync(
+            "UPDATE transactions SET sync_status = ?, updated_at = ? WHERE id = ?",
+            ["deleted", Date.now(), partner.id],
+          );
+          if (partner.accountId) {
+            await propagateForwardFromPrevious(partner.accountId, partner.date, partner.rowid);
+          }
         }
       }
-    }
+    });
   };
 
   const repairSelfTransfers = async () => {
@@ -584,12 +600,14 @@ export function useTransactionDatabase() {
     oldAccountId: string,
     newAccountId: string,
   ) => {
-    await db.runAsync(
-      "UPDATE transactions SET accountId = ?, sync_status = ?, updated_at = ? WHERE accountId = ?",
-      [newAccountId, "pending", Date.now(), oldAccountId],
-    );
-    await propagateForwardFromPrevious(oldAccountId, 0);
-    await propagateForwardFromPrevious(newAccountId, 0);
+    await db.withExclusiveTransactionAsync(async () => {
+      await db.runAsync(
+        "UPDATE transactions SET accountId = ?, sync_status = ?, updated_at = ? WHERE accountId = ?",
+        [newAccountId, "pending", Date.now(), oldAccountId],
+      );
+      await propagateForwardFromPrevious(oldAccountId, 0);
+      await propagateForwardFromPrevious(newAccountId, 0);
+    });
   };
 
   const deleteCategory = async (id: string) => {
