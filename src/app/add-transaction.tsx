@@ -31,6 +31,8 @@ export default function AddTransactionScreen() {
   const [showAccountPicker, setShowAccountPicker] = React.useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = React.useState(false);
   
+  const amountInputRef = React.useRef<TextInput>(null);
+
   const [transaction, setTransaction] = React.useState<Transaction | null>(null);
   const [initialState, setInitialState] = React.useState<{ amount: number, type: string, accountId: string } | null>(null);
 
@@ -222,15 +224,17 @@ export default function AddTransactionScreen() {
           <View className="flex-row items-center flex-1">
             <Text className={`${type === 'debit' ? 'text-[#ef4444]' : 'text-green-500'} text-2xl font-bold mr-2`}>₹</Text>
             <TextInput
+              ref={amountInputRef}
               className="text-white text-3xl font-bold tracking-wider flex-1"
               placeholder="0.00"
               placeholderTextColor="#374151"
               keyboardType="numeric"
+              caretHidden={true}
               value={amount}
               onChangeText={setAmount}
             />
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => amountInputRef.current?.focus()}>
             <Ionicons name="calculator-outline" size={24} color="#a855f7" />
           </TouchableOpacity>
         </View>
