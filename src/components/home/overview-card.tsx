@@ -7,6 +7,7 @@ import { Database } from "@nozbe/watermelondb";
 import Transaction from "../../server/db/models/Transaction";
 import Account from "../../server/db/models/Account";
 import { Q } from "@nozbe/watermelondb";
+import { useCurrency } from "../../hooks/useCurrency";
 
 interface OverviewCardProps {
   transactions: Transaction[];
@@ -44,7 +45,7 @@ const OverviewCardComponent = ({ transactions, accounts }: OverviewCardProps) =>
   const income = filteredTransactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
   const expense = filteredTransactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
 
-  const formatCurrency = (amount: number) => `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const { formatCurrency } = useCurrency();
 
   return (
     <View className="z-50">

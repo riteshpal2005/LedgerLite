@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Transaction from "../../server/db/models/Transaction";
+import { useCurrency } from "../../hooks/useCurrency";
 
 interface GroupSummaryCardProps {
   transactions: Transaction[];
@@ -13,7 +14,7 @@ export function GroupSummaryCard({ transactions }: GroupSummaryCardProps) {
   const expense = transactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
   const totalBalance = income - expense;
 
-  const formatCurrency = (amount: number) => `₹${Math.abs(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const { formatCurrency } = useCurrency();
 
   return (
     <View className="bg-[#0f1011] rounded-2xl p-4 flex-row justify-between mb-8 border border-[#1b1b1c]">
@@ -48,7 +49,7 @@ export function GroupSummaryCard({ transactions }: GroupSummaryCardProps) {
         <View>
           <Text className="text-gray-400 text-[10px] mb-0.5">Net Balance</Text>
           <Text className={`${totalBalance >= 0 ? 'text-[#6642f8]' : 'text-red-500'} text-xs font-bold`}>
-            {totalBalance < 0 ? "-" : ""}{formatCurrency(totalBalance)}
+            {formatCurrency(totalBalance)}
           </Text>
         </View>
       </View>
