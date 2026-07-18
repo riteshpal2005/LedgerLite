@@ -11,7 +11,7 @@ export function TransactionSearchBar({
   setSearchQuery,
 }: TransactionSearchBarProps) {
   return (
-    <View className="flex-1 flex-row items-center bg-[#131415] rounded-2xl px-4 h-[48px] border border-[#27272a]">
+    <View className="w-full flex-row items-center bg-[#131415] rounded-2xl px-4 h-[48px] border border-[#27272a]">
       <Ionicons name="search" size={20} color="#7c3aed" />
       <TextInput
         value={searchQuery}
