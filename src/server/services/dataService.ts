@@ -17,6 +17,8 @@ export type ExportColumn =
   | "Description"
   | "Merchant"
   | "Account"
+  | "Notes"
+  | "Ref/No."
   | "AccountInitialBalance";
 
 export const exportData = async (

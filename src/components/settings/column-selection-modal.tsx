@@ -5,16 +5,16 @@ import { useTheme } from "../../hooks/theme/ThemeContext";
 import { CustomDateTimePickerModal } from "../transactions/custom-date-time-picker-modal";
 
 export const AVAILABLE_COLUMNS = [
-  "Date",
-  "Time",
-  "Type",
-  "Category",
-  "Amount",
-  "Description",
-  "Merchant",
-  "Account",
+  { id: "Date", icon: "calendar-outline" },
+  { id: "Type", icon: "swap-vertical" },
+  { id: "Category", icon: "pricetag-outline" },
+  { id: "Account", icon: "business-outline" },
+  { id: "Amount", icon: "cash-outline" },
+  { id: "Description", icon: "document-text-outline" },
+  { id: "Notes", icon: "document-outline" },
+  { id: "Ref/No.", icon: "number" },
 ] as const;
-export type ExportColumn = (typeof AVAILABLE_COLUMNS)[number];
+export type ExportColumn = (typeof AVAILABLE_COLUMNS)[number]["id"];
 
 interface ColumnSelectionModalProps {
   visible: boolean;
@@ -33,7 +33,7 @@ export function ColumnSelectionModal({
   onConfirm,
 }: ColumnSelectionModalProps) {
   const [selected, setSelected] = useState<Set<ExportColumn>>(
-    new Set(AVAILABLE_COLUMNS),
+    new Set(AVAILABLE_COLUMNS.map((c) => c.id)),
   );
   
   const [startDate, setStartDate] = useState(new Date());
@@ -41,9 +41,6 @@ export function ColumnSelectionModal({
   const [includePieChart, setIncludePieChart] = useState(true);
   
   const [activeDatePicker, setActiveDatePicker] = useState<"start" | "end" | null>(null);
-
-  const { bottomSheetBackgroundColor, bottomSheetBorderColor, colors } =
-    useTheme();
 
   const toggleColumn = (col: ExportColumn) => {
     const newSet = new Set(selected);
@@ -56,7 +53,6 @@ export function ColumnSelectionModal({
   };
 
   const handleConfirm = () => {
-
     const finalEndDate = new Date(endDate);
     finalEndDate.setHours(23, 59, 59, 999);
     
@@ -67,6 +63,10 @@ export function ColumnSelectionModal({
     onClose();
   };
 
+  const formatDate = (d: Date) => {
+    return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+  };
+
   return (
     <Modal
       visible={visible}
@@ -75,155 +75,132 @@ export function ColumnSelectionModal({
       onRequestClose={onClose}
       statusBarTranslucent={true}
     >
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "flex-end",
-        }}
-      >
-        <Pressable
-          style={{
-            position: "absolute",
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-          }}
-          onPress={onClose}
-        />
-        <View
-          style={{
-            backgroundColor: bottomSheetBackgroundColor,
-            padding: 24,
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            paddingBottom: 48,
-            borderTopWidth: 1,
-            borderTopColor: bottomSheetBorderColor,
-            maxHeight: "90%",
-            flexShrink: 1,
-          }}
-        >
-          {}
-          <View
-            style={{
-              position: "absolute",
-              top: "100%",
-              left: 0,
-              right: 0,
-              height: 1000,
-              backgroundColor: bottomSheetBackgroundColor,
-            }}
-          />
+      <View style={{ flex: 1, justifyContent: "flex-end" }}>
+        <Pressable style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "rgba(0,0,0,0.5)" }} onPress={onClose} />
+        
+        <View style={{ backgroundColor: "#131415", borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: 40, borderTopWidth: 1, borderTopColor: "#27272a", maxHeight: "95%", flexShrink: 1 }}>
+          <View style={{ position: "absolute", top: "100%", left: 0, right: 0, height: 1000, backgroundColor: "#131415" }} />
 
-          {}
-          <View className="pb-4">
-            <View className="flex-row justify-between items-center mb-2">
-              <Text className="text-primary text-xl font-bold">
-                Export Settings
-              </Text>
-              <Pressable
-                onPress={onClose}
-                className="p-2 rounded-full bg-surface border border-bordercolor"
-              >
-                <Ionicons name="close" size={20} color="#a1a1aa" />
-              </Pressable>
-            </View>
+          <View className="items-center justify-center mt-3 mb-4">
+            <View className="w-10 h-1 bg-gray-600 rounded-full" />
           </View>
 
-          <ScrollView 
-            showsVerticalScrollIndicator={false}
-            style={{ flexShrink: 1 }}
-          >
-            <Text className="text-primary font-bold mb-2">Date Range</Text>
-            <View className="flex-row gap-4 mb-6">
+          <View className="flex-row items-center justify-between px-6 mb-6">
+            <View className="w-8" /> 
+            <View className="flex-row items-center">
+              <Ionicons name="push-outline" size={20} color="#10b981" />
+              <Text className="text-white text-lg font-bold ml-2">Export Transactions</Text>
+            </View>
+            <Pressable onPress={onClose} className="w-8 h-8 rounded-full bg-white/5 items-center justify-center">
+              <Ionicons name="close" size={18} color="#a1a1aa" />
+            </Pressable>
+          </View>
+
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24 }}>
+            <Text className="text-gray-400 text-sm font-semibold mb-3">Date Range</Text>
+            <View className="flex-row items-center justify-between mb-2">
               <View className="flex-1">
-                <Text className="text-secondary text-xs mb-1">From</Text>
+                <Text className="text-gray-500 text-xs mb-1">From</Text>
                 <Pressable
                   onPress={() => setActiveDatePicker("start")}
-                  className="bg-surface border border-bordercolor p-3 rounded-xl flex-row justify-between items-center"
+                  className="bg-transparent border border-[#27272a] h-12 rounded-xl flex-row justify-between items-center px-4"
                 >
-                  <Text className="text-primary font-semibold">
-                    {startDate.toLocaleDateString()}
-                  </Text>
-                  <Ionicons name="calendar-outline" size={20} color="#a1a1aa" />
+                  <Ionicons name="calendar-outline" size={18} color="#7c3aed" />
+                  <Text className="text-white font-medium text-sm ml-2 flex-1">{formatDate(startDate)}</Text>
                 </Pressable>
               </View>
+              
+              <View className="mx-2 mt-4">
+                <Ionicons name="arrow-forward" size={16} color="#71717a" />
+              </View>
+
               <View className="flex-1">
-                <Text className="text-secondary text-xs mb-1">To</Text>
+                <Text className="text-gray-500 text-xs mb-1">To</Text>
                 <Pressable
                   onPress={() => setActiveDatePicker("end")}
-                  className="bg-surface border border-bordercolor p-3 rounded-xl flex-row justify-between items-center"
+                  className="bg-transparent border border-[#27272a] h-12 rounded-xl flex-row justify-between items-center px-4"
                 >
-                  <Text className="text-primary font-semibold">
-                    {endDate.toLocaleDateString()}
-                  </Text>
-                  <Ionicons name="calendar-outline" size={20} color="#a1a1aa" />
+                  <Ionicons name="calendar-outline" size={18} color="#7c3aed" />
+                  <Text className="text-white font-medium text-sm ml-2 flex-1">{formatDate(endDate)}</Text>
                 </Pressable>
               </View>
             </View>
+            <Text className="text-gray-600 text-[10px] mb-8">
+              From {formatDate(startDate)}, 00:00:00 To {formatDate(endDate)}, 23:59:59
+            </Text>
 
-            <View className="flex-row justify-between items-center mb-6">
-              <View>
-                <Text className="text-primary font-bold">Include Pie Chart</Text>
-                <Text className="text-secondary text-xs mt-1">
-                  Visual summary of transactions by category
-                </Text>
+            <View className="flex-row justify-between items-center mb-8">
+              <View className="flex-1 pr-4">
+                <Text className="text-white font-bold mb-1">Include Pie Chart</Text>
+                <Text className="text-gray-400 text-xs">Add income vs expense chart to PDF</Text>
               </View>
               <Switch
                 value={includePieChart}
                 onValueChange={setIncludePieChart}
-                trackColor={{ false: "#52525b", true: colors.brandPrimary }}
+                trackColor={{ false: "#3f3f46", true: "#10b981" }}
                 thumbColor="#ffffff"
               />
             </View>
 
-            <Text className="text-primary font-bold mb-2">Columns</Text>
-            <View className="flex-row flex-wrap gap-3 mb-2">
-              {AVAILABLE_COLUMNS.map((col) => {
-                const isSelected = selected.has(col);
-                return (
-                  <Pressable
-                    key={col}
-                    onPress={() => toggleColumn(col)}
-                    className={`flex-row items-center px-4 py-2 rounded-full border ${isSelected ? "bg-brand-primary border-brand-primary" : "bg-transparent border-bordercolor"}`}
-                  >
-                    <Text
-                      className={`font-semibold ${isSelected ? "text-brand-primary-content" : "text-primary"}`}
+            <View className="mb-8">
+              <Text className="text-white font-bold mb-1">Select Columns</Text>
+              <Text className="text-gray-400 text-xs mb-4">Choose which columns to include in export</Text>
+              
+              <View className="flex-row flex-wrap justify-between">
+                {AVAILABLE_COLUMNS.map((col) => {
+                  const isSelected = selected.has(col.id);
+                  return (
+                    <Pressable
+                      key={col.id}
+                      onPress={() => toggleColumn(col.id)}
+                      className={`w-[23%] aspect-square rounded-xl border items-center justify-center mb-3 relative ${isSelected ? "bg-[#3b82f6]/10 border-[#3b82f6]" : "bg-transparent border-[#27272a]"}`}
                     >
-                      {col}
-                    </Text>
-                    {isSelected && (
-                      <Ionicons
-                        name="checkmark"
-                        size={16}
-                        color={colors.brandPrimaryContent}
-                        style={{ marginLeft: 4 }}
-                      />
-                    )}
-                  </Pressable>
-                );
-              })}
+                      <Ionicons name={col.icon as any} size={24} color={isSelected ? "white" : "#71717a"} />
+                      <Text className={`text-[10px] mt-2 font-medium ${isSelected ? "text-white" : "text-gray-400"}`}>
+                        {col.id}
+                      </Text>
+                      {isSelected && (
+                        <View className="absolute bottom-1.5 right-1.5 w-4 h-4 bg-[#3b82f6] rounded-full items-center justify-center border-2 border-[#131415]">
+                          <Ionicons name="checkmark" size={10} color="white" />
+                        </View>
+                      )}
+                      {!isSelected && (
+                        <View className="absolute bottom-1.5 right-1.5 w-4 h-4 rounded-full border-2 border-[#3f3f46]" />
+                      )}
+                    </Pressable>
+                  );
+                })}
+              </View>
             </View>
-          </ScrollView>
 
-          <View className="flex-row justify-end gap-4 mt-6">
-            <Pressable
-              onPress={onClose}
-              className="px-5 py-3 rounded-xl bg-background border border-bordercolor"
-            >
-              <Text className="text-primary font-bold">Cancel</Text>
-            </Pressable>
-            <Pressable
-              onPress={handleConfirm}
-              className="px-5 py-3 rounded-xl bg-brand-primary"
-            >
-              <Text className="text-brand-primary-content font-bold">
-                Generate PDF
-              </Text>
-            </Pressable>
-          </View>
+            <View className="bg-[#10b981]/10 border border-[#10b981]/30 rounded-xl p-4 flex-row items-center mb-8">
+              <Ionicons name="shield-checkmark-outline" size={24} color="#10b981" />
+              <View className="ml-3 flex-1">
+                <Text className="text-[#10b981] font-bold text-sm mb-0.5">Your data is safe</Text>
+                <Text className="text-gray-400 text-xs">Exports are generated locally on your device.</Text>
+              </View>
+            </View>
+
+            <View className="flex-row justify-between gap-4 mb-4">
+              <Pressable
+                onPress={onClose}
+                className="flex-1 h-14 rounded-xl bg-transparent border border-[#27272a] items-center justify-center active:bg-white/5"
+              >
+                <Text className="text-white font-bold">Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleConfirm}
+                className="flex-1 h-14 rounded-xl bg-[#10b981] flex-row items-center justify-center active:opacity-80"
+              >
+                <Ionicons name="document-text-outline" size={18} color="white" style={{ marginRight: 6 }} />
+                <Text className="text-white font-bold">Generate PDF</Text>
+              </Pressable>
+            </View>
+
+            <Text className="text-center text-gray-500 text-xs">
+              You can also export as <Text className="text-[#10b981] font-semibold">CSV</Text> from the More menu.
+            </Text>
+          </ScrollView>
         </View>
       </View>
 
