@@ -8,6 +8,7 @@ export default class Account extends Model {
   @text('name') name!: string
   @text('type') type!: string
   @field('balance') balance!: number
+  @field('current_balance') currentBalance!: number
   @text('sync_status') appSyncStatus!: SyncStatus
   @date('updated_at') updatedAt!: number
 

@@ -31,6 +31,7 @@ export interface Account {
   name: string;
   type: "Cash" | "Bank" | "Credit Card";
   balance: number;
+  current_balance?: number;
   sync_status: SyncStatus;
   updated_at: number;
 }
@@ -64,6 +65,10 @@ export interface DatabaseActions {
 }
 
 export async function initializeDatabase(db: any) {
-  // Mock initialization to satisfy existing imports. Will be refactored.
-  return Promise.resolve();
+  try {
+    // Add current_balance if it doesn't exist
+    await db.execAsync(`ALTER TABLE accounts ADD COLUMN current_balance REAL;`);
+  } catch(e) {
+    // Column already exists, safe to ignore
+  }
 }

@@ -20,6 +20,7 @@ export const mySchema = appSchema({
         { name: 'name', type: 'string' },
         { name: 'type', type: 'string' },
         { name: 'balance', type: 'number' },
+        { name: 'current_balance', type: 'number', isOptional: true },
         { name: 'sync_status', type: 'string' },
         { name: 'updated_at', type: 'number' },
       ],
