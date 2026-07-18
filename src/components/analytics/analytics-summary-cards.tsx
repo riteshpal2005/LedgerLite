@@ -66,12 +66,14 @@ const AnalyticsSummaryCardsComponent = ({ transactions, prevTransactions, accoun
         </View>
         <Text className="text-gray-400 text-xs mb-1">Total Income</Text>
         <Text className="text-green-500 text-sm font-bold mb-2">{formatCurrency(income)}</Text>
-        <View className="flex-row items-center mb-4">
-          <Ionicons name={incomeChange >= 0 ? "caret-up" : "caret-down"} size={10} color={incomeChange >= 0 ? "#22c55e" : "#ef4444"} />
-          <Text className={`${incomeChange >= 0 ? 'text-green-500' : 'text-red-500'} text-[10px] font-bold mx-1`}>
-            {Math.abs(incomeChange).toFixed(1)}%
-          </Text>
-          <Text className="text-gray-500 text-[9px]">{prevDateLabel}</Text>
+        <View className="mb-3 min-h-[28px] justify-center">
+          <View className="flex-row items-center mb-0.5">
+            <Ionicons name={incomeChange >= 0 ? "caret-up" : "caret-down"} size={10} color={incomeChange >= 0 ? "#22c55e" : "#ef4444"} />
+            <Text className={`${incomeChange >= 0 ? 'text-green-500' : 'text-red-500'} text-[10px] font-bold mx-1`}>
+              {Math.abs(incomeChange).toFixed(1)}%
+            </Text>
+          </View>
+          <Text className="text-gray-500 text-[8px]" numberOfLines={1}>{prevDateLabel}</Text>
         </View>
         <View className="h-6 w-full">
             <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
@@ -87,12 +89,14 @@ const AnalyticsSummaryCardsComponent = ({ transactions, prevTransactions, accoun
         </View>
         <Text className="text-gray-400 text-xs mb-1">Total Expense</Text>
         <Text className="text-red-500 text-sm font-bold mb-2">{formatCurrency(expense)}</Text>
-        <View className="flex-row items-center mb-4">
-          <Ionicons name={expenseChange >= 0 ? "caret-up" : "caret-down"} size={10} color={expenseChange >= 0 ? "#ef4444" : "#22c55e"} />
-          <Text className={`${expenseChange >= 0 ? 'text-red-500' : 'text-green-500'} text-[10px] font-bold mx-1`}>
-            {Math.abs(expenseChange).toFixed(1)}%
-          </Text>
-          <Text className="text-gray-500 text-[9px]">{prevDateLabel}</Text>
+        <View className="mb-3 min-h-[28px] justify-center">
+          <View className="flex-row items-center mb-0.5">
+            <Ionicons name={expenseChange >= 0 ? "caret-up" : "caret-down"} size={10} color={expenseChange >= 0 ? "#ef4444" : "#22c55e"} />
+            <Text className={`${expenseChange >= 0 ? 'text-red-500' : 'text-green-500'} text-[10px] font-bold mx-1`}>
+              {Math.abs(expenseChange).toFixed(1)}%
+            </Text>
+          </View>
+          <Text className="text-gray-500 text-[8px]" numberOfLines={1}>{prevDateLabel}</Text>
         </View>
         <View className="h-6 w-full">
             <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
@@ -110,12 +114,14 @@ const AnalyticsSummaryCardsComponent = ({ transactions, prevTransactions, accoun
         <Text className={`${netBalance >= 0 ? 'text-[#6642f8]' : 'text-[#6642f8]'} text-sm font-bold mb-2`}>
           {netBalance < 0 ? "-" : ""}{formatCurrency(netBalance)}
         </Text>
-        <View className="flex-row items-center mb-4">
-          <Ionicons name={netChange >= 0 ? "caret-up" : "caret-down"} size={10} color={netChange >= 0 ? "#6642f8" : "#ef4444"} />
-          <Text className={`${netChange >= 0 ? 'text-[#6642f8]' : 'text-red-500'} text-[10px] font-bold mx-1`}>
-            {Math.abs(netChange).toFixed(1)}%
-          </Text>
-          <Text className="text-gray-500 text-[9px]">{prevDateLabel}</Text>
+        <View className="mb-3 min-h-[28px] justify-center">
+          <View className="flex-row items-center mb-0.5">
+            <Ionicons name={netChange >= 0 ? "caret-up" : "caret-down"} size={10} color={netChange >= 0 ? "#6642f8" : "#ef4444"} />
+            <Text className={`${netChange >= 0 ? 'text-[#6642f8]' : 'text-red-500'} text-[10px] font-bold mx-1`}>
+              {Math.abs(netChange).toFixed(1)}%
+            </Text>
+          </View>
+          <Text className="text-gray-500 text-[8px]" numberOfLines={1}>{prevDateLabel}</Text>
         </View>
         <View className="h-6 w-full">
             <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
