@@ -1,12 +1,38 @@
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, BackHandler } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { OverviewCard } from "../../components/home/overview-card";
 import { RecentTransactions } from "../../components/home/recent-transactions";
 import { MonthlySummaryChart } from "../../components/home/monthly-summary-chart";
+import { CustomAlert, useAlert } from "../../components/ui/custom-alert";
+import { useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 
 export default function HomeScreen() {
+  const { showAlert, hideAlert, alertConfig } = useAlert();
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        showAlert(
+          "Exit App", 
+          "Are you sure you want to exit LedgerLite?", 
+          () => BackHandler.exitApp(), 
+          hideAlert, 
+          "Exit", 
+          "Cancel", 
+          "danger", 
+          { iconType: "warning" }
+        );
+        return true;
+      };
+      
+      const subscription = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+      return () => subscription.remove();
+    }, [showAlert, hideAlert])
+  );
+
   return (
     <SafeAreaView className="flex-1 bg-[#0a0b0d]">
       {/* Header */}
@@ -38,6 +64,8 @@ export default function HomeScreen() {
         {/* Extra padding for tab bar mock */}
         <View className="h-24" />
       </ScrollView>
+
+      <CustomAlert {...alertConfig} onCancel={alertConfig.onCancel || hideAlert} />
     </SafeAreaView>
   );
 }

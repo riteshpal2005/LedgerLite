@@ -12,6 +12,7 @@ import Category from "../server/db/models/Category";
 import { AccountPickerModal } from "../components/transactions/account-picker-modal";
 import { CategoryPickerModal } from "../components/transactions/category-picker-modal";
 import { CustomDateTimePickerModal } from "../components/transactions/custom-date-time-picker-modal";
+import { CustomAlert, useAlert } from "../components/ui/custom-alert";
 import { format } from "date-fns";
 import { Alert, Platform } from "react-native";
 
@@ -19,6 +20,7 @@ export default function AddTransactionScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const database = useDatabase();
+  const { showAlert, hideAlert, alertConfig } = useAlert();
 
   const [type, setType] = React.useState<'credit' | 'debit' | 'transfer'>('debit');
   const [amount, setAmount] = React.useState<string>('');
@@ -77,10 +79,10 @@ export default function AddTransactionScreen() {
   }, [id, database]);
 
   const handleSave = async () => {
-    if (!selectedAccount) return Alert.alert("Error", "Please select an account");
-    if (!selectedCategory && type !== 'transfer') return Alert.alert("Error", "Please select a category");
+    if (!selectedAccount) return showAlert("Error", "Please select an account", hideAlert, undefined, "OK", undefined, "primary", { iconType: "warning", singleButton: true });
+    if (!selectedCategory && type !== 'transfer') return showAlert("Error", "Please select a category", hideAlert, undefined, "OK", undefined, "primary", { iconType: "warning", singleButton: true });
     const numAmount = parseFloat(amount);
-    if (isNaN(numAmount) || numAmount <= 0) return Alert.alert("Error", "Please enter a valid amount");
+    if (isNaN(numAmount) || numAmount <= 0) return showAlert("Error", "Please enter a valid amount", hideAlert, undefined, "OK", undefined, "primary", { iconType: "warning", singleButton: true });
 
     try {
       await database.write(async () => {
@@ -130,72 +132,66 @@ export default function AddTransactionScreen() {
       });
       router.back();
     } catch (e) {
-      Alert.alert("Error", "Failed to save transaction");
+      showAlert("Error", "Failed to save transaction", hideAlert, undefined, "OK", undefined, "primary", { iconType: "warning", singleButton: true });
     }
   };
 
   const handleDelete = () => {
     if (!transaction || !initialState) return;
-    Alert.alert("Delete Transaction", "Are you sure you want to delete this transaction?", [
-      { text: "Cancel", style: "cancel" },
-      { 
-        text: "Delete", 
-        style: "destructive", 
-        onPress: async () => {
-          try {
-            await database.write(async () => {
-              const oldDelta = initialState.type === 'credit' ? initialState.amount : -initialState.amount;
-              const account = await database.get<Account>('accounts').find(initialState.accountId);
-              await account.update(a => {
-                a.currentBalance = (a.currentBalance ?? a.balance) - oldDelta;
-              });
-              await transaction.destroyPermanently();
-            });
-            router.back();
-          } catch (e) {
-            Alert.alert("Error", "Failed to delete transaction");
-          }
-        }
+    showAlert("Delete Transaction", "Are you sure you want to delete this transaction?", async () => {
+      hideAlert();
+      try {
+        await database.write(async () => {
+          const oldDelta = initialState.type === 'credit' ? initialState.amount : -initialState.amount;
+          const account = await database.get<Account>('accounts').find(initialState.accountId);
+          await account.update(a => {
+            a.currentBalance = (a.currentBalance ?? a.balance) - oldDelta;
+          });
+          await transaction.destroyPermanently();
+        });
+        router.back();
+      } catch (e) {
+        showAlert("Error", "Failed to delete transaction", hideAlert, undefined, "OK", undefined, "primary", { iconType: "warning", singleButton: true });
       }
-    ]);
+    }, hideAlert, "Delete", "Cancel", "danger", { iconType: "warning" });
   };
 
   const handlePickReceipt = () => {
-    Alert.alert("Attach Receipt", "Choose an option", [
-      {
-        text: "Take Photo",
-        onPress: async () => {
-          const permission = await ImagePicker.requestCameraPermissionsAsync();
-          if (permission.granted) {
-            const result = await ImagePicker.launchCameraAsync({
-              quality: 0.7,
-            });
-            if (!result.canceled && result.assets[0].uri) {
-              setReceiptUri(result.assets[0].uri);
+    showAlert("Attach Receipt", "Choose an option", undefined, undefined, undefined, undefined, "primary", {
+      singleButton: true, // we hide default buttons and use actions
+      actions: [
+        {
+          text: "Take Photo",
+          onPress: async () => {
+            hideAlert();
+            const permission = await ImagePicker.requestCameraPermissionsAsync();
+            if (permission.granted) {
+              const result = await ImagePicker.launchCameraAsync({ quality: 0.7 });
+              if (!result.canceled && result.assets[0].uri) setReceiptUri(result.assets[0].uri);
+            } else {
+              setTimeout(() => {
+                showAlert("Permission Required", "Camera permission is required to take photos.", hideAlert, undefined, "OK", undefined, "primary", { iconType: "warning", singleButton: true });
+              }, 500);
             }
-          } else {
-            Alert.alert("Permission Required", "Camera permission is required to take photos.");
           }
-        }
-      },
-      {
-        text: "Choose from Files",
-        onPress: async () => {
-          try {
-            const result = await DocumentPicker.getDocumentAsync({
-              type: ['image/*', 'application/pdf'],
-              copyToCacheDirectory: true,
-            });
-            if (!result.canceled && result.assets[0].uri) {
-              setReceiptUri(result.assets[0].uri);
+        },
+        {
+          text: "Choose from Files",
+          onPress: async () => {
+            hideAlert();
+            try {
+              const result = await DocumentPicker.getDocumentAsync({ type: ['image/*', 'application/pdf'], copyToCacheDirectory: true });
+              if (!result.canceled && result.assets[0].uri) setReceiptUri(result.assets[0].uri);
+            } catch (e) {
+              setTimeout(() => {
+                showAlert("Error", "Could not pick file", hideAlert, undefined, "OK", undefined, "primary", { iconType: "warning", singleButton: true });
+              }, 500);
             }
-          } catch (e) {
-            Alert.alert("Error", "Could not pick file");
           }
-        }
-      },
-      { text: "Cancel", style: "cancel" }
-    ]);
+        },
+        { text: "Cancel", style: "cancel", onPress: hideAlert }
+      ]
+    });
   };
 
   return (
@@ -407,6 +403,8 @@ export default function AddTransactionScreen() {
         setDate={setDate}
         mode="time"
       />
+      
+      <CustomAlert {...alertConfig} onCancel={alertConfig.onCancel || hideAlert} />
     </SafeAreaView>
   );
 }

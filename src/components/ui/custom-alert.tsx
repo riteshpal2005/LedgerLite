@@ -7,7 +7,7 @@ interface CustomAlertProps {
   visible: boolean;
   title: string;
   message: string;
-  onConfirm: () => void;
+  onConfirm?: () => void;
   onCancel?: () => void;
   confirmText?: string;
   cancelText?: string;
@@ -16,6 +16,7 @@ interface CustomAlertProps {
   alertTheme?: "dark" | "light";
   singleButton?: boolean;
   confirmIcon?: string;
+  actions?: { text: string; onPress?: () => void; style?: "default" | "cancel" | "destructive" }[];
 }
 
 export function CustomAlert({
@@ -31,6 +32,7 @@ export function CustomAlert({
   alertTheme = "dark",
   singleButton = false,
   confirmIcon,
+  actions,
 }: CustomAlertProps) {
   // We can default to "dark" theme, but if we need to support system theme we could use useTheme.
   // Given the design system spec, let's explicitly use alertTheme.
@@ -94,7 +96,30 @@ export function CustomAlert({
             {message}
           </Text>
 
-          {singleButton ? (
+          {actions && actions.length > 0 ? (
+            <View className="w-full">
+              {actions.map((action, index) => {
+                const isCancel = action.style === "cancel";
+                const isDestructive = action.style === "destructive";
+                const btnBg = isCancel ? cancelBgColor : isDestructive ? "bg-[#ef4444]/10" : "bg-[#7c3aed]/10";
+                const btnBorder = isCancel ? cancelBorderColor : isDestructive ? "border-[#ef4444]/30" : "border-[#7c3aed]/30";
+                const btnText = isCancel ? cancelTextColor : isDestructive ? "text-[#ef4444]" : "text-[#7c3aed]";
+                
+                return (
+                  <Pressable
+                    key={index}
+                    onPress={() => {
+                      if (action.onPress) action.onPress();
+                      if (onCancel) onCancel(); // Auto close
+                    }}
+                    className={`w-full h-[52px] mb-3 border ${btnBorder} ${btnBg} rounded-xl justify-center items-center active:opacity-50`}
+                  >
+                    <Text className={`${btnText} font-bold text-base`}>{action.text}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ) : singleButton ? (
             <Pressable
               onPress={onConfirm}
               className={`w-full h-[52px] ${confirmBgColor} rounded-xl justify-center items-center flex-row active:opacity-80`}
@@ -142,6 +167,7 @@ export function useAlert() {
     alertTheme?: "dark" | "light";
     singleButton?: boolean;
     confirmIcon?: string;
+    actions?: { text: string; onPress?: () => void; style?: "default" | "cancel" | "destructive" }[];
   }>({
     visible: false,
     title: "",
@@ -161,6 +187,7 @@ export function useAlert() {
       alertTheme?: "dark" | "light";
       singleButton?: boolean;
       confirmIcon?: string;
+      actions?: { text: string; onPress?: () => void; style?: "default" | "cancel" | "destructive" }[];
     }
   ) => {
     setAlertConfig({
