@@ -9,7 +9,7 @@ import Account from "../server/db/models/Account";
 import Category from "../server/db/models/Category";
 import { AccountPickerModal } from "../components/transactions/account-picker-modal";
 import { CategoryPickerModal } from "../components/transactions/category-picker-modal";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { CustomDateTimePickerModal } from "../components/transactions/custom-date-time-picker-modal";
 import { format } from "date-fns";
 import { Alert, Platform } from "react-native";
 
@@ -335,36 +335,20 @@ export default function AddTransactionScreen() {
         selectedCategoryId={selectedCategory?.id}
       />
 
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) => {
-            setShowDatePicker(Platform.OS === 'ios');
-            if (selectedDate) {
-              const newDate = new Date(date);
-              newDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
-              setDate(newDate);
-            }
-          }}
-        />
-      )}
-      {showTimePicker && (
-        <DateTimePicker
-          value={date}
-          mode="time"
-          display="default"
-          onChange={(event, selectedDate) => {
-            setShowTimePicker(Platform.OS === 'ios');
-            if (selectedDate) {
-              const newDate = new Date(date);
-              newDate.setHours(selectedDate.getHours(), selectedDate.getMinutes());
-              setDate(newDate);
-            }
-          }}
-        />
-      )}
+      <CustomDateTimePickerModal
+        visible={showDatePicker}
+        onClose={() => setShowDatePicker(false)}
+        date={date}
+        setDate={setDate}
+        mode="date"
+      />
+      <CustomDateTimePickerModal
+        visible={showTimePicker}
+        onClose={() => setShowTimePicker(false)}
+        date={date}
+        setDate={setDate}
+        mode="time"
+      />
     </SafeAreaView>
   );
 }
