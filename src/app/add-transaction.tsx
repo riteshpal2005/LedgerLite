@@ -18,7 +18,7 @@ export default function AddTransactionScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const database = useDatabase();
 
-  const [type, setType] = React.useState<'credit' | 'debit'>('debit');
+  const [type, setType] = React.useState<'credit' | 'debit' | 'transfer'>('debit');
   const [amount, setAmount] = React.useState<string>('');
   const [note, setNote] = React.useState<string>('');
   const [date, setDate] = React.useState<Date>(new Date());
@@ -72,7 +72,7 @@ export default function AddTransactionScreen() {
 
   const handleSave = async () => {
     if (!selectedAccount) return Alert.alert("Error", "Please select an account");
-    if (!selectedCategory) return Alert.alert("Error", "Please select a category");
+    if (!selectedCategory && type !== 'transfer') return Alert.alert("Error", "Please select a category");
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount) || numAmount <= 0) return Alert.alert("Error", "Please enter a valid amount");
 
@@ -97,12 +97,12 @@ export default function AddTransactionScreen() {
           }
 
           await transaction.update(t => {
-            t.type = type;
+            t.type = type as any;
             t.amount = numAmount;
             t.description = note;
             t.date = date.getTime();
             t.account.set(selectedAccount);
-            t.category.set(selectedCategory);
+            if (selectedCategory) t.category.set(selectedCategory);
           });
         } else {
           const delta = type === 'credit' ? numAmount : -numAmount;
@@ -111,12 +111,12 @@ export default function AddTransactionScreen() {
           });
 
           await database.get<Transaction>('transactions').create(t => {
-            t.type = type;
+            t.type = type as any;
             t.amount = numAmount;
             t.description = note;
             t.date = date.getTime();
             t.account.set(selectedAccount);
-            t.category.set(selectedCategory);
+            if (selectedCategory) t.category.set(selectedCategory);
           });
         }
       });
@@ -189,6 +189,13 @@ export default function AddTransactionScreen() {
           >
             <Ionicons name="arrow-up" size={16} color={type === 'credit' ? "#22c55e" : "#9ca3af"} className="mr-1.5" />
             <Text className={`${type === 'credit' ? 'text-white' : 'text-gray-400'} font-bold text-xs`}>Income</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => setType('transfer')}
+            className={`flex-1 flex-row items-center justify-center py-2.5 ${type === 'transfer' ? 'bg-[#a855f7]/10 rounded-lg border border-[#a855f7]' : ''}`}
+          >
+            <Ionicons name="swap-horizontal" size={16} color={type === 'transfer' ? "#6642f8" : "#9ca3af"} className="mr-1.5" />
+            <Text className={`${type === 'transfer' ? 'text-white' : 'text-gray-400'} font-bold text-xs`}>Transfer</Text>
           </TouchableOpacity>
         </View>
 
