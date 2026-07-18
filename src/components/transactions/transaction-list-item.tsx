@@ -5,6 +5,8 @@ import withObservables from "@nozbe/watermelondb/react/withObservables";
 import Transaction from "../../server/db/models/Transaction";
 import Category from "../../server/db/models/Category";
 import { format } from "date-fns";
+import { useRouter } from "expo-router";
+import { TouchableOpacity } from "react-native";
 
 interface TransactionListItemProps {
   transaction: Transaction;
@@ -21,9 +23,10 @@ const TransactionListItemComponent = ({ transaction, category, isLast }: Transac
 
   const title = category.name;
   const subtitle = transaction.description || transaction.merchant || "Transaction";
+  const router = useRouter();
 
   return (
-    <>
+    <TouchableOpacity onPress={() => router.push({ pathname: '/add-transaction', params: { id: transaction.id } })}>
       <View className="flex-row justify-between items-center p-3">
         <View className="flex-row items-center flex-1">
           <View 
@@ -50,7 +53,7 @@ const TransactionListItemComponent = ({ transaction, category, isLast }: Transac
         </View>
       </View>
       {!isLast && <View className="h-px bg-[#1b1b1c] mx-3" />}
-    </>
+    </TouchableOpacity>
   );
 };
 
