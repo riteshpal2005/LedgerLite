@@ -5,13 +5,16 @@ import withObservables from "@nozbe/watermelondb/react/withObservables";
 import { withDatabase } from "@nozbe/watermelondb/react";
 import { Database } from "@nozbe/watermelondb";
 import Transaction from "../../server/db/models/Transaction";
+import Account from "../../server/db/models/Account";
+import { Q } from "@nozbe/watermelondb";
 
 interface OverviewCardProps {
   transactions: Transaction[];
+  accounts: Account[];
 }
 
 // Ref: OverviewCard-1
-const OverviewCardComponent = ({ transactions }: OverviewCardProps) => {
+const OverviewCardComponent = ({ transactions, accounts }: OverviewCardProps) => {
   const [isBalanceVisible, setIsBalanceVisible] = useState(false);
   const [timeframe, setTimeframe] = useState<"This Month" | "This Week" | "Today">("This Month");
   const [isTrayOpen, setIsTrayOpen] = useState(false);
@@ -34,9 +37,12 @@ const OverviewCardComponent = ({ transactions }: OverviewCardProps) => {
   }, [transactions, timeframe]);
 
   // Dynamic calculations based on observable transaction stream
+  const totalBalance = useMemo(() => {
+    return accounts.reduce((acc, account) => acc + (account.currentBalance ?? account.balance), 0);
+  }, [accounts]);
+
   const income = filteredTransactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
   const expense = filteredTransactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
-  const totalBalance = income - expense;
 
   const formatCurrency = (amount: number) => `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
@@ -110,8 +116,13 @@ const OverviewCardComponent = ({ transactions }: OverviewCardProps) => {
   );
 }
 
-const enhance = withObservables(['database'], ({ database }: { database: Database }) => ({
-  transactions: database.collections.get<Transaction>('transactions').query().observe(),
-}));
-
-export const OverviewCard = withDatabase(enhance(OverviewCardComponent));
+export const OverviewCard = withDatabase(
+  withObservables([], ({ database }: any) => ({
+    transactions: database.collections.get('transactions').query(
+      Q.where('sync_status', Q.notEq('deleted'))
+    ).observe(),
+    accounts: database.collections.get('accounts').query(
+      Q.where('sync_status', Q.notEq('deleted'))
+    ).observe(),
+  }))(OverviewCardComponent)
+);

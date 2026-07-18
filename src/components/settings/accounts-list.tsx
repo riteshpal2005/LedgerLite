@@ -60,8 +60,8 @@ function AccountsListComponent({ accounts }: { accounts: Account[] }) {
                   </View>
                 </View>
                 <View className="flex-row items-center">
-                  <Text className={`${account.balance >= 0 ? 'text-green-500' : 'text-red-500'} text-sm font-bold mr-2`}>
-                    {account.balance < 0 ? '-' : ''}{formatCurrency(account.balance)}
+                  <Text className={`${(account.currentBalance ?? account.balance) >= 0 ? 'text-green-500' : 'text-red-500'} text-sm font-bold mr-2`}>
+                    {(account.currentBalance ?? account.balance) < 0 ? '-' : ''}{formatCurrency(account.currentBalance ?? account.balance)}
                   </Text>
                   <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
                 </View>
