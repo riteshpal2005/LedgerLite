@@ -16,6 +16,7 @@ export type SettingsState = {
   hapticsEnabled: boolean;
   defaultAccountId: string | null;
   themeOption: "light" | "dark" | "pitch-black" | "system";
+  currency: string;
   exportDirectoryUri: string | null;
   hasCompletedOnboarding: boolean;
   isGlobalSyncing: boolean;
@@ -30,6 +31,7 @@ const initialState: SettingsState = {
   hapticsEnabled: true,
   defaultAccountId: null,
   themeOption: "dark",
+  currency: "INR",
   exportDirectoryUri: null,
   hasCompletedOnboarding: false,
   isGlobalSyncing: false,
@@ -57,6 +59,9 @@ const settingsSlice = createSlice({
     },
     setThemeOptionRedux: (state, action: PayloadAction<"system" | "light" | "dark" | "pitch-black">) => {
       state.themeOption = action.payload;
+    },
+    setCurrency: (state, action: PayloadAction<string>) => {
+      state.currency = action.payload;
     },
     loadSettings: (state, action: PayloadAction<Partial<SettingsState>>) => {
       return {
@@ -97,6 +102,7 @@ export const {
   setDefaultAccount,
   loadSettings,
   setThemeOptionRedux,
+  setCurrency,
   setExportDirectoryUri,
   completeOnboarding,
   setIsGlobalSyncing,

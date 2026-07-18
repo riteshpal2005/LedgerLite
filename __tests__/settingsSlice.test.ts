@@ -13,14 +13,16 @@ import settingsReducer, {
   removeQuickTemplate,
   setUid,
   QuickTemplate,
+  SettingsState,
 } from '../src/store/settingsSlice';
 
 describe('settingsSlice', () => {
-  const initialState = {
+  const initialState: SettingsState = {
     showIcons: true,
     hapticsEnabled: true,
     defaultAccountId: null,
     themeOption: "dark" as const,
+    currency: "INR",
     exportDirectoryUri: null,
     hasCompletedOnboarding: false,
     isGlobalSyncing: false,
