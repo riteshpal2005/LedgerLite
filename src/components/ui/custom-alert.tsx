@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, Modal } from "react-native";
 import { useTheme } from "../../hooks/theme/ThemeContext";
+import { Ionicons } from "@expo/vector-icons";
 
 interface CustomAlertProps {
   visible: boolean;
@@ -25,9 +26,47 @@ export function CustomAlert({
   onCancel,
   confirmText = "OK",
   cancelText = "Cancel",
-  confirmStyle = "default",
+  confirmStyle = "primary",
+  iconType,
+  alertTheme = "dark",
+  singleButton = false,
+  confirmIcon,
 }: CustomAlertProps) {
-  const { bottomSheetBorderColor, bottomSheetBackgroundColor } = useTheme();
+  // We can default to "dark" theme, but if we need to support system theme we could use useTheme.
+  // Given the design system spec, let's explicitly use alertTheme.
+  const isLight = alertTheme === "light";
+  
+  const bgColor = isLight ? "bg-white" : "bg-[#131415]";
+  const borderColor = isLight ? "border-gray-200" : "border-[#27272a]";
+  const titleColor = isLight ? "text-black" : "text-white";
+  const messageColor = isLight ? "text-gray-500" : "text-gray-400";
+  const cancelBgColor = "bg-transparent";
+  const cancelBorderColor = isLight ? "border-gray-300" : "border-[#27272a]";
+  const cancelTextColor = isLight ? "text-black" : "text-white";
+
+  let iconName = "";
+  let iconColor = "";
+  let iconBgColor = "";
+  let iconBorderColor = "";
+
+  if (iconType === "question") {
+    iconName = "help";
+    iconColor = "#7c3aed";
+    iconBgColor = isLight ? "bg-[#f5f3ff]" : "bg-[#7c3aed]/10";
+    iconBorderColor = isLight ? "border-[#ddd6fe]" : "border-[#7c3aed]/30";
+  } else if (iconType === "warning") {
+    iconName = "warning-outline";
+    iconColor = "#ef4444";
+    iconBgColor = isLight ? "bg-[#fef2f2]" : "bg-[#ef4444]/10";
+    iconBorderColor = isLight ? "border-[#fecaca]" : "border-[#ef4444]/30";
+  } else if (iconType === "info") {
+    iconName = "information";
+    iconColor = "#7c3aed";
+    iconBgColor = isLight ? "bg-[#f5f3ff]" : "bg-[#7c3aed]/10";
+    iconBorderColor = isLight ? "border-[#ddd6fe]" : "border-[#7c3aed]/30";
+  }
+
+  const confirmBgColor = confirmStyle === "danger" ? "bg-[#ef4444]" : "bg-[#7c3aed]";
 
   return (
     <Modal
@@ -37,71 +76,54 @@ export function CustomAlert({
       onRequestClose={onCancel}
       statusBarTranslucent={true}
     >
-      <Pressable
-        style={{
-          flex: 1,
-          backgroundColor: "rgba(0,0,0,0.5)",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        onPress={onCancel}
-      >
-        <Pressable
-          style={{ width: "85%" }}
-          onPress={(e) => e.stopPropagation()}
-        >
-          <View
-            style={{
-              backgroundColor: bottomSheetBackgroundColor,
-              borderRadius: 24,
-              padding: 24,
-              elevation: 5,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.84,
-              borderWidth: 1,
-              borderColor: bottomSheetBorderColor,
-            }}
-          >
-            <Text className="text-primary text-2xl font-bold mb-3">
-              {title}
-            </Text>
-            <Text className="text-secondary text-base mb-8">{message}</Text>
+      <View className="flex-1 bg-black/70 justify-center items-center px-6">
+        <Pressable className="absolute inset-0" onPress={onCancel} />
+        
+        <View className={`w-full ${bgColor} rounded-[28px] border ${borderColor} p-6 items-center shadow-xl`}>
+          
+          {iconType && (
+            <View className={`w-[72px] h-[72px] rounded-full border ${iconBorderColor} ${iconBgColor} items-center justify-center mb-5`}>
+              <Ionicons name={iconName as any} size={38} color={iconColor} />
+            </View>
+          )}
 
-            <View className="flex-row justify-end">
+          <Text className={`${titleColor} text-[22px] font-bold text-center mb-2`}>
+            {title}
+          </Text>
+          <Text className={`${messageColor} text-[15px] text-center mb-8 px-2 leading-5`}>
+            {message}
+          </Text>
+
+          {singleButton ? (
+            <Pressable
+              onPress={onConfirm}
+              className={`w-full h-[52px] ${confirmBgColor} rounded-xl justify-center items-center flex-row active:opacity-80`}
+            >
+              {confirmIcon && <Ionicons name={confirmIcon as any} size={20} color="white" className="mr-2" />}
+              <Text className="text-white font-bold text-base">{confirmText}</Text>
+            </Pressable>
+          ) : (
+            <View className="w-full flex-row justify-between">
               {onCancel && (
                 <Pressable
                   onPress={onCancel}
-                  className="px-6 py-3 rounded-xl border border-bordercolor bg-surface mr-2"
+                  className={`flex-1 h-[52px] border ${cancelBorderColor} ${cancelBgColor} rounded-xl justify-center items-center mr-3 active:opacity-50`}
                 >
-                  <Text className="text-primary font-bold text-base">
-                    {cancelText}
-                  </Text>
+                  <Text className={`${cancelTextColor} font-bold text-base`}>{cancelText}</Text>
                 </Pressable>
               )}
               <Pressable
                 onPress={onConfirm}
-                className={`px-6 py-3 rounded-xl ${
-                  confirmStyle === "danger"
-                    ? "bg-status-danger"
-                    : "bg-brand-primary"
-                }`}
+                className={`flex-1 h-[52px] ${confirmBgColor} rounded-xl justify-center items-center flex-row active:opacity-80`}
               >
-                <Text
-                  className={`${
-                    confirmStyle === "danger"
-                      ? "text-status-danger-content"
-                      : "text-brand-primary-content"
-                  } font-bold text-base`}
-                >
-                  {confirmText}
-                </Text>
+                {confirmIcon && <Ionicons name={confirmIcon as any} size={20} color="white" className="mr-2" />}
+                <Text className="text-white font-bold text-base">{confirmText}</Text>
               </Pressable>
             </View>
-          </View>
-        </Pressable>
-      </Pressable>
+          )}
+
+        </View>
+      </View>
     </Modal>
   );
 }
