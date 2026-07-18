@@ -3,7 +3,7 @@ import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Transaction from '../../../server/db/models/Transaction';
 import Category from '../../../server/db/models/Category';
-import { formatCurrency } from '../../../utils/currency';
+import { useCurrency } from '../../../hooks/useCurrency';
 import { format } from 'date-fns';
 
 interface LargestExpenseCardProps {
@@ -12,6 +12,7 @@ interface LargestExpenseCardProps {
 }
 
 export function LargestExpenseCard({ currentMonthTxns, categories }: LargestExpenseCardProps) {
+  const { formatCurrency } = useCurrency();
   const insight = useMemo(() => {
     const expenses = currentMonthTxns.filter(t => t.type === 'debit');
     if (expenses.length === 0) return null;

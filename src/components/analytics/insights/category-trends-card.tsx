@@ -3,7 +3,7 @@ import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Transaction from '../../../server/db/models/Transaction';
 import Category from '../../../server/db/models/Category';
-import { formatCurrency } from '../../../utils/currency';
+import { useCurrency } from '../../../hooks/useCurrency';
 
 interface CategoryTrendsCardProps {
   currentMonthTxns: Transaction[];
@@ -12,6 +12,7 @@ interface CategoryTrendsCardProps {
 }
 
 export function CategoryTrendsCard({ currentMonthTxns, lastMonthTxns, categories }: CategoryTrendsCardProps) {
+  const { formatCurrency } = useCurrency();
   const insight = useMemo(() => {
     const currentExpenses = currentMonthTxns.filter(t => t.type === 'debit');
     const lastExpenses = lastMonthTxns.filter(t => t.type === 'debit');

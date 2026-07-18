@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Transaction from '../../../server/db/models/Transaction';
-import { formatCurrency } from '../../../utils/currency';
+import { useCurrency } from '../../../hooks/useCurrency';
 import Svg, { Circle } from 'react-native-svg';
 
 interface IncomeVsExpenseCardProps {
@@ -10,6 +10,7 @@ interface IncomeVsExpenseCardProps {
 }
 
 export function IncomeVsExpenseCard({ currentMonthTxns }: IncomeVsExpenseCardProps) {
+  const { formatCurrency } = useCurrency();
   const insight = useMemo(() => {
     let income = 0;
     let expense = 0;
