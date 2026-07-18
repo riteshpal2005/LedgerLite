@@ -23,15 +23,11 @@ import {
   updateAccountInRedux,
 } from "../../store/accountSlice";
 import { Account } from "../../server/db/schema";
-import {
-  BottomSheetModal,
-  BottomSheetView,
-  BottomSheetTextInput,
-  BottomSheetBackdrop,
-} from "@gorhom/bottom-sheet";
+import { BottomSheetModal, BottomSheetView, BottomSheetTextInput, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 import { useAuth } from "../../server/firebase/AuthContext";
 import { SyncService } from "../../server/services/syncService";
+import { useCurrency } from "../../hooks/useCurrency";
 
 interface AddAccountModalProps {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
@@ -45,11 +41,12 @@ export function AddAccountModal({
   initialAccount,
   initialName,
   onAccountCreated,
-}: AddAccountModalProps) {
-  const [name, setName] = useState("");
-  const [balance, setBalance] = useState("");
-  const [type, setType] = useState<"Cash" | "Bank" | "Credit Card">("Cash");
-  const [formKey, setFormKey] = useState(0);
+  }: AddAccountModalProps) {
+    const { getCurrencySymbol } = useCurrency();
+    const [name, setName] = useState("");
+    const [balance, setBalance] = useState("");
+    const [type, setType] = useState<"Cash" | "Bank" | "Credit Card">("Cash");
+    const [formKey, setFormKey] = useState(0);
 
   const snapPoints = useMemo(() => ["70%"], []);
   const {
@@ -189,7 +186,7 @@ export function AddAccountModal({
         </Card>
 
         <Card className="mb-4">
-          <Label>Initial Balance (₹)</Label>
+          <Label>Initial Balance ({getCurrencySymbol()})</Label>
           <BottomSheetTextInput
             key={`bal-${formKey}`}
             defaultValue={balance}

@@ -9,7 +9,7 @@ import {
 import { AccountWithBalance } from "../../server/db/schema";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../hooks/theme/ThemeContext";
-import { formatCurrency } from "../../utils/currency";
+import { useCurrency } from "../../hooks/useCurrency";
 
 interface AccountSelectModalProps {
   visible: boolean;
@@ -24,6 +24,7 @@ export function AccountSelectModal({
   accounts,
   onSelect,
 }: AccountSelectModalProps) {
+  const { formatCurrency } = useCurrency();
   const { bottomSheetBackgroundColor, bottomSheetBorderColor } = useTheme();
 
   return (

@@ -11,9 +11,10 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Account } from "../../server/db/schema";
 
 import { selectAccountsWithBalances } from "../../store/accountSlice";
-import { formatCurrency } from "../../utils/currency";
+import { useCurrency } from "../../hooks/useCurrency";
 
 export function AccountsSection() {
+  const { formatCurrency } = useCurrency();
   const accounts = useSelector(selectAccountsWithBalances);
   const defaultAccountId = useSelector(
     (state: RootState) => state.settings.defaultAccountId,

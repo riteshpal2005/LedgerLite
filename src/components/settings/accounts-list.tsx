@@ -4,10 +4,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { withDatabase } from "@nozbe/watermelondb/react";
 import withObservables from "@nozbe/watermelondb/react/withObservables";
 import Account from "../../server/db/models/Account";
+import { useCurrency } from "../../hooks/useCurrency";
 import { Q } from "@nozbe/watermelondb";
 
 function AccountsListComponent({ accounts }: { accounts: Account[] }) {
-  const formatCurrency = (amount: number) => `₹${Math.abs(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const { formatCurrency } = useCurrency();
 
   // Mock accounts if DB is empty to match the high-fidelity design
   const displayAccounts = accounts.length > 0 ? accounts : [
@@ -61,7 +62,7 @@ function AccountsListComponent({ accounts }: { accounts: Account[] }) {
                 </View>
                 <View className="flex-row items-center">
                   <Text className={`${(account.currentBalance ?? account.balance) >= 0 ? 'text-green-500' : 'text-red-500'} text-sm font-bold mr-2`}>
-                    {(account.currentBalance ?? account.balance) < 0 ? '-' : ''}{formatCurrency(account.currentBalance ?? account.balance)}
+                    {formatCurrency(account.currentBalance ?? account.balance)}
                   </Text>
                   <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
                 </View>
