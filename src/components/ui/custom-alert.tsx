@@ -10,7 +10,11 @@ interface CustomAlertProps {
   onCancel?: () => void;
   confirmText?: string;
   cancelText?: string;
-  confirmStyle?: "default" | "danger";
+  confirmStyle?: "default" | "primary" | "danger";
+  iconType?: "question" | "warning" | "info";
+  alertTheme?: "dark" | "light";
+  singleButton?: boolean;
+  confirmIcon?: string;
 }
 
 export function CustomAlert({
@@ -111,7 +115,11 @@ export function useAlert() {
     onCancel?: () => void;
     confirmText?: string;
     cancelText?: string;
-    confirmStyle?: "default" | "danger";
+    confirmStyle?: "default" | "primary" | "danger";
+    iconType?: "question" | "warning" | "info";
+    alertTheme?: "dark" | "light";
+    singleButton?: boolean;
+    confirmIcon?: string;
   }>({
     visible: false,
     title: "",
@@ -125,7 +133,13 @@ export function useAlert() {
     onCancel?: () => void,
     confirmText?: string,
     cancelText?: string,
-    confirmStyle?: "default" | "danger",
+    confirmStyle?: "default" | "primary" | "danger",
+    options?: {
+      iconType?: "question" | "warning" | "info";
+      alertTheme?: "dark" | "light";
+      singleButton?: boolean;
+      confirmIcon?: string;
+    }
   ) => {
     setAlertConfig({
       visible: true,
@@ -136,6 +150,7 @@ export function useAlert() {
       confirmText,
       cancelText,
       confirmStyle,
+      ...options,
     });
   };
 
