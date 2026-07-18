@@ -1,11 +1,12 @@
 import { View, Text } from "react-native";
-import { formatCurrency } from "../../utils/currency";
+import { useCurrency } from "../../hooks/useCurrency";
 
 interface TotalSpentCardProps {
   totalSpent: number;
 }
 
 export function TotalSpentCard({ totalSpent }: TotalSpentCardProps) {
+  const { formatCurrency } = useCurrency();
   return (
     <View className="bg-blue-600 rounded-3xl p-6 mb-8 shadow-lg">
       <Text className="text-blue-200 text-lg font-semibold mb-2">

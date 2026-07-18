@@ -7,6 +7,7 @@ import { withDatabase } from "@nozbe/watermelondb/react";
 import { Database, Q } from "@nozbe/watermelondb";
 import Transaction from "../../server/db/models/Transaction";
 import Account from "../../server/db/models/Account";
+import { useCurrency } from "../../hooks/useCurrency";
 
 interface AnalyticsSummaryCardsProps {
   transactions: Transaction[];
@@ -55,7 +56,7 @@ const AnalyticsSummaryCardsComponent = ({ transactions, prevTransactions, accoun
     };
   }, [transactions, prevTransactions, accounts]);
 
-  const formatCurrency = (amount: number) => `₹${Math.abs(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const { formatCurrency } = useCurrency();
 
   return (
     <View className="flex-row justify-between mb-6">
@@ -112,7 +113,7 @@ const AnalyticsSummaryCardsComponent = ({ transactions, prevTransactions, accoun
         </View>
         <Text className="text-gray-400 text-xs mb-1">Net Balance</Text>
         <Text className={`${netBalance >= 0 ? 'text-[#6642f8]' : 'text-[#6642f8]'} text-sm font-bold mb-2`}>
-          {netBalance < 0 ? "-" : ""}{formatCurrency(netBalance)}
+          {formatCurrency(netBalance)}
         </Text>
         <View className="mb-3 min-h-[28px] justify-center">
           <View className="flex-row items-center mb-0.5">

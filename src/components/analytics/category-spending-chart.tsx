@@ -7,6 +7,7 @@ import { withDatabase } from "@nozbe/watermelondb/react";
 import { Database, Q } from "@nozbe/watermelondb";
 import Transaction from "../../server/db/models/Transaction";
 import Category from "../../server/db/models/Category";
+import { useCurrency } from "../../hooks/useCurrency";
 
 interface CategorySpendingChartProps {
   transactions: Transaction[];
@@ -78,7 +79,7 @@ const CategorySpendingChartComponent = ({ transactions, categories, dateLabel = 
     return { totalExpense, slices };
   }, [transactions, categories]);
 
-  const formatCurrency = (amount: number) => `₹${amount.toLocaleString('en-IN')}`;
+  const { formatCurrency } = useCurrency();
 
   if (chartData.totalExpense === 0) {
     return (
