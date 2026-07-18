@@ -198,8 +198,8 @@ const enhance = withObservables(['filter', 'searchQuery', 'sortMode', 'filterAcc
           }
 
           if (!isNaN(searchNumber)) {
-            // Also search by amount if it's a number
-            orConditions.push(Q.where('amount', searchNumber));
+            // Also search by amount starting with the typed digits
+            orConditions.push(Q.where('amount', Q.like(`${sanitizedSearch}%`)));
           }
 
           const conditions = getBaseConditions();
