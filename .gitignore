@@ -53,4 +53,8 @@ release-keystore.base64.txt
 /scripts
 *.txt
 coverage/
+
+# Web variants (local separation)
+*.web.tsx
+*.web.ts
 /web-client

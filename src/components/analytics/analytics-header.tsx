@@ -25,7 +25,7 @@ export function AnalyticsHeader({ onDateRangeChange }: AnalyticsHeaderProps) {
   const [showEndPicker, setShowEndPicker] = useState(false);
 
   const filterOptions: { label: string; value: DateFilterType }[] = [
-    { label: "Day", value: "day" },
+    { label: "Today", value: "day" },
     { label: "Week", value: "week" },
     { label: "This Week", value: "current_week" },
     { label: "Month", value: "month" },
