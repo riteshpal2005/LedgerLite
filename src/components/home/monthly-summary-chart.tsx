@@ -53,28 +53,23 @@ function MonthlySummaryChartComponent({ transactions, categories }: { transactio
 
       <View className="bg-[#0f1011] rounded-2xl p-5 mb-8 flex-row items-center">
         <View className="w-40 h-40 relative justify-center items-center">
-            <Svg width="160" height="160" viewBox="0 0 160 160" style={{ transform: [{ rotate: '-90deg' }] }}>
-              <Circle 
-                cx="80" cy="80" r="70" 
-                stroke="#1b1b1c" 
-                strokeWidth="20" 
-                fill="none" 
-              />
+            <Svg width="140" height="140" viewBox="0 0 120 120" style={{ transform: [{ rotate: '-90deg' }] }}>
               {categoryTotals.map((cat, index) => {
                 const previousTotal = categoryTotals.slice(0, index).reduce((sum, c) => sum + c.amount, 0);
-                const offset = totalExpense > 0 ? (previousTotal / totalExpense) * CIRCUMFERENCE : 0;
-                const dash = totalExpense > 0 ? (cat.amount / totalExpense) * CIRCUMFERENCE : 0;
+                // r = 45 -> circumference = 2 * Math.PI * 45 = 282.743
+                const CIRCUM = 2 * Math.PI * 45;
+                const strokeLength = totalExpense > 0 ? (cat.amount / totalExpense) * CIRCUM : 0;
+                const offset = totalExpense > 0 ? (previousTotal / totalExpense) * CIRCUM : 0;
                 
                 return (
                   <Circle
                     key={cat.id}
-                    cx="80" cy="80" r="70"
+                    cx="60" cy="60" r="45"
                     stroke={cat.color}
-                    strokeWidth="20"
+                    strokeWidth="16"
                     fill="none"
-                    strokeDasharray={`${dash} ${CIRCUMFERENCE}`}
-                    strokeDashoffset={`-${offset}`}
-                    strokeLinecap="round"
+                    strokeDasharray={`${strokeLength} ${CIRCUM}`}
+                    strokeDashoffset={-offset}
                   />
                 );
               })}
