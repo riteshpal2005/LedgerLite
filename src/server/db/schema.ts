@@ -38,6 +38,7 @@ export const mySchema = appSchema({
         { name: 'account_id', type: 'string', isOptional: true, isIndexed: true },
         { name: 'balance_after', type: 'number', isOptional: true },
         { name: 'linked_transaction_id', type: 'string', isOptional: true },
+        { name: 'receipt_uri', type: 'string', isOptional: true },
         { name: 'sync_status', type: 'string' },
         { name: 'updated_at', type: 'number' },
       ],

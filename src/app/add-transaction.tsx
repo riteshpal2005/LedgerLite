@@ -1,8 +1,10 @@
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
 import { useDatabase } from "@nozbe/watermelondb/hooks";
 import Transaction from "../server/db/models/Transaction";
 import Account from "../server/db/models/Account";
@@ -22,6 +24,7 @@ export default function AddTransactionScreen() {
   const [amount, setAmount] = React.useState<string>('');
   const [note, setNote] = React.useState<string>('');
   const [date, setDate] = React.useState<Date>(new Date());
+  const [receiptUri, setReceiptUri] = React.useState<string | null>(null);
   
   const [selectedAccount, setSelectedAccount] = React.useState<Account | null>(null);
   const [selectedCategory, setSelectedCategory] = React.useState<Category | null>(null);
@@ -48,6 +51,7 @@ export default function AddTransactionScreen() {
           setAmount(t.amount.toString());
           setNote(t.description || '');
           setDate(new Date(t.date));
+          setReceiptUri(t.receiptUri || null);
           
           const acc = await t.account.fetch();
           if (acc) {
@@ -103,6 +107,7 @@ export default function AddTransactionScreen() {
             t.amount = numAmount;
             t.description = note;
             t.date = date.getTime();
+            t.receiptUri = receiptUri || undefined;
             t.account.set(selectedAccount);
             if (selectedCategory) t.category.set(selectedCategory);
           });
@@ -117,6 +122,7 @@ export default function AddTransactionScreen() {
             t.amount = numAmount;
             t.description = note;
             t.date = date.getTime();
+            t.receiptUri = receiptUri || undefined;
             t.account.set(selectedAccount);
             if (selectedCategory) t.category.set(selectedCategory);
           });
@@ -151,6 +157,44 @@ export default function AddTransactionScreen() {
           }
         }
       }
+    ]);
+  };
+
+  const handlePickReceipt = () => {
+    Alert.alert("Attach Receipt", "Choose an option", [
+      {
+        text: "Take Photo",
+        onPress: async () => {
+          const permission = await ImagePicker.requestCameraPermissionsAsync();
+          if (permission.granted) {
+            const result = await ImagePicker.launchCameraAsync({
+              quality: 0.7,
+            });
+            if (!result.canceled && result.assets[0].uri) {
+              setReceiptUri(result.assets[0].uri);
+            }
+          } else {
+            Alert.alert("Permission Required", "Camera permission is required to take photos.");
+          }
+        }
+      },
+      {
+        text: "Choose from Files",
+        onPress: async () => {
+          try {
+            const result = await DocumentPicker.getDocumentAsync({
+              type: ['image/*', 'application/pdf'],
+              copyToCacheDirectory: true,
+            });
+            if (!result.canceled && result.assets[0].uri) {
+              setReceiptUri(result.assets[0].uri);
+            }
+          } catch (e) {
+            Alert.alert("Error", "Could not pick file");
+          }
+        }
+      },
+      { text: "Cancel", style: "cancel" }
     ]);
   };
 
@@ -302,13 +346,25 @@ export default function AddTransactionScreen() {
 
         {/* Attach Receipt */}
         <Text className="text-gray-400 text-xs mb-2 ml-1">Attach Receipt (Optional)</Text>
-        <TouchableOpacity className="bg-[#0f1011] rounded-2xl p-6 items-center justify-center mb-8 border border-dashed border-[#a855f7]/30">
-          <View className="flex-row items-center mb-2">
-            <Ionicons name="cloud-upload-outline" size={20} color="#6642f8" className="mr-2" />
-            <Text className="text-white text-sm font-bold">Upload Receipt</Text>
+        {receiptUri ? (
+          <View className="mb-8 relative rounded-2xl overflow-hidden border border-[#1b1b1c]">
+            <Image source={{ uri: receiptUri }} className="w-full h-40 bg-[#0f1011]" resizeMode="cover" />
+            <TouchableOpacity 
+              onPress={() => setReceiptUri(null)}
+              className="absolute top-2 right-2 w-8 h-8 bg-black/50 rounded-full items-center justify-center"
+            >
+              <Ionicons name="close" size={20} color="white" />
+            </TouchableOpacity>
           </View>
-          <Text className="text-gray-500 text-[10px]">JPG, PNG, PDF (Max 5MB)</Text>
-        </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={handlePickReceipt} className="bg-[#0f1011] rounded-2xl p-6 items-center justify-center mb-8 border border-dashed border-[#a855f7]/30">
+            <View className="flex-row items-center mb-2">
+              <Ionicons name="cloud-upload-outline" size={20} color="#6642f8" className="mr-2" />
+              <Text className="text-white text-sm font-bold">Upload Receipt</Text>
+            </View>
+            <Text className="text-gray-500 text-[10px]">JPG, PNG, PDF (Max 5MB)</Text>
+          </TouchableOpacity>
+        )}
 
       </ScrollView>
 
