@@ -163,14 +163,15 @@ export default function AddTransactionScreen() {
         </TouchableOpacity>
         <Text className="text-white text-lg font-bold">{id ? "Edit Transaction" : "Add Transaction"}</Text>
         <View className="flex-row items-center">
-          {id && (
-            <TouchableOpacity onPress={handleDelete} className="mr-4">
-              <Ionicons name="trash-outline" size={20} color="#ef4444" />
+          {id ? (
+            <TouchableOpacity onPress={handleDelete} className="items-end">
+              <Text className="text-[#ef4444] font-bold text-base">Delete</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={handleSave} className="items-end">
+              <Text className="text-[#a855f7] font-bold text-base">Save</Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity onPress={handleSave} className="items-end">
-            <Text className="text-[#a855f7] font-bold text-base">Save</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -285,7 +286,7 @@ export default function AddTransactionScreen() {
         </View>
 
         {/* Notes */}
-        <Text className="text-gray-400 text-xs mb-2 ml-1">Notes (Optional)</Text>
+        <Text className="text-gray-400 text-xs mb-2 ml-1">Notes</Text>
         <View className="bg-[#0f1011] rounded-2xl p-3 mb-6 border border-[#1b1b1c] h-28 justify-between">
           <TextInput
             placeholder="Add a note..."
@@ -298,16 +299,6 @@ export default function AddTransactionScreen() {
           />
           <Text className="text-gray-600 text-xs text-right">{note.length}/200</Text>
         </View>
-
-        {/* Tags */}
-        <Text className="text-gray-400 text-xs mb-2 ml-1">Tags (Optional)</Text>
-        <TouchableOpacity className="bg-[#0f1011] rounded-2xl p-4 flex-row items-center justify-between mb-6 border border-[#1b1b1c]">
-          <View className="flex-row items-center">
-            <Ionicons name="pricetag-outline" size={20} color="#6642f8" className="mr-3" />
-            <Text className="text-gray-500 text-sm">Add tags...</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
-        </TouchableOpacity>
 
         {/* Attach Receipt */}
         <Text className="text-gray-400 text-xs mb-2 ml-1">Attach Receipt (Optional)</Text>
