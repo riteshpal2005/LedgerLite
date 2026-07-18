@@ -22,15 +22,6 @@ export default function HomeScreen() {
             <Text className="text-gray-400 text-xs">Transaction Tracker</Text>
           </View>
         </View>
-        <View className="flex-row items-center space-x-4">
-          <TouchableOpacity className="relative mr-4">
-            <Ionicons name="notifications-outline" size={26} color="white" />
-            <View className="absolute right-0 top-0 w-2 h-2 bg-[#6642f8] rounded-full border border-[#0a0b0d]" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons name="menu-outline" size={32} color="white" />
-          </TouchableOpacity>
-        </View>
       </View>
 
       <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
