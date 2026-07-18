@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, ScrollView, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { withDatabase } from '@nozbe/watermelondb/react';
@@ -17,75 +17,90 @@ import { HighActivityDayCard } from '../components/analytics/insights/high-activ
 import { IncomeVsExpenseCard } from '../components/analytics/insights/income-vs-expense-card';
 import { SpendingStreakCard } from '../components/analytics/insights/spending-streak-card';
 
-interface InsightsScreenProps {
+interface InsightsContentProps {
   currentMonthTxns: Transaction[];
   lastMonthTxns: Transaction[];
   categories: Category[];
+  startDate: number;
 }
 
-const InsightsScreenComponent = ({ currentMonthTxns, lastMonthTxns, categories }: InsightsScreenProps) => {
-  const currentDate = new Date();
+const InsightsContentComponent = ({ currentMonthTxns, lastMonthTxns, categories, startDate }: InsightsContentProps) => {
+  const currentDate = new Date(startDate);
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0a0b0d]">
-      <InsightsHeader />
+    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <InsightsHeroCard />
+
+      <View className="px-6 mb-4 mt-2">
+        <Text className="text-white font-bold text-lg">Key Insights</Text>
+      </View>
+
+      <CategoryTrendsCard 
+        currentMonthTxns={currentMonthTxns} 
+        lastMonthTxns={lastMonthTxns} 
+        categories={categories} 
+      />
       
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <InsightsHeroCard />
+      <LargestExpenseCard 
+        currentMonthTxns={currentMonthTxns} 
+        categories={categories} 
+      />
+      
+      <HighActivityDayCard 
+        currentMonthTxns={currentMonthTxns} 
+      />
+      
+      <IncomeVsExpenseCard 
+        currentMonthTxns={currentMonthTxns} 
+      />
+      
+      <SpendingStreakCard 
+        currentMonthTxns={currentMonthTxns} 
+        currentDate={currentDate} 
+      />
 
-        <View className="px-6 mb-4 mt-2">
-          <Text className="text-white font-bold text-lg">Key Insights</Text>
-        </View>
-
-        <CategoryTrendsCard 
-          currentMonthTxns={currentMonthTxns} 
-          lastMonthTxns={lastMonthTxns} 
-          categories={categories} 
-        />
-        
-        <LargestExpenseCard 
-          currentMonthTxns={currentMonthTxns} 
-          categories={categories} 
-        />
-        
-        <HighActivityDayCard 
-          currentMonthTxns={currentMonthTxns} 
-        />
-        
-        <IncomeVsExpenseCard 
-          currentMonthTxns={currentMonthTxns} 
-        />
-        
-        <SpendingStreakCard 
-          currentMonthTxns={currentMonthTxns} 
-          currentDate={currentDate} 
-        />
-
-        <View className="h-12" />
-      </ScrollView>
-    </SafeAreaView>
+      <View className="h-2" />
+    </ScrollView>
   );
 };
 
-const enhance = withObservables([], ({ database }: { database: Database }) => {
+const enhance = withObservables(['startDate', 'endDate', 'prevStartDate', 'prevEndDate'], ({ database, startDate, endDate, prevStartDate, prevEndDate }: { database: Database, startDate: number, endDate: number, prevStartDate: number, prevEndDate: number }) => ({
+  currentMonthTxns: database.collections.get<Transaction>('transactions').query(
+    Q.where('date', Q.between(startDate, endDate))
+  ).observe(),
+  lastMonthTxns: database.collections.get<Transaction>('transactions').query(
+    Q.where('date', Q.between(prevStartDate, prevEndDate))
+  ).observe(),
+  categories: database.collections.get<Category>('categories').query().observe(),
+}));
+
+const EnhancedInsightsContent = withDatabase(enhance(InsightsContentComponent));
+
+export default function InsightsScreen() {
   const now = new Date();
-  
-  const currentMonthStart = startOfMonth(now).getTime();
-  const currentMonthEnd = endOfMonth(now).getTime();
-  
-  const lastMonth = subMonths(now, 1);
-  const lastMonthStart = startOfMonth(lastMonth).getTime();
-  const lastMonthEnd = endOfMonth(lastMonth).getTime();
+  const [dateRange, setDateRange] = useState({ 
+    start: startOfMonth(now).getTime(), 
+    end: endOfMonth(now).getTime(),
+    prevStart: startOfMonth(subMonths(now, 1)).getTime(),
+    prevEnd: endOfMonth(subMonths(now, 1)).getTime()
+  });
 
-  return {
-    currentMonthTxns: database.collections.get<Transaction>('transactions').query(
-      Q.where('date', Q.between(currentMonthStart, currentMonthEnd))
-    ).observe(),
-    lastMonthTxns: database.collections.get<Transaction>('transactions').query(
-      Q.where('date', Q.between(lastMonthStart, lastMonthEnd))
-    ).observe(),
-    categories: database.collections.get<Category>('categories').query().observe(),
-  };
-});
-
-export default withDatabase(enhance(InsightsScreenComponent));
+  return (
+    <SafeAreaView className="flex-1 bg-[#0a0b0d]">
+      <InsightsHeader 
+        onDateRangeChange={(start, end, label, prevStart, prevEnd) => {
+          setDateRange({ start, end, prevStart, prevEnd });
+        }}
+      />
+      
+      {dateRange.start > 0 && (
+        <EnhancedInsightsContent 
+          startDate={dateRange.start} 
+          endDate={dateRange.end}
+          prevStartDate={dateRange.prevStart}
+          prevEndDate={dateRange.prevEnd}
+        />
+      )}
+    </SafeAreaView>
+  );
+}
