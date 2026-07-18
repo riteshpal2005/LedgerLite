@@ -11,18 +11,21 @@ export function TransactionSearchBar({
   setSearchQuery,
 }: TransactionSearchBarProps) {
   return (
-    <View className="flex-1 flex-row items-center bg-surface rounded-2xl px-4 h-[46px] border border-bordercolor">
-      <Ionicons name="search" size={20} color="#71717a" />
+    <View className="flex-1 flex-row items-center bg-[#131415] rounded-2xl px-4 h-[48px] border border-[#27272a]">
+      <Ionicons name="search" size={20} color="#7c3aed" />
       <TextInput
         value={searchQuery}
         onChangeText={setSearchQuery}
-        placeholder="Search by description, shop, or amount..."
+        placeholder="Search transactions..."
         placeholderTextColor="#71717a"
-        className="flex-1 text-primary text-base ml-3"
+        className="flex-1 text-white text-[15px] ml-3"
       />
       {searchQuery.length > 0 && (
-        <Pressable onPress={() => setSearchQuery("")}>
-          <Ionicons name="close-circle" size={20} color="#71717a" />
+        <Pressable 
+          onPress={() => setSearchQuery("")}
+          className="w-6 h-6 rounded-full bg-white/10 items-center justify-center active:bg-white/20"
+        >
+          <Ionicons name="close" size={14} color="#a1a1aa" />
         </Pressable>
       )}
     </View>
