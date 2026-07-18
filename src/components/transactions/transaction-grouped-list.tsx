@@ -20,7 +20,7 @@ interface TransactionGroupedListProps {
   filterAccountId?: FilterAccountId;
 }
 
-const TransactionGroupedListComponent = ({ transactions }: TransactionGroupedListProps) => {
+const TransactionGroupedListComponent = ({ transactions, sortMode }: TransactionGroupedListProps) => {
   const [isListOpen, setIsListOpen] = useState(true);
   const router = useRouter();
 
@@ -40,6 +40,14 @@ const TransactionGroupedListComponent = ({ transactions }: TransactionGroupedLis
 
   // Group the transactions dynamically by day
   const groupedData = useMemo(() => {
+    if (sortMode === 'highest' || sortMode === 'lowest') {
+      return [{
+        title: "All Transactions",
+        transactions: filteredTransactions,
+        count: filteredTransactions.length
+      }];
+    }
+
     const groups: Record<string, Transaction[]> = {};
 
     filteredTransactions.forEach(t => {
@@ -50,7 +58,7 @@ const TransactionGroupedListComponent = ({ transactions }: TransactionGroupedLis
     });
 
     return Object.keys(groups)
-      .sort((a, b) => b.localeCompare(a)) // Sort by date descending
+      .sort((a, b) => sortMode === 'oldest' ? a.localeCompare(b) : b.localeCompare(a)) 
       .map(key => {
         const tDate = new Date(key);
         let title = format(tDate, "MMM d, yyyy");
@@ -65,14 +73,14 @@ const TransactionGroupedListComponent = ({ transactions }: TransactionGroupedLis
             title = `Yesterday • ${title}`;
         }
         
-        const groupTxs = groups[key].sort((a, b) => b.date - a.date);
+        const groupTxs = groups[key].sort((a, b) => sortMode === 'oldest' ? a.date - b.date : b.date - a.date);
         return {
           title,
           transactions: groupTxs,
           count: groupTxs.length
         };
       });
-  }, [filteredTransactions]);
+  }, [filteredTransactions, sortMode]);
 
   if (groupedData.length === 0) {
     return (
