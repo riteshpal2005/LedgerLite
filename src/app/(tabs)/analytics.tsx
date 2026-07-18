@@ -52,7 +52,7 @@ export default function AnalyticsScreen() {
         )}
 
         {/* Extra padding for tab bar mock */}
-        <View className="h-24" />
+        {/* <View className="h-24" /> */}
       </ScrollView>
     </SafeAreaView>
   );

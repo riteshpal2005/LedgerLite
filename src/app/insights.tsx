@@ -29,6 +29,7 @@ const InsightsContentComponent = ({ currentMonthTxns, lastMonthTxns, categories,
 
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <View className="h-4" />
       <InsightsHeroCard />
 
       <View className="px-6 mb-4 mt-2">
@@ -59,7 +60,7 @@ const InsightsContentComponent = ({ currentMonthTxns, lastMonthTxns, categories,
         currentDate={currentDate} 
       />
 
-      <View className="h-2" />
+      {/* <View className="h-12" /> */}
     </ScrollView>
   );
 };
