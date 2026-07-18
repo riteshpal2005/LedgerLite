@@ -78,4 +78,11 @@ export const selectAccountsWithBalances = createSelector(
   },
 );
 
+export const selectTotalBalance = createSelector(
+  selectAccountsWithBalances,
+  (accountsWithBalances) => {
+    return accountsWithBalances.reduce((total, account) => total + (account.currentBalance ?? account.balance), 0);
+  }
+);
+
 export default accountSlice.reducer;
