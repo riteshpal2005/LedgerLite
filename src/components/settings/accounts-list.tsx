@@ -12,10 +12,15 @@ function AccountsListComponent({ accounts }: { accounts: Account[] }) {
 
   return (
     <>
-      <View className="flex-row justify-between items-center mb-3">
-        <Text className="text-white text-base font-bold">Accounts & Wallets</Text>
+      <View className="flex-row justify-between items-end mb-3">
+        <View>
+          <Text className="text-white text-base font-bold">Accounts & Wallets</Text>
+          <Text className="text-gray-400 text-xs mt-0.5">
+            Total Balance: <Text className="text-white font-bold">{formatCurrency(accounts.reduce((sum, a) => sum + (a.currentBalance ?? a.balance), 0))}</Text>
+          </Text>
+        </View>
         <TouchableOpacity>
-          <Text className="text-[#a855f7] text-sm font-bold">Manage {'>'}</Text>
+          <Text className="text-[#a855f7] text-sm font-bold mb-0.5">Manage {'>'}</Text>
         </TouchableOpacity>
       </View>
 
