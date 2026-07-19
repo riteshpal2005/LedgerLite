@@ -10,14 +10,6 @@ import { Q } from "@nozbe/watermelondb";
 function AccountsListComponent({ accounts }: { accounts: Account[] }) {
   const { formatCurrency } = useCurrency();
 
-  // Mock accounts if DB is empty to match the high-fidelity design
-  const displayAccounts = accounts.length > 0 ? accounts : [
-    { id: '1', name: 'Cash', type: 'wallet', balance: 18450, desc: 'Main Wallet' },
-    { id: '2', name: 'Bank Account', type: 'checking', balance: 120300, desc: 'SBI •••• 4567' },
-    { id: '3', name: 'Credit Card', type: 'credit_card', balance: -12650, desc: 'HDFC •••• 8901' },
-    { id: '4', name: 'UPI / Others', type: 'upi', balance: 5850, desc: 'Wallet, UPI, etc.' }
-  ];
-
   return (
     <>
       <View className="flex-row justify-between items-center mb-3">
@@ -28,11 +20,15 @@ function AccountsListComponent({ accounts }: { accounts: Account[] }) {
       </View>
 
       <View className="bg-[#0f1011] rounded-2xl p-2 mb-8 border border-[#1b1b1c]">
-        {displayAccounts.map((account: any, index: number) => {
+        {accounts.length === 0 ? (
+          <View className="p-4 items-center">
+            <Text className="text-gray-400 text-sm">No accounts found</Text>
+          </View>
+        ) : accounts.map((account: Account, index: number) => {
           let iconName = "wallet-outline";
           let iconColor = "#a855f7";
           let iconBg = "bg-[#a855f7]/10";
-          let typeDesc = account.desc || `${account.type} Account`;
+          let typeDesc = `${account.type} Account`;
 
           if (account.type === 'checking' || account.type === 'savings' || account.name.includes('Bank')) {
             iconName = "business-outline";
@@ -67,7 +63,7 @@ function AccountsListComponent({ accounts }: { accounts: Account[] }) {
                   <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
                 </View>
               </TouchableOpacity>
-              {index < displayAccounts.length - 1 && <View className="h-px bg-[#1b1b1c] mx-3" />}
+              {index < accounts.length - 1 && <View className="h-px bg-[#1b1b1c] mx-3" />}
             </React.Fragment>
           );
         })}
