@@ -16,10 +16,6 @@ export function SettingsHeader() {
           <Text className="text-gray-400 text-xs">Transaction Tracker</Text>
         </View>
       </View>
-      <TouchableOpacity className="relative">
-        <Ionicons name="notifications-outline" size={24} color="white" />
-        <View className="absolute top-0 right-0.5 w-2 h-2 bg-[#a855f7] rounded-full" />
-      </TouchableOpacity>
     </View>
   );
 }

@@ -16,11 +16,7 @@ export function ProfileCard() {
           <Text className="text-white text-2xl font-bold">{initial}</Text>
         </View>
         <View>
-          <Text className="text-white text-lg font-bold">Ritesh Pal</Text>
-          <View className="flex-row items-center mt-0.5">
-            <Ionicons name="hardware-chip-outline" size={12} color="#a855f7" />
-            <Text className="text-[#a855f7] text-xs ml-1 mr-3">Premium User</Text>
-          </View>
+          <Text className="text-white text-lg font-bold">{displayName}</Text>
           <View className="flex-row items-center mt-1">
             <View className="w-2 h-2 bg-green-500 rounded-full mr-1.5" />
             <Text className="text-gray-400 text-xs">Offline Mode</Text>
