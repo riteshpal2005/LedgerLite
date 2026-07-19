@@ -13,6 +13,7 @@ import {
   Keyboard,
 } from "react-native";
 import { useTheme } from "../../hooks/theme/ThemeContext";
+import { useCurrency } from "../../hooks/useCurrency";
 
 export type AccountType = "Cash" | "Bank" | "Credit Card";
 
@@ -40,6 +41,7 @@ export function BulkAccountMappingModal({
   >({});
 
   const { bottomSheetBackgroundColor, bottomSheetBorderColor } = useTheme();
+  const { getCurrencySymbol } = useCurrency();
 
   useEffect(() => {
     if (visible && missingAccounts.length > 0) {
@@ -147,7 +149,7 @@ export function BulkAccountMappingModal({
                     </Text>
 
                     <Text className="text-secondary text-sm mb-2">
-                      Initial Balance (₹)
+                      Initial Balance ({getCurrencySymbol()})
                     </Text>
                     <TextInput
                       value={mappings[acc.name]?.balance}
