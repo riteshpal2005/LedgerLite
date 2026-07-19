@@ -13,8 +13,10 @@ import { AddTransactionSheet } from "../../components/transactions/add-transacti
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Transaction } from "../../server/db/schema";
+import { useCurrency } from "../../hooks/useCurrency";
 
 export default function BackdatedScreen() {
+  const { formatCurrency } = useCurrency();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [filterType, setFilterType] = useState<FilterType>("all");
@@ -102,15 +104,15 @@ export default function BackdatedScreen() {
         <View className="bg-[#0f1412] border border-[#172a21] rounded-xl flex-row items-center py-4 px-2">
           <View className="flex-1 items-center justify-center border-r border-[#172a21]">
             <Text className="text-gray-400 text-xs mb-1">Total Income</Text>
-            <Text className="text-[#10b981] font-bold text-[15px]">₹28,450.00</Text>
+            <Text className="text-[#10b981] font-bold text-[15px]">{formatCurrency(28450)}</Text>
           </View>
           <View className="flex-1 items-center justify-center border-r border-[#172a21]">
             <Text className="text-gray-400 text-xs mb-1">Total Expenses</Text>
-            <Text className="text-[#ef4444] font-bold text-[15px]">-₹21,890.00</Text>
+            <Text className="text-[#ef4444] font-bold text-[15px]">{formatCurrency(-21890)}</Text>
           </View>
           <View className="flex-1 items-center justify-center">
             <Text className="text-gray-400 text-xs mb-1">Net Balance</Text>
-            <Text className="text-[#10b981] font-bold text-[15px]">₹6,560.00</Text>
+            <Text className="text-[#10b981] font-bold text-[15px]">{formatCurrency(6560)}</Text>
           </View>
         </View>
       </View>
@@ -130,7 +132,7 @@ export default function BackdatedScreen() {
             <Ionicons name="calendar-outline" size={14} color="#10b981" className="mr-2" />
             <Text className="text-gray-300 text-[13px]">Fri, 13 Jun 2025</Text>
           </View>
-          <Text className="text-[#10b981] text-[13px] font-bold">+ ₹5,000.00</Text>
+          <Text className="text-[#10b981] text-[13px] font-bold">+{formatCurrency(5000)}</Text>
         </View>
 
         <View className="bg-[#0f1412] border border-[#172a21] rounded-xl p-3 flex-row items-center mb-6">
@@ -146,7 +148,7 @@ export default function BackdatedScreen() {
             </View>
           </View>
           <View className="items-end relative">
-            <Text className="text-[#10b981] font-bold text-[15px] mb-1 mr-5">₹5,000.00</Text>
+            <Text className="text-[#10b981] font-bold text-[15px] mb-1 mr-5">{formatCurrency(5000)}</Text>
             <Text className="text-gray-400 text-xs mr-5">12:30 PM</Text>
             <Ionicons name="chevron-forward" size={16} color="#4b5563" className="absolute right-0 top-3" />
           </View>
@@ -158,7 +160,7 @@ export default function BackdatedScreen() {
             <Ionicons name="calendar-outline" size={14} color="#9ca3af" className="mr-2" />
             <Text className="text-gray-300 text-[13px]">Thu, 12 Jun 2025</Text>
           </View>
-          <Text className="text-[#ef4444] text-[13px] font-bold">- ₹1,250.00</Text>
+          <Text className="text-[#ef4444] text-[13px] font-bold">{formatCurrency(-1250)}</Text>
         </View>
 
         <View className="bg-[#0f1412] border border-[#172a21] rounded-xl p-3 flex-row items-center mb-6">
@@ -174,7 +176,7 @@ export default function BackdatedScreen() {
             </View>
           </View>
           <View className="items-end relative">
-            <Text className="text-[#ef4444] font-bold text-[15px] mb-1 mr-5">- ₹1,250.00</Text>
+            <Text className="text-[#ef4444] font-bold text-[15px] mb-1 mr-5">{formatCurrency(-1250)}</Text>
             <Text className="text-gray-400 text-xs mr-5">09:45 PM</Text>
             <Ionicons name="chevron-forward" size={16} color="#4b5563" className="absolute right-0 top-3" />
           </View>
@@ -186,7 +188,7 @@ export default function BackdatedScreen() {
             <Ionicons name="calendar-outline" size={14} color="#9ca3af" className="mr-2" />
             <Text className="text-gray-300 text-[13px]">Wed, 11 Jun 2025</Text>
           </View>
-          <Text className="text-[#ef4444] text-[13px] font-bold">- ₹1,890.00</Text>
+          <Text className="text-[#ef4444] text-[13px] font-bold">{formatCurrency(-1890)}</Text>
         </View>
 
         <View className="bg-[#0f1412] border border-[#172a21] rounded-xl p-3 flex-row items-center mb-6">
@@ -202,7 +204,7 @@ export default function BackdatedScreen() {
             </View>
           </View>
           <View className="items-end relative">
-            <Text className="text-[#ef4444] font-bold text-[15px] mb-1 mr-5">- ₹1,890.00</Text>
+            <Text className="text-[#ef4444] font-bold text-[15px] mb-1 mr-5">{formatCurrency(-1890)}</Text>
             <Text className="text-gray-400 text-xs mr-5">06:20 PM</Text>
             <Ionicons name="chevron-forward" size={16} color="#4b5563" className="absolute right-0 top-3" />
           </View>
@@ -214,7 +216,7 @@ export default function BackdatedScreen() {
             <Ionicons name="calendar-outline" size={14} color="#10b981" className="mr-2" />
             <Text className="text-gray-300 text-[13px]">Tue, 10 Jun 2025</Text>
           </View>
-          <Text className="text-[#10b981] text-[13px] font-bold">+ ₹2,500.00</Text>
+          <Text className="text-[#10b981] text-[13px] font-bold">+{formatCurrency(2500)}</Text>
         </View>
 
         <View className="bg-[#0f1412] border border-[#172a21] rounded-xl p-3 flex-row items-center mb-6">
@@ -230,7 +232,7 @@ export default function BackdatedScreen() {
             </View>
           </View>
           <View className="items-end relative">
-            <Text className="text-[#10b981] font-bold text-[15px] mb-1 mr-5">₹2,500.00</Text>
+            <Text className="text-[#10b981] font-bold text-[15px] mb-1 mr-5">{formatCurrency(2500)}</Text>
             <Text className="text-gray-400 text-xs mr-5">11:10 AM</Text>
             <Ionicons name="chevron-forward" size={16} color="#4b5563" className="absolute right-0 top-3" />
           </View>
