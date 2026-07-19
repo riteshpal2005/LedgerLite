@@ -32,6 +32,7 @@ export default function CurrencyScreen() {
 
   const handleSelectCurrency = (code: string) => {
     dispatch(setCurrency(code));
+    router.back();
   };
 
   const renderCurrencyItem = ({ item }: { item: CurrencyConfig }) => {
