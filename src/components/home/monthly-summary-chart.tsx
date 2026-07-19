@@ -8,9 +8,11 @@ import withObservables from "@nozbe/watermelondb/react/withObservables";
 import Transaction from "../../server/db/models/Transaction";
 import Category from "../../server/db/models/Category";
 import { Q } from "@nozbe/watermelondb";
+import { useCurrency } from "../../hooks/useCurrency";
 
 function MonthlySummaryChartComponent({ transactions, categories }: { transactions: Transaction[], categories: Category[] }) {
   const router = useRouter();
+  const { formatCurrency } = useCurrency();
   
   const { totalExpense, categoryTotals } = useMemo(() => {
     let total = 0;
@@ -75,7 +77,7 @@ function MonthlySummaryChartComponent({ transactions, categories }: { transactio
               })}
             </Svg>
             <View className="absolute items-center justify-center">
-               <Text className="text-white text-lg font-bold">₹{totalExpense.toLocaleString('en-IN')}</Text>
+               <Text className="text-white text-lg font-bold">{formatCurrency(totalExpense)}</Text>
                <Text className="text-gray-400 text-[10px] mt-1">Total Expense</Text>
             </View>
         </View>
@@ -88,7 +90,7 @@ function MonthlySummaryChartComponent({ transactions, categories }: { transactio
                 <Text className="text-gray-300 text-xs flex-1" numberOfLines={1}>{cat.name}</Text>
               </View>
               <View className="flex-row items-center">
-                <Text className="text-white text-xs mr-2">₹{cat.amount.toLocaleString('en-IN')}</Text>
+                <Text className="text-white text-xs mr-2">{formatCurrency(cat.amount)}</Text>
                 <Text className="text-gray-500 text-xs w-8 text-right">{cat.percentage}%</Text>
               </View>
             </View>
