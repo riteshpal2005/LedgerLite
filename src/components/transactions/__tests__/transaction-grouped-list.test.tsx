@@ -49,12 +49,12 @@ describe('TransactionGroupedList Business Logic', () => {
     expect(screen.getByText('No transactions found')).toBeTruthy();
   });
 
-  it('should group transactions by Month and calculate net balance', async () => {
+  it('should group transactions by Day and calculate net balance', async () => {
     const screen = await render(<TransactionGroupedList transactions={mockTransactions} filter="All" />);
 
-    // Should create groups for August 2023 and July 2023
-    expect(screen.getByText('August 2023')).toBeTruthy();
-    expect(screen.getByText('July 2023')).toBeTruthy();
+    // Should create groups for Aug 15, 2023 and Jul 15, 2023
+    expect(screen.getByText('Aug 15, 2023')).toBeTruthy();
+    expect(screen.getByText('Jul 15, 2023')).toBeTruthy();
 
     // August 2023 has 1 credit(1000) and 1 debit(200) -> Net +800
     // Formatting adds '₹' and ','. So '₹800.00'
@@ -71,8 +71,8 @@ describe('TransactionGroupedList Business Logic', () => {
     const screen = await render(<TransactionGroupedList transactions={mockTransactions} filter="Income" />);
 
     // Only the August income transaction should exist
-    expect(screen.queryByText('August 2023')).toBeTruthy();
-    expect(screen.queryByText('July 2023')).toBeNull(); // Should be filtered out
+    expect(screen.queryByText('Aug 15, 2023')).toBeTruthy();
+    expect(screen.queryByText('Jul 15, 2023')).toBeNull(); // Should be filtered out
 
     // Net balance is just the income (1000)
     expect(screen.queryByText('₹1,000.00')).toBeTruthy();
@@ -89,7 +89,7 @@ describe('TransactionGroupedList Business Logic', () => {
     expect(screen.queryByTestId('mock-tx-t1')).toBeTruthy();
 
     // Press August 2023 group header
-    fireEvent.press(screen.getByText('August 2023'));
+    fireEvent.press(screen.getByText('Aug 15, 2023'));
 
     // The summary card should become visible for August
     expect(await screen.findByTestId('mock-group-summary')).toBeTruthy();

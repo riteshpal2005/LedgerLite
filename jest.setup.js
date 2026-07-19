@@ -43,3 +43,16 @@ global.console = {
   warn: jest.fn(),
   error: jest.fn(),
 };
+
+// Mock useCurrency hook
+jest.mock('./src/hooks/useCurrency', () => ({
+  useCurrency: () => ({
+    formatCurrency: (amount) => {
+      if (amount < 0) {
+        return `- ₹${Math.abs(amount).toFixed(2).replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',')}`;
+      }
+      return `₹${amount.toFixed(2).replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',')}`;
+    },
+    getCurrencySymbol: () => '₹'
+  })
+}));
