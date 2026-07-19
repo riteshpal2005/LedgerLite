@@ -7,6 +7,7 @@ import { withDatabase } from "@nozbe/watermelondb/react";
 import { Database, Q } from "@nozbe/watermelondb";
 import Transaction from "../../server/db/models/Transaction";
 import { format } from "date-fns";
+import { useCurrency } from "../../hooks/useCurrency";
 
 interface CashFlowChartProps {
   transactions: Transaction[];
@@ -36,6 +37,7 @@ const createBezierPath = (points: {x: number, y: number}[]) => {
 };
 
 const CashFlowChartComponent = ({ transactions, dateLabel = "This Month" }: CashFlowChartProps) => {
+  const { getCurrencySymbol } = useCurrency();
   const chartPaths = useMemo(() => {
     if (transactions.length === 0) return null;
 
@@ -92,7 +94,7 @@ const CashFlowChartComponent = ({ transactions, dateLabel = "This Month" }: Cash
     };
   }, [transactions]);
 
-  const formatShortLabel = (val: number) => `₹${(val / 1000).toFixed(0)}K`;
+  const formatShortLabel = (val: number) => `${getCurrencySymbol()}${(val / 1000).toFixed(0)}K`;
 
   return (
     <View className="bg-[#0f1011] rounded-2xl p-4 mb-6 border border-[#1b1b1c]">
@@ -130,7 +132,7 @@ const CashFlowChartComponent = ({ transactions, dateLabel = "This Month" }: Cash
             <Text className="text-gray-500 text-[10px]">{formatShortLabel(chartPaths.maxVal * 0.75)}</Text>
             <Text className="text-gray-500 text-[10px]">{formatShortLabel(chartPaths.maxVal * 0.5)}</Text>
             <Text className="text-gray-500 text-[10px]">{formatShortLabel(chartPaths.maxVal * 0.25)}</Text>
-            <Text className="text-gray-500 text-[10px]">₹0</Text>
+            <Text className="text-gray-500 text-[10px]">{getCurrencySymbol()}0</Text>
           </View>
 
           <View className="flex-1">
