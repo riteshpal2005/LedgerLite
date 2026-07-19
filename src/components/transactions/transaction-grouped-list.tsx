@@ -12,6 +12,7 @@ import { TransactionListItem } from "./transaction-list-item";
 import { isToday, startOfDay, format } from "date-fns";
 import { FilterType } from "./transactions-filter-tabs";
 import { useRouter } from "expo-router";
+import { useCurrency } from "../../hooks/useCurrency";
 
 import { SortMode, FilterAccountId } from "./transaction-sort-filter";
 
@@ -26,6 +27,7 @@ interface TransactionGroupedListProps {
 const TransactionGroupedListComponent = ({ transactions, sortMode }: TransactionGroupedListProps) => {
   const [isListOpen, setIsListOpen] = useState(true);
   const router = useRouter();
+  const { formatCurrency } = useCurrency();
 
   // The transactions are already filtered and sorted by the WatermelonDB query
   const filteredTransactions = transactions;
@@ -103,7 +105,7 @@ const TransactionGroupedListComponent = ({ transactions, sortMode }: Transaction
         </TouchableOpacity>
         <View className="flex-row items-center">
           <Text className="text-[#6642f8] text-base font-bold mr-1">
-            ₹{currentMonthTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {formatCurrency(currentMonthTotal)}
           </Text>
         </View>
       </View>
