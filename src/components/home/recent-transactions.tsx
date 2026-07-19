@@ -8,9 +8,11 @@ import Category from "../../server/db/models/Category";
 import { format } from "date-fns";
 import { Q } from "@nozbe/watermelondb";
 import { useRouter } from "expo-router";
+import { useCurrency } from "../../hooks/useCurrency";
 
 const RecentTransactionRowComponent = ({ tx, category, isLast }: { tx: Transaction, category: Category, isLast: boolean }) => {
   const isIncome = tx.type === "credit";
+  const { formatCurrency } = useCurrency();
   return (
     <>
       <View className="flex-row justify-between items-center p-3">
@@ -30,7 +32,7 @@ const RecentTransactionRowComponent = ({ tx, category, isLast }: { tx: Transacti
         </View>
         <View className="flex-row items-center">
           <Text className={`${isIncome ? 'text-green-500' : 'text-red-500'} text-base font-bold mr-2`}>
-            {isIncome ? "+" : "-"} ₹{tx.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {isIncome ? "+" : "-"}{formatCurrency(tx.amount)}
           </Text>
           <Ionicons name="chevron-forward" size={16} color="#6b7280" />
         </View>
