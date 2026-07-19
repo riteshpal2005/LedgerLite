@@ -7,6 +7,7 @@ import { withDatabase } from "@nozbe/watermelondb/react";
 import { Database, Q } from "@nozbe/watermelondb";
 import Transaction from "../../server/db/models/Transaction";
 import Category from "../../server/db/models/Category";
+import { useCurrency } from "../../hooks/useCurrency";
 
 interface AnalyticsInsightsProps {
   transactions: Transaction[];
@@ -16,6 +17,7 @@ interface AnalyticsInsightsProps {
 // Ref: AnalyticsInsights-1
 const AnalyticsInsightsComponent = ({ transactions, categories }: AnalyticsInsightsProps) => {
   const router = useRouter();
+  const { formatCurrency } = useCurrency();
   const insight = useMemo(() => {
     if (transactions.length === 0) {
       return "No transactions in this period to generate insights.";
@@ -48,7 +50,6 @@ const AnalyticsInsightsComponent = ({ transactions, categories }: AnalyticsInsig
     const highestCategory = categories.find(c => c.id === maxCatId);
     
     if (highestCategory) {
-      const formatCurrency = (amt: number) => `₹${amt.toLocaleString('en-IN')}`;
       return (
         <Text className="text-gray-400 text-xs leading-5">
           You spent <Text className="text-[#6642f8] font-bold">12.5%</Text> less on {highestCategory.name} compared to last month.
