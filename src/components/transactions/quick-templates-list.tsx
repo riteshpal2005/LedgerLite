@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, Pressable, ScrollView, Alert } from "react-native";
 import { useDispatch } from "react-redux";
 import { removeQuickTemplate } from "../../store/settingsSlice";
+import { useCurrency } from "../../hooks/useCurrency";
 
 interface QuickTemplatesListProps {
   quickTemplates: any[];
@@ -10,6 +11,7 @@ interface QuickTemplatesListProps {
 
 export function QuickTemplatesList({ quickTemplates, onSelectTemplate }: QuickTemplatesListProps) {
   const dispatch = useDispatch();
+  const { formatCurrency } = useCurrency();
 
   if (!quickTemplates || quickTemplates.length === 0) return null;
 
@@ -35,7 +37,7 @@ export function QuickTemplatesList({ quickTemplates, onSelectTemplate }: QuickTe
           >
             <Text className="text-brand-primary font-bold">{template.title}</Text>
             <Text className="text-brand-primary/80 text-xs text-center">
-              {template.type === 'credit' ? '+' : '-'}₹{template.amount}
+              {template.type === 'credit' ? '+' : '-'}{formatCurrency(template.amount)}
             </Text>
           </Pressable>
         ))}
