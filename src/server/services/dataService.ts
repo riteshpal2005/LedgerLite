@@ -1,6 +1,8 @@
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 import * as DocumentPicker from "expo-document-picker";
+import { formatCurrency } from "../../utils/currency";
+import { store } from "../../store/store";
 import * as Print from "expo-print";
 import Papa from "papaparse";
 import * as Clipboard from "expo-clipboard";
@@ -41,7 +43,7 @@ export const exportData = async (
         Time: new Date(e.date).toLocaleTimeString().replace(/\u202F/g, " "),
         Type: e.type === "credit" ? "Income" : "Expense",
         Category: category ? category.name : "Unknown",
-        Amount: `₹${e.amount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        Amount: formatCurrency(e.amount, store.getState().settings.currency),
         Description: e.description,
         Merchant: e.merchant || "",
         AccountName: account ? account.name : "Unassigned",
@@ -571,7 +573,7 @@ export const exportToPDF = async (
         Time: new Date(e.date).toLocaleTimeString().replace(/\u202F/g, " "),
         Type: e.type === "credit" ? "Income" : "Transaction",
         Category: category ? category.name : "Unknown",
-        Amount: `₹${e.amount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        Amount: formatCurrency(e.amount, store.getState().settings.currency),
         Description: e.description,
         Merchant: e.merchant || "",
         Account: account ? account.name : "Unassigned",
@@ -616,10 +618,11 @@ export const exportToPDF = async (
           const percentage = (amount / totalDebit) * 100;
           const color = colors[colorIndex % colors.length];
           gradientStops.push(`${color} ${cumulativePercentage}% ${cumulativePercentage + percentage}%`);
+          const formattedAmt = formatCurrency(amount, store.getState().settings.currency);
           legendItems.push(`
-            <div class="legend-item">
-              <div class="legend-color" style="background-color: ${color};"></div>
-              <span>${escapeHTML(name)} (₹${amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })})</span>
+            <div class="category-item">
+              <span class="category-color" style="background-color: ${escapeHTML(color)};"></span>
+              <span>${escapeHTML(name)} (${formattedAmt})</span>
             </div>
           `);
           cumulativePercentage += percentage;
