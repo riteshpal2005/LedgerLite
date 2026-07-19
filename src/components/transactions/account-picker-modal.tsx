@@ -5,6 +5,7 @@ import { withDatabase } from '@nozbe/watermelondb/react';
 import withObservables from '@nozbe/watermelondb/react/withObservables';
 import { Database } from '@nozbe/watermelondb';
 import Account from '../../server/db/models/Account';
+import { useCurrency } from '../../hooks/useCurrency';
 
 interface AccountPickerModalProps {
   visible: boolean;
@@ -15,6 +16,7 @@ interface AccountPickerModalProps {
 }
 
 const AccountPickerModalComponent = ({ visible, onClose, onSelect, accounts, selectedAccountId }: AccountPickerModalProps) => {
+  const { formatCurrency } = useCurrency();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableOpacity 
@@ -36,7 +38,7 @@ const AccountPickerModalComponent = ({ visible, onClose, onSelect, accounts, sel
                     {account.name}
                   </Text>
                   <Text className={`text-sm ${isSelected ? 'text-[#a855f7]' : 'text-gray-400'}`}>
-                    ₹{(account.currentBalance ?? account.balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    {formatCurrency(account.currentBalance ?? account.balance)}
                   </Text>
                 </TouchableOpacity>
               );
