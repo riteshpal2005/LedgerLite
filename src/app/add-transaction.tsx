@@ -15,12 +15,14 @@ import { CustomDateTimePickerModal } from "../components/transactions/custom-dat
 import { CustomAlert, useAlert } from "../components/ui/custom-alert";
 import { format } from "date-fns";
 import { Alert, Platform } from "react-native";
+import { useCurrency } from "../hooks/useCurrency";
 
 export default function AddTransactionScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const database = useDatabase();
   const { showAlert, hideAlert, alertConfig } = useAlert();
+  const { formatCurrency, getCurrencySymbol } = useCurrency();
 
   const [type, setType] = React.useState<'credit' | 'debit' | 'transfer'>('debit');
   const [amount, setAmount] = React.useState<string>('');
@@ -252,7 +254,7 @@ export default function AddTransactionScreen() {
             <View>
               <Text className="text-white text-sm font-bold">{selectedAccount?.name || "Select Account"}</Text>
               {selectedAccount && (
-                <Text className="text-gray-400 text-xs mt-0.5">₹{(selectedAccount.currentBalance ?? selectedAccount.balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</Text>
+                <Text className="text-gray-400 text-xs mt-0.5">{formatCurrency(selectedAccount.currentBalance ?? selectedAccount.balance)}</Text>
               )}
             </View>
           </View>
@@ -263,7 +265,7 @@ export default function AddTransactionScreen() {
         <Text className="text-gray-400 text-xs mb-2 ml-1">Amount</Text>
         <View className="bg-[#0f1011] rounded-2xl p-4 flex-row items-center justify-between mb-6 border border-[#1b1b1c]">
           <View className="flex-row items-center flex-1">
-            <Text className={`${type === 'debit' ? 'text-[#ef4444]' : 'text-green-500'} text-2xl font-bold mr-2`}>₹</Text>
+            <Text className={`${type === 'debit' ? 'text-[#ef4444]' : 'text-green-500'} text-2xl font-bold mr-2`}>{getCurrencySymbol()}</Text>
             <TextInput
               ref={amountInputRef}
               className="text-white text-3xl font-bold tracking-wider flex-1"
