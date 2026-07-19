@@ -7,6 +7,7 @@ import { completeOnboarding } from "../../store/settingsSlice";
 import { router } from "expo-router";
 import { triggerHaptic } from "../../utils/haptics";
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
+import { useCurrency } from "../../hooks/useCurrency";
 
 const { width } = Dimensions.get("window");
 
@@ -47,6 +48,7 @@ const SLIDES = [
 
 export default function OnboardingScreen() {
   const dispatch = useDispatch();
+  const { getCurrencySymbol } = useCurrency();
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
 
@@ -131,7 +133,7 @@ export default function OnboardingScreen() {
             <View className="w-40 h-40 items-center justify-center mb-10 relative">
                <Ionicons name={slide.icon} size={120} color="#6642f8" />
                {slide.id === "1" && (
-                 <Text className="absolute text-white text-4xl font-bold mt-2 ml-4">₹</Text>
+                 <Text className="absolute text-white text-4xl font-bold mt-2 ml-4">{getCurrencySymbol()}</Text>
                )}
             </View>
 
