@@ -45,8 +45,8 @@ export function AboutSection() {
 
         <Pressable
           onPress={() => handleOpenURL(DEVELOPER_URL)}
-          className="p-4 border-b border-bordercolor flex-row items-center justify-between active:opacity-80"
-        >
+          className="p-4 border-b border-bordercolor flex-row items-center justify-between active:opacity-80">
+          
           <View className="flex-row items-center">
             <Ionicons name="code-slash" size={20} color="#10b981" />
             <Text className="text-primary font-medium ml-3">Developer</Text>
@@ -59,8 +59,8 @@ export function AboutSection() {
 
         <Pressable
           onPress={() => handleOpenURL(GITHUB_URL)}
-          className="p-4 border-b border-bordercolor flex-row items-center justify-between active:opacity-80"
-        >
+          className="p-4 border-b border-bordercolor flex-row items-center justify-between active:opacity-80">
+          
           <View className="flex-row items-center">
             <Ionicons name="logo-github" size={20} color="#a855f7" />
             <Text className="text-primary font-medium ml-3">Source Code</Text>
@@ -70,8 +70,8 @@ export function AboutSection() {
 
         <Pressable
           onPress={() => handleOpenURL(PRIVACY_POLICY_URL)}
-          className="p-4 border-b border-bordercolor flex-row items-center justify-between active:opacity-80"
-        >
+          className="p-4 border-b border-bordercolor flex-row items-center justify-between active:opacity-80">
+          
           <View className="flex-row items-center">
             <Ionicons name="shield-checkmark" size={20} color="#3b82f6" />
             <Text className="text-primary font-medium ml-3">
@@ -83,8 +83,8 @@ export function AboutSection() {
 
         <Pressable
           onPress={() => handleOpenURL(TOS_URL)}
-          className="p-4 flex-row items-center justify-between active:opacity-80"
-        >
+          className="p-4 flex-row items-center justify-between active:opacity-80">
+          
           <View className="flex-row items-center">
             <Ionicons name="document-text" size={20} color="#f59e0b" />
             <Text className="text-primary font-medium ml-3">
@@ -94,6 +94,6 @@ export function AboutSection() {
           <Ionicons name="open-outline" size={18} color="#71717a" />
         </Pressable>
       </Card>
-    </View>
-  );
+    </View>);
+
 }

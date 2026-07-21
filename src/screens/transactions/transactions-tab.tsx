@@ -4,8 +4,8 @@ import React, {
   useCallback,
   useRef,
   useEffect,
-  useLayoutEffect,
-} from "react";
+  useLayoutEffect } from
+"react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { useFocusEffect, useGlobalSearchParams, useRouter } from "expo-router";
@@ -15,13 +15,13 @@ import {
   TransactionSortFilter,
   SortMode,
   FilterType,
-  FilterAccountId,
-} from "../../components/transactions/transaction-sort-filter";
+  FilterAccountId } from
+"../../components/transactions/transaction-sort-filter";
 import { AddTransactionSheet } from "../../components/transactions/add-transaction-sheet";
 import { AddAccountModal } from "../../components/accounts/add-account-modal";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { renderStandardBackdrop } from "../../components/ui/bottom-sheet-utils";
+
 import { useTheme } from "../../hooks/theme/ThemeContext";
 import { Transaction } from "../../server/db/schema";
 import Constants, { ExecutionEnvironment } from "expo-constants";
@@ -34,33 +34,33 @@ export default function Home() {
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [filterType, setFilterType] = useState<FilterType>("all");
   const [filterAccountId, setFilterAccountId] =
-    useState<FilterAccountId>("all");
+  useState<FilterAccountId>("all");
   const [selectedTransactionToEdit, setSelectedTransactionToEdit] = useState<
-    Transaction | undefined
-  >(undefined);
+    Transaction | undefined>(
+    undefined);
   const [selectedTransactionToDuplicate, setSelectedTransactionToDuplicate] = useState<
-    Transaction | undefined
-  >(undefined);
+    Transaction | undefined>(
+    undefined);
   const [showExitModal, setShowExitModal] = useState(false);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const addAccountSheetRef = useRef<BottomSheetModal>(null);
-  const searchTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   const {
-    bottomSheetBackgroundColor,
-    bottomSheetIndicatorColor,
-    bottomSheetBorderColor,
-    colors,
+
+
+
+    colors
   } = useTheme();
 
-  const renderBackdrop = useCallback(renderStandardBackdrop, []);
+
 
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const transactions = useSelector((state: RootState) => state.transactions.transactions);
-  const uncategorizedCount = transactions.filter(e => 
-    e.categoryId === 'uncategorized' && 
-    (filterAccountId === "all" || e.accountId === filterAccountId || !e.accountId)
+  const uncategorizedCount = transactions.filter((e) =>
+  e.categoryId === 'uncategorized' && (
+  filterAccountId === "all" || e.accountId === filterAccountId || !e.accountId)
   ).length;
 
   useFocusEffect(
@@ -72,10 +72,10 @@ export default function Home() {
 
       const subscription = BackHandler.addEventListener(
         "hardwareBackPress",
-        onBackPress,
+        onBackPress
       );
       return () => subscription.remove();
-    }, []),
+    }, [])
   );
 
   const handlePresentModalPress = () => {
@@ -88,7 +88,7 @@ export default function Home() {
     bottomSheetModalRef.current?.present();
   };
 
-  const { openAddTransaction } = useGlobalSearchParams<{ openAddTransaction: string }>();
+  const { openAddTransaction } = useGlobalSearchParams<{openAddTransaction: string;}>();
   const router = useRouter();
 
   useEffect(() => {
@@ -127,19 +127,19 @@ export default function Home() {
       <View className="flex-row items-center mb-6 mt-2 z-50 relative">
         <TransactionSearchBar
           searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-        />
+          setSearchQuery={setSearchQuery} />
+        
         <TransactionSortFilter
           sortMode={sortMode}
           setSortMode={setSortMode}
           filterType={filterType}
           setFilterType={setFilterType}
           filterAccountId={filterAccountId}
-          setFilterAccountId={setFilterAccountId}
-        />
+          setFilterAccountId={setFilterAccountId} />
+        
       </View>
-      {importProgress > 0 && (
-        <View className="mb-4 bg-surface rounded-2xl p-4 border border-bordercolor">
+      {importProgress > 0 &&
+      <View className="mb-4 bg-surface rounded-2xl p-4 border border-bordercolor">
           <View className="flex-row justify-between items-center mb-2">
             <Text className="text-primary font-semibold text-sm">
               Importing Transactions...
@@ -150,20 +150,20 @@ export default function Home() {
           </View>
           <View className="h-2 w-full bg-bordercolor rounded-full overflow-hidden">
             <View
-              className="h-full bg-blue-500 rounded-full"
-              style={{ width: `${importProgress}%` }}
-            />
+            className="h-full bg-blue-500 rounded-full"
+            style={{ width: `${importProgress}%` }} />
+          
           </View>
         </View>
-      )}
+      }
 
-      {uncategorizedCount > 0 && (
-        <Pressable 
-          onPress={() => {
-            setSearchQuery("uncategorized");
-          }}
-          className="mb-4 bg-yellow-500/10 rounded-2xl p-4 border border-yellow-500/30 flex-row items-center justify-between"
-        >
+      {uncategorizedCount > 0 &&
+      <Pressable
+        onPress={() => {
+          setSearchQuery("uncategorized");
+        }}
+        className="mb-4 bg-yellow-500/10 rounded-2xl p-4 border border-yellow-500/30 flex-row items-center justify-between">
+        
           <View className="flex-1 mr-4">
             <Text className="text-yellow-600 dark:text-yellow-400 font-bold text-sm mb-1">
               ⚡ Action Required
@@ -174,7 +174,7 @@ export default function Home() {
           </View>
           <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
         </Pressable>
-      )}
+      }
 
       <TransactionList
         searchQuery={searchQuery}
@@ -182,20 +182,20 @@ export default function Home() {
         filterType={filterType}
         filterAccountId={filterAccountId}
         onTransactionPress={handleTransactionPress}
-        onTransactionLongPress={handleTransactionLongPress}
-      />
+        onTransactionLongPress={handleTransactionLongPress} />
+      
       <FAB
         icon={
-          <Ionicons name="add" size={32} color={colors.brandPrimaryContent} />
+        <Ionicons name="add" size={32} color={colors.brandPrimaryContent} />
         }
-        onPress={handlePresentModalPress}
-      />
+        onPress={handlePresentModalPress} />
+      
 
       <AddTransactionSheet
         bottomSheetRef={bottomSheetModalRef}
         initialTransaction={selectedTransactionToEdit}
-        duplicateTransaction={selectedTransactionToDuplicate}
-      />
+        duplicateTransaction={selectedTransactionToDuplicate} />
+      
       <AddAccountModal bottomSheetRef={addAccountSheetRef} />
 
       <CustomAlert
@@ -211,13 +211,13 @@ export default function Home() {
             setShowExitModal(false);
             Alert.alert(
               "Expo Go",
-              "App exit is disabled inside the Expo Go sandbox. In a production APK, this will close the app.",
+              "App exit is disabled inside the Expo Go sandbox. In a production APK, this will close the app."
             );
           } else {
             BackHandler.exitApp();
           }
-        }}
-      />
-    </View>
-  );
+        }} />
+      
+    </View>);
+
 }

@@ -12,8 +12,8 @@ export function AuthHeader({ isDark, title, subtitle }: AuthHeaderProps) {
   return (
     <Animated.View
       entering={FadeInDown.duration(600).springify()}
-      className="items-center mb-10 mt-24"
-    >
+      className="items-center mb-10 mt-24">
+      
       <View className="w-32 h-32 items-center justify-center mb-2">
         <Image
           source={require("../../../assets/splash-icon.png")}
@@ -22,9 +22,9 @@ export function AuthHeader({ isDark, title, subtitle }: AuthHeaderProps) {
             height: "100%",
             resizeMode: "contain",
             transform: [{ scale: 1.8 }],
-            tintColor: "#2563eb",
-          }}
-        />
+            tintColor: "#2563eb"
+          }} />
+        
       </View>
       <Text className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>
         {title}
@@ -32,6 +32,6 @@ export function AuthHeader({ isDark, title, subtitle }: AuthHeaderProps) {
       <Text className={`text-base mt-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
         {subtitle}
       </Text>
-    </Animated.View>
-  );
+    </Animated.View>);
+
 }

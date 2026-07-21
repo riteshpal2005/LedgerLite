@@ -18,39 +18,39 @@ const AccountPickerModalComponent = ({ visible, onClose, onSelect, accounts, sel
   const { formatCurrency } = useCurrency();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <TouchableOpacity 
-        className="flex-1 bg-black/50 justify-center items-center p-6" 
-        activeOpacity={1} 
-        onPress={onClose}
-      >
+      <TouchableOpacity
+        className="flex-1 bg-black/50 justify-center items-center p-6"
+        activeOpacity={1}
+        onPress={onClose}>
+        
         <View className="bg-[#0f1011] w-full rounded-3xl p-2 border border-[#1b1b1c]">
           <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 300 }}>
-            {accounts.map(account => {
+            {accounts.map((account) => {
               const isSelected = account.id === selectedAccountId;
               return (
-                <TouchableOpacity 
+                <TouchableOpacity
                   key={account.id}
-                  onPress={() => { onSelect(account); onClose(); }}
-                  className={`flex-row items-center justify-between p-4 rounded-2xl ${isSelected ? 'bg-[#1b1b1c]' : ''}`}
-                >
+                  onPress={() => {onSelect(account);onClose();}}
+                  className={`flex-row items-center justify-between p-4 rounded-2xl ${isSelected ? 'bg-[#1b1b1c]' : ''}`}>
+                  
                   <Text className={`font-bold text-base ${isSelected ? 'text-[#a855f7]' : 'text-white'}`}>
                     {account.name}
                   </Text>
                   <Text className={`text-sm ${isSelected ? 'text-[#a855f7]' : 'text-gray-400'}`}>
                     {formatCurrency(account.currentBalance ?? account.balance)}
                   </Text>
-                </TouchableOpacity>
-              );
+                </TouchableOpacity>);
+
             })}
           </ScrollView>
         </View>
       </TouchableOpacity>
-    </Modal>
-  );
+    </Modal>);
+
 };
 
-const enhance = withObservables(['database'], ({ database }: { database: Database }) => ({
-  accounts: database.collections.get<Account>('accounts').query().observe(),
+const enhance = withObservables(['database'], ({ database }: {database: Database;}) => ({
+  accounts: database.collections.get<Account>('accounts').query().observe()
 }));
 
 export const AccountPickerModal = withDatabase(enhance(AccountPickerModalComponent));

@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { useRouter, useSegments, useRootNavigationState } from "expo-router";
 
 export function useProtectedRoute(
-  user: any,
-  isLoading: boolean,
-  hasCompletedOnboarding: boolean,
-  isSettingsLoaded: boolean,
-) {
+user: any,
+isLoading: boolean,
+hasCompletedOnboarding: boolean,
+isSettingsLoaded: boolean)
+{
   const segments = useSegments();
   const router = useRouter();
   const navigationState = useRootNavigationState();
@@ -18,23 +18,23 @@ export function useProtectedRoute(
     const isOnboarding = segments[0] === "onboarding";
     const isDeveloper = segments[0] === "developer";
 
-    if (isDeveloper) return; // Allow access to developer menu
+    if (isDeveloper) return;
 
     if (!hasCompletedOnboarding) {
       if (!isOnboarding && !inAuthGroup) {
         router.replace("/onboarding");
       }
     } else {
-      if (isOnboarding || (user && !user.isAnonymous && inAuthGroup)) {
+      if (isOnboarding || user && !user.isAnonymous && inAuthGroup) {
         router.replace("/(tabs)");
       }
     }
   }, [
-    user,
-    isLoading,
-    segments,
-    hasCompletedOnboarding,
-    navigationState?.key,
-    isSettingsLoaded,
-  ]);
+  user,
+  isLoading,
+  segments,
+  hasCompletedOnboarding,
+  navigationState?.key,
+  isSettingsLoaded]
+  );
 }

@@ -60,15 +60,15 @@ export interface DatabaseActions {
   restoreCategory(c: Category): Promise<void>;
   restoreAccount(a: Account): Promise<void>;
   deleteCorruptedData(): Promise<void>;
-  markMultipleAsSynced(updates: { id: string; table: "transactions" | "categories" | "accounts" }[]): Promise<void>;
-  getPendingSyncData(): Promise<{ pendingTransactions: Transaction[]; pendingCategories: Category[]; pendingAccounts: Account[] }>;
+  markMultipleAsSynced(updates: {id: string;table: "transactions" | "categories" | "accounts";}[]): Promise<void>;
+  getPendingSyncData(): Promise<{pendingTransactions: Transaction[];pendingCategories: Category[];pendingAccounts: Account[];}>;
 }
 
 export async function initializeDatabase(db: any) {
   try {
-    // Add current_balance if it doesn't exist
+
     await db.execAsync(`ALTER TABLE accounts ADD COLUMN current_balance REAL;`);
-  } catch(e) {
-    // Column already exists, safe to ignore
+  } catch (e) {
+
   }
 }

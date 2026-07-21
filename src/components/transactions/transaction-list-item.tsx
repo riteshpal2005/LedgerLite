@@ -19,7 +19,7 @@ const TransactionListItemComponent = ({ transaction, category, isLast }: Transac
   const isIncome = transaction.type === "credit";
   const amountColor = isIncome ? "text-green-500" : "text-red-500";
   const sign = isIncome ? "+" : "-";
-  
+
   const { formatCurrency } = useCurrency();
 
   const title = category.name;
@@ -30,10 +30,10 @@ const TransactionListItemComponent = ({ transaction, category, isLast }: Transac
     <TouchableOpacity onPress={() => router.push({ pathname: '/add-transaction', params: { id: transaction.id } })}>
       <View className="flex-row justify-between items-center p-3">
         <View className="flex-row items-center flex-1">
-          <View 
+          <View
             className="w-12 h-12 rounded-full items-center justify-center mr-3"
-            style={{ backgroundColor: `${category.color}30` }}
-          >
+            style={{ backgroundColor: `${category.color}30` }}>
+            
             <Ionicons name={category.icon as any} size={20} color={category.color} />
           </View>
           <View className="flex-1 mr-2">
@@ -54,13 +54,13 @@ const TransactionListItemComponent = ({ transaction, category, isLast }: Transac
         </View>
       </View>
       {!isLast && <View className="h-px bg-[#1b1b1c] mx-3" />}
-    </TouchableOpacity>
-  );
+    </TouchableOpacity>);
+
 };
 
-const enhance = withObservables(['transaction'], ({ transaction }: { transaction: Transaction }) => ({
+const enhance = withObservables(['transaction'], ({ transaction }: {transaction: Transaction;}) => ({
   transaction,
-  category: transaction.category,
+  category: transaction.category
 }));
 
 export const TransactionListItem = enhance(TransactionListItemComponent);

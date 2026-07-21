@@ -1,22 +1,22 @@
-/**
- * Standardized currency formatting utility for the entire app.
- */
 
-export type CurrencyCode = 
-  // North America
-  | 'USD' | 'CAD' | 'MXN'
-  // South America
-  | 'BRL' | 'ARS' | 'COP' | 'CLP' | 'PEN'
-  // Europe
-  | 'EUR' | 'GBP' | 'CHF' | 'SEK' | 'NOK' | 'DKK' | 'PLN' | 'CZK' | 'HUF' | 'RON' | 'RUB'
-  // Asia
-  | 'JPY' | 'CNY' | 'INR' | 'KRW' | 'SGD' | 'HKD' | 'TWD' | 'IDR' | 'MYR' | 'THB' | 'VND' | 'PHP'
-  // Middle East
-  | 'AED' | 'SAR' | 'ILS' | 'TRY' | 'QAR'
-  // Africa
-  | 'ZAR' | 'EGP' | 'NGN' | 'KES' | 'GHS'
-  // Oceania
-  | 'AUD' | 'NZD';
+
+
+
+export type CurrencyCode =
+
+'USD' | 'CAD' | 'MXN' |
+
+'BRL' | 'ARS' | 'COP' | 'CLP' | 'PEN' |
+
+'EUR' | 'GBP' | 'CHF' | 'SEK' | 'NOK' | 'DKK' | 'PLN' | 'CZK' | 'HUF' | 'RON' | 'RUB' |
+
+'JPY' | 'CNY' | 'INR' | 'KRW' | 'SGD' | 'HKD' | 'TWD' | 'IDR' | 'MYR' | 'THB' | 'VND' | 'PHP' |
+
+'AED' | 'SAR' | 'ILS' | 'TRY' | 'QAR' |
+
+'ZAR' | 'EGP' | 'NGN' | 'KES' | 'GHS' |
+
+'AUD' | 'NZD';
 
 export interface CurrencyConfig {
   code: CurrencyCode;
@@ -27,19 +27,19 @@ export interface CurrencyConfig {
 }
 
 export const MAJOR_CURRENCIES: Record<CurrencyCode, CurrencyConfig> = {
-  // North America
+
   USD: { code: 'USD', symbol: '$', name: 'US Dollar', locale: 'en-US', flag: '🇺🇸' },
   CAD: { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar', locale: 'en-CA', flag: '🇨🇦' },
   MXN: { code: 'MXN', symbol: '$', name: 'Mexican Peso', locale: 'es-MX', flag: '🇲🇽' },
 
-  // South America
+
   BRL: { code: 'BRL', symbol: 'R$', name: 'Brazilian Real', locale: 'pt-BR', flag: '🇧🇷' },
   ARS: { code: 'ARS', symbol: '$', name: 'Argentine Peso', locale: 'es-AR', flag: '🇦🇷' },
   COP: { code: 'COP', symbol: '$', name: 'Colombian Peso', locale: 'es-CO', flag: '🇨🇴' },
   CLP: { code: 'CLP', symbol: '$', name: 'Chilean Peso', locale: 'es-CL', flag: '🇨🇱' },
   PEN: { code: 'PEN', symbol: 'S/', name: 'Peruvian Sol', locale: 'es-PE', flag: '🇵🇪' },
 
-  // Europe
+
   EUR: { code: 'EUR', symbol: '€', name: 'Euro', locale: 'de-DE', flag: '🇪🇺' },
   GBP: { code: 'GBP', symbol: '£', name: 'British Pound', locale: 'en-GB', flag: '🇬🇧' },
   CHF: { code: 'CHF', symbol: 'CHF', name: 'Swiss Franc', locale: 'de-CH', flag: '🇨🇭' },
@@ -52,7 +52,7 @@ export const MAJOR_CURRENCIES: Record<CurrencyCode, CurrencyConfig> = {
   RON: { code: 'RON', symbol: 'lei', name: 'Romanian Leu', locale: 'ro-RO', flag: '🇷🇴' },
   RUB: { code: 'RUB', symbol: '₽', name: 'Russian Ruble', locale: 'ru-RU', flag: '🇷🇺' },
 
-  // Asia
+
   JPY: { code: 'JPY', symbol: '¥', name: 'Japanese Yen', locale: 'ja-JP', flag: '🇯🇵' },
   CNY: { code: 'CNY', symbol: '¥', name: 'Chinese Yuan', locale: 'zh-CN', flag: '🇨🇳' },
   INR: { code: 'INR', symbol: '₹', name: 'Indian Rupee', locale: 'en-IN', flag: '🇮🇳' },
@@ -66,52 +66,52 @@ export const MAJOR_CURRENCIES: Record<CurrencyCode, CurrencyConfig> = {
   VND: { code: 'VND', symbol: '₫', name: 'Vietnamese Dong', locale: 'vi-VN', flag: '🇻🇳' },
   PHP: { code: 'PHP', symbol: '₱', name: 'Philippine Peso', locale: 'en-PH', flag: '🇵🇭' },
 
-  // Middle East
+
   AED: { code: 'AED', symbol: 'د.إ', name: 'UAE Dirham', locale: 'ar-AE', flag: '🇦🇪' },
   SAR: { code: 'SAR', symbol: '﷼', name: 'Saudi Riyal', locale: 'ar-SA', flag: '🇸🇦' },
   ILS: { code: 'ILS', symbol: '₪', name: 'Israeli New Shekel', locale: 'he-IL', flag: '🇮🇱' },
   TRY: { code: 'TRY', symbol: '₺', name: 'Turkish Lira', locale: 'tr-TR', flag: '🇹🇷' },
   QAR: { code: 'QAR', symbol: 'ر.ق', name: 'Qatari Riyal', locale: 'ar-QA', flag: '🇶🇦' },
 
-  // Africa
+
   ZAR: { code: 'ZAR', symbol: 'R', name: 'South African Rand', locale: 'en-ZA', flag: '🇿🇦' },
   EGP: { code: 'EGP', symbol: 'E£', name: 'Egyptian Pound', locale: 'ar-EG', flag: '🇪🇬' },
   NGN: { code: 'NGN', symbol: '₦', name: 'Nigerian Naira', locale: 'en-NG', flag: '🇳🇬' },
   KES: { code: 'KES', symbol: 'KSh', name: 'Kenyan Shilling', locale: 'en-KE', flag: '🇰🇪' },
   GHS: { code: 'GHS', symbol: 'GH₵', name: 'Ghanaian Cedi', locale: 'en-GH', flag: '🇬🇭' },
 
-  // Oceania
+
   AUD: { code: 'AUD', symbol: 'A$', name: 'Australian Dollar', locale: 'en-AU', flag: '🇦🇺' },
-  NZD: { code: 'NZD', symbol: 'NZ$', name: 'New Zealand Dollar', locale: 'en-NZ', flag: '🇳🇿' },
+  NZD: { code: 'NZD', symbol: 'NZ$', name: 'New Zealand Dollar', locale: 'en-NZ', flag: '🇳🇿' }
 };
 
 export const POPULAR_CURRENCIES: CurrencyCode[] = ['USD', 'INR', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF'];
 
-/**
- * Returns the symbol for a given currency code. Defaults to '₹' if unknown.
- */
+
+
+
 export function getCurrencySymbol(code: string): string {
   if (code in MAJOR_CURRENCIES) {
     return MAJOR_CURRENCIES[code as CurrencyCode].symbol;
   }
-  return '₹'; // Default fallback
+  return '₹';
 }
 
-/**
- * Convenience method to format a number into a currency string based on currency code.
- * Example: formatCurrency(1234.5, 'USD') -> "$1,234.50"
- */
+
+
+
+
 export const formatCurrency = (amount: number, code: string = 'INR'): string => {
   const currencyConfig = MAJOR_CURRENCIES[code as CurrencyCode] || MAJOR_CURRENCIES['INR'];
-  
-  // Some currencies don't typically use fraction digits
+
+
   const isZeroDecimal = ['JPY', 'KRW', 'VND', 'CLP', 'IDR'].includes(currencyConfig.code);
-  
+
   const formatter = new Intl.NumberFormat(currencyConfig.locale, {
     style: 'currency',
     currency: currencyConfig.code,
     minimumFractionDigits: isZeroDecimal ? 0 : 2,
-    maximumFractionDigits: isZeroDecimal ? 0 : 2,
+    maximumFractionDigits: isZeroDecimal ? 0 : 2
   });
   return formatter.format(amount);
 };

@@ -7,7 +7,7 @@ interface AccountState {
 }
 
 const initialState: AccountState = {
-  accounts: [],
+  accounts: []
 };
 
 export const accountSlice = createSlice({
@@ -22,7 +22,7 @@ export const accountSlice = createSlice({
     },
     updateAccountInRedux: (state, action: PayloadAction<Account>) => {
       const index = state.accounts.findIndex(
-        (acc) => acc.id === action.payload.id,
+        (acc) => acc.id === action.payload.id
       );
       if (index !== -1) {
         state.accounts[index] = action.payload;
@@ -30,17 +30,17 @@ export const accountSlice = createSlice({
     },
     removeAccountFromRedux: (state, action: PayloadAction<string>) => {
       state.accounts = state.accounts.filter(
-        (acc) => acc.id !== action.payload,
+        (acc) => acc.id !== action.payload
       );
-    },
-  },
+    }
+  }
 });
 
 export const {
   setAccounts,
   addAccountToRedux,
   updateAccountInRedux,
-  removeAccountFromRedux,
+  removeAccountFromRedux
 } = accountSlice.actions;
 
 export const selectAccountsWithBalances = createSelector(
@@ -49,7 +49,7 @@ export const selectAccountsWithBalances = createSelector(
   (accounts, transactions): AccountWithBalance[] => {
     return accounts.map((account) => {
       let currentBalance = account.balance;
-      
+
       const accountTransactions = transactions.filter((e) => e.accountId === account.id);
       if (accountTransactions.length > 0) {
         const sortedTransactions = [...accountTransactions].sort((a, b) => b.date - a.date);
@@ -58,13 +58,13 @@ export const selectAccountsWithBalances = createSelector(
           currentBalance = latestTx.balance_after;
         } else {
 
-          const totalIncome = accountTransactions
-            .filter((e) => e.type === "credit" && e.categoryId !== 'uncategorized')
-            .reduce((sum, e) => sum + e.amount, 0);
+          const totalIncome = accountTransactions.
+          filter((e) => e.type === "credit" && e.categoryId !== 'uncategorized').
+          reduce((sum, e) => sum + e.amount, 0);
 
-          const totalTransaction = accountTransactions
-            .filter((e) => e.type === "debit" && e.categoryId !== 'uncategorized')
-            .reduce((sum, e) => sum + e.amount, 0);
+          const totalTransaction = accountTransactions.
+          filter((e) => e.type === "debit" && e.categoryId !== 'uncategorized').
+          reduce((sum, e) => sum + e.amount, 0);
 
           currentBalance = account.balance + totalIncome - totalTransaction;
         }
@@ -72,10 +72,10 @@ export const selectAccountsWithBalances = createSelector(
 
       return {
         ...account,
-        currentBalance,
+        currentBalance
       };
     });
-  },
+  }
 );
 
 export const selectTotalBalance = createSelector(

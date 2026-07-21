@@ -4,22 +4,22 @@ import { CategoryIcon } from "../../components/ui/category-icon";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 
 export const PRESET_ICONS = [
-  "cart", "basket", "pricetag", "pricetags", "fast-food", "restaurant",
-  "cafe", "home", "key", "car", "bus", "airplane", "train", "subway",
-  "boat", "bicycle", "medical", "medkit", "thermometer", "bandage",
-  "fitness", "barbell", "briefcase", "cash", "card", "wallet", "gift",
-  "heart", "laptop", "phone-portrait", "game-controller", "tv", "paw",
-  "shirt", "book", "school", "build", "construct", "water", "flash",
-  "flame", "bed", "beer", "wine", "pizza", "ice-cream", "cut", "flower",
-  "hammer", "color-palette", "musical-notes", "planet", "star", "umbrella",
-  "wifi", "people", "people-outline", "happy", "mdi-pill", "mdi-syringe",
-  "mdi-bottle-tonic-plus", "mdi-piggy-bank", "mdi-hand-coin",
-  "mdi-cash-multiple", "mdi-cash-fast", "mdi-sim", "mdi-router-wireless",
-  "mdi-gas-station", "mdi-power-plug", "mdi-file-document-outline",
-  "mdi-account-group", "mdi-account-multiple", "mdi-handshake",
-  "mdi-shopping", "mdi-hanger", "mdi-needle", "mdi-bank-transfer",
-  "mdi-mouse", "mdi-keyboard", "mdi-controller-classic", "mdi-food-apple"
-];
+"cart", "basket", "pricetag", "pricetags", "fast-food", "restaurant",
+"cafe", "home", "key", "car", "bus", "airplane", "train", "subway",
+"boat", "bicycle", "medical", "medkit", "thermometer", "bandage",
+"fitness", "barbell", "briefcase", "cash", "card", "wallet", "gift",
+"heart", "laptop", "phone-portrait", "game-controller", "tv", "paw",
+"shirt", "book", "school", "build", "construct", "water", "flash",
+"flame", "bed", "beer", "wine", "pizza", "ice-cream", "cut", "flower",
+"hammer", "color-palette", "musical-notes", "planet", "star", "umbrella",
+"wifi", "people", "people-outline", "happy", "mdi-pill", "mdi-syringe",
+"mdi-bottle-tonic-plus", "mdi-piggy-bank", "mdi-hand-coin",
+"mdi-cash-multiple", "mdi-cash-fast", "mdi-sim", "mdi-router-wireless",
+"mdi-gas-station", "mdi-power-plug", "mdi-file-document-outline",
+"mdi-account-group", "mdi-account-multiple", "mdi-handshake",
+"mdi-shopping", "mdi-hanger", "mdi-needle", "mdi-bank-transfer",
+"mdi-mouse", "mdi-keyboard", "mdi-controller-classic", "mdi-food-apple"];
+
 
 interface IconSelectorProps {
   icon: string;
@@ -31,9 +31,9 @@ export function IconSelector({ icon, setIcon, color }: IconSelectorProps) {
   const { colors } = useTheme();
   const [previewIcon, setPreviewIcon] = useState<string | null>(null);
 
-  const layoutsRef = useRef<Record<string, { x: number; y: number; w: number; h: number }>>({});
+  const layoutsRef = useRef<Record<string, {x: number;y: number;w: number;h: number;}>>({});
   const containerRef = useRef<View>(null);
-  const containerPageRef = useRef<{ x: number; y: number } | null>(null);
+  const containerPageRef = useRef<{x: number;y: number;} | null>(null);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isPreviewActiveRef = useRef(false);
   const hoveredIconRef = useRef<string | null>(null);
@@ -115,8 +115,8 @@ export function IconSelector({ icon, setIcon, color }: IconSelectorProps) {
         setPreviewIcon(null);
         hoveredIconRef.current = null;
         touchStartIconRef.current = null;
-      },
-    }),
+      }
+    })
   ).current;
 
   return (
@@ -139,26 +139,26 @@ export function IconSelector({ icon, setIcon, color }: IconSelectorProps) {
           });
         }}
         {...panResponder.panHandlers}
-        className="flex-row flex-wrap gap-3 mb-8"
-      >
-        {PRESET_ICONS.map((i) => (
-          <View
-            key={i}
-            onLayout={(e) => {
-              const { x, y, width, height } = e.nativeEvent.layout;
-              layoutsRef.current[i] = { x, y, w: width, h: height };
-            }}
-            className={`w-14 h-14 rounded-2xl items-center justify-center border ${
-              icon === i ? "bg-brand-primary border-brand-primary" : "bg-surface border-bordercolor"
-            }`}
-          >
+        className="flex-row flex-wrap gap-3 mb-8">
+        
+        {PRESET_ICONS.map((i) =>
+        <View
+          key={i}
+          onLayout={(e) => {
+            const { x, y, width, height } = e.nativeEvent.layout;
+            layoutsRef.current[i] = { x, y, w: width, h: height };
+          }}
+          className={`w-14 h-14 rounded-2xl items-center justify-center border ${
+          icon === i ? "bg-brand-primary border-brand-primary" : "bg-surface border-bordercolor"}`
+          }>
+          
             <CategoryIcon
-              name={i as any}
-              size={28}
-              color={icon === i ? colors.brandPrimaryContent : "#71717a"}
-            />
+            name={i as any}
+            size={28}
+            color={icon === i ? colors.brandPrimaryContent : "#71717a"} />
+          
           </View>
-        ))}
+        )}
       </View>
 
       <Modal visible={previewIcon !== null} transparent animationType="fade">
@@ -169,8 +169,8 @@ export function IconSelector({ icon, setIcon, color }: IconSelectorProps) {
             </Text>
             <View
               style={{ backgroundColor: color || "#3b82f6" }}
-              className="w-32 h-32 rounded-full items-center justify-center shadow-lg animate-scale-in"
-            >
+              className="w-32 h-32 rounded-full items-center justify-center shadow-lg animate-scale-in">
+              
               <CategoryIcon name={previewIcon || ""} size={64} color="white" />
             </View>
             <Text className="text-tertiary text-xs mt-4 font-semibold">
@@ -179,6 +179,6 @@ export function IconSelector({ icon, setIcon, color }: IconSelectorProps) {
           </View>
         </View>
       </Modal>
-    </>
-  );
+    </>);
+
 }

@@ -17,10 +17,10 @@ export function ToolsAndSettings() {
       <View className="bg-[#0f1011] rounded-2xl p-2 mb-6 border border-[#1b1b1c] z-50">
         
         <View className="relative z-50">
-          <TouchableOpacity 
+          <TouchableOpacity
             className="flex-row justify-between items-center p-3"
-            onPress={() => setIsAppearanceDropdownOpen(!isAppearanceDropdownOpen)}
-          >
+            onPress={() => setIsAppearanceDropdownOpen(!isAppearanceDropdownOpen)}>
+            
             <View className="flex-row items-center">
               <Ionicons name="color-palette-outline" size={20} color="#a855f7" className="mr-4" />
               <View>
@@ -33,21 +33,21 @@ export function ToolsAndSettings() {
             </View>
           </TouchableOpacity>
 
-          {isAppearanceDropdownOpen && (
-            <View className="absolute top-full right-3 mt-1 bg-[#18181b] w-40 rounded-2xl border border-[#27272a] overflow-hidden shadow-2xl z-50">
-              {(["System", "Light", "Dark"] as const).map((item, index) => (
-                <TouchableOpacity
-                  key={item}
-                  className={`px-4 py-3 ${index !== 2 ? 'border-b border-[#27272a]' : ''} ${appearance === item ? 'bg-[#a855f7]/10' : ''}`}
-                  onPress={() => { setAppearance(item); setIsAppearanceDropdownOpen(false); }}
-                >
+          {isAppearanceDropdownOpen &&
+          <View className="absolute top-full right-3 mt-1 bg-[#18181b] w-40 rounded-2xl border border-[#27272a] overflow-hidden shadow-2xl z-50">
+              {(["System", "Light", "Dark"] as const).map((item, index) =>
+            <TouchableOpacity
+              key={item}
+              className={`px-4 py-3 ${index !== 2 ? 'border-b border-[#27272a]' : ''} ${appearance === item ? 'bg-[#a855f7]/10' : ''}`}
+              onPress={() => {setAppearance(item);setIsAppearanceDropdownOpen(false);}}>
+              
                   <Text className={`text-sm ${appearance === item ? 'text-[#a855f7] font-bold' : 'text-gray-300'}`}>
                     {item}
                   </Text>
                 </TouchableOpacity>
-              ))}
+            )}
             </View>
-          )}
+          }
         </View>
 
         <View className="h-px bg-[#1b1b1c] mx-3" />
@@ -60,20 +60,20 @@ export function ToolsAndSettings() {
               <Text className="text-gray-400 text-xs mt-0.5">Vibration feedback</Text>
             </View>
           </View>
-          <Switch 
+          <Switch
             value={hapticsEnabled}
             onValueChange={setHapticsEnabled}
             trackColor={{ false: '#3e3e3e', true: '#6642f8' }}
-            thumbColor={'#ffffff'}
-          />
+            thumbColor={'#ffffff'} />
+          
         </View>
 
         <View className="h-px bg-[#1b1b1c] mx-3" />
 
-        <TouchableOpacity 
+        <TouchableOpacity
           className="flex-row justify-between items-center p-3"
-          onPress={() => router.push("/settings/currency")}
-        >
+          onPress={() => router.push("/settings/currency")}>
+          
           <View className="flex-row items-center">
             <Ionicons name="logo-usd" size={20} color="#f97316" className="mr-4" />
             <View>
@@ -124,6 +124,6 @@ export function ToolsAndSettings() {
         </TouchableOpacity>
 
       </View>
-    </>
-  );
+    </>);
+
 }

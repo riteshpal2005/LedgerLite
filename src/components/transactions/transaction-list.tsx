@@ -8,8 +8,8 @@ import { useDispatch } from "react-redux";
 import { useTransactionDatabase } from "../../server/db/useTransactionDatabase";
 import { Ionicons } from "@expo/vector-icons";
 import {
-  selectAccountsWithBalances,
-} from "../../store/accountSlice";
+  selectAccountsWithBalances } from
+"../../store/accountSlice";
 import { AccountSelectModal } from "../accounts/account-select-modal";
 import { Heading } from "../../components/ui/typography";
 import { TransactionListItem } from "./transaction-list-item";
@@ -37,21 +37,21 @@ export function TransactionList({
   filterType,
   filterAccountId,
   onTransactionPress,
-  onTransactionLongPress,
+  onTransactionLongPress
 }: TransactionListProps) {
   const {
     transactions,
     categories,
     showIcons,
     isGlobalSyncing,
-    use24HourFormat,
+    use24HourFormat
   } = useSelector(
     (state: RootState) => ({
       transactions: state.transactions.transactions,
       categories: state.categories.categories,
       showIcons: state.settings.showIcons,
       isGlobalSyncing: state.settings.isGlobalSyncing,
-      use24HourFormat: state.settings.use24HourFormat,
+      use24HourFormat: state.settings.use24HourFormat
     }),
     shallowEqual
   );
@@ -65,31 +65,31 @@ export function TransactionList({
 
   const { height: windowHeight } = useWindowDimensions();
   const skeletonCount = useMemo(
-    () => Math.max(3, Math.floor((windowHeight * 0.65) / ITEM_HEIGHT)),
-    [windowHeight],
+    () => Math.max(3, Math.floor(windowHeight * 0.65 / ITEM_HEIGHT)),
+    [windowHeight]
   );
 
   const {
-    updateTransactionAccount,
+    updateTransactionAccount
   } = useTransactionDatabase();
 
 
-  const categoryMap = useMemo(() => new Map(categories.map(c => [c.id, c])), [categories]);
-  const accountMap = useMemo(() => new Map(accounts.map(a => [a.id, a])), [accounts]);
+  const categoryMap = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories]);
+  const accountMap = useMemo(() => new Map(accounts.map((a) => [a.id, a])), [accounts]);
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter((transaction) => {
       if (filterType !== "all" && transaction.type !== filterType) return false;
 
       if (filterAccountId !== "all" && transaction.accountId !== filterAccountId)
-        return false;
+      return false;
 
       if (!searchQuery) return true;
       const lowerQuery = searchQuery.toLowerCase();
       const matchesDesc = transaction.description.toLowerCase().includes(lowerQuery);
-      const matchesMerchant = transaction.merchant
-        ?.toLocaleLowerCase()
-        .includes(lowerQuery);
+      const matchesMerchant = transaction.merchant?.
+      toLocaleLowerCase().
+      includes(lowerQuery);
       const matchesAmount = transaction.amount.toString().includes(lowerQuery);
       const cat = categoryMap.get(transaction.categoryId);
       const matchesCategory = cat?.name.toLowerCase().includes(lowerQuery) || false;
@@ -127,43 +127,43 @@ export function TransactionList({
 
         <Animated.View entering={FadeIn.duration(400)} className="flex-1">
           <FlashList
-            data={sortedTransactions.slice(0, displayLimit)}
-            // @ts-ignore
-            estimatedItemSize={ITEM_HEIGHT}
-            showsVerticalScrollIndicator={false}
-            onEndReached={() => {
-              if (displayLimit < sortedTransactions.length) {
-                setDisplayLimit((prev) => prev + 50);
-              }
-            }}
-            onEndReachedThreshold={0.5}
-            keyExtractor={(item) => item.id}
-            getItemType={(item) => typeof item === "string" ? "header" : "transaction"}
-            extraData={use24HourFormat}
-            contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
-            ListEmptyComponent={<EmptyTransactionState searchQuery={searchQuery} />}
-            renderItem={({ item }) => {
-              const category = categoryMap.get(item.categoryId);
-              const account = item.accountId ? accountMap.get(item.accountId) : undefined;
-              const isCredit = item.type === "credit";
+          data={sortedTransactions.slice(0, displayLimit)}
+          // @ts-ignore
+          estimatedItemSize={ITEM_HEIGHT}
+          showsVerticalScrollIndicator={false}
+          onEndReached={() => {
+            if (displayLimit < sortedTransactions.length) {
+              setDisplayLimit((prev) => prev + 50);
+            }
+          }}
+          onEndReachedThreshold={0.5}
+          keyExtractor={(item) => item.id}
+          getItemType={(item) => typeof item === "string" ? "header" : "transaction"}
+          extraData={use24HourFormat}
+          contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}
+          ListEmptyComponent={<EmptyTransactionState searchQuery={searchQuery} />}
+          renderItem={({ item }) => {
+            const category = categoryMap.get(item.categoryId);
+            const account = item.accountId ? accountMap.get(item.accountId) : undefined;
+            const isCredit = item.type === "credit";
 
-              return (
-                <TransactionListItem
-                  item={item}
-                  category={category}
-                  account={account}
-                  showIcons={showIcons}
-                  isCredit={isCredit}
-                  onPress={() => onTransactionPress && onTransactionPress(item)}
-                  onLongPress={() =>
-                    onTransactionLongPress && onTransactionLongPress(item)
-                  }
-                  onAssignAccountPress={() => setTransactionToAssign(item.id)}
-                  use24HourFormat={use24HourFormat}
-                />
-              );
-            }}
-          />
+            return (
+              <TransactionListItem
+                item={item}
+                category={category}
+                account={account}
+                showIcons={showIcons}
+                isCredit={isCredit}
+                onPress={() => onTransactionPress && onTransactionPress(item)}
+                onLongPress={() =>
+                onTransactionLongPress && onTransactionLongPress(item)
+                }
+                onAssignAccountPress={() => setTransactionToAssign(item.id)}
+                use24HourFormat={use24HourFormat} />);
+
+
+          }} />
+        
         </Animated.View>
 
 
@@ -171,36 +171,36 @@ export function TransactionList({
         visible={transactionToAssign !== null}
         onClose={() => setTransactionToAssign(null)}
         accounts={accounts}
-        onSelect={handleAssignAccount}
-      />
-    </View>
-  );
+        onSelect={handleAssignAccount} />
+      
+    </View>);
+
 }
 
 
-function EmptyTransactionState({ searchQuery }: { searchQuery: string }) {
+function EmptyTransactionState({ searchQuery }: {searchQuery: string;}) {
   const { colors } = useTheme();
 
   if (searchQuery) {
     return (
       <Animated.View
         entering={FadeIn.duration(300)}
-        className="flex-1 items-center justify-center pt-10 pb-20"
-      >
-        {/* Custom Illustration */}
+        className="flex-1 items-center justify-center pt-10 pb-20">
+        
+        {}
         <View className="w-24 h-24 mb-6 items-center justify-center relative">
-          {/* Stars */}
+          {}
           <Text className="absolute top-2 left-0 text-[#facc15] text-[18px]">✦</Text>
           <Text className="absolute bottom-6 right-0 text-[#facc15] text-[12px]">✦</Text>
 
-          {/* Magnifying Glass */}
+          {}
           <View className="relative w-16 h-16 mr-3 mb-3">
-            {/* Handle */}
+            {}
             <View className="absolute -bottom-3 -right-3 w-[26px] h-[8px] bg-[#d4d4d8] rounded-full rotate-45 z-0" />
             
-            {/* Lens */}
+            {}
             <View className="w-full h-full rounded-full border-[5px] border-[#7c3aed] bg-[#1e1b4b] z-10 overflow-hidden relative">
-              {/* Lens Reflection */}
+              {}
               <View className="absolute top-1 left-2 w-10 h-10 rounded-full border-t-4 border-l-4 border-white/20 -rotate-12" />
             </View>
           </View>
@@ -212,19 +212,19 @@ function EmptyTransactionState({ searchQuery }: { searchQuery: string }) {
         <Text className="text-center text-[13px] text-gray-400 px-10">
           Try adjusting your search or filters
         </Text>
-      </Animated.View>
-    );
+      </Animated.View>);
+
   }
 
   return (
     <Animated.View
       entering={FadeIn.duration(300)}
-      className="flex-1 w-full items-center justify-center"
-    >
+      className="flex-1 w-full items-center justify-center">
+      
       <View
         className="w-24 h-24 rounded-full items-center justify-center mb-5"
-        style={{ backgroundColor: colors.surface }}
-      >
+        style={{ backgroundColor: colors.surface }}>
+        
         <Ionicons name="receipt-outline" size={44} color={colors.textTertiary} />
       </View>
       <Text className="w-full font-bold text-2xl mb-3 text-center px-4" style={{ color: colors.text }}>
@@ -234,6 +234,6 @@ function EmptyTransactionState({ searchQuery }: { searchQuery: string }) {
         Every rupee tells a story.{"\n"}Tap the + button to log your first
         transaction.
       </Text>
-    </Animated.View>
-  );
+    </Animated.View>);
+
 }

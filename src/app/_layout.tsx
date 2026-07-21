@@ -1,7 +1,7 @@
 import {
   Stack,
-  useRouter,
-} from "expo-router";
+  useRouter } from
+"expo-router";
 import { View } from "react-native";
 import { ThemeProvider } from "../hooks/theme/ThemeContext";
 import "../global.css";
@@ -22,7 +22,7 @@ import { useState } from "react";
 import Constants, { ExecutionEnvironment } from "expo-constants";
 
 const isExpoGo =
-  Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
 if (!isExpoGo) {
   const Notifications = require("expo-notifications");
@@ -32,8 +32,8 @@ if (!isExpoGo) {
       shouldPlaySound: false,
       shouldSetBadge: false,
       shouldShowBanner: true,
-      shouldShowList: true,
-    }),
+      shouldShowList: true
+    })
   });
 }
 
@@ -42,12 +42,12 @@ SplashScreen.preventAutoHideAsync().catch(console.warn);
 import { UpdateChecker } from "../components/ui/update-checker";
 import {
   configureReanimatedLogger,
-  ReanimatedLogLevel,
-} from "react-native-reanimated";
+  ReanimatedLogLevel } from
+"react-native-reanimated";
 
 configureReanimatedLogger({
   level: ReanimatedLogLevel.warn,
-  strict: false,
+  strict: false
 });
 
 import { DatabaseProvider } from "../server/db/DatabaseProvider";
@@ -66,7 +66,7 @@ export default function RootLayout() {
           const parsed = JSON.parse(fileData);
           storage.set("ledgerLite_settings", fileData);
           store.dispatch(loadSettings(parsed));
-          try { file.delete(); } catch(e) { console.warn(e); }
+          try {file.delete();} catch (e) {console.warn(e);}
         } else {
           const data = storage.getString("ledgerLite_settings");
           if (data) {
@@ -100,8 +100,8 @@ export default function RootLayout() {
           </DatabaseProvider>
         </SQLiteProvider>
       </AuthProvider>
-    </Provider>
-  );
+    </Provider>);
+
 }
 
 
@@ -112,10 +112,10 @@ import { useDispatch } from "react-redux";
 import { setUid } from "../store/settingsSlice";
 import { SyncService } from "../server/services/syncService";
 
-function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
+function RootLayoutNav({ isSettingsLoaded }: {isSettingsLoaded: boolean;}) {
   const { user, isLoading } = useAuth();
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
     if (!isLoading) {
       dispatch(setUid(user?.uid ?? null));
@@ -123,11 +123,11 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
     }
   }, [user?.uid, isLoading]);
 
-  // Legacy Redux loading removed - Screens now use WatermelonDB withObservables directly
+
 
   const { activeThemeClass } = useTheme();
   const hasCompletedOnboarding = useSelector(
-    (state: RootState) => state.settings.hasCompletedOnboarding,
+    (state: RootState) => state.settings.hasCompletedOnboarding
   );
 
   useProtectedRoute(user, isLoading, hasCompletedOnboarding, isSettingsLoaded);
@@ -160,6 +160,6 @@ function RootLayoutNav({ isSettingsLoaded }: { isSettingsLoaded: boolean }) {
         <Stack.Screen name="signin" />
         <Stack.Screen name="signup" />
       </Stack>
-    </View>
-  );
+    </View>);
+
 }

@@ -14,7 +14,7 @@ interface LargestExpenseCardProps {
 export function LargestExpenseCard({ currentMonthTxns, categories }: LargestExpenseCardProps) {
   const { formatCurrency } = useCurrency();
   const insight = useMemo(() => {
-    const expenses = currentMonthTxns.filter(t => t.type === 'debit');
+    const expenses = currentMonthTxns.filter((t) => t.type === 'debit');
     if (expenses.length === 0) return null;
 
     let maxExpense = expenses[0];
@@ -25,13 +25,13 @@ export function LargestExpenseCard({ currentMonthTxns, categories }: LargestExpe
     }
 
     const catId = (maxExpense as any)._raw.category_id;
-    const category = categories.find(c => c.id === catId);
-    
+    const category = categories.find((c) => c.id === catId);
+
     return {
       amount: maxExpense.amount,
       date: new Date(maxExpense.date),
       categoryName: category?.name || 'Unknown',
-      description: maxExpense.description,
+      description: maxExpense.description
     };
   }, [currentMonthTxns, categories]);
 
@@ -45,8 +45,8 @@ export function LargestExpenseCard({ currentMonthTxns, categories }: LargestExpe
           <Text className="text-[#ef4444] text-[10px] font-bold tracking-wider uppercase">Largest Expense</Text>
         </View>
         <Text className="text-gray-500 text-sm italic">You don't have any expenses this month.</Text>
-      </View>
-    );
+      </View>);
+
   }
 
   return (
@@ -77,6 +77,6 @@ export function LargestExpenseCard({ currentMonthTxns, categories }: LargestExpe
           You spent {formatCurrency(insight.amount)} on {format(insight.date, 'd MMM yyyy')}.
         </Text>
       </View>
-    </View>
-  );
+    </View>);
+
 }

@@ -21,8 +21,8 @@ export function useDataImport() {
   const { showAlert } = useAlert();
 
   const [missingAccountsForImport, setMissingAccountsForImport] = useState<
-    { name: string; initialBalance: number }[]
-  >([]);
+    {name: string;initialBalance: number;}[]>(
+    []);
   const [pendingImportTransactions, setPendingImportTransactions] = useState<ImportedTransaction[]>([]);
   const [accountMappingModalVisible, setAccountMappingModalVisible] = useState(false);
 
@@ -54,7 +54,7 @@ export function useDataImport() {
         type: mapping.type,
         balance: mapping.balance,
         sync_status: "pending",
-        updated_at: Date.now(),
+        updated_at: Date.now()
       };
       const id = await addAccount(newAccount);
       newlyCreatedAccounts.push({ ...newAccount, id });
@@ -70,18 +70,18 @@ export function useDataImport() {
   };
 
   const finalizeImport = async (
-    transactionsToImport: any[],
-    newlyCreatedAccounts: Account[],
-  ) => {
+  transactionsToImport: any[],
+  newlyCreatedAccounts: Account[]) =>
+  {
     let hasPermission = false;
     let Notifications: any = null;
 
     if (!isExpoGo) {
       try {
         Notifications = require("expo-notifications");
-        const status = await Notifications.requestPermissionsAsync()
-          .then((res: any) => res.status)
-          .catch(() => "denied");
+        const status = await Notifications.requestPermissionsAsync().
+        then((res: any) => res.status).
+        catch(() => "denied");
         hasPermission = status === "granted";
       } catch (e) {
         console.error("Notifications initialization error: ", e);
@@ -93,7 +93,7 @@ export function useDataImport() {
       triggerHaptic.light();
       showAlert(
         "Notice",
-        "No new transactions were found to import (all were duplicates).",
+        "No new transactions were found to import (all were duplicates)."
       );
       return;
     }
@@ -104,9 +104,9 @@ export function useDataImport() {
       await Notifications.scheduleNotificationAsync({
         content: {
           title: "Importing Transactions",
-          body: `Starting import of ${totalCount} transactions...`,
+          body: `Starting import of ${totalCount} transactions...`
         },
-        trigger: null,
+        trigger: null
       }).catch(console.error);
     }
 
@@ -118,7 +118,7 @@ export function useDataImport() {
       const { id, _accountName, ...transactionData } = transaction;
       if (_accountName && !transactionData.accountId) {
         const mappedAccount = newlyCreatedAccounts.find(
-          (a) => a.name === _accountName,
+          (a) => a.name === _accountName
         );
         if (mappedAccount) {
           transactionData.accountId = mappedAccount.id;
@@ -134,7 +134,7 @@ export function useDataImport() {
         processedCount += chunk.length;
 
         const progressPercent = Math.min(
-          Math.round((processedCount / totalCount) * 100),
+          Math.round(processedCount / totalCount * 100),
           99
         );
         dispatch(setImportProgress(progressPercent));
@@ -143,9 +143,9 @@ export function useDataImport() {
           await Notifications.scheduleNotificationAsync({
             content: {
               title: "Importing Transactions",
-              body: `${processedCount} / ${totalCount} transactions imported (${progressPercent}%)...`,
+              body: `${processedCount} / ${totalCount} transactions imported (${progressPercent}%)...`
             },
-            trigger: null,
+            trigger: null
           }).catch(console.error);
         }
 
@@ -167,15 +167,15 @@ export function useDataImport() {
           await Notifications.scheduleNotificationAsync({
             content: {
               title: "Import Complete!",
-              body: `Successfully imported ${totalCount} transactions.`,
+              body: `Successfully imported ${totalCount} transactions.`
             },
-            trigger: null,
+            trigger: null
           }).catch(console.error);
         }
 
         showAlert(
           "Success",
-          `Imported ${totalCount} new transactions successfully.`,
+          `Imported ${totalCount} new transactions successfully.`
         );
 
         if (user) {
@@ -198,6 +198,6 @@ export function useDataImport() {
     setAccountMappingModalVisible,
     missingAccountsForImport,
     setMissingAccountsForImport,
-    setPendingImportTransactions,
+    setPendingImportTransactions
   };
 }

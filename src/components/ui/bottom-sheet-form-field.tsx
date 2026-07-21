@@ -21,10 +21,10 @@ export function BottomSheetFormField({
         className={inputClassName}
         {...textInputProps}
         style={[
-          { paddingVertical: 0, includeFontPadding: false },
-          textInputProps.style,
-        ]}
-      />
-    </View>
-  );
+        { paddingVertical: 0, includeFontPadding: false },
+        textInputProps.style]
+        } />
+      
+    </View>);
+
 }

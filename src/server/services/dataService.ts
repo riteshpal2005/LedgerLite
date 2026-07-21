@@ -11,26 +11,26 @@ import { Transaction, Account, Category, ImportedTransaction } from "../db/schem
 import { Platform } from "react-native";
 
 export type ExportColumn =
-  | "Date"
-  | "Time"
-  | "Type"
-  | "Category"
-  | "Amount"
-  | "Description"
-  | "Merchant"
-  | "Account"
-  | "Notes"
-  | "Ref/No."
-  | "AccountInitialBalance";
+"Date" |
+"Time" |
+"Type" |
+"Category" |
+"Amount" |
+"Description" |
+"Merchant" |
+"Account" |
+"Notes" |
+"Ref/No." |
+"AccountInitialBalance";
 
 export const exportData = async (
-  transactions: Transaction[],
-  accounts: Account[],
-  categories: Category[],
-  format: "csv" | "xlsx",
-  action: "save" | "share" = "share",
-  savedDirectoryUri?: string | null,
-): Promise<string | undefined> => {
+transactions: Transaction[],
+accounts: Account[],
+categories: Category[],
+format: "csv" | "xlsx",
+action: "save" | "share" = "share",
+savedDirectoryUri?: string | null)
+: Promise<string | undefined> => {
   try {
     const accountMap = new Map(accounts.map((a) => [a.id, a]));
     const categoryMap = new Map(categories.map((c) => [c.id, c]));
@@ -49,7 +49,7 @@ export const exportData = async (
         AccountName: account ? account.name : "Unassigned",
         AccountType: account ? account.type : "N/A",
         AccountInitialBalance: account ? account.balance : 0,
-        _RawDateUnix: e.date,
+        _RawDateUnix: e.date
       };
     });
 
@@ -65,10 +65,10 @@ export const exportData = async (
           const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
             targetDirUri,
             filename,
-            mimeType,
+            mimeType
           );
           await FileSystem.writeAsStringAsync(safUri, csvString, {
-            encoding: FileSystem.EncodingType.UTF8,
+            encoding: FileSystem.EncodingType.UTF8
           });
           return targetDirUri;
         } catch (e) {
@@ -79,12 +79,12 @@ export const exportData = async (
 
     const fileUri = FileSystem.cacheDirectory + filename;
     await FileSystem.writeAsStringAsync(fileUri, csvString, {
-      encoding: FileSystem.EncodingType.UTF8,
+      encoding: FileSystem.EncodingType.UTF8
     });
 
     await Sharing.shareAsync(fileUri, {
       mimeType: mimeType,
-      dialogTitle: "Export LedgerLite Data",
+      dialogTitle: "Export LedgerLite Data"
     });
 
     return undefined;
@@ -110,7 +110,7 @@ const getRowValue = (row: any, keys: string[]): any => {
 const getSystemDateFormat = (): "MDY" | "DMY" | "YMD" => {
   try {
     const parts = new Intl.DateTimeFormat().formatToParts(new Date());
-    const firstPart = parts.find(p => p.type === "year" || p.type === "month" || p.type === "day");
+    const firstPart = parts.find((p) => p.type === "year" || p.type === "month" || p.type === "day");
     if (firstPart?.type === "year") return "YMD";
     if (firstPart?.type === "day") return "DMY";
     return "MDY";
@@ -173,7 +173,7 @@ export const parseDateTime = (dateVal: any, timeVal: any): number => {
     if (timePart > 0) {
       const totalSeconds = Math.round(timePart * 86400);
       hours = Math.floor(totalSeconds / 3600);
-      minutes = Math.floor((totalSeconds % 3600) / 60);
+      minutes = Math.floor(totalSeconds % 3600 / 60);
       seconds = totalSeconds % 60;
     }
   } else {
@@ -237,12 +237,12 @@ export const parseDateTime = (dateVal: any, timeVal: any): number => {
   if (activeTimeVal) {
     const activeStr = String(activeTimeVal).trim();
     const numericTime = Number(activeTimeVal);
-    
+
     if (activeStr !== "" && !isNaN(numericTime) && numericTime >= 0) {
       const fraction = numericTime % 1;
       const totalSeconds = Math.round(fraction * 86400);
       hours = Math.floor(totalSeconds / 3600);
-      minutes = Math.floor((totalSeconds % 3600) / 60);
+      minutes = Math.floor(totalSeconds % 3600 / 60);
       seconds = totalSeconds % 60;
     } else if (activeTimeVal instanceof Date) {
       hours = activeTimeVal.getUTCHours();
@@ -267,21 +267,21 @@ export const parseDateTime = (dateVal: any, timeVal: any): number => {
 };
 
 export const importData = async (
-  categories: Category[],
-  accounts: Account[],
-  existingTransactions: Transaction[],
-): Promise<{
+categories: Category[],
+accounts: Account[],
+existingTransactions: Transaction[])
+: Promise<{
   transactions: ImportedTransaction[];
-  missingAccounts: { name: string; initialBalance: number }[];
+  missingAccounts: {name: string;initialBalance: number;}[];
 } | null> => {
   try {
     const result = await DocumentPicker.getDocumentAsync({
       type: [
-        "text/csv",
-        "text/comma-separated-values",
-        "application/csv",
-      ],
-      copyToCacheDirectory: true,
+      "text/csv",
+      "text/comma-separated-values",
+      "application/csv"],
+
+      copyToCacheDirectory: true
     });
 
     if (result.canceled || !result.assets || result.assets.length === 0) {
@@ -290,14 +290,14 @@ export const importData = async (
 
     const fileUri = result.assets[0].uri;
     const fileString = await FileSystem.readAsStringAsync(fileUri, {
-      encoding: FileSystem.EncodingType.UTF8,
+      encoding: FileSystem.EncodingType.UTF8
     });
-    
+
     const parsed = Papa.parse(fileString, { header: true, skipEmptyLines: true });
     const rawJson = parsed.data as any[];
 
     const importedTransactions: any[] = [];
-    const missingAccounts: { name: string; initialBalance: number }[] = [];
+    const missingAccounts: {name: string;initialBalance: number;}[] = [];
     const pairedIds = new Set<string>();
 
     const transactionsBucket = new Map<number, Transaction[]>();
@@ -329,9 +329,9 @@ export const importData = async (
         if (!missingAccounts.find((m) => m.name === accountName)) {
           const balanceVal = getRowValue(row, ["AccountInitialBalance", "initial_balance", "initialBalance", "balance"]);
           const initialBalance =
-            parseFloat(
-              String(balanceVal || "0").replace(/[^0-9.-]+/g, ""),
-            ) || 0;
+          parseFloat(
+            String(balanceVal || "0").replace(/[^0-9.-]+/g, "")
+          ) || 0;
           missingAccounts.push({ name: accountName, initialBalance });
         }
       }
@@ -349,7 +349,7 @@ export const importData = async (
 
       const typeVal = getRowValue(row, ["Type", "type", "transaction_type", "transactionType"]);
       const type =
-        typeVal === "Income" || typeVal === "credit" || typeVal === "income" ? "credit" : "debit";
+      typeVal === "Income" || typeVal === "credit" || typeVal === "income" ? "credit" : "debit";
 
       const descVal = getRowValue(row, ["Description", "description", "details", "memo", "note"]);
       const description = descVal || "Imported Transaction";
@@ -358,10 +358,10 @@ export const importData = async (
 
       const bucket = Math.floor(parsedDate / 60000);
       const candidates = [
-        ...(transactionsBucket.get(bucket - 1) || []),
-        ...(transactionsBucket.get(bucket) || []),
-        ...(transactionsBucket.get(bucket + 1) || [])
-      ];
+      ...(transactionsBucket.get(bucket - 1) || []),
+      ...(transactionsBucket.get(bucket) || []),
+      ...(transactionsBucket.get(bucket + 1) || [])];
+
 
       const matchedExisting = candidates.find((ex) => {
         if (pairedIds.has(ex.id)) return false;
@@ -370,8 +370,8 @@ export const importData = async (
           ex.amount === parsedAmount &&
           ex.description.trim().toLowerCase() === description.trim().toLowerCase() &&
           ex.type === type &&
-          timeDiff < 60000
-        );
+          timeDiff < 60000);
+
       });
 
       if (matchedExisting) {
@@ -386,7 +386,7 @@ export const importData = async (
           type,
           categoryId,
           accountId,
-          _accountName: accountName,
+          _accountName: accountName
         });
       }
     }
@@ -399,18 +399,18 @@ export const importData = async (
 };
 
 export const getOrCreateSAFDirectory = async (
-  savedDirectoryUri?: string | null,
-): Promise<string | undefined> => {
+savedDirectoryUri?: string | null)
+: Promise<string | undefined> => {
   if (savedDirectoryUri) {
     return savedDirectoryUri;
   }
 
   const initialUri =
-    "content://com.android.externalstorage.documents/tree/primary%3ADocuments";
+  "content://com.android.externalstorage.documents/tree/primary%3ADocuments";
   const permissions =
-    await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
-      initialUri,
-    );
+  await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync(
+    initialUri
+  );
 
   if (permissions.granted) {
     let targetDirUri = permissions.directoryUri;
@@ -418,13 +418,13 @@ export const getOrCreateSAFDirectory = async (
       let folderCreatedOrFound = false;
       try {
         const files =
-          await FileSystem.StorageAccessFramework.readDirectoryAsync(
-            permissions.directoryUri,
-          );
+        await FileSystem.StorageAccessFramework.readDirectoryAsync(
+          permissions.directoryUri
+        );
         const existingLedgerLite = files.find(
           (f) =>
-            decodeURIComponent(f).endsWith("/LedgerLite") ||
-            decodeURIComponent(f).endsWith(":LedgerLite"),
+          decodeURIComponent(f).endsWith("/LedgerLite") ||
+          decodeURIComponent(f).endsWith(":LedgerLite")
         );
         if (existingLedgerLite) {
           targetDirUri = existingLedgerLite;
@@ -436,10 +436,10 @@ export const getOrCreateSAFDirectory = async (
       if (!folderCreatedOrFound) {
         try {
           targetDirUri =
-            await FileSystem.StorageAccessFramework.makeDirectoryAsync(
-              permissions.directoryUri,
-              "LedgerLite",
-            );
+          await FileSystem.StorageAccessFramework.makeDirectoryAsync(
+            permissions.directoryUri,
+            "LedgerLite"
+          );
         } catch (e) {
           console.error("SAF mkdir error:", e);
         }
@@ -451,10 +451,10 @@ export const getOrCreateSAFDirectory = async (
 };
 
 export const exportSettingsJSON = async (
-  settingsData: any,
-  action: "save" | "share" | "copy" = "share",
-  savedDirectoryUri?: string | null,
-): Promise<string | undefined> => {
+settingsData: any,
+action: "save" | "share" | "copy" = "share",
+savedDirectoryUri?: string | null)
+: Promise<string | undefined> => {
   try {
     const jsonString = JSON.stringify(settingsData, null, 2);
 
@@ -468,16 +468,16 @@ export const exportSettingsJSON = async (
 
     if (action === "save" && Platform.OS === "android") {
       const targetDirUri = await getOrCreateSAFDirectory(savedDirectoryUri);
-      
+
       if (targetDirUri) {
         try {
           const safUri = await FileSystem.StorageAccessFramework.createFileAsync(
             targetDirUri,
             filename,
-            mimeType,
+            mimeType
           );
           await FileSystem.writeAsStringAsync(safUri, jsonString, {
-            encoding: "utf8",
+            encoding: "utf8"
           });
           return targetDirUri;
         } catch (e) {
@@ -488,12 +488,12 @@ export const exportSettingsJSON = async (
 
     const fileUri = FileSystem.cacheDirectory + filename;
     await FileSystem.writeAsStringAsync(fileUri, jsonString, {
-      encoding: "utf8",
+      encoding: "utf8"
     });
 
     await Sharing.shareAsync(fileUri, {
       mimeType: mimeType,
-      dialogTitle: "Export LedgerLite Settings",
+      dialogTitle: "Export LedgerLite Settings"
     });
 
     return undefined;
@@ -506,7 +506,7 @@ export const importSettingsJSON = async () => {
   try {
     const result = await DocumentPicker.getDocumentAsync({
       type: "application/json",
-      copyToCacheDirectory: true,
+      copyToCacheDirectory: true
     });
 
     if (result.canceled || !result.assets || result.assets.length === 0) {
@@ -515,16 +515,16 @@ export const importSettingsJSON = async () => {
 
     const fileUri = result.assets[0].uri;
     const fileContent = await FileSystem.readAsStringAsync(fileUri, {
-      encoding: "utf8",
+      encoding: "utf8"
     });
     const parsedData = JSON.parse(fileContent);
-    
+
     if (typeof parsedData !== "object" || parsedData === null) {
       console.warn("Invalid JSON structure");
       return null;
     }
 
-    // Only extract safe preference keys, dropping critical states like 'uid', 'isGlobalSyncing', etc.
+
     const safeSettings: any = {};
     if ("showIcons" in parsedData) safeSettings.showIcons = Boolean(parsedData.showIcons);
     if ("hapticsEnabled" in parsedData) safeSettings.hapticsEnabled = Boolean(parsedData.hapticsEnabled);
@@ -544,25 +544,25 @@ export const importSettingsJSON = async () => {
 };
 
 export const exportToPDF = async (
-  transactions: Transaction[],
-  accounts: Account[],
-  categories: Category[],
-  selectedColumns: ExportColumn[],
-  startDate: Date,
-  endDate: Date,
-  includePieChart: boolean,
-  action: "save" | "share" = "share",
-  savedDirectoryUri?: string | null,
-): Promise<string | undefined> => {
+transactions: Transaction[],
+accounts: Account[],
+categories: Category[],
+selectedColumns: ExportColumn[],
+startDate: Date,
+endDate: Date,
+includePieChart: boolean,
+action: "save" | "share" = "share",
+savedDirectoryUri?: string | null)
+: Promise<string | undefined> => {
   try {
     const escapeHTML = (str: any) => {
       if (str === null || str === undefined) return "";
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+      return String(str).
+      replace(/&/g, "&amp;").
+      replace(/</g, "&lt;").
+      replace(/>/g, "&gt;").
+      replace(/"/g, "&quot;").
+      replace(/'/g, "&#039;");
     };
 
     const formattedData = transactions.map((e) => {
@@ -577,21 +577,21 @@ export const exportToPDF = async (
         Description: e.description,
         Merchant: e.merchant || "",
         Account: account ? account.name : "Unassigned",
-        AccountInitialBalance: account ? account.balance : 0,
+        AccountInitialBalance: account ? account.balance : 0
       };
     });
 
-    const thHeaders = selectedColumns
-      .map((col) => `<th>${escapeHTML(col)}</th>`)
-      .join("");
-    const trRows = formattedData
-      .map((row) => {
-        const tdCells = selectedColumns
-          .map((col) => `<td>${escapeHTML((row as any)[col])}</td>`)
-          .join("");
-        return `<tr>${tdCells}</tr>`;
-      })
-      .join("");
+    const thHeaders = selectedColumns.
+    map((col) => `<th>${escapeHTML(col)}</th>`).
+    join("");
+    const trRows = formattedData.
+    map((row) => {
+      const tdCells = selectedColumns.
+      map((col) => `<td>${escapeHTML((row as any)[col])}</td>`).
+      join("");
+      return `<tr>${tdCells}</tr>`;
+    }).
+    join("");
 
     let pieChartHtml = "";
     if (includePieChart) {
@@ -615,7 +615,7 @@ export const exportToPDF = async (
         let colorIndex = 0;
 
         Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]).forEach(([name, amount]) => {
-          const percentage = (amount / totalDebit) * 100;
+          const percentage = amount / totalDebit * 100;
           const color = colors[colorIndex % colors.length];
           gradientStops.push(`${color} ${cumulativePercentage}% ${cumulativePercentage + percentage}%`);
           const formattedAmt = formatCurrency(amount, store.getState().settings.currency);
@@ -675,7 +675,7 @@ export const exportToPDF = async (
     const { uri } = await Print.printToFileAsync({
       html,
       width: 612,
-      height: 792,
+      height: 792
     });
 
 
@@ -692,20 +692,20 @@ export const exportToPDF = async (
 
     if (action === "save" && Platform.OS === "android") {
       const fileBase64 = await FileSystem.readAsStringAsync(uri, {
-        encoding: "base64",
+        encoding: "base64"
       });
       let targetDirUri = await getOrCreateSAFDirectory(savedDirectoryUri);
 
       if (targetDirUri) {
         try {
           const safUri =
-            await FileSystem.StorageAccessFramework.createFileAsync(
-              targetDirUri,
-              filename,
-              mimeType,
-            );
+          await FileSystem.StorageAccessFramework.createFileAsync(
+            targetDirUri,
+            filename,
+            mimeType
+          );
           await FileSystem.writeAsStringAsync(safUri, fileBase64, {
-            encoding: "base64",
+            encoding: "base64"
           });
           return targetDirUri;
         } catch (e) {

@@ -3,8 +3,8 @@ import { View, Text, Pressable } from "react-native";
 import {
   BottomSheetModal,
   BottomSheetScrollView,
-  BottomSheetBackdrop,
-} from "@gorhom/bottom-sheet";
+  BottomSheetBackdrop } from
+"@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
 import { useTransactionDatabase } from "../../server/db/useTransactionDatabase";
 import { BottomSheetFormField } from "../../components/ui/bottom-sheet-form-field";
@@ -26,7 +26,7 @@ interface CategoryEditSheetProps {
 export function CategoryEditSheet({
   bottomSheetRef,
   initialCategory,
-  categories,
+  categories
 }: CategoryEditSheetProps) {
   const [name, setName] = useState("");
   const [color, setColor] = useState(PRESET_COLORS[0]);
@@ -42,7 +42,7 @@ export function CategoryEditSheet({
     bottomSheetBackgroundColor,
     bottomSheetIndicatorColor,
     bottomSheetBorderColor,
-    colors,
+    colors
   } = useTheme();
   const { user } = useAuth();
 
@@ -51,8 +51,8 @@ export function CategoryEditSheet({
       setName(initialCategory.name);
       setColor(initialCategory.color || PRESET_COLORS[0]);
       setIcon(initialCategory.icon || PRESET_ICONS[0]);
-      
-      // Fetch linked transactions directly from WatermelonDB relation
+
+
       if (initialCategory.transactions) {
         initialCategory.transactions.fetchCount().then(setLinkedTransactionCount).catch(console.error);
       } else {
@@ -80,18 +80,18 @@ export function CategoryEditSheet({
         }
       }
     },
-    [initialCategory],
+    [initialCategory]
   );
 
   const renderBackdrop = useCallback(
     (props: any) =>
-      React.createElement(BottomSheetBackdrop, {
-        ...props,
-        disappearsOnIndex: -1,
-        appearsOnIndex: 0,
-        opacity: 0.5,
-      }),
-    [],
+    React.createElement(BottomSheetBackdrop, {
+      ...props,
+      disappearsOnIndex: -1,
+      appearsOnIndex: 0,
+      opacity: 0.5
+    }),
+    []
   );
 
   const handleClose = useCallback(() => {
@@ -104,7 +104,7 @@ export function CategoryEditSheet({
     const categoryData = {
       name,
       color,
-      icon,
+      icon
     };
 
     if (initialCategory) {
@@ -130,14 +130,14 @@ export function CategoryEditSheet({
       backgroundStyle={{
         backgroundColor: bottomSheetBackgroundColor,
         borderWidth: 1,
-        borderColor: bottomSheetBorderColor,
+        borderColor: bottomSheetBorderColor
       }}
-      handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
-    >
+      handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}>
+      
       <BottomSheetScrollView
         style={{ flex: 1 }}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
+        
         <View className="px-6 py-2 pb-10">
           <View className="flex-row justify-between items-center mb-6">
             <Text className="text-2xl font-bold text-primary">
@@ -151,8 +151,8 @@ export function CategoryEditSheet({
           <View className="items-center mb-6">
             <View
               style={{ backgroundColor: `${color || "#3b82f6"}30` }}
-              className="w-20 h-20 rounded-full items-center justify-center mb-2 shadow-sm"
-            >
+              className="w-20 h-20 rounded-full items-center justify-center mb-2 shadow-sm">
+              
               <CategoryIcon name={icon as any} size={40} color={color || "#3b82f6"} />
             </View>
             <Text className="text-secondary text-sm">Preview</Text>
@@ -163,30 +163,30 @@ export function CategoryEditSheet({
             label="Category Name"
             defaultValue={name}
             onChangeText={setName}
-            placeholder="e.g. Groceries..."
-          />
+            placeholder="e.g. Groceries..." />
+          
 
           <ColorSelector color={color} setColor={setColor} showColorPicker={showColorPicker} setShowColorPicker={setShowColorPicker} />
           
           <IconSelector icon={icon} setIcon={setIcon} color={color} />
 
           <View className="flex-row gap-4 mb-8">
-            {initialCategory && (
-              <Pressable
-                onPress={() => setShowDeleteModal(true)}
-                className="flex-1 border border-status-danger/50 bg-status-danger/10 rounded-xl p-4 items-center justify-center"
-              >
+            {initialCategory &&
+            <Pressable
+              onPress={() => setShowDeleteModal(true)}
+              className="flex-1 border border-status-danger/50 bg-status-danger/10 rounded-xl p-4 items-center justify-center">
+              
                 <Ionicons
-                  name="trash-outline"
-                  size={24}
-                  color={colors.statusDanger}
-                />
+                name="trash-outline"
+                size={24}
+                color={colors.statusDanger} />
+              
               </Pressable>
-            )}
+            }
             <Pressable
               onPress={handleSave}
-              className="flex-[3] bg-brand-primary rounded-xl p-4"
-            >
+              className="flex-[3] bg-brand-primary rounded-xl p-4">
+              
               <Text className="text-brand-primary-content font-bold text-center text-lg">
                 {initialCategory ? "Save Changes" : "Create Category"}
               </Text>
@@ -207,8 +207,8 @@ export function CategoryEditSheet({
         }}
         category={initialCategory}
         categories={categories}
-        linkedTransactionCount={linkedTransactionCount}
-      />
-    </BottomSheetModal>
-  );
+        linkedTransactionCount={linkedTransactionCount} />
+      
+    </BottomSheetModal>);
+
 }

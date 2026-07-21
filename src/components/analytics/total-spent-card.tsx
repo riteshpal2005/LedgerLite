@@ -15,6 +15,6 @@ export function TotalSpentCard({ totalSpent }: TotalSpentCardProps) {
       <Text className="text-white text-5xl font-bold">
         {formatCurrency(totalSpent)}
       </Text>
-    </View>
-  );
+    </View>);
+
 }

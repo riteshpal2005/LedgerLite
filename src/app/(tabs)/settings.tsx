@@ -20,9 +20,9 @@ export default function SettingsScreen() {
         <ToolsAndSettings />
         <AboutCard />
 
-        {/* Extra padding for tab bar mock */}
+        {}
         <View className="h-24" />
       </ScrollView>
-    </SafeAreaView>
-  );
+    </SafeAreaView>);
+
 }

@@ -8,7 +8,7 @@ interface TransactionsHeaderProps {
   hasActiveFilters?: boolean;
 }
 
-// Ref: TransactionsHeader-1
+
 export function TransactionsHeader({ onSearchPress, onFilterPress, hasActiveFilters }: TransactionsHeaderProps) {
   return (
     <View className="flex-row items-center justify-between px-6 mt-4 mb-2">
@@ -31,6 +31,6 @@ export function TransactionsHeader({ onSearchPress, onFilterPress, hasActiveFilt
           <Ionicons name="funnel-outline" size={24} color={hasActiveFilters ? "#3b82f6" : "white"} />
         </TouchableOpacity>
       </View>
-    </View>
-  );
+    </View>);
+
 }

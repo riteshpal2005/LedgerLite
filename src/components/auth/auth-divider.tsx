@@ -14,6 +14,6 @@ export function AuthDivider({ isDark, text = "OR" }: AuthDividerProps) {
         {text}
       </Text>
       <View className={`flex-1 h-px ${isDark ? "bg-gray-800" : "bg-gray-200"}`} />
-    </View>
-  );
+    </View>);
+
 }

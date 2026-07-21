@@ -10,15 +10,15 @@ export const triggerHaptic = {
   success: () => {
     if (store.getState().settings.hapticsEnabled) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(
-        () => {},
+        () => {}
       );
     }
   },
   error: () => {
     if (store.getState().settings.hapticsEnabled) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(
-        () => {},
+        () => {}
       );
     }
-  },
+  }
 };

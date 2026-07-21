@@ -17,27 +17,27 @@ const markdownStyles = {
     fontWeight: "bold" as "bold",
     fontSize: 14,
     marginTop: 16,
-    marginBottom: 8,
+    marginBottom: 8
   },
   heading3: {
     color: "#a855f7",
     fontWeight: "bold" as "bold",
     fontSize: 14,
     marginTop: 16,
-    marginBottom: 8,
+    marginBottom: 8
   },
   heading4: {
     color: "#eab308",
     fontWeight: "bold" as "bold",
     fontSize: 14,
     marginTop: 16,
-    marginBottom: 8,
+    marginBottom: 8
   },
   hr: {
     backgroundColor: '#1b1b1c',
     height: 1,
     marginTop: 12,
-    marginBottom: 4,
+    marginBottom: 4
   },
   link: { color: "#10b981" },
   list_item: { marginBottom: 6, flexDirection: 'row' as 'row', alignItems: 'flex-start' as 'flex-start' },
@@ -46,8 +46,8 @@ const markdownStyles = {
     color: "#9ca3af",
     fontSize: 14,
     marginRight: 6,
-    marginTop: 0,
-  },
+    marginTop: 0
+  }
 };
 
 export function UpdateChecker() {
@@ -55,11 +55,11 @@ export function UpdateChecker() {
   const [visible, setVisible] = useState(false);
 
   type DownloadStatus =
-    | "IDLE"
-    | "CHECKING"
-    | "DOWNLOADING"
-    | "READY_TO_INSTALL"
-    | "INSTALLING";
+  "IDLE" |
+  "CHECKING" |
+  "DOWNLOADING" |
+  "READY_TO_INSTALL" |
+  "INSTALLING";
   const [downloadStatus, setDownloadStatus] = useState<DownloadStatus>("IDLE");
   const [downloadProgress, setDownloadProgress] = useState(0);
 
@@ -75,8 +75,8 @@ export function UpdateChecker() {
 
           setDownloadStatus("CHECKING");
           const apkUri =
-            Paths.document.uri +
-            `LedgerLite-Update-${info.latestVersion}.apk`;
+          Paths.document.uri +
+          `LedgerLite-Update-${info.latestVersion}.apk`;
           const file = new File(apkUri);
           if (file.exists) {
             setDownloadStatus("READY_TO_INSTALL");
@@ -100,7 +100,7 @@ export function UpdateChecker() {
         await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
           data: contentUri,
           flags: 1 | 268435456,
-          type: "application/vnd.android.package-archive",
+          type: "application/vnd.android.package-archive"
         });
         setVisible(false);
       } catch (error) {
@@ -110,7 +110,7 @@ export function UpdateChecker() {
         setDownloadStatus("READY_TO_INSTALL");
       }
     },
-    [updateInfo],
+    [updateInfo]
   );
 
   const handleUpdate = useCallback(async () => {
@@ -131,7 +131,7 @@ export function UpdateChecker() {
       const dirContents = new Directory(Paths.document).list();
       for (const item of dirContents) {
         if (item instanceof File && item.name.endsWith('.apk') && item.name !== `LedgerLite-Update-${updateInfo.latestVersion}.apk`) {
-          try { item.delete(); } catch (e) {}
+          try {item.delete();} catch (e) {}
         }
       }
 
@@ -177,8 +177,8 @@ export function UpdateChecker() {
     return (
       downloadStatus === "CHECKING" ||
       downloadStatus === "DOWNLOADING" ||
-      downloadStatus === "INSTALLING"
-    );
+      downloadStatus === "INSTALLING");
+
   }, [downloadStatus]);
 
   const handleDismiss = useCallback(() => {
@@ -192,15 +192,15 @@ export function UpdateChecker() {
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={handleDismiss}
-    >
+      onRequestClose={handleDismiss}>
+      
       <View className="flex-1 justify-center items-center bg-black/80 px-6">
         <View className="w-full bg-[#0f1011] border border-[#1b1b1c] rounded-[32px] overflow-hidden shadow-xl pb-6">
           
-          <Pressable 
-            onPress={handleDismiss} 
-            className="absolute top-4 right-4 w-8 h-8 bg-[#1b1b1c] rounded-full items-center justify-center z-10"
-          >
+          <Pressable
+            onPress={handleDismiss}
+            className="absolute top-4 right-4 w-8 h-8 bg-[#1b1b1c] rounded-full items-center justify-center z-10">
+            
             <Ionicons name="close" size={18} color="#9ca3af" />
           </Pressable>
 
@@ -221,8 +221,8 @@ export function UpdateChecker() {
             </Text>
           </View>
 
-          {updateInfo.releaseNotes ? (
-            <View className="px-6 mb-6 max-h-72">
+          {updateInfo.releaseNotes ?
+          <View className="px-6 mb-6 max-h-72">
               <View className="bg-[#131415] border border-[#1b1b1c] rounded-2xl overflow-hidden flex-1">
                 <View className="flex-row items-center p-4 border-b border-[#1b1b1c]">
                   <Ionicons name="document-text-outline" size={20} color="#10b981" className="mr-3" />
@@ -237,8 +237,8 @@ export function UpdateChecker() {
                   </Markdown>
                 </ScrollView>
               </View>
-            </View>
-          ) : null}
+            </View> :
+          null}
 
           <View className="px-6 pb-6 pt-2 w-full">
             <View className="items-center mb-4">
@@ -251,23 +251,23 @@ export function UpdateChecker() {
             <Pressable
               onPress={handleUpdate}
               disabled={isButtonDisabled}
-              className="w-full h-14 bg-[#131415] border border-[#1b1b1c] rounded-full overflow-hidden mb-4 justify-center items-center relative active:opacity-80"
-            >
+              className="w-full h-14 bg-[#131415] border border-[#1b1b1c] rounded-full overflow-hidden mb-4 justify-center items-center relative active:opacity-80">
+              
               <View
                 className="absolute left-0 top-0 bottom-0 bg-[#10b981]"
                 style={{
                   width:
-                    downloadStatus === "IDLE" ||
-                    downloadStatus === "READY_TO_INSTALL"
-                      ? "100%"
-                      : `${downloadStatus === 'DOWNLOADING' ? downloadProgress * 100 : 58}%`,
+                  downloadStatus === "IDLE" ||
+                  downloadStatus === "READY_TO_INSTALL" ?
+                  "100%" :
+                  `${downloadStatus === 'DOWNLOADING' ? downloadProgress * 100 : 58}%`,
                   opacity:
-                    downloadStatus === "INSTALLING" ||
-                    downloadStatus === "CHECKING"
-                      ? 0.5
-                      : 1,
-                }}
-              />
+                  downloadStatus === "INSTALLING" ||
+                  downloadStatus === "CHECKING" ?
+                  0.5 :
+                  1
+                }} />
+              
               <View className="flex-row items-center z-10">
                 <Ionicons name="download-outline" size={20} color="white" className="mr-2" />
                 <Text
@@ -275,9 +275,9 @@ export function UpdateChecker() {
                   style={{
                     textShadowColor: "rgba(0,0,0,0.5)",
                     textShadowOffset: { width: 0, height: 1 },
-                    textShadowRadius: 3,
-                  }}
-                >
+                    textShadowRadius: 3
+                  }}>
+                  
                   {downloadStatus === 'DOWNLOADING' ? getButtonText() : 'Downloading... 58%'}
                 </Text>
               </View>
@@ -290,8 +290,8 @@ export function UpdateChecker() {
             <Pressable
               onPress={handleDismiss}
               disabled={isButtonDisabled}
-              className="w-full h-14 border border-[#a855f7]/50 rounded-full justify-center items-center flex-row active:bg-[#a855f7]/10"
-            >
+              className="w-full h-14 border border-[#a855f7]/50 rounded-full justify-center items-center flex-row active:bg-[#a855f7]/10">
+              
               <Ionicons name="time-outline" size={20} color="#a855f7" className="mr-2" />
               <Text className="text-[#a855f7] font-bold text-base">Maybe Later</Text>
             </Pressable>
@@ -305,6 +305,6 @@ export function UpdateChecker() {
           </View>
         </View>
       </View>
-    </Modal>
-  );
+    </Modal>);
+
 }

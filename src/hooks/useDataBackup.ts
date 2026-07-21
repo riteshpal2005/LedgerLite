@@ -21,12 +21,12 @@ export function useDataBackup() {
     const fullState = store.getState();
     const payload = {
       settings: fullState.settings,
-      categories: fullState.categories.categories,
+      categories: fullState.categories.categories
     };
     const newDirUri = await exportSettingsJSON(
       payload,
       action,
-      fullState.settings.exportDirectoryUri,
+      fullState.settings.exportDirectoryUri
     );
     if (newDirUri && newDirUri !== fullState.settings.exportDirectoryUri) {
       dispatch(setExportDirectoryUri(newDirUri));
@@ -72,6 +72,6 @@ export function useDataBackup() {
     processRestoration,
     handleImportSettingsFromFile,
     rawJsonModalVisible,
-    setRawJsonModalVisible,
+    setRawJsonModalVisible
   };
 }

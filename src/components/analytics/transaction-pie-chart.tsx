@@ -6,45 +6,45 @@ import { RootState } from "../../store/store";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 
 function polarToCartesian(
-  centerX: number,
-  centerY: number,
-  radius: number,
-  angleInDegrees: number,
-) {
-  const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
+centerX: number,
+centerY: number,
+radius: number,
+angleInDegrees: number)
+{
+  const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
   return {
     x: centerX + radius * Math.cos(angleInRadians),
-    y: centerY + radius * Math.sin(angleInRadians),
+    y: centerY + radius * Math.sin(angleInRadians)
   };
 }
 
 function describeArc(
-  x: number,
-  y: number,
-  radius: number,
-  startAngle: number,
-  endAngle: number,
-) {
+x: number,
+y: number,
+radius: number,
+startAngle: number,
+endAngle: number)
+{
   const start = polarToCartesian(x, y, radius, endAngle);
   const end = polarToCartesian(x, y, radius, startAngle);
   const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
   return [
-    "M",
-    x,
-    y,
-    "L",
-    start.x,
-    start.y,
-    "A",
-    radius,
-    radius,
-    0,
-    largeArcFlag,
-    0,
-    end.x,
-    end.y,
-    "Z",
-  ].join(" ");
+  "M",
+  x,
+  y,
+  "L",
+  start.x,
+  start.y,
+  "A",
+  radius,
+  radius,
+  0,
+  largeArcFlag,
+  0,
+  end.x,
+  end.y,
+  "Z"].
+  join(" ");
 }
 
 interface TransactionPieChartProps {
@@ -53,28 +53,28 @@ interface TransactionPieChartProps {
 
 export function TransactionPieChart({ spendingData }: TransactionPieChartProps) {
   const categories = useSelector(
-    (state: RootState) => state.categories.categories,
+    (state: RootState) => state.categories.categories
   );
   const { activeThemeClass } = useTheme();
 
   const getBorderColor = () => {
     if (
-      activeThemeClass === "theme-dark" ||
-      activeThemeClass === "theme-pitch-black"
-    )
-      return "#d4d4d8";
+    activeThemeClass === "theme-dark" ||
+    activeThemeClass === "theme-pitch-black")
+
+    return "#d4d4d8";
     return "#71717a";
   };
 
   const totalPopulation = spendingData.reduce(
     (sum, item) => sum + item.totalSpent,
-    0,
+    0
   );
 
   let currentAngle = 0;
   const chartData = spendingData.map((item) => {
     const category = categories.find((c) => c.id === item.categoryId);
-    const angle = (item.totalSpent / totalPopulation) * 360;
+    const angle = item.totalSpent / totalPopulation * 360;
     const startAngle = currentAngle;
     const endAngle = currentAngle + angle;
     currentAngle += angle;
@@ -85,7 +85,7 @@ export function TransactionPieChart({ spendingData }: TransactionPieChartProps) 
       color: category?.color || "#52525b",
       startAngle,
       endAngle,
-      percentage: ((item.totalSpent / totalPopulation) * 100).toFixed(1),
+      percentage: (item.totalSpent / totalPopulation * 100).toFixed(1)
     };
   });
 
@@ -93,8 +93,8 @@ export function TransactionPieChart({ spendingData }: TransactionPieChartProps) 
     return (
       <View className="items-center justify-center h-48 bg-surface rounded-3xl border border-bordercolor">
         <Text className="text-tertiary text-lg">No transactions in this range</Text>
-      </View>
-    );
+      </View>);
+
   }
 
   const chartSize = 180;
@@ -109,8 +109,8 @@ export function TransactionPieChart({ spendingData }: TransactionPieChartProps) 
           <Svg
             width={chartSize}
             height={chartSize}
-            viewBox={`0 0 ${chartSize} ${chartSize}`}
-          >
+            viewBox={`0 0 ${chartSize} ${chartSize}`}>
+            
             <G>
               {chartData.map((slice, index) => {
                 if (slice.endAngle - slice.startAngle === 360) {
@@ -120,16 +120,16 @@ export function TransactionPieChart({ spendingData }: TransactionPieChartProps) 
                       d={`M ${center}, ${center} m -${radius}, 0 a ${radius},${radius} 0 1,0 ${radius * 2},0 a ${radius},${radius} 0 1,0 -${radius * 2},0`}
                       fill={slice.color}
                       stroke={getBorderColor()}
-                      strokeWidth={strokeW}
-                    />
-                  );
+                      strokeWidth={strokeW} />);
+
+
                 }
                 const d = describeArc(
                   center,
                   center,
                   radius,
                   slice.startAngle,
-                  slice.endAngle,
+                  slice.endAngle
                 );
                 return (
                   <Path
@@ -137,21 +137,21 @@ export function TransactionPieChart({ spendingData }: TransactionPieChartProps) 
                     d={d}
                     fill={slice.color}
                     stroke={getBorderColor()}
-                    strokeWidth={strokeW}
-                  />
-                );
+                    strokeWidth={strokeW} />);
+
+
               })}
             </G>
           </Svg>
         </View>
 
         <View className="flex-1 ml-6 justify-center">
-          {chartData.map((item, idx) => (
-            <View key={idx} className="flex-row items-center mb-3">
+          {chartData.map((item, idx) =>
+          <View key={idx} className="flex-row items-center mb-3">
               <View
-                style={{ backgroundColor: item.color }}
-                className="w-4 h-4 rounded-full mr-3"
-              />
+              style={{ backgroundColor: item.color }}
+              className="w-4 h-4 rounded-full mr-3" />
+            
               <View>
                 <Text className="text-primary font-bold text-sm">
                   {item.name}
@@ -161,9 +161,9 @@ export function TransactionPieChart({ spendingData }: TransactionPieChartProps) 
                 </Text>
               </View>
             </View>
-          ))}
+          )}
         </View>
       </View>
-    </View>
-  );
+    </View>);
+
 }

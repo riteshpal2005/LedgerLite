@@ -5,8 +5,8 @@ import Animated, {
   useAnimatedStyle,
   withRepeat,
   withSequence,
-  withTiming,
-} from "react-native-reanimated";
+  withTiming } from
+"react-native-reanimated";
 
 
 
@@ -17,10 +17,10 @@ export function SkeletonTransactionRow() {
     opacity.value = withRepeat(
       withSequence(
         withTiming(0.75, { duration: 750 }),
-        withTiming(0.35, { duration: 750 }),
+        withTiming(0.35, { duration: 750 })
       ),
       -1,
-      true,
+      true
     );
   }, []);
 
@@ -29,8 +29,8 @@ export function SkeletonTransactionRow() {
   return (
     <Animated.View
       style={animStyle}
-      className="bg-surface p-4 rounded-xl mb-3 flex-row justify-between items-center border border-bordercolor"
-    >
+      className="bg-surface p-4 rounded-xl mb-3 flex-row justify-between items-center border border-bordercolor">
+      
       {}
       <View className="flex-row items-center flex-1">
         {}
@@ -50,6 +50,6 @@ export function SkeletonTransactionRow() {
         <View className="h-4 w-16 bg-bordercolor rounded-md mb-2" />
         <View className="h-3 w-12 bg-bordercolor rounded-md" />
       </View>
-    </Animated.View>
-  );
+    </Animated.View>);
+
 }

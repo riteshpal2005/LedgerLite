@@ -7,8 +7,8 @@ import {
   TextInput,
   Modal,
   KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+  Platform } from
+"react-native";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
@@ -24,7 +24,7 @@ interface RestoreRawJsonModalProps {
 export function RestoreRawJsonModal({
   visible,
   onClose,
-  onRestore,
+  onRestore
 }: RestoreRawJsonModalProps) {
   const [jsonText, setJsonText] = useState("");
   const { bottomSheetBorderColor, bottomSheetBackgroundColor } = useTheme();
@@ -50,12 +50,12 @@ export function RestoreRawJsonModal({
 
     try {
       const parsed = JSON.parse(jsonText);
-      
+
       const BackupSchema = z.object({
         settings: z.any().optional(),
         categories: z.array(CategorySchema).optional(),
         accounts: z.array(AccountSchema).optional(),
-        transactions: z.array(TransactionSchema).optional(),
+        transactions: z.array(TransactionSchema).optional()
       });
 
       BackupSchema.parse(parsed);
@@ -67,7 +67,7 @@ export function RestoreRawJsonModal({
       console.log(e);
       Alert.alert(
         "Invalid Backup Data",
-        "The text you pasted is either not valid JSON or is corrupted/missing required fields. Please check and try again.",
+        "The text you pasted is either not valid JSON or is corrupted/missing required fields. Please check and try again."
       );
     }
   };
@@ -78,16 +78,16 @@ export function RestoreRawJsonModal({
       transparent={true}
       animationType="slide"
       onRequestClose={onClose}
-      statusBarTranslucent={true}
-    >
+      statusBarTranslucent={true}>
+      
       <Pressable
         style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)" }}
-        onPress={onClose}
-      >
+        onPress={onClose}>
+        
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1, justifyContent: "flex-end" }}
-        >
+          style={{ flex: 1, justifyContent: "flex-end" }}>
+          
           <Pressable
             onPress={(e) => e.stopPropagation()}
             style={{
@@ -96,9 +96,9 @@ export function RestoreRawJsonModal({
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
               borderTopWidth: 1,
-              borderTopColor: bottomSheetBorderColor,
-            }}
-          >
+              borderTopColor: bottomSheetBorderColor
+            }}>
+            
             <View style={{ flex: 1, padding: 24 }}>
               <View className="flex-row justify-between items-center mb-6">
                 <Text className="text-primary text-xl font-bold">
@@ -129,13 +129,13 @@ export function RestoreRawJsonModal({
                 value={jsonText}
                 onChangeText={setJsonText}
                 autoCapitalize="none"
-                autoCorrect={false}
-              />
+                autoCorrect={false} />
+              
 
               <Pressable
                 onPress={handleRestore}
-                className="bg-brand-primary rounded-xl p-4 mb-4"
-              >
+                className="bg-brand-primary rounded-xl p-4 mb-4">
+                
                 <Text className="text-brand-primary-content font-bold text-center text-lg">
                   Validate & Restore
                 </Text>
@@ -149,12 +149,12 @@ export function RestoreRawJsonModal({
                 left: 0,
                 right: 0,
                 height: 1000,
-                backgroundColor: bottomSheetBackgroundColor,
-              }}
-            />
+                backgroundColor: bottomSheetBackgroundColor
+              }} />
+            
           </Pressable>
         </KeyboardAvoidingView>
       </Pressable>
-    </Modal>
-  );
+    </Modal>);
+
 }

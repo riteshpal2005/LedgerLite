@@ -7,8 +7,8 @@ import {
   Platform,
   Modal,
   ScrollView,
-  KeyboardAvoidingView,
-} from "react-native";
+  KeyboardAvoidingView } from
+"react-native";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 import { useCurrency } from "../../hooks/useCurrency";
 
@@ -22,7 +22,7 @@ export interface AccountMapping {
 
 interface BulkAccountMappingModalProps {
   visible: boolean;
-  missingAccounts: { name: string; initialBalance: number }[];
+  missingAccounts: {name: string;initialBalance: number;}[];
   onClose: () => void;
   onConfirm: (mappings: AccountMapping[]) => void;
 }
@@ -31,11 +31,11 @@ export function BulkAccountMappingModal({
   visible,
   missingAccounts,
   onClose,
-  onConfirm,
+  onConfirm
 }: BulkAccountMappingModalProps) {
   const [mappings, setMappings] = useState<
-    Record<string, { balance: string; type: AccountType }>
-  >({});
+    Record<string, {balance: string;type: AccountType;}>>(
+    {});
 
   const { bottomSheetBackgroundColor, bottomSheetBorderColor } = useTheme();
   const { getCurrencySymbol } = useCurrency();
@@ -44,12 +44,12 @@ export function BulkAccountMappingModal({
     if (visible && missingAccounts.length > 0) {
       const initialMappings: Record<
         string,
-        { balance: string; type: AccountType }
-      > = {};
+        {balance: string;type: AccountType;}> =
+      {};
       missingAccounts.forEach((acc) => {
         initialMappings[acc.name] = {
           balance: acc.initialBalance.toString(),
-          type: "Bank",
+          type: "Bank"
         };
       });
       setMappings(initialMappings);
@@ -57,16 +57,16 @@ export function BulkAccountMappingModal({
   }, [visible, missingAccounts]);
 
   const handleUpdateMapping = (
-    name: string,
-    field: "balance" | "type",
-    value: string,
-  ) => {
+  name: string,
+  field: "balance" | "type",
+  value: string) =>
+  {
     setMappings((prev) => ({
       ...prev,
       [name]: {
         ...prev[name],
-        [field]: value,
-      },
+        [field]: value
+      }
     }));
   };
 
@@ -74,7 +74,7 @@ export function BulkAccountMappingModal({
     const finalMappings: AccountMapping[] = missingAccounts.map((acc) => ({
       name: acc.name,
       balance: parseFloat(mappings[acc.name]?.balance) || 0,
-      type: mappings[acc.name]?.type || "Bank",
+      type: mappings[acc.name]?.type || "Bank"
     }));
 
     onConfirm(finalMappings);
@@ -86,20 +86,20 @@ export function BulkAccountMappingModal({
       transparent={true}
       animationType="slide"
       onRequestClose={onClose}
-      statusBarTranslucent={true}
-    >
+      statusBarTranslucent={true}>
+      
       <Pressable
         style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)" }}
-        onPress={onClose}
-      >
+        onPress={onClose}>
+        
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1, justifyContent: "flex-end" }}
-        >
+          style={{ flex: 1, justifyContent: "flex-end" }}>
+          
           <Pressable
             onPress={(e) => e.stopPropagation()}
-            style={{ height: "85%" }}
-          >
+            style={{ height: "85%" }}>
+            
             <View
               style={{
                 flex: 1,
@@ -107,9 +107,9 @@ export function BulkAccountMappingModal({
                 borderTopLeftRadius: 24,
                 borderTopRightRadius: 24,
                 borderTopWidth: 1,
-                borderTopColor: bottomSheetBorderColor,
-              }}
-            >
+                borderTopColor: bottomSheetBorderColor
+              }}>
+              
               <View className="px-6 pt-6 pb-2">
                 <View className="flex-row justify-between items-center mb-4">
                   <Text className="text-2xl font-bold text-primary">
@@ -131,13 +131,13 @@ export function BulkAccountMappingModal({
 
               <ScrollView
                 className="px-6 flex-1"
-                showsVerticalScrollIndicator={false}
-              >
-                {missingAccounts.map((acc) => (
-                  <View
-                    key={acc.name}
-                    className="bg-surface rounded-2xl p-4 mb-4 border border-bordercolor"
-                  >
+                showsVerticalScrollIndicator={false}>
+                
+                {missingAccounts.map((acc) =>
+                <View
+                  key={acc.name}
+                  className="bg-surface rounded-2xl p-4 mb-4 border border-bordercolor">
+                  
                     <Text className="text-secondary text-sm mb-1">
                       Account Name (Locked)
                     </Text>
@@ -149,52 +149,52 @@ export function BulkAccountMappingModal({
                       Initial Balance ({getCurrencySymbol()})
                     </Text>
                     <TextInput
-                      value={mappings[acc.name]?.balance}
-                      onChangeText={(val) =>
-                        handleUpdateMapping(acc.name, "balance", val)
-                      }
-                      placeholder="0.00"
-                      placeholderTextColor="#52525b"
-                      keyboardType="decimal-pad"
-                      className="bg-surface text-primary text-lg font-semibold rounded-xl p-3 border border-bordercolor mb-4"
-                    />
+                    value={mappings[acc.name]?.balance}
+                    onChangeText={(val) =>
+                    handleUpdateMapping(acc.name, "balance", val)
+                    }
+                    placeholder="0.00"
+                    placeholderTextColor="#52525b"
+                    keyboardType="decimal-pad"
+                    className="bg-surface text-primary text-lg font-semibold rounded-xl p-3 border border-bordercolor mb-4" />
+                  
 
                     <Text className="text-secondary text-sm mb-2">
                       Account Type
                     </Text>
                     <View className="flex-row gap-2">
                       {(["Cash", "Bank", "Credit Card"] as AccountType[]).map(
-                        (t) => (
-                          <Pressable
-                            key={t}
-                            onPress={() =>
-                              handleUpdateMapping(acc.name, "type", t)
-                            }
-                            className={`flex-1 p-3 rounded-xl border ${
-                              mappings[acc.name]?.type === t
-                                ? "bg-brand-primary border-brand-primary"
-                                : "bg-surface border-bordercolor"
-                            }`}
-                          >
+                      (t) =>
+                      <Pressable
+                        key={t}
+                        onPress={() =>
+                        handleUpdateMapping(acc.name, "type", t)
+                        }
+                        className={`flex-1 p-3 rounded-xl border ${
+                        mappings[acc.name]?.type === t ?
+                        "bg-brand-primary border-brand-primary" :
+                        "bg-surface border-bordercolor"}`
+                        }>
+                        
                             <Text
-                              className={`text-center font-bold text-xs sm:text-sm ${mappings[acc.name]?.type === t ? "text-brand-primary-content" : "text-secondary"}`}
-                            >
+                          className={`text-center font-bold text-xs sm:text-sm ${mappings[acc.name]?.type === t ? "text-brand-primary-content" : "text-secondary"}`}>
+                          
                               {t}
                             </Text>
                           </Pressable>
-                        ),
-                      )}
+
+                    )}
                     </View>
                   </View>
-                ))}
+                )}
                 <View className="h-6" />
               </ScrollView>
 
               <View className="p-6 bg-background border-t border-bordercolor pb-8">
                 <Pressable
                   onPress={handleConfirm}
-                  className="bg-brand-primary rounded-xl p-4"
-                >
+                  className="bg-brand-primary rounded-xl p-4">
+                  
                   <Text className="text-brand-primary-content font-bold text-center text-lg">
                     Create Accounts & Import
                   </Text>
@@ -204,6 +204,6 @@ export function BulkAccountMappingModal({
           </Pressable>
         </KeyboardAvoidingView>
       </Pressable>
-    </Modal>
-  );
+    </Modal>);
+
 }

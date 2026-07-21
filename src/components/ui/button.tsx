@@ -3,8 +3,8 @@ import { Text, Pressable, ActivityIndicator } from "react-native";
 import Animated, {
   useAnimatedStyle,
   withSpring,
-  useSharedValue,
-} from "react-native-reanimated";
+  useSharedValue } from
+"react-native-reanimated";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -47,7 +47,7 @@ export function Button({
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+    transform: [{ scale: scale.value }]
   }));
 
   const getVariantStyles = (): string => {
@@ -96,7 +96,7 @@ export function Button({
   };
 
   const activeOpacity =
-    disabled || loading ? "opacity-50" : "active:opacity-80";
+  disabled || loading ? "opacity-50" : "active:opacity-80";
 
   return (
     <AnimatedPressable
@@ -105,24 +105,24 @@ export function Button({
       disabled={disabled || loading}
       className={`flex-row items-center justify-center ${getVariantStyles()} ${getSizeStyles()} ${activeOpacity} ${className}`}
       style={animatedStyle}
-      {...props}
-    >
-      {loading ? (
-        <ActivityIndicator
-          color={
-            variant === "primary" || variant === "danger" ? "#fff" : "#2563eb"
-          }
-        />
-      ) : (
-        <>
+      {...props}>
+      
+      {loading ?
+      <ActivityIndicator
+        color={
+        variant === "primary" || variant === "danger" ? "#fff" : "#2563eb"
+        } /> :
+
+
+      <>
           {icon && <React.Fragment>{icon}</React.Fragment>}
           <Text
-            className={`font-bold text-center ${size === "sm" ? "text-sm" : "text-lg"} ${icon ? "ml-2" : ""} ${getTextStyles()} ${textClassName}`}
-          >
+          className={`font-bold text-center ${size === "sm" ? "text-sm" : "text-lg"} ${icon ? "ml-2" : ""} ${getTextStyles()} ${textClassName}`}>
+          
             {title}
           </Text>
         </>
-      )}
-    </AnimatedPressable>
-  );
+      }
+    </AnimatedPressable>);
+
 }

@@ -25,7 +25,7 @@ export function DataManagementSection() {
     handleConfirmPDF,
     pdfModalVisible,
     setPdfModalVisible,
-    setPdfAction,
+    setPdfAction
   } = useDataExport();
 
   const {
@@ -35,7 +35,7 @@ export function DataManagementSection() {
     setAccountMappingModalVisible,
     missingAccountsForImport,
     setMissingAccountsForImport,
-    setPendingImportTransactions,
+    setPendingImportTransactions
   } = useDataImport();
 
   const { handleSyncAll, isSyncing } = useDataSync();
@@ -45,7 +45,7 @@ export function DataManagementSection() {
     processRestoration,
     handleImportSettingsFromFile,
     rawJsonModalVisible,
-    setRawJsonModalVisible,
+    setRawJsonModalVisible
   } = useDataBackup();
 
   return (
@@ -55,8 +55,8 @@ export function DataManagementSection() {
       </Text>
       <View
         className="bg-surface rounded-2xl p-4 border border-bordercolor"
-        style={{ zIndex: 10 }}
-      >
+        style={{ zIndex: 10 }}>
+        
         <View style={{ zIndex: 50, elevation: 50 }}>
           <ExportActionRow
             title="Export to PDF"
@@ -65,8 +65,8 @@ export function DataManagementSection() {
             expanded={openMenuId === "pdf"}
             onToggle={() => setOpenMenuId(openMenuId === "pdf" ? null : "pdf")}
             onSave={() => initiateExportPDF("save")}
-            onShare={() => initiateExportPDF("share")}
-          />
+            onShare={() => initiateExportPDF("share")} />
+          
         </View>
 
         <View style={{ zIndex: 40, elevation: 40 }}>
@@ -76,11 +76,11 @@ export function DataManagementSection() {
             iconColor="#2563eb"
             expanded={openMenuId === "excel"}
             onToggle={() =>
-              setOpenMenuId(openMenuId === "excel" ? null : "excel")
+            setOpenMenuId(openMenuId === "excel" ? null : "excel")
             }
             onSave={() => handleExportExcel("save")}
-            onShare={() => handleExportExcel("share")}
-          />
+            onShare={() => handleExportExcel("share")} />
+          
         </View>
 
         <View style={{ zIndex: 30, elevation: 30 }}>
@@ -91,15 +91,15 @@ export function DataManagementSection() {
             expanded={openMenuId === "csv"}
             onToggle={() => setOpenMenuId(openMenuId === "csv" ? null : "csv")}
             onSave={() => handleExportCSV("save")}
-            onShare={() => handleExportCSV("share")}
-          />
+            onShare={() => handleExportCSV("share")} />
+          
         </View>
 
         <View style={{ zIndex: 20, elevation: 20 }}>
           <Pressable
             className="flex-row justify-between items-center py-2"
-            onPress={handleImport}
-          >
+            onPress={handleImport}>
+            
             <View className="flex-row items-center">
               <Ionicons name="push-outline" size={24} color="#10b981" />
               <Text className="text-primary text-lg font-semibold ml-3">
@@ -111,20 +111,20 @@ export function DataManagementSection() {
           <View className="h-[1px] bg-bordercolor my-2" />
         </View>
 
-        {user && (
-          <>
+        {user &&
+        <>
             <View style={{ zIndex: 19, elevation: 19 }}>
               <Pressable
-                className="flex-row justify-between items-center py-2"
-                onPress={handleSyncAll}
-                disabled={isSyncing}
-              >
+              className="flex-row justify-between items-center py-2"
+              onPress={handleSyncAll}
+              disabled={isSyncing}>
+              
                 <View className="flex-row items-center">
                   <Ionicons
-                    name="cloud-done-outline"
-                    size={24}
-                    color="#3b82f6"
-                  />
+                  name="cloud-done-outline"
+                  size={24}
+                  color="#3b82f6" />
+                
                   <Text className="text-primary text-lg font-semibold ml-3">
                     Sync with Cloud
                   </Text>
@@ -136,7 +136,7 @@ export function DataManagementSection() {
               <View className="h-[1px] bg-bordercolor my-2" />
             </View>
           </>
-        )}
+        }
 
         <View style={{ zIndex: 15, elevation: 15 }}>
           <ExportActionRow
@@ -145,12 +145,12 @@ export function DataManagementSection() {
             iconColor="#a855f7"
             expanded={openMenuId === "backup"}
             onToggle={() =>
-              setOpenMenuId(openMenuId === "backup" ? null : "backup")
+            setOpenMenuId(openMenuId === "backup" ? null : "backup")
             }
             onSave={() => handleExportSettings("save")}
             onShare={() => handleExportSettings("share")}
-            onCopy={() => handleExportSettings("copy")}
-          />
+            onCopy={() => handleExportSettings("copy")} />
+          
         </View>
 
         <View style={{ zIndex: 10, elevation: 10 }}>
@@ -160,20 +160,20 @@ export function DataManagementSection() {
             iconColor="#a855f7"
             expanded={openMenuId === "restore"}
             onToggle={() =>
-              setOpenMenuId(openMenuId === "restore" ? null : "restore")
+            setOpenMenuId(openMenuId === "restore" ? null : "restore")
             }
             onFilePicker={handleImportSettingsFromFile}
             onRawJson={() => setRawJsonModalVisible(true)}
-            isLast={true}
-          />
+            isLast={true} />
+          
         </View>
       </View>
 
       <RestoreRawJsonModal
         visible={rawJsonModalVisible}
         onClose={() => setRawJsonModalVisible(false)}
-        onRestore={processRestoration}
-      />
+        onRestore={processRestoration} />
+      
 
       <ColumnSelectionModal
         visible={pdfModalVisible}
@@ -181,8 +181,8 @@ export function DataManagementSection() {
           setPdfModalVisible(false);
           setPdfAction(null);
         }}
-        onConfirm={handleConfirmPDF}
-      />
+        onConfirm={handleConfirmPDF} />
+      
 
       <BulkAccountMappingModal
         visible={accountMappingModalVisible}
@@ -193,11 +193,11 @@ export function DataManagementSection() {
           setPendingImportTransactions([]);
           showAlert(
             "Import Cancelled",
-            "Import was cancelled because you discarded the unknown accounts mapping.",
+            "Import was cancelled because you discarded the unknown accounts mapping."
           );
         }}
-        onConfirm={handleConfirmBulkMapping}
-      />
+        onConfirm={handleConfirmBulkMapping} />
+      
 
       <CustomAlert
         visible={alertConfig.visible}
@@ -207,8 +207,8 @@ export function DataManagementSection() {
         onCancel={alertConfig.onCancel}
         confirmText={alertConfig.confirmText}
         cancelText={alertConfig.cancelText}
-        confirmStyle={alertConfig.confirmStyle}
-      />
-    </>
-  );
+        confirmStyle={alertConfig.confirmStyle} />
+      
+    </>);
+
 }

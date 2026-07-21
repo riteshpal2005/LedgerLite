@@ -31,9 +31,9 @@ export function Card({
   return (
     <View
       className={`bg-surface rounded-2xl border border-bordercolor ${getPaddingStyles()} ${className}`}
-      {...props}
-    >
+      {...props}>
+      
       {children}
-    </View>
-  );
+    </View>);
+
 }

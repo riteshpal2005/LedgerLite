@@ -1,8 +1,8 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
+  signOut } from
+"firebase/auth";
 import { auth } from "../firebase/config";
 import Constants, { ExecutionEnvironment } from "expo-constants";
 
@@ -14,7 +14,7 @@ if (!isExpoGo) {
   try {
     GoogleSignin = require("@react-native-google-signin/google-signin").GoogleSignin as GoogleSigninType;
     GoogleSignin.configure({
-      webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+      webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
     });
   } catch (e) {
     console.warn("[AuthService] GoogleSignin failed to load", e);
@@ -47,7 +47,7 @@ export const AuthService = {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
-        password,
+        password
       );
       return { user: userCredential.user, error: null };
     } catch (error: any) {
@@ -59,7 +59,7 @@ export const AuthService = {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
-        password,
+        password
       );
       return { user: userCredential.user, error: null };
     } catch (error: any) {
@@ -105,12 +105,12 @@ export const AuthService = {
         throw new Error("No ID token found");
       }
       const { GoogleAuthProvider, signInWithCredential } =
-        await import("firebase/auth");
+      await import("firebase/auth");
       const googleCredential = GoogleAuthProvider.credential(idToken);
       const userCredential = await signInWithCredential(auth, googleCredential);
       return { user: userCredential.user, error: null };
     } catch (error: unknown) {
       return { user: null, error: (error as Error).message };
     }
-  },
+  }
 };

@@ -3,8 +3,8 @@ import {
   query,
   getDocs,
   writeBatch,
-  doc,
-} from "firebase/firestore";
+  doc } from
+"firebase/firestore";
 import { db } from "../firebase/config";
 import { store } from "../../store/store";
 import { Transaction, Category, Account, DatabaseActions } from "../db/schema";
@@ -34,9 +34,9 @@ export const SyncService = {
     }
   },
   async pullFromFirebase(
-    userId: string,
-    dbActions: DatabaseActions,
-  ) {
+  userId: string,
+  dbActions: DatabaseActions)
+  {
     if (isPulling) return;
     isPulling = true;
 
@@ -51,7 +51,7 @@ export const SyncService = {
           const data = document.data();
 
           const localData = { ...data, id: document.id, sync_status: "synced" };
-          if (!document.id) continue; // Ref: syncService-1
+          if (!document.id) continue;
 
           if (col === "transactions" || col === "expenses") {
             const transaction = { ...localData } as any;
@@ -107,9 +107,9 @@ export const SyncService = {
     }
   },
   schedulePush(
-    userId: string,
-    dbActions: DatabaseActions,
-  ) {
+  userId: string,
+  dbActions: DatabaseActions)
+  {
     if (syncTimeout) {
       clearTimeout(syncTimeout);
     }
@@ -123,9 +123,9 @@ export const SyncService = {
     }, 3000);
   },
   async pushToFirebase(
-    userId: string,
-    dbActions: DatabaseActions,
-  ) {
+  userId: string,
+  dbActions: DatabaseActions)
+  {
     if (isPushing) {
       pushPending = true;
       return;
@@ -137,10 +137,10 @@ export const SyncService = {
       const { pendingTransactions, pendingCategories, pendingAccounts } = await getPendingSyncData();
 
       if (
-        pendingTransactions.length === 0 &&
-        pendingCategories.length === 0 &&
-        pendingAccounts.length === 0
-      ) {
+      pendingTransactions.length === 0 &&
+      pendingCategories.length === 0 &&
+      pendingAccounts.length === 0)
+      {
         isPushing = false;
         return;
       }
@@ -151,7 +151,7 @@ export const SyncService = {
       for (const account of pendingAccounts) {
         const docRef = doc(
           collection(userRef, "accounts"),
-          account.id.toString(),
+          account.id.toString()
         );
         if (account.sync_status === "deleted") {
           batch.delete(docRef);
@@ -163,7 +163,7 @@ export const SyncService = {
       for (const category of pendingCategories) {
         const docRef = doc(
           collection(userRef, "categories"),
-          category.id.toString(),
+          category.id.toString()
         );
         if (category.sync_status === "deleted") {
           batch.delete(docRef);
@@ -175,7 +175,7 @@ export const SyncService = {
       for (const transaction of pendingTransactions) {
         const docRef = doc(
           collection(userRef, "transactions"),
-          transaction.id.toString(),
+          transaction.id.toString()
         );
         if (transaction.sync_status === "deleted") {
           batch.delete(docRef);
@@ -185,8 +185,8 @@ export const SyncService = {
         }
       }
       await batch.commit();
-      
-      const updates: { table: "transactions" | "categories" | "accounts"; id: string }[] = [];
+
+      const updates: {table: "transactions" | "categories" | "accounts";id: string;}[] = [];
       for (const account of pendingAccounts) {
         updates.push({ table: "accounts", id: account.id });
       }
@@ -208,10 +208,10 @@ export const SyncService = {
     }
   },
   async syncAll(
-    userId: string,
-    dbActions: DatabaseActions,
-  ) {
-    // Temporarily disabled during WatermelonDB migration
+  userId: string,
+  dbActions: DatabaseActions)
+  {
+
     return;
     const now = Date.now();
     if (now - lastSyncTime < SYNC_COOLDOWN_MS) {
@@ -230,5 +230,5 @@ export const SyncService = {
     } finally {
       store.dispatch(setIsGlobalSyncing(false));
     }
-  },
+  }
 };

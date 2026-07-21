@@ -3,8 +3,8 @@ import { useFocusEffect } from "expo-router";
 import { useState, useCallback, useRef, useEffect } from "react";
 import {
   useAnalyticsDatabase,
-  CategorySpending,
-} from "../../server/db/analyticsQueries";
+  CategorySpending } from
+"../../server/db/analyticsQueries";
 import { AnalyticsFilter } from "../../components/analytics/analytics-filter";
 import { TransactionPieChart } from "../../components/analytics/transaction-pie-chart";
 import { TotalSpentCard } from "../../components/analytics/total-spent-card";
@@ -17,22 +17,22 @@ import Animated, {
   withTiming,
   withSequence,
   FadeIn,
-  cancelAnimation,
-} from "react-native-reanimated";
+  cancelAnimation } from
+"react-native-reanimated";
 
 
 
-function SkeletonPieChart({ rowCount }: { rowCount: number }) {
+function SkeletonPieChart({ rowCount }: {rowCount: number;}) {
   const opacity = useSharedValue(0.35);
 
   useEffect(() => {
     opacity.value = withRepeat(
       withSequence(
         withTiming(0.8, { duration: 750 }),
-        withTiming(0.35, { duration: 750 }),
+        withTiming(0.35, { duration: 750 })
       ),
       -1,
-      true,
+      true
     );
     return () => cancelAnimation(opacity);
   }, []);
@@ -45,35 +45,35 @@ function SkeletonPieChart({ rowCount }: { rowCount: number }) {
   return (
     <Animated.View
       style={animStyle}
-      className="bg-surface rounded-3xl border border-bordercolor overflow-hidden p-6 mb-8"
-    >
+      className="bg-surface rounded-3xl border border-bordercolor overflow-hidden p-6 mb-8">
+      
       <View className="flex-row items-center w-full justify-between">
         {}
         <View
           className="rounded-full bg-bordercolor"
-          style={{ width: 180, height: 180 }}
-        />
+          style={{ width: 180, height: 180 }} />
+        
         {}
         <View className="flex-1 ml-6 justify-center">
-          {Array.from({ length: rows }).map((_, i) => (
-            <View key={i} className="flex-row items-center mb-3">
+          {Array.from({ length: rows }).map((_, i) =>
+          <View key={i} className="flex-row items-center mb-3">
               {}
               <View className="w-4 h-4 rounded-full bg-bordercolor mr-3" />
               <View>
                 {}
                 <View
-                  className="h-3.5 bg-bordercolor rounded-md mb-1"
-                  style={{ width: 60 + (i % 3) * 16 }}
-                />
+                className="h-3.5 bg-bordercolor rounded-md mb-1"
+                style={{ width: 60 + i % 3 * 16 }} />
+              
                 {}
                 <View className="h-3 w-10 bg-bordercolor rounded-md" />
               </View>
             </View>
-          ))}
+          )}
         </View>
       </View>
-    </Animated.View>
-  );
+    </Animated.View>);
+
 }
 
 
@@ -82,17 +82,17 @@ function EmptyAnalyticsState() {
   return (
     <Animated.View
       entering={FadeIn.duration(300)}
-      className="items-center justify-center py-16"
-    >
+      className="items-center justify-center py-16">
+      
       <View
         className="w-24 h-24 rounded-full items-center justify-center mb-5"
-        style={{ backgroundColor: colors.surface }}
-      >
+        style={{ backgroundColor: colors.surface }}>
+        
         <Ionicons
           name="pie-chart-outline"
           size={44}
-          color={colors.textTertiary}
-        />
+          color={colors.textTertiary} />
+        
       </View>
       <Text className="text-primary font-bold text-xl mb-2 text-center">
         Nothing to analyse yet
@@ -100,8 +100,8 @@ function EmptyAnalyticsState() {
       <Text className="text-tertiary text-center text-sm px-10 leading-6">
         Add some transactions to see your{"\n"}spending breakdown here.
       </Text>
-    </Animated.View>
-  );
+    </Animated.View>);
+
 }
 
 export function Analytics() {
@@ -135,8 +135,8 @@ export function Analytics() {
 
     const currentRangeStr = JSON.stringify(dateRange);
     const isDateChange =
-      prevDateRangeStr.current !== null &&
-      prevDateRangeStr.current !== currentRangeStr;
+    prevDateRangeStr.current !== null &&
+    prevDateRangeStr.current !== currentRangeStr;
     const shouldShowSkeleton = isFirstLoad.current || isDateChange;
 
     if (shouldShowSkeleton) {
@@ -162,20 +162,20 @@ export function Analytics() {
   useFocusEffect(
     useCallback(() => {
       loadData();
-    }, [loadData]),
+    }, [loadData])
   );
 
   return (
     <ScrollView
       className="flex-1 bg-background"
       contentContainerStyle={{ padding: 24, paddingTop: 48 }}
-      showsVerticalScrollIndicator={false}
-    >
+      showsVerticalScrollIndicator={false}>
+      
       <Text className="text-primary text-3xl font-bold mb-4">Analytics</Text>
 
       <AnalyticsFilter
-        onDateRangeChange={handleDateRangeChange}
-      />
+        onDateRangeChange={handleDateRangeChange} />
+      
 
       <TotalSpentCard totalSpent={totalSpent} />
 
@@ -183,15 +183,15 @@ export function Analytics() {
         Spending by Category
       </Text>
 
-      {isLoading ? (
-        <SkeletonPieChart rowCount={prevRowCount.current} />
-      ) : spendingData.length === 0 ? (
-        <EmptyAnalyticsState />
-      ) : (
-        <Animated.View entering={FadeIn.duration(400)}>
+      {isLoading ?
+      <SkeletonPieChart rowCount={prevRowCount.current} /> :
+      spendingData.length === 0 ?
+      <EmptyAnalyticsState /> :
+
+      <Animated.View entering={FadeIn.duration(400)}>
           <TransactionPieChart spendingData={spendingData} />
         </Animated.View>
-      )}
-    </ScrollView>
-  );
+      }
+    </ScrollView>);
+
 }

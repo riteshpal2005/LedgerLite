@@ -6,7 +6,7 @@ export function InsightsHeroCard() {
   return (
     <View className="mx-6 mb-8 rounded-2xl bg-[#0f1011] border border-[#1b1b1c] p-5 flex-row items-center justify-between overflow-hidden relative">
       
-      {/* Decorative gradient overlay mock */}
+      {}
       <View className="absolute right-0 top-0 bottom-0 w-32 bg-[#6642f8]/5 opacity-50" />
 
       <View className="flex-row items-center flex-1 pr-4 z-10">
@@ -21,14 +21,14 @@ export function InsightsHeroCard() {
         </View>
       </View>
 
-      {/* Mini abstract chart graphic */}
+      {}
       <View className="w-20 h-16 justify-end flex-row items-end space-x-1.5 z-10 opacity-70">
         <View className="w-3 bg-[#6642f8]/40 rounded-t-sm h-6" />
         <View className="w-3 bg-[#6642f8]/60 rounded-t-sm h-10" />
         <View className="w-3 bg-[#6642f8]/80 rounded-t-sm h-8" />
         <View className="w-3 bg-[#6642f8] rounded-t-sm h-12" />
         
-        {/* Abstract line overlay */}
+        {}
         <View className="absolute top-2 left-0 right-0 h-10">
           <View className="absolute top-4 left-1 w-2 h-2 rounded-full bg-white opacity-40 z-20" />
           <View className="absolute top-1 left-7 w-2 h-2 rounded-full bg-white opacity-40 z-20" />
@@ -36,6 +36,6 @@ export function InsightsHeroCard() {
           <View className="absolute top-3 left-19 w-2 h-2 rounded-full bg-[#6642f8] z-20" />
         </View>
       </View>
-    </View>
-  );
+    </View>);
+
 }

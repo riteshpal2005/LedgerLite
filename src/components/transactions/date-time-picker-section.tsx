@@ -13,7 +13,7 @@ interface DateTimePickerSectionProps {
 
 export function DateTimePickerSection({
   date,
-  setDate,
+  setDate
 }: DateTimePickerSectionProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -26,7 +26,7 @@ export function DateTimePickerSection({
   const timeStr = date.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
-    hour12: !use24HourFormat,
+    hour12: !use24HourFormat
   });
 
   return (
@@ -36,8 +36,8 @@ export function DateTimePickerSection({
           <Text className="text-secondary text-sm mb-2">Date</Text>
           <Pressable
             onPress={() => setShowDatePicker(true)}
-            className="flex-row items-center justify-between border-b border-bordercolor pb-1"
-          >
+            className="flex-row items-center justify-between border-b border-bordercolor pb-1">
+            
             <Text className="text-primary text-lg font-semibold flex-1 mr-2">
               {dateStr}
             </Text>
@@ -49,8 +49,8 @@ export function DateTimePickerSection({
           <Text className="text-secondary text-sm mb-2">Time</Text>
           <Pressable
             onPress={() => setShowTimePicker(true)}
-            className="flex-row items-center justify-between border-b border-bordercolor pb-1"
-          >
+            className="flex-row items-center justify-between border-b border-bordercolor pb-1">
+            
             <Text className="text-primary text-lg font-semibold flex-1 mr-2">
               {timeStr}
             </Text>
@@ -59,25 +59,25 @@ export function DateTimePickerSection({
         </View>
       </View>
 
-      {showDatePicker && (
-        <CustomDateTimePickerModal
-          visible={showDatePicker}
-          onClose={() => setShowDatePicker(false)}
-          date={date}
-          setDate={setDate}
-          mode="date"
-        />
-      )}
+      {showDatePicker &&
+      <CustomDateTimePickerModal
+        visible={showDatePicker}
+        onClose={() => setShowDatePicker(false)}
+        date={date}
+        setDate={setDate}
+        mode="date" />
 
-      {showTimePicker && (
-        <CustomDateTimePickerModal
-          visible={showTimePicker}
-          onClose={() => setShowTimePicker(false)}
-          date={date}
-          setDate={setDate}
-          mode="time"
-        />
-      )}
-    </>
-  );
+      }
+
+      {showTimePicker &&
+      <CustomDateTimePickerModal
+        visible={showTimePicker}
+        onClose={() => setShowTimePicker(false)}
+        date={date}
+        setDate={setDate}
+        mode="time" />
+
+      }
+    </>);
+
 }

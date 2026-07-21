@@ -8,7 +8,7 @@ interface TransactionSearchBarProps {
 
 export function TransactionSearchBar({
   searchQuery,
-  setSearchQuery,
+  setSearchQuery
 }: TransactionSearchBarProps) {
   return (
     <View className="w-full flex-row items-center bg-[#131415] rounded-2xl px-4 h-[48px] border border-[#27272a]">
@@ -18,16 +18,16 @@ export function TransactionSearchBar({
         onChangeText={setSearchQuery}
         placeholder="Search transactions..."
         placeholderTextColor="#71717a"
-        className="flex-1 text-white text-[15px] ml-3"
-      />
-      {searchQuery.length > 0 && (
-        <Pressable 
-          onPress={() => setSearchQuery("")}
-          className="w-6 h-6 rounded-full bg-white/10 items-center justify-center active:bg-white/20"
-        >
+        className="flex-1 text-white text-[15px] ml-3" />
+      
+      {searchQuery.length > 0 &&
+      <Pressable
+        onPress={() => setSearchQuery("")}
+        className="w-6 h-6 rounded-full bg-white/10 items-center justify-center active:bg-white/20">
+        
           <Ionicons name="close" size={14} color="#a1a1aa" />
         </Pressable>
-      )}
-    </View>
-  );
+      }
+    </View>);
+
 }

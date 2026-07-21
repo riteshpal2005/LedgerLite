@@ -28,10 +28,10 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
+export function ThemeProvider({ children }: {children: ReactNode;}) {
   const dispatch = useDispatch();
   const themeOption =
-    useSelector((state: RootState) => state.settings.themeOption) || "dark";
+  useSelector((state: RootState) => state.settings.themeOption) || "dark";
   const systemColorScheme = useColorScheme();
 
   const setThemeOption = (option: ThemeOption) => {
@@ -40,26 +40,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const activeThemeClass = (() => {
     const effectiveTheme =
-      themeOption === "system" ? systemColorScheme || "dark" : themeOption;
+    themeOption === "system" ? systemColorScheme || "dark" : themeOption;
     if (effectiveTheme === "dark") return "theme-dark";
     if (effectiveTheme === "pitch-black") return "theme-pitch-black";
     return "";
   })();
 
   const bottomSheetBackgroundColor =
-    activeThemeClass === "theme-pitch-black"
-      ? "#000000"
-      : activeThemeClass === "theme-dark"
-        ? "#09090b"
-        : "#f4f4f5";
+  activeThemeClass === "theme-pitch-black" ?
+  "#000000" :
+  activeThemeClass === "theme-dark" ?
+  "#09090b" :
+  "#f4f4f5";
   const bottomSheetIndicatorColor =
-    activeThemeClass === "" ? "#e4e4e7" : "#52525b";
+  activeThemeClass === "" ? "#e4e4e7" : "#52525b";
   const bottomSheetBorderColor =
-    activeThemeClass === "theme-pitch-black"
-      ? "#18181b"
-      : activeThemeClass === "theme-dark"
-        ? "#27272a"
-        : "#e4e4e7";
+  activeThemeClass === "theme-pitch-black" ?
+  "#18181b" :
+  activeThemeClass === "theme-dark" ?
+  "#27272a" :
+  "#e4e4e7";
 
   const colors = {
     brandPrimary: activeThemeClass === "" ? "#2563eb" : "#3b82f6",
@@ -69,7 +69,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     textSecondary: activeThemeClass === "" ? "#52525b" : "#a1a1aa",
     textTertiary: activeThemeClass === "" ? "#a1a1aa" : "#71717a",
     text: activeThemeClass === "" ? "#18181b" : "#f4f4f5",
-    surface: activeThemeClass === "theme-pitch-black" ? "#09090b" : activeThemeClass === "theme-dark" ? "#18181b" : "#ffffff",
+    surface: activeThemeClass === "theme-pitch-black" ? "#09090b" : activeThemeClass === "theme-dark" ? "#18181b" : "#ffffff"
   };
 
   return (
@@ -81,19 +81,19 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         bottomSheetBackgroundColor,
         bottomSheetIndicatorColor,
         bottomSheetBorderColor,
-        colors,
-      }}
-    >
+        colors
+      }}>
+      
       <View className={`${activeThemeClass} bg-transparent flex-1`}>
         <StatusBar
           style={activeThemeClass === "" ? "dark" : "light"}
           backgroundColor="transparent"
-          translucent={true}
-        />
+          translucent={true} />
+        
         {children}
       </View>
-    </ThemeContext.Provider>
-  );
+    </ThemeContext.Provider>);
+
 }
 
 export function useTheme() {

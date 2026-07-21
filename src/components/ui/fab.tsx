@@ -3,8 +3,8 @@ import { Pressable } from "react-native";
 import Animated, {
   useAnimatedStyle,
   withSpring,
-  useSharedValue,
-} from "react-native-reanimated";
+  useSharedValue } from
+"react-native-reanimated";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -35,7 +35,7 @@ export function FAB({
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+    transform: [{ scale: scale.value }]
   }));
 
   const getPositionStyles = () => {
@@ -57,9 +57,9 @@ export function FAB({
       onPressOut={handlePressOut}
       className={`${getPositionStyles()} w-16 h-16 bg-brand-primary rounded-full items-center justify-center shadow-lg elevation-5 active:opacity-90 ${className}`}
       style={animatedStyle}
-      {...props}
-    >
+      {...props}>
+      
       {icon}
-    </AnimatedPressable>
-  );
+    </AnimatedPressable>);
+
 }

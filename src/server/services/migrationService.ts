@@ -5,9 +5,9 @@ import { Transaction, Category, Account, DatabaseActions } from "../db/schema";
 
 export const MigrationService = {
   async migrateGuestDataToUser(
-    userId: string,
-    dbActions: DatabaseActions,
-  ) {
+  userId: string,
+  dbActions: DatabaseActions)
+  {
     const guestDbName = "ledgerlite_guest.db";
 
     const guestDbPath = Paths.document.uri + "SQLite/" + guestDbName;
@@ -24,7 +24,7 @@ export const MigrationService = {
 
       const transactions = await guestDb.getAllAsync<Transaction>(`SELECT * FROM transactions`);
       const categories = await guestDb.getAllAsync<Category>(
-        `SELECT * FROM categories`,
+        `SELECT * FROM categories`
       );
       const accounts = await guestDb.getAllAsync<Account>(`SELECT * FROM accounts`);
 
@@ -34,19 +34,19 @@ export const MigrationService = {
       if (transactions.length > 0 || categories.length > 0 || accounts.length > 0) {
 
         for (const account of accounts) {
-          account.sync_status = "pending"; // Ref: migrationService-6
+          account.sync_status = "pending";
           await dbActions.restoreAccount(account);
         }
 
 
         for (const category of categories) {
-          category.sync_status = "pending"; // Ref: migrationService-8
+          category.sync_status = "pending";
           await dbActions.restoreCategory(category);
         }
 
 
         for (const transaction of transactions) {
-          transaction.sync_status = "pending"; // Ref: migrationService-10
+          transaction.sync_status = "pending";
           await dbActions.restoreTransaction(transaction);
         }
 
@@ -59,5 +59,5 @@ export const MigrationService = {
     } catch (error) {
       console.error(`[MigrationService] Failed to migrate guest data:`, error);
     }
-  },
+  }
 };

@@ -56,9 +56,9 @@ export default function RegisterScreen() {
 
     isSubmitting.current = true;
     setIsLoading(true);
-    
+
     const { error } = await AuthService.registerWithEmail(email, password);
-    
+
     setIsLoading(false);
     isSubmitting.current = false;
 
@@ -71,12 +71,12 @@ export default function RegisterScreen() {
 
   const handleGoogleLogin = async () => {
     if (isSubmitting.current) return;
-    
+
     isSubmitting.current = true;
     setIsGoogleLoading(true);
-    
+
     const { error } = await AuthService.signInWithGoogle();
-    
+
     setIsGoogleLoading(false);
     isSubmitting.current = false;
 
@@ -93,13 +93,13 @@ export default function RegisterScreen() {
         <AuthHeader
           isDark={isDark}
           title="Create Account"
-          subtitle="Join LedgerLite to sync your data"
-        />
+          subtitle="Join LedgerLite to sync your data" />
+        
 
         <Animated.View
           entering={FadeInDown.delay(200).duration(600).springify()}
-          className="space-y-4"
-        >
+          className="space-y-4">
+          
           <AuthInput
             label="Email Address"
             value={email}
@@ -107,37 +107,37 @@ export default function RegisterScreen() {
             error={emailError}
             autoCapitalize="none"
             keyboardType="email-address"
-            placeholder="you@example.com"
-          />
+            placeholder="you@example.com" />
+          
 
           <AuthInput
             label="Password"
             value={password}
             onChangeText={setPassword}
             isPassword={true}
-            placeholder="••••••••"
-          />
+            placeholder="••••••••" />
+          
 
           <AuthInput
             label="Confirm Password"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             isPassword={true}
-            placeholder="••••••••"
-          />
+            placeholder="••••••••" />
+          
 
           <AuthButton
             label="Sign Up"
             onPress={handleRegister}
             disabled={isLoading}
             isLoading={isLoading}
-            className="mt-6"
-          />
+            className="mt-6" />
+          
         </Animated.View>
 
         <Animated.View
-          entering={FadeInDown.delay(200).duration(600).springify()}
-        >
+          entering={FadeInDown.delay(200).duration(600).springify()}>
+          
           <AuthDivider isDark={isDark} />
 
           <AuthButton
@@ -147,15 +147,15 @@ export default function RegisterScreen() {
             onPress={handleGoogleLogin}
             disabled={isLoading || isGoogleLoading}
             isLoading={isGoogleLoading}
-            isDark={isDark}
-          />
+            isDark={isDark} />
+          
 
           <AuthFooter
             isDark={isDark}
             promptText="Already have an account?"
             linkText="Sign In"
-            linkHref="/(auth)/login"
-          />
+            linkHref="/(auth)/login" />
+          
         </Animated.View>
       </View>
       <CustomAlert
@@ -166,8 +166,8 @@ export default function RegisterScreen() {
         onCancel={alertConfig.onCancel}
         confirmText={alertConfig.confirmText}
         cancelText={alertConfig.cancelText}
-        confirmStyle={alertConfig.confirmStyle}
-      />
-    </SafeAreaView>
-  );
+        confirmStyle={alertConfig.confirmStyle} />
+      
+    </SafeAreaView>);
+
 }

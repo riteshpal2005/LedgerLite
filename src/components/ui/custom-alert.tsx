@@ -15,7 +15,7 @@ interface CustomAlertProps {
   alertTheme?: "dark" | "light";
   singleButton?: boolean;
   confirmIcon?: string;
-  actions?: { text: string; onPress?: () => void; style?: "default" | "cancel" | "destructive" }[];
+  actions?: {text: string;onPress?: () => void;style?: "default" | "cancel" | "destructive";}[];
 }
 
 export function CustomAlert({
@@ -31,12 +31,12 @@ export function CustomAlert({
   alertTheme = "dark",
   singleButton = false,
   confirmIcon,
-  actions,
+  actions
 }: CustomAlertProps) {
-  // We can default to "dark" theme, but if we need to support system theme we could use useTheme.
-  // Given the design system spec, let's explicitly use alertTheme.
+
+
   const isLight = alertTheme === "light";
-  
+
   const bgColor = isLight ? "bg-white" : "bg-[#131415]";
   const borderColor = isLight ? "border-gray-200" : "border-[#27272a]";
   const titleColor = isLight ? "text-black" : "text-white";
@@ -75,18 +75,18 @@ export function CustomAlert({
       transparent={true}
       animationType="fade"
       onRequestClose={onCancel}
-      statusBarTranslucent={true}
-    >
+      statusBarTranslucent={true}>
+      
       <View className="flex-1 bg-black/70 justify-center items-center px-6">
         <Pressable className="absolute inset-0" onPress={onCancel} />
         
         <View className={`w-full ${bgColor} rounded-[28px] border ${borderColor} p-6 items-center shadow-xl`}>
           
-          {iconType && (
-            <View className={`w-[72px] h-[72px] rounded-full border ${iconBorderColor} ${iconBgColor} items-center justify-center mb-5`}>
+          {iconType &&
+          <View className={`w-[72px] h-[72px] rounded-full border ${iconBorderColor} ${iconBgColor} items-center justify-center mb-5`}>
               <Ionicons name={iconName as any} size={38} color={iconColor} />
             </View>
-          )}
+          }
 
           <Text className={`${titleColor} text-[22px] font-bold text-center mb-2`}>
             {title}
@@ -95,61 +95,61 @@ export function CustomAlert({
             {message}
           </Text>
 
-          {actions && actions.length > 0 ? (
-            <View className="w-full">
+          {actions && actions.length > 0 ?
+          <View className="w-full">
               {actions.map((action, index) => {
-                const isCancel = action.style === "cancel";
-                const isDestructive = action.style === "destructive";
-                const btnBg = isCancel ? cancelBgColor : isDestructive ? "bg-[#ef4444]/10" : "bg-[#7c3aed]/10";
-                const btnBorder = isCancel ? cancelBorderColor : isDestructive ? "border-[#ef4444]/30" : "border-[#7c3aed]/30";
-                const btnText = isCancel ? cancelTextColor : isDestructive ? "text-[#ef4444]" : "text-[#7c3aed]";
-                
-                return (
-                  <Pressable
-                    key={index}
-                    onPress={() => {
-                      if (action.onPress) action.onPress();
-                      if (onCancel) onCancel(); // Auto close
-                    }}
-                    className={`w-full h-[52px] mb-3 border ${btnBorder} ${btnBg} rounded-xl justify-center items-center active:opacity-50`}
-                  >
+              const isCancel = action.style === "cancel";
+              const isDestructive = action.style === "destructive";
+              const btnBg = isCancel ? cancelBgColor : isDestructive ? "bg-[#ef4444]/10" : "bg-[#7c3aed]/10";
+              const btnBorder = isCancel ? cancelBorderColor : isDestructive ? "border-[#ef4444]/30" : "border-[#7c3aed]/30";
+              const btnText = isCancel ? cancelTextColor : isDestructive ? "text-[#ef4444]" : "text-[#7c3aed]";
+
+              return (
+                <Pressable
+                  key={index}
+                  onPress={() => {
+                    if (action.onPress) action.onPress();
+                    if (onCancel) onCancel();
+                  }}
+                  className={`w-full h-[52px] mb-3 border ${btnBorder} ${btnBg} rounded-xl justify-center items-center active:opacity-50`}>
+                  
                     <Text className={`${btnText} font-bold text-base`}>{action.text}</Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          ) : singleButton ? (
-            <Pressable
-              onPress={onConfirm}
-              className={`w-full h-[52px] ${confirmBgColor} rounded-xl justify-center items-center flex-row active:opacity-80`}
-            >
+                  </Pressable>);
+
+            })}
+            </View> :
+          singleButton ?
+          <Pressable
+            onPress={onConfirm}
+            className={`w-full h-[52px] ${confirmBgColor} rounded-xl justify-center items-center flex-row active:opacity-80`}>
+            
               {confirmIcon && <Ionicons name={confirmIcon as any} size={20} color="white" className="mr-2" />}
               <Text className="text-white font-bold text-base">{confirmText}</Text>
-            </Pressable>
-          ) : (
-            <View className="w-full flex-row justify-between">
-              {onCancel && (
-                <Pressable
-                  onPress={onCancel}
-                  className={`flex-1 h-[52px] border ${cancelBorderColor} ${cancelBgColor} rounded-xl justify-center items-center mr-3 active:opacity-50`}
-                >
+            </Pressable> :
+
+          <View className="w-full flex-row justify-between">
+              {onCancel &&
+            <Pressable
+              onPress={onCancel}
+              className={`flex-1 h-[52px] border ${cancelBorderColor} ${cancelBgColor} rounded-xl justify-center items-center mr-3 active:opacity-50`}>
+              
                   <Text className={`${cancelTextColor} font-bold text-base`}>{cancelText}</Text>
                 </Pressable>
-              )}
+            }
               <Pressable
-                onPress={onConfirm}
-                className={`flex-1 h-[52px] ${confirmBgColor} rounded-xl justify-center items-center flex-row active:opacity-80`}
-              >
+              onPress={onConfirm}
+              className={`flex-1 h-[52px] ${confirmBgColor} rounded-xl justify-center items-center flex-row active:opacity-80`}>
+              
                 {confirmIcon && <Ionicons name={confirmIcon as any} size={20} color="white" className="mr-2" />}
                 <Text className="text-white font-bold text-base">{confirmText}</Text>
               </Pressable>
             </View>
-          )}
+          }
 
         </View>
       </View>
-    </Modal>
-  );
+    </Modal>);
+
 }
 
 export function useAlert() {
@@ -166,29 +166,29 @@ export function useAlert() {
     alertTheme?: "dark" | "light";
     singleButton?: boolean;
     confirmIcon?: string;
-    actions?: { text: string; onPress?: () => void; style?: "default" | "cancel" | "destructive" }[];
+    actions?: {text: string;onPress?: () => void;style?: "default" | "cancel" | "destructive";}[];
   }>({
     visible: false,
     title: "",
-    message: "",
+    message: ""
   });
 
   const showAlert = (
-    title: string,
-    message: string,
-    onConfirm?: () => void,
-    onCancel?: () => void,
-    confirmText?: string,
-    cancelText?: string,
-    confirmStyle?: "default" | "primary" | "danger",
-    options?: {
-      iconType?: "question" | "warning" | "info";
-      alertTheme?: "dark" | "light";
-      singleButton?: boolean;
-      confirmIcon?: string;
-      actions?: { text: string; onPress?: () => void; style?: "default" | "cancel" | "destructive" }[];
-    }
-  ) => {
+  title: string,
+  message: string,
+  onConfirm?: () => void,
+  onCancel?: () => void,
+  confirmText?: string,
+  cancelText?: string,
+  confirmStyle?: "default" | "primary" | "danger",
+  options?: {
+    iconType?: "question" | "warning" | "info";
+    alertTheme?: "dark" | "light";
+    singleButton?: boolean;
+    confirmIcon?: string;
+    actions?: {text: string;onPress?: () => void;style?: "default" | "cancel" | "destructive";}[];
+  }) =>
+  {
     setAlertConfig({
       visible: true,
       title,
@@ -198,12 +198,12 @@ export function useAlert() {
       confirmText,
       cancelText,
       confirmStyle,
-      ...options,
+      ...options
     });
   };
 
   const hideAlert = () =>
-    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  setAlertConfig((prev) => ({ ...prev, visible: false }));
 
   return { showAlert, hideAlert, alertConfig };
 }

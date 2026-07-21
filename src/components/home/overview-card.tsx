@@ -13,7 +13,7 @@ interface OverviewCardProps {
   accounts: Account[];
 }
 
-// Ref: OverviewCard-1
+
 const OverviewCardComponent = ({ transactions, accounts }: OverviewCardProps) => {
   const [isBalanceVisible, setIsBalanceVisible] = useState(false);
   const [timeframe, setTimeframe] = useState<"This Month" | "This Week" | "Today">("This Month");
@@ -22,27 +22,27 @@ const OverviewCardComponent = ({ transactions, accounts }: OverviewCardProps) =>
   const filteredTransactions = useMemo(() => {
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    
-    // Calculate start of week (assuming Monday is start of week)
-    const day = now.getDay() || 7; // Get current day number, converting Sun(0) to 7
+
+
+    const day = now.getDay() || 7;
     const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day + 1).getTime();
-    
+
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
 
     return transactions.filter((t) => {
       if (timeframe === "Today") return t.date >= startOfToday;
       if (timeframe === "This Week") return t.date >= startOfWeek;
-      return t.date >= startOfMonth; // Default "This Month"
+      return t.date >= startOfMonth;
     });
   }, [transactions, timeframe]);
 
-  // Dynamic calculations based on observable transaction stream
+
   const totalBalance = useMemo(() => {
     return accounts.reduce((acc, account) => acc + (account.currentBalance ?? account.balance), 0);
   }, [accounts]);
 
-  const income = filteredTransactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
-  const expense = filteredTransactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
+  const income = filteredTransactions.filter((t) => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
+  const expense = filteredTransactions.filter((t) => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
 
   const { formatCurrency } = useCurrency();
 
@@ -55,22 +55,22 @@ const OverviewCardComponent = ({ transactions, accounts }: OverviewCardProps) =>
           <Ionicons name={isTrayOpen ? "chevron-up" : "chevron-down"} size={16} color="#d1d5db" />
         </TouchableOpacity>
 
-        {/* Timeframe Dropdown */}
-        {isTrayOpen && (
-          <View className="absolute top-full right-0 mt-2 bg-[#18181b] w-40 rounded-2xl border border-[#27272a] overflow-hidden shadow-2xl z-50">
-            {(["This Month", "This Week", "Today"] as const).map((item, index) => (
-              <TouchableOpacity
-                key={item}
-                className={`px-4 py-3 ${index !== 2 ? 'border-b border-[#27272a]' : ''} ${timeframe === item ? 'bg-[#3b82f6]/10' : ''}`}
-                onPress={() => { setTimeframe(item); setIsTrayOpen(false); }}
-              >
+        {}
+        {isTrayOpen &&
+        <View className="absolute top-full right-0 mt-2 bg-[#18181b] w-40 rounded-2xl border border-[#27272a] overflow-hidden shadow-2xl z-50">
+            {(["This Month", "This Week", "Today"] as const).map((item, index) =>
+          <TouchableOpacity
+            key={item}
+            className={`px-4 py-3 ${index !== 2 ? 'border-b border-[#27272a]' : ''} ${timeframe === item ? 'bg-[#3b82f6]/10' : ''}`}
+            onPress={() => {setTimeframe(item);setIsTrayOpen(false);}}>
+            
                 <Text className={`text-sm ${timeframe === item ? 'text-[#3b82f6] font-bold' : 'text-gray-300'}`}>
                   {item}
                 </Text>
               </TouchableOpacity>
-            ))}
+          )}
           </View>
-        )}
+        }
       </View>
 
       <View className="bg-[#0f1011] rounded-2xl p-5 mb-8">
@@ -112,9 +112,9 @@ const OverviewCardComponent = ({ transactions, accounts }: OverviewCardProps) =>
           </View>
         </View>
       </View>
-    </View>
-  );
-}
+    </View>);
+
+};
 
 export const OverviewCard = withDatabase(
   withObservables([], ({ database }: any) => ({
@@ -123,6 +123,6 @@ export const OverviewCard = withDatabase(
     ).observe(),
     accounts: database.collections.get('accounts').query(
       Q.where('sync_status', Q.notEq('deleted'))
-    ).observe(),
+    ).observe()
   }))(OverviewCardComponent)
 );

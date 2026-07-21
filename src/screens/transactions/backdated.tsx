@@ -4,8 +4,8 @@ import { router } from "expo-router";
 import {
   SortMode,
   FilterType,
-  FilterAccountId,
-} from "../../components/transactions/transaction-sort-filter";
+  FilterAccountId } from
+"../../components/transactions/transaction-sort-filter";
 import { AddTransactionSheet } from "../../components/transactions/add-transaction-sheet";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -18,10 +18,10 @@ export default function BackdatedScreen() {
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [filterType, setFilterType] = useState<FilterType>("all");
   const [filterAccountId, setFilterAccountId] =
-    useState<FilterAccountId>("all");
+  useState<FilterAccountId>("all");
   const [selectedTransactionToEdit, setSelectedTransactionToEdit] = useState<
-    Transaction | undefined
-  >(undefined);
+    Transaction | undefined>(
+    undefined);
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -60,14 +60,14 @@ export default function BackdatedScreen() {
       </View>
 
       <View className="px-6 mb-6">
-        {/* Search Bar */}
+        {}
         <View className="flex-row items-center bg-[#0a1511] rounded-xl px-4 h-[46px] border border-[#172a21] mb-4">
           <Ionicons name="search" size={20} color="#71717a" />
           <Text className="flex-1 text-[#71717a] text-[15px] ml-3">Search transactions...</Text>
           <Ionicons name="funnel-outline" size={20} color="#71717a" />
         </View>
 
-        {/* Filter Pills */}
+        {}
         <View className="flex-row items-center">
           <View className="flex-1 mr-3">
             <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
@@ -123,7 +123,7 @@ export default function BackdatedScreen() {
       </View>
 
       <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-        {/* Date Group 1 */}
+        {}
         <View className="flex-row items-center justify-between mb-2">
           <View className="flex-row items-center">
             <Ionicons name="calendar-outline" size={14} color="#10b981" className="mr-2" />
@@ -151,7 +151,7 @@ export default function BackdatedScreen() {
           </View>
         </View>
 
-        {/* Date Group 2 */}
+        {}
         <View className="flex-row items-center justify-between mb-2">
           <View className="flex-row items-center">
             <Ionicons name="calendar-outline" size={14} color="#9ca3af" className="mr-2" />
@@ -179,7 +179,7 @@ export default function BackdatedScreen() {
           </View>
         </View>
 
-        {/* Date Group 3 */}
+        {}
         <View className="flex-row items-center justify-between mb-2">
           <View className="flex-row items-center">
             <Ionicons name="calendar-outline" size={14} color="#9ca3af" className="mr-2" />
@@ -207,7 +207,7 @@ export default function BackdatedScreen() {
           </View>
         </View>
         
-        {/* Date Group 4 */}
+        {}
         <View className="flex-row items-center justify-between mb-2">
           <View className="flex-row items-center">
             <Ionicons name="calendar-outline" size={14} color="#10b981" className="mr-2" />
@@ -240,16 +240,16 @@ export default function BackdatedScreen() {
 
       <Pressable
         onPress={handlePresentModalPress}
-        className="absolute bottom-6 right-6 w-[60px] h-[60px] bg-[#10b981] rounded-full items-center justify-center shadow-lg"
-      >
+        className="absolute bottom-6 right-6 w-[60px] h-[60px] bg-[#10b981] rounded-full items-center justify-center shadow-lg">
+        
         <Ionicons name="time-outline" size={30} color="white" />
       </Pressable>
 
       <AddTransactionSheet
         bottomSheetRef={bottomSheetModalRef}
         initialTransaction={selectedTransactionToEdit}
-        isBackdatedMode={true}
-      />
-    </View>
-  );
+        isBackdatedMode={true} />
+      
+    </View>);
+
 }

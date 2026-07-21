@@ -10,8 +10,8 @@ export function ManageCategoriesCard() {
       <Label>Customization</Label>
       <Pressable
         onPress={() => router.push("/categories")}
-        className="bg-surface rounded-2xl p-4 border border-bordercolor flex-row justify-between items-center active:opacity-80"
-      >
+        className="bg-surface rounded-2xl p-4 border border-bordercolor flex-row justify-between items-center active:opacity-80">
+        
         <View className="flex-row items-center">
           <IconWrapper colorClass="bg-blue-500/20" className="mr-3">
             <Ionicons name="pricetags" size={20} color="#3b82f6" />
@@ -22,6 +22,6 @@ export function ManageCategoriesCard() {
         </View>
         <Ionicons name="chevron-forward" size={20} color="#71717a" />
       </Pressable>
-    </View>
-  );
+    </View>);
+
 }

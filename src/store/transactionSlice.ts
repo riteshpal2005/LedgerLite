@@ -6,7 +6,7 @@ interface TransactionState {
 }
 
 const initialState: TransactionState = {
-  transactions: [],
+  transactions: []
 };
 
 export const transactionSlice = createSlice({
@@ -30,14 +30,14 @@ export const transactionSlice = createSlice({
 
     deleteTransactionAction: (state, action: PayloadAction<string>) => {
       state.transactions = state.transactions.filter((e) => e.id !== action.payload);
-    },
-  },
+    }
+  }
 });
 
 export const {
   setTransactions,
   addTransaction,
   updateTransactionAction,
-  deleteTransactionAction,
+  deleteTransactionAction
 } = transactionSlice.actions;
 export default transactionSlice.reducer;

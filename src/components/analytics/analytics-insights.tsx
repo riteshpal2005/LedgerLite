@@ -14,7 +14,7 @@ interface AnalyticsInsightsProps {
   categories: Category[];
 }
 
-// Ref: AnalyticsInsights-1
+
 const AnalyticsInsightsComponent = ({ transactions, categories }: AnalyticsInsightsProps) => {
   const router = useRouter();
   const { formatCurrency } = useCurrency();
@@ -23,16 +23,16 @@ const AnalyticsInsightsComponent = ({ transactions, categories }: AnalyticsInsig
       return "No transactions in this period to generate insights.";
     }
 
-    const expenses = transactions.filter(t => t.type === 'debit');
+    const expenses = transactions.filter((t) => t.type === 'debit');
     if (expenses.length === 0) {
       return "Great job! You have no expenses in this period.";
     }
 
-    // Find highest spending category
+
     const categoryTotals: Record<string, number> = {};
-    expenses.forEach(t => {
-      // transaction.category is an async relation, but since we fetched categories separately
-      // we match by category_id
+    expenses.forEach((t) => {
+
+
       const catId = (t as any)._raw.category_id;
       if (!categoryTotals[catId]) categoryTotals[catId] = 0;
       categoryTotals[catId] += t.amount;
@@ -47,25 +47,25 @@ const AnalyticsInsightsComponent = ({ transactions, categories }: AnalyticsInsig
       }
     });
 
-    const highestCategory = categories.find(c => c.id === maxCatId);
-    
+    const highestCategory = categories.find((c) => c.id === maxCatId);
+
     if (highestCategory) {
       return (
         <Text className="text-gray-400 text-xs leading-5">
           You spent <Text className="text-[#6642f8] font-bold">12.5%</Text> less on {highestCategory.name} compared to last month.
-        </Text>
-      );
+        </Text>);
+
     }
 
     return "Keep tracking your transactions to see personalized insights.";
   }, [transactions, categories]);
 
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       activeOpacity={0.7}
       onPress={() => router.push("/insights")}
-      className="bg-[#0f1011] rounded-2xl p-4 mb-6 border border-[#1b1b1c] flex-row items-center"
-    >
+      className="bg-[#0f1011] rounded-2xl p-4 mb-6 border border-[#1b1b1c] flex-row items-center">
+      
       <View className="w-12 h-12 rounded-full bg-[#6642f8]/10 items-center justify-center mr-3">
         <Ionicons name="bulb-outline" size={24} color="#6642f8" />
       </View>
@@ -76,15 +76,15 @@ const AnalyticsInsightsComponent = ({ transactions, categories }: AnalyticsInsig
         </Text>
       </View>
       <Ionicons name="chevron-forward" size={18} color="#6642f8" />
-    </TouchableOpacity>
-  );
+    </TouchableOpacity>);
+
 };
 
-const enhance = withObservables(['startDate', 'endDate'], ({ database, startDate, endDate }: { database: Database, startDate: number, endDate: number }) => ({
+const enhance = withObservables(['startDate', 'endDate'], ({ database, startDate, endDate }: {database: Database;startDate: number;endDate: number;}) => ({
   transactions: database.collections.get<Transaction>('transactions').query(
     Q.where('date', Q.between(startDate, endDate))
   ).observe(),
-  categories: database.collections.get<Category>('categories').query().observe(),
+  categories: database.collections.get<Category>('categories').query().observe()
 }));
 
 export const AnalyticsInsights = withDatabase(enhance(AnalyticsInsightsComponent));

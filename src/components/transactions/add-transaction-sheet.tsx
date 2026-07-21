@@ -7,14 +7,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import {
   selectAccountsWithBalances,
-  setAccounts,
-} from "../../store/accountSlice";
+  setAccounts } from
+"../../store/accountSlice";
 import { addQuickTemplate } from "../../store/settingsSlice";
 import {
   BottomSheetModal,
   BottomSheetView,
-  BottomSheetScrollView,
-} from "@gorhom/bottom-sheet";
+  BottomSheetScrollView } from
+"@gorhom/bottom-sheet";
 import { TransactionTypeToggle } from "./transaction-type-toggle";
 import { CategorySelectModal } from "./category-select-modal";
 import { AccountSelectModal } from "../accounts/account-select-modal";
@@ -25,8 +25,8 @@ import { QuickTemplatesList } from "./quick-templates-list";
 import { TransactionActionButtons } from "./transaction-action-buttons";
 import { TransactionMetadataForm } from "./transaction-metadata-form";
 import {
-  setTransactions,
-} from "../../store/transactionSlice";
+  setTransactions } from
+"../../store/transactionSlice";
 import { DeleteConfirmationModal } from "../../components/ui/delete-confirmation-modal";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 import { useAuth } from "../../server/firebase/AuthContext";
@@ -43,7 +43,7 @@ export function AddTransactionSheet({
   bottomSheetRef,
   initialTransaction,
   duplicateTransaction,
-  isBackdatedMode = false,
+  isBackdatedMode = false
 }: AddTransactionSheetProps) {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
@@ -67,10 +67,10 @@ export function AddTransactionSheet({
     deleteTransaction,
     adjustAccountBalance,
     getAllAccounts,
-    getAllTransactions,
+    getAllTransactions
   } = dbActions;
   const categories = useSelector(
-    (state: RootState) => state.categories.categories,
+    (state: RootState) => state.categories.categories
   );
   const selectedCategory = categories.find((c) => c.id === categoryId);
 
@@ -79,14 +79,14 @@ export function AddTransactionSheet({
   const {
     bottomSheetBackgroundColor,
     bottomSheetIndicatorColor,
-    bottomSheetBorderColor,
+    bottomSheetBorderColor
   } = useTheme();
 
   const renderBackdrop = useCallback(renderStandardBackdrop, []);
 
   const accounts = useSelector(selectAccountsWithBalances);
   const defaultAccountId = useSelector(
-    (state: RootState) => state.settings.defaultAccountId,
+    (state: RootState) => state.settings.defaultAccountId
   );
   const quickTemplates = useSelector(
     (state: RootState) => state.settings.quickTemplates
@@ -95,7 +95,7 @@ export function AddTransactionSheet({
   const [accountId, setAccountId] = useState(defaultAccountId);
   const [showAccountPicker, setShowAccountPicker] = useState(false);
   const selectedAccount =
-    accounts.find((a) => a.id === accountId) || accounts[0];
+  accounts.find((a) => a.id === accountId) || accounts[0];
 
   useEffect(() => {
     if (destinationAccountId && destinationAccountId === accountId) {
@@ -147,7 +147,7 @@ export function AddTransactionSheet({
         }
       }
     },
-    [initialTransaction, duplicateTransaction, resetForm],
+    [initialTransaction, duplicateTransaction, resetForm]
   );
 
   const snapPoints = useMemo(() => ["90%"], []);
@@ -184,12 +184,12 @@ export function AddTransactionSheet({
       type: type,
       categoryId: categoryId,
       merchant: merchant,
-      accountId: selectedAccount?.id || undefined,
+      accountId: selectedAccount?.id || undefined
     };
 
     if (initialTransaction) {
       await updateTransactionFull(initialTransaction.id, transactionData);
-      
+
       if (isBackdatedMode) {
         if (initialTransaction.accountId) {
           const oldAdj = initialTransaction.type === "debit" ? -initialTransaction.amount : initialTransaction.amount;
@@ -211,7 +211,7 @@ export function AddTransactionSheet({
           id: leg1Id,
           type: "debit" as const,
           description: `${description} (To ${destAccount?.name || "Other Account"})`,
-          linkedTransactionId: leg2Id,
+          linkedTransactionId: leg2Id
         };
         await addTransaction(leg1Data);
 
@@ -222,7 +222,7 @@ export function AddTransactionSheet({
           accountId: destinationAccountId,
           description: `${description} (From ${selectedAccount?.name || "Other Account"})`,
           date: date.getTime() + 1,
-          linkedTransactionId: leg1Id,
+          linkedTransactionId: leg1Id
         };
         await addTransaction(leg2Data);
 
@@ -269,31 +269,31 @@ export function AddTransactionSheet({
 
   const handleDelete = async () => {
     if (!initialTransaction) return;
-    
+
     let partnerTransaction = null;
     if (initialTransaction.linkedTransactionId) {
-       const all = await getAllTransactions();
-       partnerTransaction = all.find(t => t.id === initialTransaction.linkedTransactionId);
+      const all = await getAllTransactions();
+      partnerTransaction = all.find((t) => t.id === initialTransaction.linkedTransactionId);
     }
 
     await deleteTransaction(initialTransaction.id);
 
     if (isBackdatedMode) {
-       if (initialTransaction.accountId) {
-         const reverseAdj = initialTransaction.type === 'debit' ? -initialTransaction.amount : initialTransaction.amount;
-         await adjustAccountBalance(initialTransaction.accountId, reverseAdj);
-       }
-       if (partnerTransaction && partnerTransaction.accountId) {
-         const reversePartnerAdj = partnerTransaction.type === 'debit' ? -partnerTransaction.amount : partnerTransaction.amount;
-         await adjustAccountBalance(partnerTransaction.accountId, reversePartnerAdj);
-       }
+      if (initialTransaction.accountId) {
+        const reverseAdj = initialTransaction.type === 'debit' ? -initialTransaction.amount : initialTransaction.amount;
+        await adjustAccountBalance(initialTransaction.accountId, reverseAdj);
+      }
+      if (partnerTransaction && partnerTransaction.accountId) {
+        const reversePartnerAdj = partnerTransaction.type === 'debit' ? -partnerTransaction.amount : partnerTransaction.amount;
+        await adjustAccountBalance(partnerTransaction.accountId, reversePartnerAdj);
+      }
     }
 
     setShowDeleteModal(false);
 
     setTimeout(async () => {
       handleClose();
-      
+
       const updatedTransactions = await getAllTransactions();
       dispatch(setTransactions(updatedTransactions));
 
@@ -318,10 +318,10 @@ export function AddTransactionSheet({
       backgroundStyle={{
         backgroundColor: bottomSheetBackgroundColor,
         borderWidth: 1,
-        borderColor: bottomSheetBorderColor,
+        borderColor: bottomSheetBorderColor
       }}
-      handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
-    >
+      handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}>
+      
       <BottomSheetView style={{ flex: 1, padding: 24 }}>
         <View className="flex-row justify-between items-center mb-6">
           <Heading className="mb-0">
@@ -336,10 +336,10 @@ export function AddTransactionSheet({
 
         <BottomSheetScrollView
           style={{ flex: 1 }}
-          showsVerticalScrollIndicator={false}
-        >
-          <QuickTemplatesList 
-            quickTemplates={quickTemplates} 
+          showsVerticalScrollIndicator={false}>
+          
+          <QuickTemplatesList
+            quickTemplates={quickTemplates}
             onSelectTemplate={(template) => {
               setAmount(template.amount);
               setDescription(template.description);
@@ -349,9 +349,9 @@ export function AddTransactionSheet({
               if (template.accountId) setAccountId(template.accountId);
               setDestinationAccountId(undefined);
               setDate(new Date());
-              setFormKey(prev => prev + 1);
-            }} 
-          />
+              setFormKey((prev) => prev + 1);
+            }} />
+          
 
           <TransactionMetadataForm
             amount={amount} setAmount={setAmount}
@@ -360,12 +360,12 @@ export function AddTransactionSheet({
             selectedCategory={selectedCategory} setShowCategoryPicker={setShowCategoryPicker}
             selectedAccount={selectedAccount} setShowAccountPicker={setShowAccountPicker}
             destinationAccountId={destinationAccountId} setShowDestinationPicker={setShowDestinationPicker} accounts={accounts}
-            formKey={formKey}
-          />
+            formKey={formKey} />
+          
 
           <DateTimePickerSection date={date} setDate={setDate} />
 
-          <TransactionActionButtons 
+          <TransactionActionButtons
             isEditing={!!initialTransaction}
             onSave={handleSave}
             onDelete={() => setShowDeleteModal(true)}
@@ -382,12 +382,12 @@ export function AddTransactionSheet({
                 merchant,
                 categoryId,
                 accountId: selectedAccount?.id,
-                type,
+                type
               };
               dispatch(addQuickTemplate(newTemplate));
               Alert.alert("Template Saved", `Saved "${description}" as a template.`);
-            }}
-          />
+            }} />
+          
         </BottomSheetScrollView>
       </BottomSheetView>
 
@@ -395,15 +395,15 @@ export function AddTransactionSheet({
         visible={showCategoryPicker}
         onClose={() => setShowCategoryPicker(false)}
         categories={categories}
-        onSelect={handleCategorySelect}
-      />
+        onSelect={handleCategorySelect} />
+      
 
       <AccountSelectModal
         visible={showAccountPicker}
         onClose={() => setShowAccountPicker(false)}
         accounts={accounts}
-        onSelect={setAccountId}
-      />
+        onSelect={setAccountId} />
+      
 
       <AccountSelectModal
         visible={showDestinationPicker}
@@ -412,14 +412,14 @@ export function AddTransactionSheet({
         onSelect={(id) => {
           setDestinationAccountId(id);
           setShowDestinationPicker(false);
-        }}
-      />
+        }} />
+      
 
       <DeleteConfirmationModal
         visible={showDeleteModal}
         onConfirm={handleDelete}
-        onCancel={() => setShowDeleteModal(false)}
-      />
-    </BottomSheetModal>
-  );
+        onCancel={() => setShowDeleteModal(false)} />
+      
+    </BottomSheetModal>);
+
 }

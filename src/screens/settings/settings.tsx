@@ -27,6 +27,6 @@ export default function SettingsScreen() {
         <AboutSection />
         <View className="h-12" />
       </ScrollView>
-    </View>
-  );
+    </View>);
+
 }

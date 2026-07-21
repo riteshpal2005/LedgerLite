@@ -12,7 +12,7 @@ const firebaseConfig = {
   storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 const storageAdapter = {
@@ -24,13 +24,13 @@ const storageAdapter = {
   },
   removeItem: async (key: string) => {
     storage.remove(key);
-  },
+  }
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(storageAdapter),
+  persistence: getReactNativePersistence(storageAdapter)
 });
 
 const db = getFirestore(app);

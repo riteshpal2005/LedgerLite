@@ -4,41 +4,41 @@ import { Ionicons } from "@expo/vector-icons";
 import { CustomDateTimePickerModal } from "../transactions/custom-date-time-picker-modal";
 
 export const AVAILABLE_COLUMNS = [
-  { id: "Date", icon: "calendar-outline" },
-  { id: "Type", icon: "swap-vertical" },
-  { id: "Category", icon: "pricetag-outline" },
-  { id: "Account", icon: "business-outline" },
-  { id: "Amount", icon: "cash-outline" },
-  { id: "Description", icon: "document-text-outline" },
-  { id: "Notes", icon: "document-outline" },
-  { id: "Ref/No.", icon: "number" },
-] as const;
+{ id: "Date", icon: "calendar-outline" },
+{ id: "Type", icon: "swap-vertical" },
+{ id: "Category", icon: "pricetag-outline" },
+{ id: "Account", icon: "business-outline" },
+{ id: "Amount", icon: "cash-outline" },
+{ id: "Description", icon: "document-text-outline" },
+{ id: "Notes", icon: "document-outline" },
+{ id: "Ref/No.", icon: "number" }] as
+const;
 export type ExportColumn = (typeof AVAILABLE_COLUMNS)[number]["id"];
 
 interface ColumnSelectionModalProps {
   visible: boolean;
   onClose: () => void;
   onConfirm: (
-    selectedColumns: ExportColumn[],
-    startDate: Date,
-    endDate: Date,
-    includePieChart: boolean,
-  ) => void;
+  selectedColumns: ExportColumn[],
+  startDate: Date,
+  endDate: Date,
+  includePieChart: boolean)
+  => void;
 }
 
 export function ColumnSelectionModal({
   visible,
   onClose,
-  onConfirm,
+  onConfirm
 }: ColumnSelectionModalProps) {
   const [selected, setSelected] = useState<Set<ExportColumn>>(
-    new Set(AVAILABLE_COLUMNS.map((c) => c.id)),
+    new Set(AVAILABLE_COLUMNS.map((c) => c.id))
   );
-  
+
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [includePieChart, setIncludePieChart] = useState(true);
-  
+
   const [activeDatePicker, setActiveDatePicker] = useState<"start" | "end" | null>(null);
 
   const toggleColumn = (col: ExportColumn) => {
@@ -54,7 +54,7 @@ export function ColumnSelectionModal({
   const handleConfirm = () => {
     const finalEndDate = new Date(endDate);
     finalEndDate.setHours(23, 59, 59, 999);
-    
+
     const finalStartDate = new Date(startDate);
     finalStartDate.setHours(0, 0, 0, 0);
 
@@ -72,8 +72,8 @@ export function ColumnSelectionModal({
       transparent={true}
       animationType="slide"
       onRequestClose={onClose}
-      statusBarTranslucent={true}
-    >
+      statusBarTranslucent={true}>
+      
       <View style={{ flex: 1, justifyContent: "flex-end" }}>
         <Pressable style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "rgba(0,0,0,0.5)" }} onPress={onClose} />
         
@@ -102,8 +102,8 @@ export function ColumnSelectionModal({
                 <Text className="text-gray-500 text-xs mb-1">From</Text>
                 <Pressable
                   onPress={() => setActiveDatePicker("start")}
-                  className="bg-transparent border border-[#27272a] h-12 rounded-xl flex-row justify-between items-center px-4"
-                >
+                  className="bg-transparent border border-[#27272a] h-12 rounded-xl flex-row justify-between items-center px-4">
+                  
                   <Ionicons name="calendar-outline" size={18} color="#7c3aed" />
                   <Text className="text-white font-medium text-sm ml-2 flex-1">{formatDate(startDate)}</Text>
                 </Pressable>
@@ -117,8 +117,8 @@ export function ColumnSelectionModal({
                 <Text className="text-gray-500 text-xs mb-1">To</Text>
                 <Pressable
                   onPress={() => setActiveDatePicker("end")}
-                  className="bg-transparent border border-[#27272a] h-12 rounded-xl flex-row justify-between items-center px-4"
-                >
+                  className="bg-transparent border border-[#27272a] h-12 rounded-xl flex-row justify-between items-center px-4">
+                  
                   <Ionicons name="calendar-outline" size={18} color="#7c3aed" />
                   <Text className="text-white font-medium text-sm ml-2 flex-1">{formatDate(endDate)}</Text>
                 </Pressable>
@@ -137,8 +137,8 @@ export function ColumnSelectionModal({
                 value={includePieChart}
                 onValueChange={setIncludePieChart}
                 trackColor={{ false: "#3f3f46", true: "#10b981" }}
-                thumbColor="#ffffff"
-              />
+                thumbColor="#ffffff" />
+              
             </View>
 
             <View className="mb-8">
@@ -152,22 +152,22 @@ export function ColumnSelectionModal({
                     <Pressable
                       key={col.id}
                       onPress={() => toggleColumn(col.id)}
-                      className={`w-[23%] aspect-square rounded-xl border items-center justify-center mb-3 relative ${isSelected ? "bg-[#3b82f6]/10 border-[#3b82f6]" : "bg-transparent border-[#27272a]"}`}
-                    >
+                      className={`w-[23%] aspect-square rounded-xl border items-center justify-center mb-3 relative ${isSelected ? "bg-[#3b82f6]/10 border-[#3b82f6]" : "bg-transparent border-[#27272a]"}`}>
+                      
                       <Ionicons name={col.icon as any} size={24} color={isSelected ? "white" : "#71717a"} />
                       <Text className={`text-[10px] mt-2 font-medium ${isSelected ? "text-white" : "text-gray-400"}`}>
                         {col.id}
                       </Text>
-                      {isSelected && (
-                        <View className="absolute bottom-1.5 right-1.5 w-4 h-4 bg-[#3b82f6] rounded-full items-center justify-center border-2 border-[#131415]">
+                      {isSelected &&
+                      <View className="absolute bottom-1.5 right-1.5 w-4 h-4 bg-[#3b82f6] rounded-full items-center justify-center border-2 border-[#131415]">
                           <Ionicons name="checkmark" size={10} color="white" />
                         </View>
-                      )}
-                      {!isSelected && (
-                        <View className="absolute bottom-1.5 right-1.5 w-4 h-4 rounded-full border-2 border-[#3f3f46]" />
-                      )}
-                    </Pressable>
-                  );
+                      }
+                      {!isSelected &&
+                      <View className="absolute bottom-1.5 right-1.5 w-4 h-4 rounded-full border-2 border-[#3f3f46]" />
+                      }
+                    </Pressable>);
+
                 })}
               </View>
             </View>
@@ -183,14 +183,14 @@ export function ColumnSelectionModal({
             <View className="flex-row justify-between gap-4 mb-4">
               <Pressable
                 onPress={onClose}
-                className="flex-1 h-14 rounded-xl bg-transparent border border-[#27272a] items-center justify-center active:bg-white/5"
-              >
+                className="flex-1 h-14 rounded-xl bg-transparent border border-[#27272a] items-center justify-center active:bg-white/5">
+                
                 <Text className="text-white font-bold">Cancel</Text>
               </Pressable>
               <Pressable
                 onPress={handleConfirm}
-                className="flex-1 h-14 rounded-xl bg-[#10b981] flex-row items-center justify-center active:opacity-80"
-              >
+                className="flex-1 h-14 rounded-xl bg-[#10b981] flex-row items-center justify-center active:opacity-80">
+                
                 <Ionicons name="document-text-outline" size={18} color="white" style={{ marginRight: 6 }} />
                 <Text className="text-white font-bold">Generate PDF</Text>
               </Pressable>
@@ -208,11 +208,11 @@ export function ColumnSelectionModal({
         mode="date"
         date={activeDatePicker === "start" ? startDate : endDate}
         setDate={(d) => {
-          if (activeDatePicker === "start") setStartDate(d);
-          else if (activeDatePicker === "end") setEndDate(d);
+          if (activeDatePicker === "start") setStartDate(d);else
+          if (activeDatePicker === "end") setEndDate(d);
         }}
-        onClose={() => setActiveDatePicker(null)}
-      />
-    </Modal>
-  );
+        onClose={() => setActiveDatePicker(null)} />
+      
+    </Modal>);
+
 }

@@ -6,36 +6,36 @@ import { getDaysInMonth } from 'date-fns';
 
 interface SpendingStreakCardProps {
   currentMonthTxns: Transaction[];
-  currentDate: Date; // pass the date context (e.g. new Date() or selected month date)
+  currentDate: Date;
 }
 
 export function SpendingStreakCard({ currentMonthTxns, currentDate }: SpendingStreakCardProps) {
   const insight = useMemo(() => {
-    const expenses = currentMonthTxns.filter(t => t.type === 'debit');
-    
-    // Threshold: Need some expenses to establish an average
+    const expenses = currentMonthTxns.filter((t) => t.type === 'debit');
+
+
     if (expenses.length < 3) return null;
 
     let totalExpense = 0;
     const expenseByDay: Record<number, number> = {};
 
-    expenses.forEach(t => {
+    expenses.forEach((t) => {
       totalExpense += t.amount;
       const day = new Date(t.date).getDate();
       expenseByDay[day] = (expenseByDay[day] || 0) + t.amount;
     });
 
     const daysInMonth = getDaysInMonth(currentDate);
-    // Rough estimate of "daily budget" is the average spend per day so far (or across the month)
+
     const currentDayOfMonth = currentDate.getMonth() === new Date().getMonth() ? new Date().getDate() : daysInMonth;
     const averageDailySpend = totalExpense / currentDayOfMonth;
 
     let underBudgetDays = 0;
-    
+
     for (let i = 1; i <= currentDayOfMonth; i++) {
       const spendToday = expenseByDay[i] || 0;
-      // If they spent less than 80% of their average, consider it "under budget"
-      if (spendToday < (averageDailySpend * 0.8)) {
+
+      if (spendToday < averageDailySpend * 0.8) {
         underBudgetDays++;
       }
     }
@@ -43,7 +43,7 @@ export function SpendingStreakCard({ currentMonthTxns, currentDate }: SpendingSt
     if (underBudgetDays === 0) return null;
 
     return {
-      underBudgetDays,
+      underBudgetDays
     };
   }, [currentMonthTxns, currentDate]);
 
@@ -57,8 +57,8 @@ export function SpendingStreakCard({ currentMonthTxns, currentDate }: SpendingSt
           <Text className="text-[#3b82f6] text-[10px] font-bold tracking-wider uppercase">Spending Streak</Text>
         </View>
         <Text className="text-gray-500 text-sm italic">Track your expenses regularly to unlock spending streak insights.</Text>
-      </View>
-    );
+      </View>);
+
   }
 
   return (
@@ -78,7 +78,7 @@ export function SpendingStreakCard({ currentMonthTxns, currentDate }: SpendingSt
         </View>
         
         <View className="items-center justify-center relative w-20 h-20">
-           {/* Mock badge graphic */}
+           {}
            <View className="absolute inset-0 bg-[#3b82f6]/10 rounded-full" style={{ transform: [{ scale: 1.2 }] }} />
            <View className="absolute inset-2 bg-[#3b82f6]/20 rounded-full" />
            <View className="w-14 h-14 bg-[#1b1b1c] rounded-full items-center justify-center border-2 border-[#3b82f6]">
@@ -86,13 +86,13 @@ export function SpendingStreakCard({ currentMonthTxns, currentDate }: SpendingSt
              <Text className="text-gray-400 text-[8px] -mt-1 uppercase">Days</Text>
            </View>
            
-           {/* Confetti specs */}
+           {}
            <View className="absolute top-0 right-2 w-1.5 h-1.5 bg-[#10b981] rotate-45" />
            <View className="absolute bottom-1 right-0 w-1 h-2 bg-[#a855f7] rotate-12" />
            <View className="absolute top-4 -left-1 w-2 h-1 bg-[#ef4444] -rotate-12" />
            <View className="absolute bottom-3 left-1 w-1.5 h-1.5 bg-[#f59e0b] rotate-45" />
         </View>
       </View>
-    </View>
-  );
+    </View>);
+
 }

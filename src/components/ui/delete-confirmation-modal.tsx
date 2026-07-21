@@ -14,7 +14,7 @@ export function DeleteConfirmationModal({
   onConfirm,
   onCancel,
   title = "Delete Transaction",
-  message = "Are you sure you want to delete this transaction? This action cannot be undone.",
+  message = "Are you sure you want to delete this transaction? This action cannot be undone."
 }: DeleteConfirmationModalProps) {
   return (
     <CustomAlert
@@ -27,7 +27,7 @@ export function DeleteConfirmationModal({
       cancelText="Cancel"
       confirmStyle="primary"
       iconType="question"
-      confirmIcon="trash-outline"
-    />
-  );
+      confirmIcon="trash-outline" />);
+
+
 }

@@ -17,13 +17,13 @@ export function AccountsSection() {
   const { formatCurrency } = useCurrency();
   const accounts = useSelector(selectAccountsWithBalances);
   const defaultAccountId = useSelector(
-    (state: RootState) => state.settings.defaultAccountId,
+    (state: RootState) => state.settings.defaultAccountId
   );
   const transactions = useSelector((state: RootState) => state.transactions.transactions);
 
   const addAccountSheetRef = useRef<BottomSheetModal>(null);
   const [accountToEdit, setAccountToEdit] = useState<Account | undefined>(
-    undefined,
+    undefined
   );
   const [accountToDelete, setAccountToDelete] = useState<Account | null>(null);
   const [linkedTransactionCount, setLinkedTransactionCount] = useState(0);
@@ -56,19 +56,19 @@ export function AccountsSection() {
         Accounts
       </Text>
       <View className="bg-surface rounded-2xl p-4 border border-bordercolor">
-        {accounts.length === 0 ? (
-          <Text className="text-tertiary italic mb-4">
+        {accounts.length === 0 ?
+        <Text className="text-tertiary italic mb-4">
             No accounts added yet.
-          </Text>
-        ) : (
-          accounts.map((account, index) => {
-            const isDefault = account.id === defaultAccountId;
-            return (
-              <View key={account.id}>
+          </Text> :
+
+        accounts.map((account, index) => {
+          const isDefault = account.id === defaultAccountId;
+          return (
+            <View key={account.id}>
                 <Pressable
-                  className="flex-row justify-between items-center py-3"
-                  onPress={() => setActionAccount(account)}
-                >
+                className="flex-row justify-between items-center py-3"
+                onPress={() => setActionAccount(account)}>
+                
                   <View>
                     <Text className="text-primary text-lg font-semibold">
                       {account.name}
@@ -78,33 +78,33 @@ export function AccountsSection() {
                     </Text>
                   </View>
                   <View className="flex-row items-center">
-                    {isDefault && (
-                      <Text className="text-blue-500 text-xs font-bold mr-3 bg-blue-500/20 px-2 py-1 rounded-full">
+                    {isDefault &&
+                  <Text className="text-blue-500 text-xs font-bold mr-3 bg-blue-500/20 px-2 py-1 rounded-full">
                         DEFAULT
                       </Text>
-                    )}
+                  }
 
                     <Pressable
-                      onPress={() => dispatch(setDefaultAccount(account.id))}
-                      className="p-2 -mr-2"
-                    >
+                    onPress={() => dispatch(setDefaultAccount(account.id))}
+                    className="p-2 -mr-2">
+                    
                       <Ionicons
-                        name={
-                          isDefault ? "radio-button-on" : "radio-button-off"
-                        }
-                        size={26}
-                        color={isDefault ? "#3b82f6" : "#52525b"}
-                      />
+                      name={
+                      isDefault ? "radio-button-on" : "radio-button-off"
+                      }
+                      size={26}
+                      color={isDefault ? "#3b82f6" : "#52525b"} />
+                    
                     </Pressable>
                   </View>
                 </Pressable>
-                {index < accounts.length - 1 && (
-                  <View className="h-[1px] bg-bordercolor my-1" />
-                )}
-              </View>
-            );
-          })
-        )}
+                {index < accounts.length - 1 &&
+              <View className="h-[1px] bg-bordercolor my-1" />
+              }
+              </View>);
+
+        })
+        }
 
         <View className="h-[1px] bg-bordercolor my-2" />
 
@@ -113,8 +113,8 @@ export function AccountsSection() {
           onPress={() => {
             setAccountToEdit(undefined);
             addAccountSheetRef.current?.present();
-          }}
-        >
+          }}>
+          
           <Ionicons name="add-circle-outline" size={24} color="#10b981" />
           <Text className="text-emerald-500 text-lg font-bold ml-2">
             Add New Account
@@ -124,25 +124,25 @@ export function AccountsSection() {
 
       <AddAccountModal
         bottomSheetRef={addAccountSheetRef}
-        initialAccount={accountToEdit}
-      />
+        initialAccount={accountToEdit} />
+      
       <AccountDeleteModal
         visible={accountToDelete !== null}
         onClose={() => setAccountToDelete(null)}
         account={accountToDelete}
         accounts={accounts}
-        linkedTransactionCount={linkedTransactionCount}
-      />
+        linkedTransactionCount={linkedTransactionCount} />
+      
 
       <Modal visible={actionAccount !== null} transparent animationType="fade">
         <Pressable
           className="flex-1 bg-black/60 justify-center items-center p-6"
-          onPress={() => setActionAccount(null)}
-        >
+          onPress={() => setActionAccount(null)}>
+          
           <Pressable
             className="bg-surface w-full rounded-3xl p-2 border border-bordercolor shadow-2xl"
-            onPress={(e) => e.stopPropagation()}
-          >
+            onPress={(e) => e.stopPropagation()}>
+            
             <Text className="text-tertiary text-center text-xs font-bold uppercase tracking-wider py-4 border-b border-bordercolor mb-2">
               Manage {actionAccount?.name}
             </Text>
@@ -153,34 +153,34 @@ export function AccountsSection() {
                 addAccountSheetRef.current?.present();
                 setActionAccount(null);
               }}
-              className="flex-row items-center p-4 rounded-2xl active:bg-white/5"
-            >
+              className="flex-row items-center p-4 rounded-2xl active:bg-white/5">
+              
               <Ionicons name="pencil" size={22} color="#3b82f6" />
               <Text className="text-primary text-lg font-semibold ml-3">
                 Edit Account
               </Text>
             </Pressable>
 
-            {accounts.length > 1 && (
-              <Pressable
-                onPress={() => {
-                  const targetAcc = actionAccount!;
-                  setActionAccount(null);
-                  setTimeout(() => {
-                    initiateDelete(targetAcc);
-                  }, 300);
-                }}
-                className="flex-row items-center p-4 rounded-2xl active:bg-red-500/10"
-              >
+            {accounts.length > 1 &&
+            <Pressable
+              onPress={() => {
+                const targetAcc = actionAccount!;
+                setActionAccount(null);
+                setTimeout(() => {
+                  initiateDelete(targetAcc);
+                }, 300);
+              }}
+              className="flex-row items-center p-4 rounded-2xl active:bg-red-500/10">
+              
                 <Ionicons name="trash-outline" size={22} color="#ef4444" />
                 <Text className="text-red-500 text-lg font-semibold ml-3">
                   Delete Account
                 </Text>
               </Pressable>
-            )}
+            }
           </Pressable>
         </Pressable>
       </Modal>
-    </>
-  );
+    </>);
+
 }

@@ -10,7 +10,7 @@ interface DatePickerCalendarProps {
 
 export function DatePickerCalendar({ date, setDate, onClose }: DatePickerCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(
-    new Date(date.getFullYear(), date.getMonth(), 1),
+    new Date(date.getFullYear(), date.getMonth(), 1)
   );
 
   useEffect(() => {
@@ -25,9 +25,9 @@ export function DatePickerCalendar({ date, setDate, onClose }: DatePickerCalenda
   const daysInPrevMonth = new Date(year, month, 0).getDate();
 
   const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
-  ];
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"];
+
 
   const handlePrevMonth = () => setCurrentMonth(new Date(year, month - 1, 1));
   const handleNextMonth = () => setCurrentMonth(new Date(year, month + 1, 1));
@@ -36,14 +36,14 @@ export function DatePickerCalendar({ date, setDate, onClose }: DatePickerCalenda
     const newDate = new Date(date);
     newDate.setFullYear(year, month + monthOffset, day);
     setDate(newDate);
-    // Don't close automatically so user can press "Done"
+
   };
 
   const renderDays = () => {
     const days = [];
-    const totalSlots = 42; // 6 weeks * 7 days
+    const totalSlots = 42;
 
-    // Previous month days
+
     for (let i = firstDayOfMonth - 1; i >= 0; i--) {
       const day = daysInPrevMonth - i;
       days.push(
@@ -53,25 +53,25 @@ export function DatePickerCalendar({ date, setDate, onClose }: DatePickerCalenda
       );
     }
 
-    // Current month days
+
     for (let i = 1; i <= daysInMonth; i++) {
       const isSelected =
-        i === date.getDate() &&
-        month === date.getMonth() &&
-        year === date.getFullYear();
+      i === date.getDate() &&
+      month === date.getMonth() &&
+      year === date.getFullYear();
 
       days.push(
         <Pressable key={`current-${i}`} onPress={() => handleDateSelect(i, 0)} className="w-[14.28%] h-[46px] justify-center items-center">
           <View className={`w-8 h-8 justify-center items-center rounded-full ${isSelected ? "bg-[#7c3aed]" : ""}`}>
             <Text className={`font-semibold ${isSelected ? "text-white" : "text-gray-200"}`}>{i}</Text>
           </View>
-          {/* Mock active dot indicator under date if selected */}
+          {}
           {isSelected && <View className="absolute bottom-1 w-1 h-1 rounded-full bg-[#7c3aed]" />}
         </Pressable>
       );
     }
 
-    // Next month days
+
     const remainingSlots = totalSlots - days.length;
     for (let i = 1; i <= remainingSlots; i++) {
       days.push(
@@ -99,16 +99,16 @@ export function DatePickerCalendar({ date, setDate, onClose }: DatePickerCalenda
       </View>
 
       <View className="flex-row justify-around mb-2">
-        {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d, i) => (
-          <Text key={i} className="text-gray-500 text-[10px] font-bold w-[14.28%] text-center">
+        {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d, i) =>
+        <Text key={i} className="text-gray-500 text-[10px] font-bold w-[14.28%] text-center">
             {d}
           </Text>
-        ))}
+        )}
       </View>
 
       <View className="flex-row flex-wrap justify-start">
         {renderDays()}
       </View>
-    </View>
-  );
+    </View>);
+
 }

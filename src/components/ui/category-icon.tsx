@@ -16,9 +16,9 @@ export function CategoryIcon({ name, size, color }: CategoryIconProps) {
       <MaterialCommunityIcons
         name={iconName.replace("mdi-", "") as any}
         size={size}
-        color={color}
-      />
-    );
+        color={color} />);
+
+
   }
 
   return <Ionicons name={iconName as any} size={size} color={color} />;

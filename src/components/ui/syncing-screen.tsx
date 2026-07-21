@@ -8,8 +8,8 @@ import Animated, {
   withTiming,
   withSpring,
   FadeIn,
-  cancelAnimation,
-} from "react-native-reanimated";
+  cancelAnimation } from
+"react-native-reanimated";
 import { Image } from "react-native";
 import { useAuth } from "../../server/firebase/AuthContext";
 
@@ -31,20 +31,20 @@ export function SyncingScreen() {
     iconScale.value = withRepeat(
       withSequence(
         withSpring(1.06, { damping: 8, stiffness: 60 }),
-        withSpring(0.94, { damping: 8, stiffness: 60 }),
+        withSpring(0.94, { damping: 8, stiffness: 60 })
       ),
       -1,
-      true,
+      true
     );
 
 
     glowOpacity.value = withRepeat(
       withSequence(
         withTiming(0.6, { duration: 1200 }),
-        withTiming(0.15, { duration: 1200 }),
+        withTiming(0.15, { duration: 1200 })
       ),
       -1,
-      true,
+      true
     );
 
 
@@ -56,10 +56,10 @@ export function SyncingScreen() {
         sv.value = withRepeat(
           withSequence(
             withTiming(1, { duration: DURATION }),
-            withTiming(0.3, { duration: DURATION }),
+            withTiming(0.3, { duration: DURATION })
           ),
           -1,
-          true,
+          true
         );
       }, delay);
       timeouts.push(t);
@@ -80,11 +80,11 @@ export function SyncingScreen() {
   }, []);
 
   const iconStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: iconScale.value }],
+    transform: [{ scale: iconScale.value }]
   }));
 
   const glowStyle = useAnimatedStyle(() => ({
-    opacity: glowOpacity.value,
+    opacity: glowOpacity.value
   }));
 
   const d1Style = useAnimatedStyle(() => ({ opacity: dot1.value }));
@@ -101,8 +101,8 @@ export function SyncingScreen() {
           <Image
             source={require("../../../assets/splash-icon.png")}
             style={styles.icon}
-            resizeMode="contain"
-          />
+            resizeMode="contain" />
+          
         </Animated.View>
       </View>
 
@@ -115,8 +115,8 @@ export function SyncingScreen() {
         <Animated.View style={[styles.dot, d2Style]} />
         <Animated.View style={[styles.dot, d3Style]} />
       </View>
-    </Animated.View>
-  );
+    </Animated.View>);
+
 }
 
 const BLUE = "#2563EB";
@@ -126,47 +126,47 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#0f172a",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   iconWrapper: {
     width: 120,
     height: 120,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 28,
+    marginBottom: 28
   },
   glow: {
     position: "absolute",
     width: 130,
     height: 130,
     borderRadius: 65,
-    backgroundColor: BLUE,
+    backgroundColor: BLUE
   },
   icon: {
     width: 96,
     height: 96,
-    tintColor: "white",
+    tintColor: "white"
   },
   appName: {
     color: "#f8fafc",
     fontSize: 28,
     fontWeight: "bold",
     letterSpacing: 0.5,
-    marginBottom: 8,
+    marginBottom: 8
   },
   subtitle: {
     color: "#94a3b8",
     fontSize: 15,
-    marginBottom: 32,
+    marginBottom: 32
   },
   dotsRow: {
     flexDirection: "row",
-    gap: 10,
+    gap: 10
   },
   dot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: BLUE,
-  },
+    backgroundColor: BLUE
+  }
 });

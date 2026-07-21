@@ -1,5 +1,5 @@
 const GITHUB_API_URL =
-  "https://api.github.com/repos/riteshpal2005/LedgerLite/releases/latest";
+"https://api.github.com/repos/riteshpal2005/LedgerLite/releases/latest";
 
 export interface UpdateInfo {
   isUpdateAvailable: boolean;
@@ -25,13 +25,13 @@ const isVersionGreater = (v1: string, v2: string): boolean => {
   return false;
 };
 export const checkForUpdates = async (
-  currentVersion: string,
-): Promise<UpdateInfo> => {
+currentVersion: string)
+: Promise<UpdateInfo> => {
   try {
     const response = await fetch(GITHUB_API_URL, {
       headers: {
-        Accept: "application/vnd.github.v3+json",
-      },
+        Accept: "application/vnd.github.v3+json"
+      }
     });
     if (!response.ok) {
       throw new Error(`GitHub API Error: ${response.status}`);
@@ -40,7 +40,7 @@ export const checkForUpdates = async (
     const latestVersion = data.tag_name;
     const releaseNotes = data.body;
     const apkAsset = data.assets?.find((asset: GitHubAsset) =>
-      asset.name.endsWith(".apk"),
+    asset.name.endsWith(".apk")
     );
     const downloadUrl = apkAsset ? apkAsset.browser_download_url : null;
     const isUpdateAvailable = isVersionGreater(latestVersion, currentVersion);
@@ -49,14 +49,14 @@ export const checkForUpdates = async (
       isUpdateAvailable,
       latestVersion: latestVersion.replace(/^v/, ""),
       releaseNotes,
-      downloadUrl,
+      downloadUrl
     };
   } catch (error) {
     return {
       isUpdateAvailable: false,
       latestVersion: currentVersion,
       releaseNotes: "",
-      downloadUrl: null,
+      downloadUrl: null
     };
   }
 };

@@ -16,44 +16,44 @@ export default function AnalyticsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#0a0b0d]">
-      <AnalyticsHeader 
+      <AnalyticsHeader
         onDateRangeChange={(start, end, label, prevStart, prevEnd, prevLabel) => {
           setDateRange({ start, end, prevStart, prevEnd });
           setDateLabel(label);
           setPrevDateLabel(prevLabel);
-        }} 
-      />
+        }} />
+      
       
       <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
         <Text className="text-white text-2xl font-bold mb-4">Analytics</Text>
         <AnalyticsTabs activeTab={activeTab} onChange={setActiveTab} />
         
-        {dateRange.start > 0 && (
-          <>
-            <AnalyticsSummaryCards 
-              startDate={dateRange.start} 
-              endDate={dateRange.end}
-              prevStartDate={dateRange.prevStart}
-              prevEndDate={dateRange.prevEnd}
-              prevDateLabel={prevDateLabel}
-            />
+        {dateRange.start > 0 &&
+        <>
+            <AnalyticsSummaryCards
+            startDate={dateRange.start}
+            endDate={dateRange.end}
+            prevStartDate={dateRange.prevStart}
+            prevEndDate={dateRange.prevEnd}
+            prevDateLabel={prevDateLabel} />
+          
             
-            {/* We could conditionally render these based on activeTab, but let's show all for "Overview" */}
-            {(activeTab === "Overview" || activeTab === "Income" || activeTab === "Expense") && (
-              <CashFlowChart startDate={dateRange.start} endDate={dateRange.end} dateLabel={dateLabel} />
-            )}
+            {}
+            {(activeTab === "Overview" || activeTab === "Income" || activeTab === "Expense") &&
+          <CashFlowChart startDate={dateRange.start} endDate={dateRange.end} dateLabel={dateLabel} />
+          }
             
-            {(activeTab === "Overview" || activeTab === "Categories") && (
-              <CategorySpendingChart startDate={dateRange.start} endDate={dateRange.end} dateLabel={dateLabel} />
-            )}
+            {(activeTab === "Overview" || activeTab === "Categories") &&
+          <CategorySpendingChart startDate={dateRange.start} endDate={dateRange.end} dateLabel={dateLabel} />
+          }
             
             <AnalyticsInsights startDate={dateRange.start} endDate={dateRange.end} />
           </>
-        )}
+        }
 
-        {/* Extra padding for tab bar mock */}
-        {/* <View className="h-24" /> */}
+        {}
+        {}
       </ScrollView>
-    </SafeAreaView>
-  );
+    </SafeAreaView>);
+
 }

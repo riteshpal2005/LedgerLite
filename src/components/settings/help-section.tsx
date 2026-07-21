@@ -4,31 +4,31 @@ import { useState } from "react";
 import { triggerHaptic } from "../../utils/haptics";
 
 const FAQS = [
-  {
-    id: "1",
-    question: "How do I track backdated transactions?",
-    answer:
-      'When adding an transaction, simply tap on the "Today" text next to the calendar icon to select a past date and time for your transaction.',
-  },
-  {
-    id: "2",
-    question: "Why should I create an account?",
-    answer:
-      "Creating an account enables Cloud Sync. If you lose your phone or uninstall the app, your data will be safely backed up and easily restorable.",
-  },
-  {
-    id: "3",
-    question: "How do I export my data?",
-    answer:
-      "Go to Settings > Data Management. From there, you can export all your transactions and categories to a visually pleasing PDF, Excel, or CSV file.",
-  },
-  {
-    id: "4",
-    question: "Bank vs Cash Accounts?",
-    answer:
-      "Accounts help you visualize where your money currently sits. When you add an transaction, you can assign it to a specific account so you know exactly which balance went down.",
-  },
-];
+{
+  id: "1",
+  question: "How do I track backdated transactions?",
+  answer:
+  'When adding an transaction, simply tap on the "Today" text next to the calendar icon to select a past date and time for your transaction.'
+},
+{
+  id: "2",
+  question: "Why should I create an account?",
+  answer:
+  "Creating an account enables Cloud Sync. If you lose your phone or uninstall the app, your data will be safely backed up and easily restorable."
+},
+{
+  id: "3",
+  question: "How do I export my data?",
+  answer:
+  "Go to Settings > Data Management. From there, you can export all your transactions and categories to a visually pleasing PDF, Excel, or CSV file."
+},
+{
+  id: "4",
+  question: "Bank vs Cash Accounts?",
+  answer:
+  "Accounts help you visualize where your money currently sits. When you add an transaction, you can assign it to a specific account so you know exactly which balance went down."
+}];
+
 
 export function HelpSection() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -53,14 +53,14 @@ export function HelpSection() {
             <View key={faq.id}>
               <Pressable
                 onPress={() => toggleExpand(faq.id)}
-                className="flex-row items-center justify-between p-4 active:bg-black/5 dark:active:bg-white/5"
-              >
+                className="flex-row items-center justify-between p-4 active:bg-black/5 dark:active:bg-white/5">
+                
                 <View className="flex-row items-center flex-1 mr-4">
                   <Ionicons
                     name="help-circle-outline"
                     size={22}
-                    color="#a855f7"
-                  />
+                    color="#a855f7" />
+                  
                   <Text className="text-primary text-base font-semibold ml-3 flex-1">
                     {faq.question}
                   </Text>
@@ -68,23 +68,23 @@ export function HelpSection() {
                 <Ionicons
                   name={isExpanded ? "chevron-up" : "chevron-down"}
                   size={20}
-                  color="#52525b"
-                />
+                  color="#52525b" />
+                
               </Pressable>
 
-              {isExpanded && (
-                <View className="px-4 pb-4 pt-1 ml-9">
+              {isExpanded &&
+              <View className="px-4 pb-4 pt-1 ml-9">
                   <Text className="text-secondary text-sm leading-relaxed">
                     {faq.answer}
                   </Text>
                 </View>
-              )}
+              }
 
               {!isLast && <View className="h-[1px] bg-bordercolor mx-4" />}
-            </View>
-          );
+            </View>);
+
         })}
       </View>
-    </View>
-  );
+    </View>);
+
 }

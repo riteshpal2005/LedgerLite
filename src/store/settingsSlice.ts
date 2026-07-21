@@ -38,7 +38,7 @@ const initialState: SettingsState = {
   importProgress: 0,
   use24HourFormat: false,
   quickTemplates: [],
-  uid: null,
+  uid: null
 };
 
 const settingsSlice = createSlice({
@@ -68,7 +68,7 @@ const settingsSlice = createSlice({
         ...state,
         ...action.payload,
         importProgress: 0,
-        isGlobalSyncing: false,
+        isGlobalSyncing: false
       };
     },
     setExportDirectoryUri: (state, action: PayloadAction<string | null>) => {
@@ -87,12 +87,12 @@ const settingsSlice = createSlice({
       state.quickTemplates.push(action.payload);
     },
     removeQuickTemplate: (state, action: PayloadAction<string>) => {
-      state.quickTemplates = state.quickTemplates.filter(t => t.id !== action.payload);
+      state.quickTemplates = state.quickTemplates.filter((t) => t.id !== action.payload);
     },
     setUid: (state, action: PayloadAction<string | null>) => {
       state.uid = action.payload;
-    },
-  },
+    }
+  }
 });
 
 export const {
@@ -109,6 +109,6 @@ export const {
   setImportProgress,
   addQuickTemplate,
   removeQuickTemplate,
-  setUid,
+  setUid
 } = settingsSlice.actions;
 export default settingsSlice.reducer;

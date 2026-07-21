@@ -20,7 +20,7 @@ export function useDataExport() {
   const handleExportExcel = async (action: "save" | "share") => {
     const transactions = await getAllTransactions();
     if (transactions.length === 0)
-      return showAlert("No Data", "There are no transactions to export.");
+    return showAlert("No Data", "There are no transactions to export.");
     const state = store.getState();
     const newDirUri = await exportData(
       transactions,
@@ -28,7 +28,7 @@ export function useDataExport() {
       state.categories.categories,
       "xlsx",
       action,
-      state.settings.exportDirectoryUri,
+      state.settings.exportDirectoryUri
     );
 
     if (newDirUri && newDirUri !== state.settings.exportDirectoryUri) {
@@ -43,7 +43,7 @@ export function useDataExport() {
   const handleExportCSV = async (action: "save" | "share") => {
     const transactions = await getAllTransactions();
     if (transactions.length === 0)
-      return showAlert("No Data", "There are no transactions to export.");
+    return showAlert("No Data", "There are no transactions to export.");
     const state = store.getState();
 
     const newDirUri = await exportData(
@@ -52,7 +52,7 @@ export function useDataExport() {
       state.categories.categories,
       "csv",
       action,
-      state.settings.exportDirectoryUri,
+      state.settings.exportDirectoryUri
     );
 
     if (newDirUri && newDirUri !== state.settings.exportDirectoryUri) {
@@ -67,20 +67,20 @@ export function useDataExport() {
   const initiateExportPDF = async (action: "save" | "share") => {
     const transactions = await getAllTransactions();
     if (transactions.length === 0)
-      return showAlert("No Data", "There are no transactions to export.");
+    return showAlert("No Data", "There are no transactions to export.");
     setPdfAction(action);
     setPdfModalVisible(true);
   };
 
   const handleConfirmPDF = async (
-    selectedColumns: ExportColumn[],
-    startDate: Date,
-    endDate: Date,
-    includePieChart: boolean,
-  ) => {
+  selectedColumns: ExportColumn[],
+  startDate: Date,
+  endDate: Date,
+  includePieChart: boolean) =>
+  {
     if (!pdfAction) return;
     if (selectedColumns.length === 0)
-      return showAlert("Error", "Please select at least one column.");
+    return showAlert("Error", "Please select at least one column.");
 
     const transactions = await getAllTransactions();
 
@@ -104,7 +104,7 @@ export function useDataExport() {
       endDate,
       includePieChart,
       pdfAction,
-      state.settings.exportDirectoryUri,
+      state.settings.exportDirectoryUri
     );
 
     if (newDirUri && newDirUri !== state.settings.exportDirectoryUri) {
@@ -125,6 +125,6 @@ export function useDataExport() {
     handleConfirmPDF,
     pdfModalVisible,
     setPdfModalVisible,
-    setPdfAction,
+    setPdfAction
   };
 }

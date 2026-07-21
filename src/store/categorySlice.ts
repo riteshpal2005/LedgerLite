@@ -6,7 +6,7 @@ interface CategoryState {
 }
 
 const initialState: CategoryState = {
-  categories: [],
+  categories: []
 };
 
 const categorySlice = createSlice({
@@ -21,7 +21,7 @@ const categorySlice = createSlice({
     },
     updateCategoryAction: (state, action: PayloadAction<Category>) => {
       const index = state.categories.findIndex(
-        (c) => c.id === action.payload.id,
+        (c) => c.id === action.payload.id
       );
       if (index !== -1) {
         state.categories[index] = action.payload;
@@ -29,16 +29,16 @@ const categorySlice = createSlice({
     },
     removeCategory: (state, action: PayloadAction<string>) => {
       state.categories = state.categories.filter(
-        (c) => c.id !== action.payload,
+        (c) => c.id !== action.payload
       );
-    },
-  },
+    }
+  }
 });
 
 export const {
   setCategories,
   addCategory,
   updateCategoryAction,
-  removeCategory,
+  removeCategory
 } = categorySlice.actions;
 export default categorySlice.reducer;

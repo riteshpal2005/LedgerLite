@@ -64,7 +64,11 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@babel/core": "^8.0.1",
+    "@babel/generator": "^8.0.0",
+    "@babel/parser": "^8.0.4",
     "@babel/plugin-proposal-decorators": "^8.0.2",
+    "@babel/traverse": "^8.0.4",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^14.0.0",
     "@types/jest": "^29.5.14",

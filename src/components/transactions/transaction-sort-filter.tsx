@@ -4,8 +4,8 @@ import { forwardRef, useImperativeHandle, useRef, useMemo, useCallback } from "r
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
-  BottomSheetScrollView,
-} from "@gorhom/bottom-sheet";
+  BottomSheetScrollView } from
+"@gorhom/bottom-sheet";
 import { useSelector } from "react-redux";
 import { selectAccountsWithBalances } from "../../store/accountSlice";
 
@@ -29,161 +29,161 @@ export interface TransactionSortFilterRef {
 
 export const TransactionSortFilter = forwardRef<TransactionSortFilterRef, TransactionSortFilterProps>(
   (
-    {
-      sortMode,
-      setSortMode,
-      filterType,
-      setFilterType,
-      filterAccountId,
-      setFilterAccountId,
-    },
-    ref
-  ) => {
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const accounts = useSelector(selectAccountsWithBalances);
+  {
+    sortMode,
+    setSortMode,
+    filterType,
+    setFilterType,
+    filterAccountId,
+    setFilterAccountId
+  },
+  ref) =>
+  {
+    const bottomSheetRef = useRef<BottomSheetModal>(null);
+    const accounts = useSelector(selectAccountsWithBalances);
 
-  const openSheet = () => bottomSheetRef.current?.present();
-  const closeSheet = () => bottomSheetRef.current?.dismiss();
+    const openSheet = () => bottomSheetRef.current?.present();
+    const closeSheet = () => bottomSheetRef.current?.dismiss();
 
-  useImperativeHandle(ref, () => ({
-    present: openSheet,
-    dismiss: closeSheet,
-  }));
+    useImperativeHandle(ref, () => ({
+      present: openSheet,
+      dismiss: closeSheet
+    }));
 
-  const snapPoints = useMemo(() => ["90%"], []);
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.7} />
-    ),
-    [],
-  );
+    const snapPoints = useMemo(() => ["90%"], []);
+    const renderBackdrop = useCallback(
+      (props: any) =>
+      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.7} />,
 
-  const hasActiveFilters =
+      []
+    );
+
+    const hasActiveFilters =
     sortMode !== "newest" || filterType !== "all" || filterAccountId !== "all";
 
-  const getAccountIcon = (type?: string) => {
-    switch (type) {
-      case "bank": return "business";
-      case "wallet": return "wallet";
-      case "credit_card": return "card";
-      default: return "cash";
-    }
-  };
+    const getAccountIcon = (type?: string) => {
+      switch (type) {
+        case "bank":return "business";
+        case "wallet":return "wallet";
+        case "credit_card":return "card";
+        default:return "cash";
+      }
+    };
 
-  return (
-    <>
+    return (
+      <>
 
       <BottomSheetModal
-        ref={bottomSheetRef}
-        index={0}
-        snapPoints={snapPoints}
-        backdropComponent={renderBackdrop}
-        backgroundStyle={{ backgroundColor: "#131415" }}
-        handleIndicatorStyle={{ backgroundColor: "#52525b" }}
-      >
+          ref={bottomSheetRef}
+          index={0}
+          snapPoints={snapPoints}
+          backdropComponent={renderBackdrop}
+          backgroundStyle={{ backgroundColor: "#131415" }}
+          handleIndicatorStyle={{ backgroundColor: "#52525b" }}>
+          
         <BottomSheetScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
-          {/* Header */}
+          {}
           <View className="flex-row justify-between items-center mb-8 relative">
             <View className="flex-1" />
             <Text className="text-white text-lg font-bold absolute w-full text-center pointer-events-none">
               Filter & Sort
             </Text>
-            {hasActiveFilters ? (
+            {hasActiveFilters ?
               <Pressable
                 onPress={() => {
                   setSortMode("newest");
                   setFilterType("all");
                   setFilterAccountId("all");
                 }}
-                className="flex-1 items-end"
-              >
+                className="flex-1 items-end">
+                
                 <Text className="text-[#3b82f6] font-semibold text-sm">Reset</Text>
-              </Pressable>
-            ) : (
+              </Pressable> :
+
               <View className="flex-1" />
-            )}
+              }
           </View>
 
-          {/* Sort By */}
+          {}
           <Text className="text-gray-400 text-sm font-semibold mb-3">Sort By</Text>
           <View className="flex-row gap-2 mb-8">
             {[
               { id: "newest", label: "Newest", icon: "time-outline" },
               { id: "oldest", label: "Oldest", icon: "time" },
               { id: "highest", label: "Highest", icon: "trending-up" },
-              { id: "lowest", label: "Lowest", icon: "trending-down" },
-            ].map((mode) => {
-              const isActive = sortMode === mode.id;
-              return (
-                <Pressable
-                  key={mode.id}
-                  onPress={() => setSortMode(mode.id as SortMode)}
-                  className={`flex-1 items-center justify-center py-3 rounded-xl border ${isActive ? "bg-[#4338ca]/10 border-[#7c3aed]" : "bg-transparent border-[#27272a]"}`}
-                >
+              { id: "lowest", label: "Lowest", icon: "trending-down" }].
+              map((mode) => {
+                const isActive = sortMode === mode.id;
+                return (
+                  <Pressable
+                    key={mode.id}
+                    onPress={() => setSortMode(mode.id as SortMode)}
+                    className={`flex-1 items-center justify-center py-3 rounded-xl border ${isActive ? "bg-[#4338ca]/10 border-[#7c3aed]" : "bg-transparent border-[#27272a]"}`}>
+                    
                   <Ionicons name={mode.icon as any} size={20} color={isActive ? "#7c3aed" : "#71717a"} />
                   <Text className={`text-xs mt-2 font-medium ${isActive ? "text-white" : "text-gray-400"}`}>
                     {mode.label}
                   </Text>
-                </Pressable>
-              );
-            })}
+                </Pressable>);
+
+              })}
           </View>
 
-          {/* Transaction Type */}
+          {}
           <Text className="text-gray-400 text-sm font-semibold mb-3">Transaction Type</Text>
           <View className="flex-row gap-2 mb-8">
             <Pressable
-              onPress={() => setFilterType("all")}
-              className={`flex-1 items-center justify-center py-3 rounded-xl border ${filterType === "all" ? "bg-[#4338ca] border-[#4338ca]" : "bg-transparent border-[#27272a]"}`}
-            >
+                onPress={() => setFilterType("all")}
+                className={`flex-1 items-center justify-center py-3 rounded-xl border ${filterType === "all" ? "bg-[#4338ca] border-[#4338ca]" : "bg-transparent border-[#27272a]"}`}>
+                
               <Text className={`font-semibold ${filterType === "all" ? "text-white" : "text-gray-400"}`}>All</Text>
             </Pressable>
             
             <Pressable
-              onPress={() => setFilterType("credit")}
-              className={`flex-1 flex-row items-center justify-center py-3 rounded-xl border ${filterType === "credit" ? "bg-[#4338ca] border-[#4338ca]" : "bg-transparent border-[#27272a]"}`}
-            >
+                onPress={() => setFilterType("credit")}
+                className={`flex-1 flex-row items-center justify-center py-3 rounded-xl border ${filterType === "credit" ? "bg-[#4338ca] border-[#4338ca]" : "bg-transparent border-[#27272a]"}`}>
+                
               <Ionicons name="arrow-up" size={16} color={filterType === "credit" ? "white" : "#22c55e"} style={{ marginRight: 4 }} />
               <Text className={`font-semibold ${filterType === "credit" ? "text-white" : "text-gray-400"}`}>Income</Text>
             </Pressable>
 
             <Pressable
-              onPress={() => setFilterType("debit")}
-              className={`flex-1 flex-row items-center justify-center py-3 rounded-xl border ${filterType === "debit" ? "bg-[#4338ca] border-[#4338ca]" : "bg-transparent border-[#27272a]"}`}
-            >
+                onPress={() => setFilterType("debit")}
+                className={`flex-1 flex-row items-center justify-center py-3 rounded-xl border ${filterType === "debit" ? "bg-[#4338ca] border-[#4338ca]" : "bg-transparent border-[#27272a]"}`}>
+                
               <Ionicons name="arrow-down" size={16} color={filterType === "debit" ? "white" : "#ef4444"} style={{ marginRight: 4 }} />
               <Text className={`font-semibold ${filterType === "debit" ? "text-white" : "text-gray-400"}`}>Expense</Text>
             </Pressable>
           </View>
 
-          {/* Accounts */}
+          {}
           <Text className="text-gray-400 text-sm font-semibold mb-3">Accounts</Text>
           <View className="mb-8 -mx-5">
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20 }}>
               <Pressable
-                onPress={() => setFilterAccountId("all")}
-                className={`w-24 h-24 items-center justify-center mr-3 rounded-2xl border ${filterAccountId === "all" ? "bg-[#4338ca]/10 border-[#7c3aed]" : "bg-transparent border-[#27272a]"}`}
-              >
+                  onPress={() => setFilterAccountId("all")}
+                  className={`w-24 h-24 items-center justify-center mr-3 rounded-2xl border ${filterAccountId === "all" ? "bg-[#4338ca]/10 border-[#7c3aed]" : "bg-transparent border-[#27272a]"}`}>
+                  
                 <Ionicons name="layers" size={24} color={filterAccountId === "all" ? "#7c3aed" : "#a1a1aa"} />
                 <Text className={`text-xs mt-2 text-center font-medium ${filterAccountId === "all" ? "text-white" : "text-gray-400"}`}>All Accounts</Text>
               </Pressable>
 
-              {accounts.map((account) => (
+              {accounts.map((account) =>
                 <Pressable
                   key={account.id}
                   onPress={() => setFilterAccountId(account.id)}
-                  className={`w-24 h-24 items-center justify-center mr-3 rounded-2xl border ${filterAccountId === account.id ? "bg-[#4338ca]/10 border-[#7c3aed]" : "bg-transparent border-[#27272a]"}`}
-                >
+                  className={`w-24 h-24 items-center justify-center mr-3 rounded-2xl border ${filterAccountId === account.id ? "bg-[#4338ca]/10 border-[#7c3aed]" : "bg-transparent border-[#27272a]"}`}>
+                  
                   <Ionicons name={getAccountIcon(account.type)} size={24} color={filterAccountId === account.id ? "#7c3aed" : "#a1a1aa"} />
                   <Text className={`text-xs mt-2 text-center font-medium ${filterAccountId === account.id ? "text-white" : "text-gray-400"}`} numberOfLines={2}>
                     {account.name}
                   </Text>
                 </Pressable>
-              ))}
+                )}
             </ScrollView>
           </View>
 
-          {/* Date Range & Amount Range (Mock UI placeholders as requested) */}
+          {}
           <Text className="text-gray-400 text-sm font-semibold mb-3">Date Range</Text>
           <Pressable className="flex-row items-center justify-between p-4 mb-6 rounded-2xl border border-[#27272a]">
             <View className="flex-row items-center">
@@ -208,40 +208,40 @@ export const TransactionSortFilter = forwardRef<TransactionSortFilterRef, Transa
             </View>
           </Pressable>
 
-          {/* Active Filters List */}
-          {hasActiveFilters && (
+          {}
+          {hasActiveFilters &&
             <>
               <Text className="text-gray-400 text-sm font-semibold mb-3">Active Filters</Text>
               <View className="flex-row flex-wrap gap-2 mb-6">
-                {sortMode !== "newest" && (
-                  <View className="flex-row items-center px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+                {sortMode !== "newest" &&
+                <View className="flex-row items-center px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
                     <Text className="text-xs text-gray-300 mr-1">Sort: {sortMode}</Text>
                     <Ionicons name="close" size={12} color="#a1a1aa" onPress={() => setSortMode("newest")} />
                   </View>
-                )}
-                {filterType !== "all" && (
-                  <View className="flex-row items-center px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+                }
+                {filterType !== "all" &&
+                <View className="flex-row items-center px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
                     <Text className="text-xs text-gray-300 mr-1">Type: {filterType}</Text>
                     <Ionicons name="close" size={12} color="#a1a1aa" onPress={() => setFilterType("all")} />
                   </View>
-                )}
-                {filterAccountId !== "all" && (
-                  <View className="flex-row items-center px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+                }
+                {filterAccountId !== "all" &&
+                <View className="flex-row items-center px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
                     <Text className="text-xs text-gray-300 mr-1">Account: Selected</Text>
                     <Ionicons name="close" size={12} color="#a1a1aa" onPress={() => setFilterAccountId("all")} />
                   </View>
-                )}
+                }
               </View>
             </>
-          )}
+            }
 
-          {/* Apply Button */}
+          {}
           <Pressable onPress={closeSheet} className="w-full bg-[#4338ca] h-14 rounded-2xl flex-row items-center justify-center">
             <Ionicons name="filter" size={20} color="white" />
             <Text className="text-white font-bold text-[16px] ml-2">Apply Filters</Text>
           </Pressable>
         </BottomSheetScrollView>
       </BottomSheetModal>
-    </>
-  );
-});
+    </>);
+
+  });

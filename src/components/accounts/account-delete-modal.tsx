@@ -24,30 +24,30 @@ export function AccountDeleteModal({
   onClose,
   account,
   accounts,
-  linkedTransactionCount,
+  linkedTransactionCount
 }: AccountDeleteModalProps) {
   const [option, setOption] = useState<ActionOption>("delete");
   const [selectedExistingAccountId, setSelectedExistingAccountId] = useState<
-    string | null
-  >(null);
+    string | null>(
+    null);
 
   const {
     deleteAccount,
     deleteTransactionsByAccount,
     reassignTransactions,
-    getAllTransactions,
+    getAllTransactions
   } = useTransactionDatabase();
   const dispatch = useDispatch();
 
   const { bottomSheetBackgroundColor, bottomSheetBorderColor, colors } =
-    useTheme();
+  useTheme();
 
   useEffect(() => {
     if (visible) {
       setOption("delete");
       const otherAccounts = accounts.filter((a) => a.id !== account?.id);
       setSelectedExistingAccountId(
-        otherAccounts.length > 0 ? otherAccounts[0].id : null,
+        otherAccounts.length > 0 ? otherAccounts[0].id : null
       );
     }
   }, [visible, account]);
@@ -87,9 +87,9 @@ export function AccountDeleteModal({
         title="Cannot Delete"
         message="You must have at least one active account to track transactions."
         onConfirm={onClose}
-        confirmText="OK"
-      />
-    );
+        confirmText="OK" />);
+
+
   }
 
   return (
@@ -98,16 +98,16 @@ export function AccountDeleteModal({
       transparent={true}
       animationType="fade"
       onRequestClose={onClose}
-      statusBarTranslucent={true}
-    >
+      statusBarTranslucent={true}>
+      
       <Pressable
         style={{
           flex: 1,
           backgroundColor: "rgba(0,0,0,0.5)",
-          justifyContent: "flex-end",
+          justifyContent: "flex-end"
         }}
-        onPress={onClose}
-      >
+        onPress={onClose}>
+        
         <Pressable
           style={{
             backgroundColor: bottomSheetBackgroundColor,
@@ -115,10 +115,10 @@ export function AccountDeleteModal({
             borderColor: bottomSheetBorderColor,
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
-            maxHeight: "80%",
+            maxHeight: "80%"
           }}
-          onPress={(e) => e.stopPropagation()}
-        >
+          onPress={(e) => e.stopPropagation()}>
+          
           <View style={{ padding: 24 }}>
             <Text className="text-primary text-xl font-bold mb-2">
               Delete Account
@@ -128,8 +128,8 @@ export function AccountDeleteModal({
               <Text className="font-bold text-primary">{account?.name}</Text>.
             </Text>
 
-            {linkedTransactionCount > 0 && (
-              <ScrollView className="mb-6" showsVerticalScrollIndicator={false}>
+            {linkedTransactionCount > 0 &&
+            <ScrollView className="mb-6" showsVerticalScrollIndicator={false}>
                 <View className="bg-status-danger/10 p-3 rounded-xl border border-status-danger/30 mb-6">
                   <Text className="text-status-danger font-bold">
                     Warning: {linkedTransactionCount} linked transactions found.
@@ -140,93 +140,93 @@ export function AccountDeleteModal({
                 </View>
 
                 <Pressable
-                  onPress={() => setOption("delete")}
-                  className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === "delete" ? "bg-status-danger/20 border-status-danger" : "bg-surface border-bordercolor"}`}
-                >
+                onPress={() => setOption("delete")}
+                className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === "delete" ? "bg-status-danger/20 border-status-danger" : "bg-surface border-bordercolor"}`}>
+                
                   <Ionicons
-                    name={
-                      option === "delete"
-                        ? "radio-button-on"
-                        : "radio-button-off"
-                    }
-                    size={24}
-                    color={
-                      option === "delete" ? colors.statusDanger : "#71717a"
-                    }
-                  />
+                  name={
+                  option === "delete" ?
+                  "radio-button-on" :
+                  "radio-button-off"
+                  }
+                  size={24}
+                  color={
+                  option === "delete" ? colors.statusDanger : "#71717a"
+                  } />
+                
                   <Text
-                    className={`ml-3 font-semibold ${option === "delete" ? "text-status-danger" : "text-primary"}`}
-                  >
+                  className={`ml-3 font-semibold ${option === "delete" ? "text-status-danger" : "text-primary"}`}>
+                  
                     Delete all linked transactions
                   </Text>
                 </Pressable>
 
-                {otherAccounts.length > 0 && (
-                  <Pressable
-                    onPress={() => setOption("reassign")}
-                    className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === "reassign" ? "bg-status-success/20 border-status-success" : "bg-surface border-bordercolor"}`}
-                  >
+                {otherAccounts.length > 0 &&
+              <Pressable
+                onPress={() => setOption("reassign")}
+                className={`p-4 rounded-xl border mb-3 flex-row items-center ${option === "reassign" ? "bg-status-success/20 border-status-success" : "bg-surface border-bordercolor"}`}>
+                
                     <Ionicons
-                      name={
-                        option === "reassign"
-                          ? "radio-button-on"
-                          : "radio-button-off"
-                      }
-                      size={24}
-                      color={
-                        option === "reassign" ? colors.statusSuccess : "#71717a"
-                      }
-                    />
+                  name={
+                  option === "reassign" ?
+                  "radio-button-on" :
+                  "radio-button-off"
+                  }
+                  size={24}
+                  color={
+                  option === "reassign" ? colors.statusSuccess : "#71717a"
+                  } />
+                
                     <Text
-                      className={`ml-3 font-semibold ${option === "reassign" ? "text-status-success" : "text-primary"}`}
-                    >
+                  className={`ml-3 font-semibold ${option === "reassign" ? "text-status-success" : "text-primary"}`}>
+                  
                       Move to existing account
                     </Text>
                   </Pressable>
-                )}
+              }
 
-                {option === "reassign" && otherAccounts.length > 0 && (
-                  <View className="bg-surface p-2 rounded-xl border border-status-success/30 mb-3 ml-6">
-                    {otherAccounts.map((acc, index) => (
-                      <Pressable
-                        key={acc.id}
-                        onPress={() => setSelectedExistingAccountId(acc.id)}
-                        className={`p-3 flex-row justify-between items-center ${index < otherAccounts.length - 1 ? "border-b border-bordercolor" : ""}`}
-                      >
+                {option === "reassign" && otherAccounts.length > 0 &&
+              <View className="bg-surface p-2 rounded-xl border border-status-success/30 mb-3 ml-6">
+                    {otherAccounts.map((acc, index) =>
+                <Pressable
+                  key={acc.id}
+                  onPress={() => setSelectedExistingAccountId(acc.id)}
+                  className={`p-3 flex-row justify-between items-center ${index < otherAccounts.length - 1 ? "border-b border-bordercolor" : ""}`}>
+                  
                         <Text
-                          className={
-                            selectedExistingAccountId === acc.id
-                              ? "text-status-success font-bold"
-                              : "text-primary"
-                          }
-                        >
+                    className={
+                    selectedExistingAccountId === acc.id ?
+                    "text-status-success font-bold" :
+                    "text-primary"
+                    }>
+                    
                           {acc.name}
                         </Text>
-                        {selectedExistingAccountId === acc.id && (
-                          <Ionicons
-                            name="checkmark"
-                            size={20}
-                            color={colors.statusSuccess}
-                          />
-                        )}
+                        {selectedExistingAccountId === acc.id &&
+                  <Ionicons
+                    name="checkmark"
+                    size={20}
+                    color={colors.statusSuccess} />
+
+                  }
                       </Pressable>
-                    ))}
-                  </View>
                 )}
+                  </View>
+              }
               </ScrollView>
-            )}
+            }
 
             <View className="flex-row justify-end gap-4 mt-2 mb-2">
               <Pressable
                 onPress={onClose}
-                className="px-5 py-3 rounded-xl bg-surface border border-bordercolor"
-              >
+                className="px-5 py-3 rounded-xl bg-surface border border-bordercolor">
+                
                 <Text className="text-primary font-bold">Cancel</Text>
               </Pressable>
               <Pressable
                 onPress={handleConfirm}
-                className="px-5 py-3 rounded-xl bg-status-danger"
-              >
+                className="px-5 py-3 rounded-xl bg-status-danger">
+                
                 <Text className="text-status-danger-content font-bold">
                   Confirm Delete
                 </Text>
@@ -235,6 +235,6 @@ export function AccountDeleteModal({
           </View>
         </Pressable>
       </Pressable>
-    </Modal>
-  );
+    </Modal>);
+
 }

@@ -8,10 +8,10 @@ interface GroupSummaryCardProps {
   transactions: Transaction[];
 }
 
-// Ref: GroupSummaryCard-1
+
 export function GroupSummaryCard({ transactions }: GroupSummaryCardProps) {
-  const income = transactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
-  const expense = transactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
+  const income = transactions.filter((t) => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
+  const expense = transactions.filter((t) => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
   const totalBalance = income - expense;
 
   const { formatCurrency } = useCurrency();
@@ -53,6 +53,6 @@ export function GroupSummaryCard({ transactions }: GroupSummaryCardProps) {
           </Text>
         </View>
       </View>
-    </View>
-  );
+    </View>);
+
 }

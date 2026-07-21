@@ -4,8 +4,8 @@ import {
   Text,
   TextInput,
   TextInputProps,
-  TouchableOpacity,
-} from "react-native";
+  TouchableOpacity } from
+"react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 
@@ -28,8 +28,8 @@ export function AuthInput({
   return (
     <View className="mb-4">
       <Text
-        className={`text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}
-      >
+        className={`text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+        
         {label}
       </Text>
       <View className="relative justify-center">
@@ -37,33 +37,33 @@ export function AuthInput({
           {...props}
           secureTextEntry={isPassword && !showPassword}
           className={`w-full h-14 px-4 rounded-2xl border ${
-            error
-              ? "border-red-500 bg-red-500/5"
-              : isDark
-                ? "bg-gray-800 border-gray-700 text-white"
-                : "bg-white border-gray-200 text-gray-900"
-          } ${isPassword ? "pr-12" : ""} ${error ? (isDark ? "text-white" : "text-gray-900") : ""}`}
-          placeholderTextColor={isDark ? "#9CA3AF" : "#6B7280"}
-        />
-        {isPassword && (
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => setShowPassword(!showPassword)}
-            className="absolute right-4 h-full justify-center"
-          >
+          error ?
+          "border-red-500 bg-red-500/5" :
+          isDark ?
+          "bg-gray-800 border-gray-700 text-white" :
+          "bg-white border-gray-200 text-gray-900"} ${
+          isPassword ? "pr-12" : ""} ${error ? isDark ? "text-white" : "text-gray-900" : ""}`}
+          placeholderTextColor={isDark ? "#9CA3AF" : "#6B7280"} />
+        
+        {isPassword &&
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => setShowPassword(!showPassword)}
+          className="absolute right-4 h-full justify-center">
+          
             <Ionicons
-              name={showPassword ? "eye-off-outline" : "eye-outline"}
-              size={22}
-              color={isDark ? "#9CA3AF" : "#6B7280"}
-            />
+            name={showPassword ? "eye-off-outline" : "eye-outline"}
+            size={22}
+            color={isDark ? "#9CA3AF" : "#6B7280"} />
+          
           </TouchableOpacity>
-        )}
+        }
       </View>
-      {error ? (
-        <Text className="text-red-500 text-xs mt-1.5 ml-1 font-medium">
+      {error ?
+      <Text className="text-red-500 text-xs mt-1.5 ml-1 font-medium">
           {error}
-        </Text>
-      ) : null}
-    </View>
-  );
+        </Text> :
+      null}
+    </View>);
+
 }

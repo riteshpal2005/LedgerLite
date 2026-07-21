@@ -10,20 +10,20 @@ export function QuickActions() {
     <>
       <Text className="text-white text-base font-bold mb-3">Quick Actions</Text>
       <View className="flex-row justify-between mb-8">
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => router.push("/add-transaction")}
-          className="bg-[#0f1011] py-4 px-1 rounded-2xl flex-1 items-center justify-center mr-2 border border-[#1b1b1c]"
-        >
+          className="bg-[#0f1011] py-4 px-1 rounded-2xl flex-1 items-center justify-center mr-2 border border-[#1b1b1c]">
+          
           <View className="w-10 h-10 rounded-full border border-[#a855f7]/50 items-center justify-center mb-2">
             <Ionicons name="add" size={24} color="#a855f7" />
           </View>
           <Text className="text-gray-300 text-[10px] text-center">Add Transaction</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => router.push("/categories")}
-          className="bg-[#0f1011] py-4 px-1 rounded-2xl flex-1 items-center justify-center mr-2 border border-[#1b1b1c]"
-        >
+          className="bg-[#0f1011] py-4 px-1 rounded-2xl flex-1 items-center justify-center mr-2 border border-[#1b1b1c]">
+          
           <View className="w-10 h-10 rounded-full border border-[#3b82f6]/50 items-center justify-center mb-2">
             <Ionicons name="pricetag-outline" size={20} color="#3b82f6" />
           </View>
@@ -44,6 +44,6 @@ export function QuickActions() {
           <Text className="text-gray-300 text-[10px] text-center">Reports</Text>
         </TouchableOpacity>
       </View>
-    </>
-  );
+    </>);
+
 }

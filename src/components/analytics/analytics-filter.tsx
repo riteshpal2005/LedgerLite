@@ -10,19 +10,19 @@ interface AnalyticsFilterProps {
 }
 
 const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
+"January",
+"February",
+"March",
+"April",
+"May",
+"June",
+"July",
+"August",
+"September",
+"October",
+"November",
+"December"];
+
 
 export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
   const [filter, setFilter] = useState<FilterType>("week");
@@ -35,19 +35,19 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
 
   const currentMonthName = MONTHS[new Date().getMonth()];
 
-  const filterOptions: { label: string; value: FilterType }[] = [
-    { label: "Day", value: "day" },
-    { label: "Week", value: "week" },
-    { label: "Month", value: "month" },
-    { label: `Current Month (${currentMonthName})`, value: "current_month" },
-    { label: "Custom", value: "custom" },
-  ];
+  const filterOptions: {label: string;value: FilterType;}[] = [
+  { label: "Day", value: "day" },
+  { label: "Week", value: "week" },
+  { label: "Month", value: "month" },
+  { label: `Current Month (${currentMonthName})`, value: "current_month" },
+  { label: "Custom", value: "custom" }];
+
 
   const updateRange = (
-    selectedFilter: FilterType,
-    start?: Date,
-    end?: Date,
-  ) => {
+  selectedFilter: FilterType,
+  start?: Date,
+  end?: Date) =>
+  {
     const now = new Date();
     const endOfDay = new Date(
       now.getFullYear(),
@@ -56,7 +56,7 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
       23,
       59,
       59,
-      999,
+      999
     ).getTime();
     const startOfDay = new Date(
       now.getFullYear(),
@@ -65,7 +65,7 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
       0,
       0,
       0,
-      0,
+      0
     ).getTime();
 
     let result = { startDate: startOfDay, endDate: endOfDay };
@@ -82,7 +82,7 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
           0,
           0,
           0,
-          0,
+          0
         ).getTime();
         result = { startDate: startOfWeek, endDate: endOfDay };
         break;
@@ -94,7 +94,7 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
           0,
           0,
           0,
-          0,
+          0
         ).getTime();
         result = { startDate: startOfMonthRange, endDate: endOfDay };
         break;
@@ -106,7 +106,7 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
           0,
           0,
           0,
-          0,
+          0
         ).getTime();
         const endOfCurrent = new Date(
           now.getFullYear(),
@@ -115,7 +115,7 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
           23,
           59,
           59,
-          999,
+          999
         ).getTime();
         result = { startDate: startOfCurrent, endDate: endOfCurrent };
         break;
@@ -129,7 +129,7 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
               0,
               0,
               0,
-              0,
+              0
             ).getTime(),
             endDate: new Date(
               end.getFullYear(),
@@ -138,8 +138,8 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
               23,
               59,
               59,
-              999,
-            ).getTime(),
+              999
+            ).getTime()
           };
         }
         break;
@@ -170,8 +170,8 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
     <View className="mb-8 z-50">
       <Pressable
         onPress={() => setDropdownVisible(true)}
-        className="flex-row items-center justify-between bg-surface border border-bordercolor rounded-2xl p-4 shadow-sm"
-      >
+        className="flex-row items-center justify-between bg-surface border border-bordercolor rounded-2xl p-4 shadow-sm">
+        
         <Text className="text-primary font-bold text-lg">{selectedLabel}</Text>
         <Ionicons name="chevron-down" size={20} color="#a1a1aa" />
       </Pressable>
@@ -179,28 +179,28 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
       <Modal visible={dropdownVisible} transparent animationType="fade">
         <Pressable
           className="flex-1 bg-black/50 justify-center items-center p-6"
-          onPress={() => setDropdownVisible(false)}
-        >
+          onPress={() => setDropdownVisible(false)}>
+          
           <View className="bg-surface w-full rounded-3xl p-2 border border-bordercolor">
-            {filterOptions.map((option) => (
-              <Pressable
-                key={option.value}
-                onPress={() => handleSelectFilter(option.value)}
-                className={`p-4 rounded-2xl ${filter === option.value ? "bg-bordercolor" : "bg-surface"}`}
-              >
+            {filterOptions.map((option) =>
+            <Pressable
+              key={option.value}
+              onPress={() => handleSelectFilter(option.value)}
+              className={`p-4 rounded-2xl ${filter === option.value ? "bg-bordercolor" : "bg-surface"}`}>
+              
                 <Text
-                  className={`text-center font-bold text-lg ${filter === option.value ? "text-blue-500" : "text-primary"}`}
-                >
+                className={`text-center font-bold text-lg ${filter === option.value ? "text-blue-500" : "text-primary"}`}>
+                
                   {option.label}
                 </Text>
               </Pressable>
-            ))}
+            )}
           </View>
         </Pressable>
       </Modal>
 
-      {filter === "custom" && (
-        <View className="flex-row justify-between mt-4 gap-4">
+      {filter === "custom" &&
+      <View className="flex-row justify-between mt-4 gap-4">
           <View className="flex-1 bg-surface rounded-2xl p-4 border border-bordercolor">
             <Text className="text-secondary text-xs mb-1">From Date</Text>
             <Pressable onPress={() => setShowStartPicker(true)}>
@@ -218,23 +218,23 @@ export function AnalyticsFilter({ onDateRangeChange }: AnalyticsFilterProps) {
             </Pressable>
           </View>
         </View>
-      )}
+      }
 
       <CustomDateTimePickerModal
         visible={showStartPicker}
         mode="date"
         date={customStart}
         setDate={setCustomStart}
-        onClose={() => setShowStartPicker(false)}
-      />
+        onClose={() => setShowStartPicker(false)} />
+      
 
       <CustomDateTimePickerModal
         visible={showEndPicker}
         mode="date"
         date={customEnd}
         setDate={setCustomEnd}
-        onClose={() => setShowEndPicker(false)}
-      />
-    </View>
-  );
+        onClose={() => setShowEndPicker(false)} />
+      
+    </View>);
+
 }

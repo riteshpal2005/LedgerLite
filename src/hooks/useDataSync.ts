@@ -20,7 +20,7 @@ export function useDataSync() {
 
   const handleSyncAll = async () => {
     if (!user)
-      return showAlert("Error", "You must be logged in to sync to the cloud.");
+    return showAlert("Error", "You must be logged in to sync to the cloud.");
     setIsSyncing(true);
     try {
       await SyncService.syncAll(user.uid, dbActions);
@@ -43,6 +43,6 @@ export function useDataSync() {
 
   return {
     handleSyncAll,
-    isSyncing,
+    isSyncing
   };
 }

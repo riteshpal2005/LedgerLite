@@ -8,10 +8,10 @@ import { storage } from "../utils/storage";
 const persistSettingsMiddleware: Middleware = (storeAPI) => (next) => (action: any) => {
   const result = next(action);
   if (
-    action.type?.startsWith("settings/") &&
-    action.type !== "settings/setImportProgress" &&
-    action.type !== "settings/setIsGlobalSyncing"
-  ) {
+  action.type?.startsWith("settings/") &&
+  action.type !== "settings/setImportProgress" &&
+  action.type !== "settings/setIsGlobalSyncing")
+  {
     const state = storeAPI.getState() as RootState;
     const { importProgress, isGlobalSyncing, ...persistableSettings } = state.settings;
     const settingsVal = JSON.stringify(persistableSettings);
@@ -25,10 +25,10 @@ export const store = configureStore({
     transactions: transactionReducer,
     categories: categoryReducer,
     settings: settingsReducer,
-    accounts: accountReducer,
+    accounts: accountReducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(persistSettingsMiddleware),
+  getDefaultMiddleware().concat(persistSettingsMiddleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;

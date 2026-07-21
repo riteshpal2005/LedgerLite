@@ -37,7 +37,7 @@ export default function LoginScreen() {
 
   const handleEmailLogin = async () => {
     if (isSubmitting.current) return;
-    
+
     if (!email || !password) {
       showAlert("Error", "Please enter both email and password.");
       return;
@@ -49,9 +49,9 @@ export default function LoginScreen() {
 
     isSubmitting.current = true;
     setIsLoading(true);
-    
+
     const { error } = await AuthService.signInWithEmail(email, password);
-    
+
     setIsLoading(false);
     isSubmitting.current = false;
 
@@ -64,12 +64,12 @@ export default function LoginScreen() {
 
   const handleGoogleLogin = async () => {
     if (isSubmitting.current) return;
-    
+
     isSubmitting.current = true;
     setIsGoogleLoading(true);
-    
+
     const { error } = await AuthService.signInWithGoogle();
-    
+
     setIsGoogleLoading(false);
     isSubmitting.current = false;
 
@@ -86,13 +86,13 @@ export default function LoginScreen() {
         <AuthHeader
           isDark={isDark}
           title="Welcome Back"
-          subtitle="Sign in to sync your transactions"
-        />
+          subtitle="Sign in to sync your transactions" />
+        
 
         <Animated.View
           entering={FadeInDown.delay(100).duration(600).springify()}
-          className="space-y-4"
-        >
+          className="space-y-4">
+          
           <AuthInput
             label="Email Address"
             value={email}
@@ -100,29 +100,29 @@ export default function LoginScreen() {
             error={emailError}
             autoCapitalize="none"
             keyboardType="email-address"
-            placeholder="you@example.com"
-          />
+            placeholder="you@example.com" />
+          
 
           <AuthInput
             label="Password"
             value={password}
             onChangeText={setPassword}
             isPassword={true}
-            placeholder="••••••••"
-          />
+            placeholder="••••••••" />
+          
 
           <AuthButton
             label="Sign In"
             onPress={handleEmailLogin}
             disabled={isLoading || isGoogleLoading}
             isLoading={isLoading}
-            className="mt-4"
-          />
+            className="mt-4" />
+          
         </Animated.View>
 
         <Animated.View
-          entering={FadeInDown.delay(200).duration(600).springify()}
-        >
+          entering={FadeInDown.delay(200).duration(600).springify()}>
+          
           <AuthDivider isDark={isDark} />
 
           <AuthButton
@@ -132,15 +132,15 @@ export default function LoginScreen() {
             onPress={handleGoogleLogin}
             disabled={isLoading || isGoogleLoading}
             isLoading={isGoogleLoading}
-            isDark={isDark}
-          />
+            isDark={isDark} />
+          
 
           <AuthFooter
             isDark={isDark}
             promptText="Don't have an account?"
             linkText="Sign Up"
-            linkHref="/(auth)/register"
-          />
+            linkHref="/(auth)/register" />
+          
         </Animated.View>
       </View>
 
@@ -152,8 +152,8 @@ export default function LoginScreen() {
         onCancel={alertConfig.onCancel}
         confirmText={alertConfig.confirmText}
         cancelText={alertConfig.cancelText}
-        confirmStyle={alertConfig.confirmStyle}
-      />
-    </SafeAreaView>
-  );
+        confirmStyle={alertConfig.confirmStyle} />
+      
+    </SafeAreaView>);
+
 }

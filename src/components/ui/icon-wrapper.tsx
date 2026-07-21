@@ -31,9 +31,9 @@ export function IconWrapper({
   return (
     <View
       className={`rounded-full items-center justify-center ${getSizeStyles()} ${colorClass} ${className}`}
-      {...props}
-    >
+      {...props}>
+      
       {children}
-    </View>
-  );
+    </View>);
+
 }

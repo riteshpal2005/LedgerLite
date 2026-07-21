@@ -14,11 +14,11 @@ export function Heading({
   return (
     <Text
       className={`text-2xl font-bold text-primary mb-2 ${className}`}
-      {...props}
-    >
+      {...props}>
+      
       {children}
-    </Text>
-  );
+    </Text>);
+
 }
 
 export function SubText({
@@ -29,17 +29,17 @@ export function SubText({
   return (
     <Text className={`text-secondary text-sm ${className}`} {...props}>
       {children}
-    </Text>
-  );
+    </Text>);
+
 }
 
 export function Label({ children, className = "", ...props }: TypographyProps) {
   return (
     <Text
       className={`text-secondary font-bold uppercase text-xs tracking-wider mb-2 ${className}`}
-      {...props}
-    >
+      {...props}>
+      
       {children}
-    </Text>
-  );
+    </Text>);
+
 }

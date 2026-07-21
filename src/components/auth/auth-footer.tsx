@@ -29,20 +29,20 @@ export function AuthFooter({ isDark, promptText, linkText, linkHref }: AuthFoote
           By continuing, you agree to our{" "}
           <Text
             onPress={() => Linking.openURL("https://riteshpal2005.github.io/terms.html")}
-            className="text-blue-500"
-          >
+            className="text-blue-500">
+            
             Terms of Service
           </Text>{" "}
           and{" "}
           <Text
             onPress={() => Linking.openURL("https://riteshpal2005.github.io/privacy.html")}
-            className="text-blue-500"
-          >
+            className="text-blue-500">
+            
             Privacy Policy
           </Text>
           .
         </Text>
       </View>
-    </>
-  );
+    </>);
+
 }

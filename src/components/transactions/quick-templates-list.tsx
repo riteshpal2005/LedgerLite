@@ -19,29 +19,29 @@ export function QuickTemplatesList({ quickTemplates, onSelectTemplate }: QuickTe
     <View className="mb-6">
       <Text className="text-secondary font-bold text-sm mb-2 uppercase">Quick Templates</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
-        {quickTemplates.map(template => (
-          <Pressable
-            key={template.id}
-            onLongPress={() => {
-              Alert.alert("Remove Template", `Remove "${template.title}"?`, [
-                { text: "Cancel", style: "cancel" },
-                {
-                  text: "Remove",
-                  style: "destructive",
-                  onPress: () => dispatch(removeQuickTemplate(template.id))
-                }
-              ]);
-            }}
-            onPress={() => onSelectTemplate(template)}
-            className="bg-brand-primary/10 px-4 py-2 rounded-xl mr-3 border border-brand-primary/20"
-          >
+        {quickTemplates.map((template) =>
+        <Pressable
+          key={template.id}
+          onLongPress={() => {
+            Alert.alert("Remove Template", `Remove "${template.title}"?`, [
+            { text: "Cancel", style: "cancel" },
+            {
+              text: "Remove",
+              style: "destructive",
+              onPress: () => dispatch(removeQuickTemplate(template.id))
+            }]
+            );
+          }}
+          onPress={() => onSelectTemplate(template)}
+          className="bg-brand-primary/10 px-4 py-2 rounded-xl mr-3 border border-brand-primary/20">
+          
             <Text className="text-brand-primary font-bold">{template.title}</Text>
             <Text className="text-brand-primary/80 text-xs text-center">
               {template.type === 'credit' ? '+' : '-'}{formatCurrency(template.amount)}
             </Text>
           </Pressable>
-        ))}
+        )}
       </ScrollView>
-    </View>
-  );
+    </View>);
+
 }

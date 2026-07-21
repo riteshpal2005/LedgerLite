@@ -15,23 +15,23 @@ export function IncomeVsExpenseCard({ currentMonthTxns }: IncomeVsExpenseCardPro
     let income = 0;
     let expense = 0;
 
-    currentMonthTxns.forEach(t => {
+    currentMonthTxns.forEach((t) => {
       if (t.type === 'credit') income += t.amount;
       if (t.type === 'debit') expense += t.amount;
     });
 
-    // Threshold: Need both income and expense to show a meaningful ratio
+
     if (income === 0 || expense === 0) return null;
 
     const saved = income - expense;
-    // If they spent more than they earned, it's a negative savings rate
-    const percentage = Math.round((saved / income) * 100);
+
+    const percentage = Math.round(saved / income * 100);
 
     return {
       income,
       expense,
       saved,
-      percentage,
+      percentage
     };
   }, [currentMonthTxns]);
 
@@ -45,23 +45,23 @@ export function IncomeVsExpenseCard({ currentMonthTxns }: IncomeVsExpenseCardPro
           <Text className="text-[#10b981] text-[10px] font-bold tracking-wider uppercase">Income vs Expense</Text>
         </View>
         <Text className="text-gray-500 text-sm italic">Add both income and expenses to see your savings rate.</Text>
-      </View>
-    );
+      </View>);
+
   }
 
   const isPositive = insight.percentage >= 0;
   const color = isPositive ? '#10b981' : '#ef4444';
   const label = isPositive ? 'saved' : 'overspent';
-  
-  // For the SVG donut
+
+
   const size = 64;
   const strokeWidth = 6;
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
-  
-  // Calculate stroke dashoffset for the colored segment (clamp between 0 and 100)
+
+
   const clampedPercent = Math.min(Math.max(Math.abs(insight.percentage), 0), 100);
-  const strokeDashoffset = circumference - (clampedPercent / 100) * circumference;
+  const strokeDashoffset = circumference - clampedPercent / 100 * circumference;
 
   return (
     <View className="mx-6 mb-4 rounded-2xl bg-[#0f1011] border border-[#1b1b1c] p-5">
@@ -80,23 +80,23 @@ export function IncomeVsExpenseCard({ currentMonthTxns }: IncomeVsExpenseCardPro
         
         <View className="items-center justify-center relative">
           <Svg width={size} height={size} className="-rotate-90">
-            {/* Background Circle */}
-            <Circle 
-              stroke="#27272a" 
-              fill="none" 
-              cx={size/2} cy={size/2} r={radius} 
-              strokeWidth={strokeWidth} 
-            />
-            {/* Foreground Circle */}
-            <Circle 
-              stroke={color} 
-              fill="none" 
-              cx={size/2} cy={size/2} r={radius} 
-              strokeWidth={strokeWidth} 
+            {}
+            <Circle
+              stroke="#27272a"
+              fill="none"
+              cx={size / 2} cy={size / 2} r={radius}
+              strokeWidth={strokeWidth} />
+            
+            {}
+            <Circle
+              stroke={color}
+              fill="none"
+              cx={size / 2} cy={size / 2} r={radius}
+              strokeWidth={strokeWidth}
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
-              strokeLinecap="round"
-            />
+              strokeLinecap="round" />
+            
           </Svg>
           <View className="absolute items-center justify-center">
              <Text className="text-white font-bold text-xs">{Math.abs(insight.percentage)}%</Text>
@@ -110,6 +110,6 @@ export function IncomeVsExpenseCard({ currentMonthTxns }: IncomeVsExpenseCardPro
           Your income was {formatCurrency(insight.income)} and expenses were {formatCurrency(insight.expense)}.
         </Text>
       </View>
-    </View>
-  );
+    </View>);
+
 }

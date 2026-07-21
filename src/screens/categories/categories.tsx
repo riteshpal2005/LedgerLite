@@ -12,12 +12,12 @@ import withObservables from "@nozbe/watermelondb/react/withObservables";
 import { withDatabase } from "@nozbe/watermelondb/react";
 import { Database, Q } from "@nozbe/watermelondb";
 
-function CategoriesScreenComponent({ categories }: { categories: CategoryModel[] }) {
+function CategoriesScreenComponent({ categories }: {categories: CategoryModel[];}) {
   const { colors } = useTheme();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [selectedCategory, setSelectedCategory] = useState<
-    CategoryModel | undefined
-  >(undefined);
+    CategoryModel | undefined>(
+    undefined);
 
   useLayoutEffect(() => {
     if (selectedCategory !== undefined) {
@@ -50,51 +50,51 @@ function CategoriesScreenComponent({ categories }: { categories: CategoryModel[]
         contentContainerStyle={{ padding: 24, paddingBottom: 96 }}
         showsVerticalScrollIndicator={false}
         columnWrapperStyle={{ justifyContent: "flex-start", gap: 0, marginBottom: 24 }}
-        renderItem={({ item: category }) => (
-          <Pressable
-            onPress={() => handleCategoryPress(category)}
-            className="w-1/4 items-center mb-4"
-          >
+        renderItem={({ item: category }) =>
+        <Pressable
+          onPress={() => handleCategoryPress(category)}
+          className="w-1/4 items-center mb-4">
+          
             <View
-              style={{ backgroundColor: `${category.color || "#3b82f6"}30` }}
-              className="w-16 h-16 rounded-full items-center justify-center mb-3"
-            >
+            style={{ backgroundColor: `${category.color || "#3b82f6"}30` }}
+            className="w-16 h-16 rounded-full items-center justify-center mb-3">
+            
               <CategoryIcon
-                name={(category.icon as any) || "pricetag"}
-                size={28}
-                color={category.color || "#3b82f6"}
-              />
+              name={category.icon as any || "pricetag"}
+              size={28}
+              color={category.color || "#3b82f6"} />
+            
             </View>
             <Text
-              className="text-gray-200 text-xs font-semibold text-center"
-              numberOfLines={1}
-            >
+            className="text-gray-200 text-xs font-semibold text-center"
+            numberOfLines={1}>
+            
               {category.name}
             </Text>
           </Pressable>
-        )}
-      />
+        } />
+      
 
       <Pressable
         onPress={handleAddPress}
-        className="absolute bottom-10 right-6 w-16 h-16 bg-brand-primary rounded-full items-center justify-center shadow-lg elevation-5"
-      >
+        className="absolute bottom-10 right-6 w-16 h-16 bg-brand-primary rounded-full items-center justify-center shadow-lg elevation-5">
+        
         <Ionicons name="add" size={32} color={colors.brandPrimaryContent} />
       </Pressable>
 
       <CategoryEditSheet
         bottomSheetRef={bottomSheetModalRef}
-        initialCategory={selectedCategory as any} // Temporary cast until we update CategoryEditSheet
-        categories={categories}
-      />
-    </SafeAreaView>
-  );
+        initialCategory={selectedCategory as any}
+        categories={categories} />
+      
+    </SafeAreaView>);
+
 }
 
-const enhance = withObservables([], ({ database }: { database: Database }) => ({
+const enhance = withObservables([], ({ database }: {database: Database;}) => ({
   categories: database.collections.get<CategoryModel>('categories').query(
     Q.where('sync_status', Q.notEq('deleted'))
-  ).observe(),
+  ).observe()
 }));
 
 export default withDatabase(enhance(CategoriesScreenComponent));

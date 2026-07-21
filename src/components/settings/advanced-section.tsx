@@ -11,8 +11,8 @@ export function AdvancedSection() {
       <View className="bg-surface rounded-2xl p-4 border border-bordercolor">
         <Pressable
           onPress={() => router.push("/backdated")}
-          className="flex-row justify-between items-center py-2"
-        >
+          className="flex-row justify-between items-center py-2">
+          
           <View className="flex-1 pr-4">
             <Text className="text-primary text-lg font-semibold mb-1">
               Backdated Data Entry
@@ -25,6 +25,6 @@ export function AdvancedSection() {
           <Ionicons name="chevron-forward" size={20} color="#71717a" />
         </Pressable>
       </View>
-    </>
-  );
+    </>);
+
 }

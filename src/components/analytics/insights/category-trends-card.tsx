@@ -14,8 +14,8 @@ interface CategoryTrendsCardProps {
 export function CategoryTrendsCard({ currentMonthTxns, lastMonthTxns, categories }: CategoryTrendsCardProps) {
   const { formatCurrency } = useCurrency();
   const insight = useMemo(() => {
-    const currentExpenses = currentMonthTxns.filter(t => t.type === 'debit');
-    const lastExpenses = lastMonthTxns.filter(t => t.type === 'debit');
+    const currentExpenses = currentMonthTxns.filter((t) => t.type === 'debit');
+    const lastExpenses = lastMonthTxns.filter((t) => t.type === 'debit');
 
     if (currentExpenses.length === 0 || lastExpenses.length === 0) {
       return null;
@@ -24,20 +24,20 @@ export function CategoryTrendsCard({ currentMonthTxns, lastMonthTxns, categories
     const currentTotals: Record<string, number> = {};
     const lastTotals: Record<string, number> = {};
 
-    currentExpenses.forEach(t => {
+    currentExpenses.forEach((t) => {
       const catId = (t as any)._raw.category_id;
       currentTotals[catId] = (currentTotals[catId] || 0) + t.amount;
     });
 
-    lastExpenses.forEach(t => {
+    lastExpenses.forEach((t) => {
       const catId = (t as any)._raw.category_id;
       lastTotals[catId] = (lastTotals[catId] || 0) + t.amount;
     });
 
-    // Find the category with the highest total in current month that also exists in last month
+
     let maxCatId = "";
     let maxAmount = 0;
-    
+
     Object.entries(currentTotals).forEach(([catId, amount]) => {
       if (lastTotals[catId] && amount > maxAmount) {
         maxAmount = amount;
@@ -47,13 +47,13 @@ export function CategoryTrendsCard({ currentMonthTxns, lastMonthTxns, categories
 
     if (!maxCatId) return null;
 
-    const category = categories.find(c => c.id === maxCatId);
+    const category = categories.find((c) => c.id === maxCatId);
     if (!category) return null;
 
     const currentTotal = maxAmount;
     const lastTotal = lastTotals[maxCatId];
     const diff = currentTotal - lastTotal;
-    const percentChange = Math.abs(Math.round((diff / lastTotal) * 100));
+    const percentChange = Math.abs(Math.round(diff / lastTotal * 100));
     const isLess = diff < 0;
 
     return {
@@ -61,7 +61,7 @@ export function CategoryTrendsCard({ currentMonthTxns, lastMonthTxns, categories
       percentChange,
       isLess,
       currentTotal,
-      lastTotal,
+      lastTotal
     };
   }, [currentMonthTxns, lastMonthTxns, categories]);
 
@@ -75,11 +75,11 @@ export function CategoryTrendsCard({ currentMonthTxns, lastMonthTxns, categories
           <Text className="text-[#10b981] text-[10px] font-bold tracking-wider uppercase">Category Trends</Text>
         </View>
         <Text className="text-gray-500 text-sm italic">Not enough data across two months to calculate category trends yet.</Text>
-      </View>
-    );
+      </View>);
+
   }
 
-  const trendColor = insight.isLess ? '#10b981' : '#ef4444'; // green if spent less, red if more
+  const trendColor = insight.isLess ? '#10b981' : '#ef4444';
   const trendBg = insight.isLess ? 'bg-[#10b981]/10' : 'bg-[#ef4444]/10';
 
   return (
@@ -109,17 +109,17 @@ export function CategoryTrendsCard({ currentMonthTxns, lastMonthTxns, categories
         </Text>
         
         <View className="w-24 h-10 relative">
-           {/* Decorative sparkline mimicking the UI */}
+           {}
            <View className="absolute bottom-2 left-0 right-0 h-[1px] bg-[#27272a]" />
            <View className="absolute bottom-2 left-0 w-2 h-2 rounded-full bg-gray-500 -ml-1 -mb-1" />
            <View className="absolute bottom-2 right-0 w-2 h-2 rounded-full bg-[#10b981] -mr-1 -mb-1" />
-           {/* Diagonal line */}
+           {}
            <View style={{ transform: [{ rotate: insight.isLess ? '10deg' : '-10deg' }] }} className="absolute bottom-3 left-0 right-0 h-[1px] bg-[#10b981] opacity-50 origin-left" />
            
            <Text className="absolute -bottom-2 left-0 text-[9px] text-gray-500">Last</Text>
            <Text className="absolute -bottom-2 right-0 text-[9px] text-[#10b981]">This</Text>
         </View>
       </View>
-    </View>
-  );
+    </View>);
+
 }

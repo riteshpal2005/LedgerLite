@@ -10,17 +10,17 @@ interface TransactionMetadataFormProps {
   setDescription: (val: string) => void;
   merchant: string;
   setMerchant: (val: string) => void;
-  
+
   selectedCategory: any;
   setShowCategoryPicker: (val: boolean) => void;
-  
+
   selectedAccount: any;
   setShowAccountPicker: (val: boolean) => void;
-  
+
   destinationAccountId: string | undefined;
   setShowDestinationPicker: (val: boolean) => void;
   accounts: any[];
-  
+
   formKey: number;
 }
 
@@ -39,22 +39,22 @@ export function TransactionMetadataForm({
         <View className="flex-1">
           <CategoryPickerButton
             selectedCategory={selectedCategory}
-            onPress={() => setShowCategoryPicker(true)}
-          />
+            onPress={() => setShowCategoryPicker(true)} />
+          
         </View>
         <View className="flex-1">
           <Pressable
             onPress={() => setShowAccountPicker(true)}
-            className="bg-surface rounded-2xl p-4 border border-bordercolor h-[72px] justify-center active:bg-black/5 dark:active:bg-white/5"
-          >
+            className="bg-surface rounded-2xl p-4 border border-bordercolor h-[72px] justify-center active:bg-black/5 dark:active:bg-white/5">
+            
             <Text className="text-secondary text-sm mb-1">
               {selectedCategory?.name === "Self Transfer" ? "From Account" : "Account"}
             </Text>
             <View className="flex-row items-center justify-between">
               <Text
                 className="text-primary font-bold text-lg flex-1"
-                numberOfLines={1}
-              >
+                numberOfLines={1}>
+                
                 {selectedAccount?.name || "Select"}
               </Text>
             </View>
@@ -62,24 +62,24 @@ export function TransactionMetadataForm({
         </View>
       </View>
 
-      {selectedCategory?.name === "Self Transfer" && (
-        <View className="mb-4">
+      {selectedCategory?.name === "Self Transfer" &&
+      <View className="mb-4">
           <Pressable
-            onPress={() => setShowDestinationPicker(true)}
-            className="bg-surface rounded-2xl p-4 border border-bordercolor h-[72px] justify-center active:bg-black/5 dark:active:bg-white/5"
-          >
+          onPress={() => setShowDestinationPicker(true)}
+          className="bg-surface rounded-2xl p-4 border border-bordercolor h-[72px] justify-center active:bg-black/5 dark:active:bg-white/5">
+          
             <Text className="text-secondary text-sm mb-1">To Account</Text>
             <View className="flex-row items-center justify-between">
               <Text
-                className="text-primary font-bold text-lg flex-1"
-                numberOfLines={1}
-              >
+              className="text-primary font-bold text-lg flex-1"
+              numberOfLines={1}>
+              
                 {accounts.find((a) => a.id === destinationAccountId)?.name || "Select Destination"}
               </Text>
             </View>
           </Pressable>
         </View>
-      )}
+      }
 
       <BottomSheetFormField
         key={`amount-${formKey}`}
@@ -88,8 +88,8 @@ export function TransactionMetadataForm({
         onChangeText={setAmount}
         placeholder="0.00"
         keyboardType="decimal-pad"
-        inputClassName="text-primary text-4xl font-semibold"
-      />
+        inputClassName="text-primary text-4xl font-semibold" />
+      
 
       <View className="flex-row gap-4 mb-4">
         <View className="flex-1">
@@ -99,8 +99,8 @@ export function TransactionMetadataForm({
             defaultValue={description}
             onChangeText={setDescription}
             placeholder="e.g. Lunch..."
-            className="bg-surface rounded-2xl p-4 border border-bordercolor h-[76px]"
-          />
+            className="bg-surface rounded-2xl p-4 border border-bordercolor h-[76px]" />
+          
         </View>
         <View className="flex-1">
           <BottomSheetFormField
@@ -109,10 +109,10 @@ export function TransactionMetadataForm({
             defaultValue={merchant}
             onChangeText={setMerchant}
             placeholder="e.g. Zomato..."
-            className="bg-surface rounded-2xl p-4 border border-bordercolor h-[76px]"
-          />
+            className="bg-surface rounded-2xl p-4 border border-bordercolor h-[76px]" />
+          
         </View>
       </View>
-    </>
-  );
+    </>);
+
 }

@@ -23,11 +23,11 @@ export function AccountSection() {
   }>({
     visible: false,
     title: "",
-    message: "",
+    message: ""
   });
 
   const hideAlert = () =>
-    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  setAlertConfig((prev) => ({ ...prev, visible: false }));
 
   if (!user) {
     return (
@@ -48,15 +48,15 @@ export function AccountSection() {
           </Text>
           <Pressable
             onPress={() => router.push("/(auth)/login")}
-            className="bg-amber-500 rounded-xl py-3 items-center"
-          >
+            className="bg-amber-500 rounded-xl py-3 items-center">
+            
             <Text className="text-white font-bold text-base">
               Sign In / Sign Up
             </Text>
           </Pressable>
         </View>
-      </View>
-    );
+      </View>);
+
   }
 
   const handleLogout = () => {
@@ -73,14 +73,14 @@ export function AccountSection() {
             visible: true,
             title: "Logout Failed",
             message: error,
-            onConfirm: hideAlert,
+            onConfirm: hideAlert
           });
         }
       },
       onCancel: hideAlert,
       confirmText: "Log Out",
       cancelText: "Cancel",
-      confirmStyle: "danger",
+      confirmStyle: "danger"
     });
   };
 
@@ -98,8 +98,8 @@ export function AccountSection() {
           <View className="flex-1 pr-2">
             <Text
               className="text-primary text-lg font-semibold"
-              numberOfLines={1}
-            >
+              numberOfLines={1}>
+              
               {user.email || "User"}
             </Text>
             <Text className="text-tertiary text-xs">Logged In</Text>
@@ -109,8 +109,8 @@ export function AccountSection() {
 
       <Pressable
         onPress={handleLogout}
-        className="bg-surface rounded-2xl p-4 border border-bordercolor flex-row items-center justify-center"
-      >
+        className="bg-surface rounded-2xl p-4 border border-bordercolor flex-row items-center justify-center">
+        
         <Ionicons name="log-out-outline" size={20} color="#ef4444" />
         <Text className="text-red-500 text-lg font-semibold ml-2">Log Out</Text>
       </Pressable>
@@ -123,8 +123,8 @@ export function AccountSection() {
         onCancel={alertConfig.onCancel}
         confirmText={alertConfig.confirmText}
         cancelText={alertConfig.cancelText}
-        confirmStyle={alertConfig.confirmStyle}
-      />
-    </View>
-  );
+        confirmStyle={alertConfig.confirmStyle} />
+      
+    </View>);
+
 }

@@ -16,6 +16,6 @@ export function SettingsHeader() {
           <Text className="text-gray-400 text-xs">Transaction Tracker</Text>
         </View>
       </View>
-    </View>
-  );
+    </View>);
+
 }

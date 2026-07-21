@@ -16,18 +16,18 @@ export default function HomeScreen() {
     useCallback(() => {
       const onBackPress = () => {
         showAlert(
-          "Exit App", 
-          "Are you sure you want to exit LedgerLite?", 
-          () => BackHandler.exitApp(), 
-          hideAlert, 
-          "Exit", 
-          "Cancel", 
-          "danger", 
+          "Exit App",
+          "Are you sure you want to exit LedgerLite?",
+          () => BackHandler.exitApp(),
+          hideAlert,
+          "Exit",
+          "Cancel",
+          "danger",
           { iconType: "warning" }
         );
         return true;
       };
-      
+
       const subscription = BackHandler.addEventListener("hardwareBackPress", onBackPress);
       return () => subscription.remove();
     }, [showAlert, hideAlert])
@@ -35,7 +35,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#0a0b0d]">
-      {/* Header */}
+      {}
       <View className="flex-row items-center justify-between px-6 mt-4 mb-2">
         <View className="flex-row items-center">
           <View className="w-12 h-12 bg-[#6642f8] rounded-xl items-center justify-center mr-3">
@@ -52,20 +52,20 @@ export default function HomeScreen() {
 
       <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
 
-        {/* Overview */}
+        {}
         <OverviewCard />
 
-        {/* Recent Transactions */}
+        {}
         <RecentTransactions />
 
-        {/* Monthly Summary */}
+        {}
         <MonthlySummaryChart />
         
-        {/* Extra padding for tab bar mock */}
+        {}
         <View className="h-24" />
       </ScrollView>
 
       <CustomAlert {...alertConfig} onCancel={alertConfig.onCancel || hideAlert} />
-    </SafeAreaView>
-  );
+    </SafeAreaView>);
+
 }

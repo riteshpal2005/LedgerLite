@@ -1,14 +1,14 @@
 import React, {
   useState,
   useMemo,
-  useCallback,
-} from "react";
+  useCallback } from
+"react";
 import {
   View,
   Text,
   Pressable,
-  Alert,
-} from "react-native";
+  Alert } from
+"react-native";
 import { Button } from "../../components/ui/button";
 import { Heading, Label } from "../../components/ui/typography";
 import { Card } from "../../components/ui/card";
@@ -16,8 +16,8 @@ import { useDispatch } from "react-redux";
 import { useTransactionDatabase } from "../../server/db/useTransactionDatabase";
 import {
   addAccountToRedux,
-  updateAccountInRedux,
-} from "../../store/accountSlice";
+  updateAccountInRedux } from
+"../../store/accountSlice";
 import { Account } from "../../server/db/schema";
 import { BottomSheetModal, BottomSheetView, BottomSheetTextInput, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { useTheme } from "../../hooks/theme/ThemeContext";
@@ -36,19 +36,19 @@ export function AddAccountModal({
   bottomSheetRef,
   initialAccount,
   initialName,
-  onAccountCreated,
-  }: AddAccountModalProps) {
-    const { getCurrencySymbol } = useCurrency();
-    const [name, setName] = useState("");
-    const [balance, setBalance] = useState("");
-    const [type, setType] = useState<"Cash" | "Bank" | "Credit Card">("Cash");
-    const [formKey, setFormKey] = useState(0);
+  onAccountCreated
+}: AddAccountModalProps) {
+  const { getCurrencySymbol } = useCurrency();
+  const [name, setName] = useState("");
+  const [balance, setBalance] = useState("");
+  const [type, setType] = useState<"Cash" | "Bank" | "Credit Card">("Cash");
+  const [formKey, setFormKey] = useState(0);
 
   const snapPoints = useMemo(() => ["70%"], []);
   const {
     bottomSheetBackgroundColor,
     bottomSheetIndicatorColor,
-    bottomSheetBorderColor,
+    bottomSheetBorderColor
   } = useTheme();
 
   const handleSheetChanges = useCallback(
@@ -69,7 +69,7 @@ export function AddAccountModal({
         }
       }
     },
-    [initialAccount, initialName],
+    [initialAccount, initialName]
   );
 
   const handleClose = () => {
@@ -78,13 +78,13 @@ export function AddAccountModal({
 
   const renderBackdrop = useCallback(
     (props: any) =>
-      React.createElement(BottomSheetBackdrop, {
-        ...props,
-        disappearsOnIndex: -1,
-        appearsOnIndex: 0,
-        opacity: 0.5,
-      }),
-    [],
+    React.createElement(BottomSheetBackdrop, {
+      ...props,
+      disappearsOnIndex: -1,
+      appearsOnIndex: 0,
+      opacity: 0.5
+    }),
+    []
   );
 
   const dispatch = useDispatch();
@@ -101,7 +101,7 @@ export function AddAccountModal({
     const newAccount = {
       name: name.trim(),
       type,
-      balance: parseFloat(balance) || 0,
+      balance: parseFloat(balance) || 0
     };
 
     try {
@@ -112,8 +112,8 @@ export function AddAccountModal({
             ...newAccount,
             id: initialAccount.id,
             sync_status: "pending",
-            updated_at: Date.now(),
-          }),
+            updated_at: Date.now()
+          })
         );
       } else {
         const id = await addAccount(newAccount);
@@ -121,7 +121,7 @@ export function AddAccountModal({
           ...newAccount,
           id,
           sync_status: "pending",
-          updated_at: Date.now(),
+          updated_at: Date.now()
         };
         dispatch(addAccountToRedux(createdAccount));
         if (onAccountCreated) {
@@ -150,12 +150,12 @@ export function AddAccountModal({
       backgroundStyle={{
         backgroundColor: bottomSheetBackgroundColor,
         borderWidth: 1,
-        borderColor: bottomSheetBorderColor,
+        borderColor: bottomSheetBorderColor
       }}
       handleIndicatorStyle={{ backgroundColor: bottomSheetIndicatorColor }}
       keyboardBehavior="extend"
-      keyboardBlurBehavior="restore"
-    >
+      keyboardBlurBehavior="restore">
+      
       <BottomSheetView style={{ flex: 1, padding: 24 }}>
         <View className="flex-row justify-between items-center mb-6">
           <Heading className="mb-0">
@@ -165,8 +165,8 @@ export function AddAccountModal({
             title="Cancel"
             variant="ghost"
             size="sm"
-            onPress={handleClose}
-          />
+            onPress={handleClose} />
+          
         </View>
 
         <Card className="mb-4">
@@ -177,8 +177,8 @@ export function AddAccountModal({
             onChangeText={setName}
             placeholder="e.g., Chase Checking"
             placeholderTextColor="#52525b"
-            className="text-primary text-xl font-semibold p-0 m-0"
-          />
+            className="text-primary text-xl font-semibold p-0 m-0" />
+          
         </Card>
 
         <Card className="mb-4">
@@ -190,37 +190,37 @@ export function AddAccountModal({
             placeholder="0.00"
             placeholderTextColor="#52525b"
             keyboardType="decimal-pad"
-            className="text-primary text-xl font-semibold p-0 m-0"
-          />
+            className="text-primary text-xl font-semibold p-0 m-0" />
+          
         </Card>
 
         <Text className="text-secondary text-sm mb-2 ml-1">Account Type</Text>
         <View className="flex-row gap-2 mb-8">
-          {["Cash", "Bank", "Credit Card"].map((t) => (
-            <Pressable
-              key={t}
-              onPress={() => setType(t as any)}
-              className={`flex-1 p-3 rounded-xl border ${
-                type === t
-                  ? "bg-brand-primary border-brand-primary"
-                  : "bg-surface border-bordercolor"
-              }`}
-            >
+          {["Cash", "Bank", "Credit Card"].map((t) =>
+          <Pressable
+            key={t}
+            onPress={() => setType(t as any)}
+            className={`flex-1 p-3 rounded-xl border ${
+            type === t ?
+            "bg-brand-primary border-brand-primary" :
+            "bg-surface border-bordercolor"}`
+            }>
+            
               <Text
-                className={`text-center font-bold ${type === t ? "text-brand-primary-content" : "text-secondary"}`}
-              >
+              className={`text-center font-bold ${type === t ? "text-brand-primary-content" : "text-secondary"}`}>
+              
                 {t}
               </Text>
             </Pressable>
-          ))}
+          )}
         </View>
 
         <Button
           title={initialAccount ? "Save Changes" : "Create Account"}
           onPress={handleSave}
-          className="mt-2 mb-8"
-        />
+          className="mt-2 mb-8" />
+        
       </BottomSheetView>
-    </BottomSheetModal>
-  );
+    </BottomSheetModal>);
+
 }

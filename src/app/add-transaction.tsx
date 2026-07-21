@@ -18,7 +18,7 @@ import { useCurrency } from "../hooks/useCurrency";
 
 export default function AddTransactionScreen() {
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id?: string }>();
+  const { id } = useLocalSearchParams<{id?: string;}>();
   const database = useDatabase();
   const { showAlert, hideAlert, alertConfig } = useAlert();
   const { formatCurrency, getCurrencySymbol } = useCurrency();
@@ -28,7 +28,7 @@ export default function AddTransactionScreen() {
   const [note, setNote] = React.useState<string>('');
   const [date, setDate] = React.useState<Date>(new Date());
   const [receiptUri, setReceiptUri] = React.useState<string | null>(null);
-  
+
   const [selectedAccount, setSelectedAccount] = React.useState<Account | null>(null);
   const [selectedCategory, setSelectedCategory] = React.useState<Category | null>(null);
 
@@ -36,11 +36,11 @@ export default function AddTransactionScreen() {
   const [showTimePicker, setShowTimePicker] = React.useState(false);
   const [showAccountPicker, setShowAccountPicker] = React.useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = React.useState(false);
-  
+
   const amountInputRef = React.useRef<TextInput>(null);
 
   const [transaction, setTransaction] = React.useState<Transaction | null>(null);
-  const [initialState, setInitialState] = React.useState<{ amount: number, type: string, accountId: string } | null>(null);
+  const [initialState, setInitialState] = React.useState<{amount: number;type: string;accountId: string;} | null>(null);
 
   React.useEffect(() => {
     let isMounted = true;
@@ -55,13 +55,13 @@ export default function AddTransactionScreen() {
           setNote(t.description || '');
           setDate(new Date(t.date));
           setReceiptUri(t.receiptUri || null);
-          
+
           const acc = await t.account.fetch();
           if (acc) {
             setSelectedAccount(acc);
             setInitialState({ amount: t.amount, type: t.type, accountId: acc.id });
           }
-          
+
           const cat = await t.category.fetch();
           if (cat) setSelectedCategory(cat);
         } catch (e) {
@@ -76,7 +76,7 @@ export default function AddTransactionScreen() {
       }
     };
     loadDefaults();
-    return () => { isMounted = false; };
+    return () => {isMounted = false;};
   }, [id, database]);
 
   const handleSave = async () => {
@@ -92,20 +92,20 @@ export default function AddTransactionScreen() {
           const newDelta = type === 'credit' ? numAmount : -numAmount;
 
           if (initialState.accountId === selectedAccount.id) {
-            await selectedAccount.update(a => {
+            await selectedAccount.update((a) => {
               a.currentBalance = (a.currentBalance ?? a.balance) + (newDelta - oldDelta);
             });
           } else {
             const oldAccount = await database.get<Account>('accounts').find(initialState.accountId);
-            await oldAccount.update(a => {
+            await oldAccount.update((a) => {
               a.currentBalance = (a.currentBalance ?? a.balance) - oldDelta;
             });
-            await selectedAccount.update(a => {
+            await selectedAccount.update((a) => {
               a.currentBalance = (a.currentBalance ?? a.balance) + newDelta;
             });
           }
 
-          await transaction.update(t => {
+          await transaction.update((t) => {
             t.type = type as any;
             t.amount = numAmount;
             t.description = note;
@@ -116,11 +116,11 @@ export default function AddTransactionScreen() {
           });
         } else {
           const delta = type === 'credit' ? numAmount : -numAmount;
-          await selectedAccount.update(a => {
+          await selectedAccount.update((a) => {
             a.currentBalance = (a.currentBalance ?? a.balance) + delta;
           });
 
-          await database.get<Transaction>('transactions').create(t => {
+          await database.get<Transaction>('transactions').create((t) => {
             t.type = type as any;
             t.amount = numAmount;
             t.description = note;
@@ -145,7 +145,7 @@ export default function AddTransactionScreen() {
         await database.write(async () => {
           const oldDelta = initialState.type === 'credit' ? initialState.amount : -initialState.amount;
           const account = await database.get<Account>('accounts').find(initialState.accountId);
-          await account.update(a => {
+          await account.update((a) => {
             a.currentBalance = (a.currentBalance ?? a.balance) - oldDelta;
           });
           await transaction.destroyPermanently();
@@ -159,91 +159,91 @@ export default function AddTransactionScreen() {
 
   const handlePickReceipt = () => {
     showAlert("Attach Receipt", "Choose an option", undefined, undefined, undefined, undefined, "primary", {
-      singleButton: true, // we hide default buttons and use actions
+      singleButton: true,
       actions: [
-        {
-          text: "Take Photo",
-          onPress: async () => {
-            hideAlert();
-            const permission = await ImagePicker.requestCameraPermissionsAsync();
-            if (permission.granted) {
-              const result = await ImagePicker.launchCameraAsync({ quality: 0.7 });
-              if (!result.canceled && result.assets[0].uri) setReceiptUri(result.assets[0].uri);
-            } else {
-              setTimeout(() => {
-                showAlert("Permission Required", "Camera permission is required to take photos.", hideAlert, undefined, "OK", undefined, "primary", { iconType: "warning", singleButton: true });
-              }, 500);
-            }
+      {
+        text: "Take Photo",
+        onPress: async () => {
+          hideAlert();
+          const permission = await ImagePicker.requestCameraPermissionsAsync();
+          if (permission.granted) {
+            const result = await ImagePicker.launchCameraAsync({ quality: 0.7 });
+            if (!result.canceled && result.assets[0].uri) setReceiptUri(result.assets[0].uri);
+          } else {
+            setTimeout(() => {
+              showAlert("Permission Required", "Camera permission is required to take photos.", hideAlert, undefined, "OK", undefined, "primary", { iconType: "warning", singleButton: true });
+            }, 500);
           }
-        },
-        {
-          text: "Choose from Files",
-          onPress: async () => {
-            hideAlert();
-            try {
-              const result = await DocumentPicker.getDocumentAsync({ type: ['image/*', 'application/pdf'], copyToCacheDirectory: true });
-              if (!result.canceled && result.assets[0].uri) setReceiptUri(result.assets[0].uri);
-            } catch (e) {
-              setTimeout(() => {
-                showAlert("Error", "Could not pick file", hideAlert, undefined, "OK", undefined, "primary", { iconType: "warning", singleButton: true });
-              }, 500);
-            }
+        }
+      },
+      {
+        text: "Choose from Files",
+        onPress: async () => {
+          hideAlert();
+          try {
+            const result = await DocumentPicker.getDocumentAsync({ type: ['image/*', 'application/pdf'], copyToCacheDirectory: true });
+            if (!result.canceled && result.assets[0].uri) setReceiptUri(result.assets[0].uri);
+          } catch (e) {
+            setTimeout(() => {
+              showAlert("Error", "Could not pick file", hideAlert, undefined, "OK", undefined, "primary", { iconType: "warning", singleButton: true });
+            }, 500);
           }
-        },
-        { text: "Cancel", style: "cancel", onPress: hideAlert }
-      ]
+        }
+      },
+      { text: "Cancel", style: "cancel", onPress: hideAlert }]
+
     });
   };
 
   return (
     <SafeAreaView className="flex-1 bg-[#0a0b0d]">
-      {/* Header */}
+      {}
       <View className="flex-row items-center justify-between px-6 mt-4 mb-6">
         <TouchableOpacity onPress={() => router.back()} className="w-10">
           <Ionicons name="chevron-back" size={28} color="white" />
         </TouchableOpacity>
         <Text className="text-white text-lg font-bold">{id ? "Edit Transaction" : "Add Transaction"}</Text>
         <View className="flex-row items-center">
-          {id ? (
-            <TouchableOpacity onPress={handleDelete} className="items-end">
+          {id ?
+          <TouchableOpacity onPress={handleDelete} className="items-end">
               <Text className="text-[#ef4444] font-bold text-base">Delete</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity onPress={handleSave} className="items-end">
+            </TouchableOpacity> :
+
+          <TouchableOpacity onPress={handleSave} className="items-end">
               <Text className="text-[#a855f7] font-bold text-base">Save</Text>
             </TouchableOpacity>
-          )}
+          }
         </View>
       </View>
 
       <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
         
-        {/* Transaction Type Tabs */}
+        {}
         <View className="flex-row bg-[#0f1011] rounded-xl p-1 mb-6 border border-[#1b1b1c]">
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => setType('debit')}
-            className={`flex-1 flex-row items-center justify-center py-2.5 ${type === 'debit' ? 'bg-[#a855f7]/10 rounded-lg border border-[#a855f7]' : ''}`}
-          >
+            className={`flex-1 flex-row items-center justify-center py-2.5 ${type === 'debit' ? 'bg-[#a855f7]/10 rounded-lg border border-[#a855f7]' : ''}`}>
+            
             <Ionicons name="arrow-down" size={16} color={type === 'debit' ? "#ef4444" : "#9ca3af"} className="mr-1.5" />
             <Text className={`${type === 'debit' ? 'text-white' : 'text-gray-400'} font-bold text-xs`}>Expense</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => setType('credit')}
-            className={`flex-1 flex-row items-center justify-center py-2.5 ${type === 'credit' ? 'bg-[#a855f7]/10 rounded-lg border border-[#a855f7]' : ''}`}
-          >
+            className={`flex-1 flex-row items-center justify-center py-2.5 ${type === 'credit' ? 'bg-[#a855f7]/10 rounded-lg border border-[#a855f7]' : ''}`}>
+            
             <Ionicons name="arrow-up" size={16} color={type === 'credit' ? "#22c55e" : "#9ca3af"} className="mr-1.5" />
             <Text className={`${type === 'credit' ? 'text-white' : 'text-gray-400'} font-bold text-xs`}>Income</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => setType('transfer')}
-            className={`flex-1 flex-row items-center justify-center py-2.5 ${type === 'transfer' ? 'bg-[#a855f7]/10 rounded-lg border border-[#a855f7]' : ''}`}
-          >
+            className={`flex-1 flex-row items-center justify-center py-2.5 ${type === 'transfer' ? 'bg-[#a855f7]/10 rounded-lg border border-[#a855f7]' : ''}`}>
+            
             <Ionicons name="swap-horizontal" size={16} color={type === 'transfer' ? "#6642f8" : "#9ca3af"} className="mr-1.5" />
             <Text className={`${type === 'transfer' ? 'text-white' : 'text-gray-400'} font-bold text-xs`}>Transfer</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Account Selection */}
+        {}
         <Text className="text-gray-400 text-xs mb-2 ml-1">Account</Text>
         <TouchableOpacity onPress={() => setShowAccountPicker(true)} className="bg-[#0f1011] rounded-2xl p-3 flex-row items-center justify-between mb-6 border border-[#1b1b1c]">
           <View className="flex-row items-center">
@@ -252,15 +252,15 @@ export default function AddTransactionScreen() {
             </View>
             <View>
               <Text className="text-white text-sm font-bold">{selectedAccount?.name || "Select Account"}</Text>
-              {selectedAccount && (
-                <Text className="text-gray-400 text-xs mt-0.5">{formatCurrency(selectedAccount.currentBalance ?? selectedAccount.balance)}</Text>
-              )}
+              {selectedAccount &&
+              <Text className="text-gray-400 text-xs mt-0.5">{formatCurrency(selectedAccount.currentBalance ?? selectedAccount.balance)}</Text>
+              }
             </View>
           </View>
           <Ionicons name="chevron-down" size={20} color="#9ca3af" />
         </TouchableOpacity>
 
-        {/* Amount Input */}
+        {}
         <Text className="text-gray-400 text-xs mb-2 ml-1">Amount</Text>
         <View className="bg-[#0f1011] rounded-2xl p-4 flex-row items-center justify-between mb-6 border border-[#1b1b1c]">
           <View className="flex-row items-center flex-1">
@@ -273,35 +273,35 @@ export default function AddTransactionScreen() {
               keyboardType="numeric"
               caretHidden={true}
               value={amount}
-              onChangeText={setAmount}
-            />
+              onChangeText={setAmount} />
+            
           </View>
           <TouchableOpacity onPress={() => amountInputRef.current?.focus()}>
             <Ionicons name="calculator-outline" size={24} color="#a855f7" />
           </TouchableOpacity>
         </View>
 
-        {/* Category Selection */}
+        {}
         <Text className="text-gray-400 text-xs mb-2 ml-1">Category</Text>
         <TouchableOpacity onPress={() => setShowCategoryPicker(true)} className="bg-[#0f1011] rounded-2xl p-3 flex-row items-center justify-between mb-6 border border-[#1b1b1c]">
           <View className="flex-row items-center">
-            {selectedCategory ? (
-              <View className="w-10 h-10 rounded-full items-center justify-center mr-3" style={{ backgroundColor: `${selectedCategory.color}30` }}>
+            {selectedCategory ?
+            <View className="w-10 h-10 rounded-full items-center justify-center mr-3" style={{ backgroundColor: `${selectedCategory.color}30` }}>
                 <Ionicons name={selectedCategory.icon as any} size={20} color={selectedCategory.color} />
-              </View>
-            ) : (
-              <View className="w-10 h-10 bg-[#ea580c] rounded-full items-center justify-center mr-3">
+              </View> :
+
+            <View className="w-10 h-10 bg-[#ea580c] rounded-full items-center justify-center mr-3">
                 <Ionicons name="cart" size={20} color="white" />
               </View>
-            )}
+            }
             <Text className="text-white text-sm font-bold">{selectedCategory?.name || "Select Category"}</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
         </TouchableOpacity>
 
-        {/* Date and Time Row */}
+        {}
         <View className="flex-row justify-between mb-6">
-          {/* Date */}
+          {}
           <View className="flex-1 mr-3">
             <Text className="text-gray-400 text-xs mb-2 ml-1">Date</Text>
             <TouchableOpacity onPress={() => setShowDatePicker(true)} className="bg-[#0f1011] rounded-2xl p-3.5 flex-row items-center justify-between border border-[#1b1b1c]">
@@ -313,7 +313,7 @@ export default function AddTransactionScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Time */}
+          {}
           <View className="flex-1 ml-1">
             <Text className="text-gray-400 text-xs mb-2 ml-1">Time</Text>
             <TouchableOpacity onPress={() => setShowTimePicker(true)} className="bg-[#0f1011] rounded-2xl p-3.5 flex-row items-center justify-between border border-[#1b1b1c]">
@@ -326,7 +326,7 @@ export default function AddTransactionScreen() {
           </View>
         </View>
 
-        {/* Notes */}
+        {}
         <Text className="text-gray-400 text-xs mb-2 ml-1">Notes</Text>
         <View className="bg-[#0f1011] rounded-2xl p-3 mb-6 border border-[#1b1b1c] h-28 justify-between">
           <TextInput
@@ -336,36 +336,36 @@ export default function AddTransactionScreen() {
             multiline
             textAlignVertical="top"
             value={note}
-            onChangeText={setNote}
-          />
+            onChangeText={setNote} />
+          
           <Text className="text-gray-600 text-xs text-right">{note.length}/200</Text>
         </View>
 
-        {/* Attach Receipt */}
+        {}
         <Text className="text-gray-400 text-xs mb-2 ml-1">Attach Receipt (Optional)</Text>
-        {receiptUri ? (
-          <View className="mb-8 relative rounded-2xl overflow-hidden border border-[#1b1b1c]">
+        {receiptUri ?
+        <View className="mb-8 relative rounded-2xl overflow-hidden border border-[#1b1b1c]">
             <Image source={{ uri: receiptUri }} className="w-full h-40 bg-[#0f1011]" resizeMode="cover" />
-            <TouchableOpacity 
-              onPress={() => setReceiptUri(null)}
-              className="absolute top-2 right-2 w-8 h-8 bg-black/50 rounded-full items-center justify-center"
-            >
+            <TouchableOpacity
+            onPress={() => setReceiptUri(null)}
+            className="absolute top-2 right-2 w-8 h-8 bg-black/50 rounded-full items-center justify-center">
+            
               <Ionicons name="close" size={20} color="white" />
             </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity onPress={handlePickReceipt} className="bg-[#0f1011] rounded-2xl p-6 items-center justify-center mb-8 border border-dashed border-[#a855f7]/30">
+          </View> :
+
+        <TouchableOpacity onPress={handlePickReceipt} className="bg-[#0f1011] rounded-2xl p-6 items-center justify-center mb-8 border border-dashed border-[#a855f7]/30">
             <View className="flex-row items-center mb-2">
               <Ionicons name="cloud-upload-outline" size={20} color="#6642f8" className="mr-2" />
               <Text className="text-white text-sm font-bold">Upload Receipt</Text>
             </View>
             <Text className="text-gray-500 text-[10px]">JPG, PNG, PDF (Max 5MB)</Text>
           </TouchableOpacity>
-        )}
+        }
 
       </ScrollView>
 
-      {/* Sticky Save Button */}
+      {}
       <View className="px-6 pb-6 pt-2 bg-[#0a0b0d]">
         <View className="flex-row items-center justify-center mb-4">
           <Ionicons name="shield-checkmark-outline" size={14} color="#a855f7" className="mr-1.5" />
@@ -377,35 +377,35 @@ export default function AddTransactionScreen() {
         </TouchableOpacity>
       </View>
 
-      <AccountPickerModal 
-        visible={showAccountPicker} 
-        onClose={() => setShowAccountPicker(false)} 
-        onSelect={setSelectedAccount} 
-        selectedAccountId={selectedAccount?.id}
-      />
-      <CategoryPickerModal 
-        visible={showCategoryPicker} 
-        onClose={() => setShowCategoryPicker(false)} 
-        onSelect={setSelectedCategory} 
-        selectedCategoryId={selectedCategory?.id}
-      />
+      <AccountPickerModal
+        visible={showAccountPicker}
+        onClose={() => setShowAccountPicker(false)}
+        onSelect={setSelectedAccount}
+        selectedAccountId={selectedAccount?.id} />
+      
+      <CategoryPickerModal
+        visible={showCategoryPicker}
+        onClose={() => setShowCategoryPicker(false)}
+        onSelect={setSelectedCategory}
+        selectedCategoryId={selectedCategory?.id} />
+      
 
       <CustomDateTimePickerModal
         visible={showDatePicker}
         onClose={() => setShowDatePicker(false)}
         date={date}
         setDate={setDate}
-        mode="date"
-      />
+        mode="date" />
+      
       <CustomDateTimePickerModal
         visible={showTimePicker}
         onClose={() => setShowTimePicker(false)}
         date={date}
         setDate={setDate}
-        mode="time"
-      />
+        mode="time" />
+      
       
       <CustomAlert {...alertConfig} onCancel={alertConfig.onCancel || hideAlert} />
-    </SafeAreaView>
-  );
+    </SafeAreaView>);
+
 }
