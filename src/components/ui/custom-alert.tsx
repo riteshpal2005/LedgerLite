@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, Modal } from "react-native";
-import { useTheme } from "../../hooks/theme/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 
 interface CustomAlertProps {

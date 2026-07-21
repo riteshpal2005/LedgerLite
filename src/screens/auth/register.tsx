@@ -1,10 +1,9 @@
 import React, { useState, useRef } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { Link, useRouter } from "expo-router";
+import { View, Text } from "react-native";
+import { useRouter } from "expo-router";
 import { AuthService } from "../../server/services/authService";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { AuthInput } from "../../components/ui/auth-input";
 import { AuthButton } from "../../components/ui/auth-button";

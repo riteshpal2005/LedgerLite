@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react-native';
+import { render } from '@testing-library/react-native';
 import { CashFlowChart } from '../cash-flow-chart';
 
 jest.mock('react-native-svg', () => {

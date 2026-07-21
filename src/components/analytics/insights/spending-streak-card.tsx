@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Transaction from '../../../server/db/models/Transaction';
-import { getDaysInMonth, format } from 'date-fns';
+import { getDaysInMonth } from 'date-fns';
 
 interface SpendingStreakCardProps {
   currentMonthTxns: Transaction[];

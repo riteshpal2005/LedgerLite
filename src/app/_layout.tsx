@@ -1,8 +1,6 @@
 import {
   Stack,
   useRouter,
-  useSegments,
-  useRootNavigationState,
 } from "expo-router";
 import { View } from "react-native";
 import { ThemeProvider } from "../hooks/theme/ThemeContext";
@@ -12,9 +10,6 @@ import { initializeDatabase } from "../server/db/schema";
 import { Provider } from "react-redux";
 import { store, RootState } from "../store/store";
 import { useSelector } from "react-redux";
-import { setTransactions } from "../store/transactionSlice";
-import { setCategories } from "../store/categorySlice";
-import { setAccounts } from "../store/accountSlice";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useEffect } from "react";
@@ -25,7 +20,6 @@ import { AuthProvider, useAuth } from "../server/firebase/AuthContext";
 import * as SplashScreen from "expo-splash-screen";
 import { useState } from "react";
 import Constants, { ExecutionEnvironment } from "expo-constants";
-import { createContext } from "react";
 
 const isExpoGo =
   Constants.executionEnvironment === ExecutionEnvironment.StoreClient;

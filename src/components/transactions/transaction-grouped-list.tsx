@@ -5,7 +5,6 @@ import withObservables from "@nozbe/watermelondb/react/withObservables";
 import { withDatabase } from "@nozbe/watermelondb/react";
 import { Database, Q } from "@nozbe/watermelondb";
 import { switchMap } from "rxjs/operators";
-import { of } from "rxjs";
 import Transaction from "../../server/db/models/Transaction";
 import Category from "../../server/db/models/Category";
 import { TransactionListItem } from "./transaction-list-item";

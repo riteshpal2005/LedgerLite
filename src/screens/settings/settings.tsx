@@ -1,7 +1,5 @@
-import { View, ScrollView, Pressable, Text } from "react-native";
-import { Heading, Label } from "../../components/ui/typography";
-import { Card } from "../../components/ui/card";
-import { IconWrapper } from "../../components/ui/icon-wrapper";
+import { View, ScrollView, Text } from "react-native";
+import { Heading } from "../../components/ui/typography";
 import { PreferencesSection } from "../../components/settings/preferences-section";
 import { AccountsSection } from "../../components/settings/accounts-section";
 import { DataManagementSection } from "../../components/settings/data-management-section";
@@ -10,8 +8,6 @@ import { AccountSection } from "../../components/settings/account-section";
 import { AboutSection } from "../../components/settings/about-section";
 import { HelpSection } from "../../components/settings/help-section";
 import { ManageCategoriesCard } from "../../components/categories/manage-categories-card";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 
 export default function SettingsScreen() {
   return (

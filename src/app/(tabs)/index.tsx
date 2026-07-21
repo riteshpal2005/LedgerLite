@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity, BackHandler } from "react-native";
+import { View, Text, ScrollView, BackHandler } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { OverviewCard } from "../../components/home/overview-card";

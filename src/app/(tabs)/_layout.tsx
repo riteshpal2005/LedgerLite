@@ -3,7 +3,6 @@ import { withLayoutContext, useRouter } from "expo-router";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../hooks/theme/ThemeContext";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useEffect } from "react";
 import { useAuth } from "../../server/firebase/AuthContext";
 import { useTransactionDatabase } from "../../server/db/useTransactionDatabase";

@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import withObservables from "@nozbe/watermelondb/react/withObservables";
 import { withDatabase } from "@nozbe/watermelondb/react";
-import { Database } from "@nozbe/watermelondb";
 import Transaction from "../../server/db/models/Transaction";
 import Account from "../../server/db/models/Account";
 import { Q } from "@nozbe/watermelondb";

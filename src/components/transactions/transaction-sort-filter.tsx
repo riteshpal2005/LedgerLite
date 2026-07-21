@@ -3,7 +3,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { forwardRef, useImperativeHandle, useRef, useMemo, useCallback } from "react";
 import {
   BottomSheetModal,
-  BottomSheetView,
   BottomSheetBackdrop,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";

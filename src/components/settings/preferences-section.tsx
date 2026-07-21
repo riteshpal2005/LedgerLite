@@ -1,4 +1,4 @@
-import { View, Text, Switch, Pressable, ScrollView } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/store";
 import {

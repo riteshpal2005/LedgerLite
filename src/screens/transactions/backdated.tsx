@@ -1,10 +1,7 @@
 import { Text, View, Pressable, ScrollView } from "react-native";
-import { useState, useCallback, useRef } from "react";
+import { useState, useRef } from "react";
 import { router } from "expo-router";
-import { TransactionList } from "../../components/transactions/transaction-list";
-import { TransactionSearchBar } from "../../components/transactions/transaction-search-bar";
 import {
-  TransactionSortFilter,
   SortMode,
   FilterType,
   FilterAccountId,

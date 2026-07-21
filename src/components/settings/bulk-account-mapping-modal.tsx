@@ -5,12 +5,9 @@ import {
   Pressable,
   TextInput,
   Platform,
-  Alert,
   Modal,
   ScrollView,
   KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  Keyboard,
 } from "react-native";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 import { useCurrency } from "../../hooks/useCurrency";

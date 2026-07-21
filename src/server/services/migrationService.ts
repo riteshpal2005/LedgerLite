@@ -1,6 +1,5 @@
 import * as SQLite from "expo-sqlite";
-import { Paths, File, Directory } from "expo-file-system";
-import type { useTransactionDatabase } from "../db/useTransactionDatabase";
+import { Paths, File } from "expo-file-system";
 import { SyncService } from "./syncService";
 import { Transaction, Category, Account, DatabaseActions } from "../db/schema";
 

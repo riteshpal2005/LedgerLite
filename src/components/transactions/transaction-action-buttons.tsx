@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Alert } from "react-native";
+import { View } from "react-native";
 import { Button } from "../../components/ui/button";
 
 interface TransactionActionButtonsProps {

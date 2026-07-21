@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Svg, { Path } from "react-native-svg";
 import withObservables from "@nozbe/watermelondb/react/withObservables";
 import { withDatabase } from "@nozbe/watermelondb/react";
-import { Database, Q } from "@nozbe/watermelondb";
+import { Q } from "@nozbe/watermelondb";
 import Transaction from "../../server/db/models/Transaction";
 import Account from "../../server/db/models/Account";
 import { useCurrency } from "../../hooks/useCurrency";

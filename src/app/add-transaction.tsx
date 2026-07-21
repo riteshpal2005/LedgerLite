@@ -14,7 +14,6 @@ import { CategoryPickerModal } from "../components/transactions/category-picker-
 import { CustomDateTimePickerModal } from "../components/transactions/custom-date-time-picker-modal";
 import { CustomAlert, useAlert } from "../components/ui/custom-alert";
 import { format } from "date-fns";
-import { Alert, Platform } from "react-native";
 import { useCurrency } from "../hooks/useCurrency";
 
 export default function AddTransactionScreen() {

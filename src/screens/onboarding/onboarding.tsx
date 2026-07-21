@@ -6,7 +6,6 @@ import { useDispatch } from "react-redux";
 import { completeOnboarding } from "../../store/settingsSlice";
 import { router } from "expo-router";
 import { triggerHaptic } from "../../utils/haptics";
-import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { useCurrency } from "../../hooks/useCurrency";
 
 const { width } = Dimensions.get("window");

@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
-import { View, Text, Pressable, ScrollView, Modal } from "react-native";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { View, Text, Pressable } from "react-native";
 import {
   BottomSheetModal,
   BottomSheetScrollView,

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, Modal, Switch, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../../hooks/theme/ThemeContext";
 import { CustomDateTimePickerModal } from "../transactions/custom-date-time-picker-modal";
 
 export const AVAILABLE_COLUMNS = [

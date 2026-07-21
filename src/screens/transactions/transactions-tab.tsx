@@ -3,7 +3,6 @@ import React, {
   useState,
   useCallback,
   useRef,
-  useMemo,
   useEffect,
   useLayoutEffect,
 } from "react";
@@ -21,7 +20,7 @@ import {
 import { AddTransactionSheet } from "../../components/transactions/add-transaction-sheet";
 import { AddAccountModal } from "../../components/accounts/add-account-modal";
 import { Ionicons } from "@expo/vector-icons";
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { renderStandardBackdrop } from "../../components/ui/bottom-sheet-utils";
 import { useTheme } from "../../hooks/theme/ThemeContext";
 import { Transaction } from "../../server/db/schema";
@@ -29,7 +28,6 @@ import Constants, { ExecutionEnvironment } from "expo-constants";
 import { Alert } from "react-native";
 import { CustomAlert } from "../../components/ui/custom-alert";
 import { FAB } from "../../components/ui/fab";
-import { storage } from "../../utils/storage";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");

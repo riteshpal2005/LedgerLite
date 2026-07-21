@@ -1,12 +1,10 @@
 import React, { useMemo } from "react";
 import { View, Text } from "react-native";
 import Svg, { Path, Circle } from "react-native-svg";
-import { Ionicons } from "@expo/vector-icons";
 import withObservables from "@nozbe/watermelondb/react/withObservables";
 import { withDatabase } from "@nozbe/watermelondb/react";
 import { Database, Q } from "@nozbe/watermelondb";
 import Transaction from "../../server/db/models/Transaction";
-import { format } from "date-fns";
 import { useCurrency } from "../../hooks/useCurrency";
 
 interface CashFlowChartProps {

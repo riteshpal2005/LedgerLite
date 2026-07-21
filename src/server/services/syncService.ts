@@ -1,7 +1,6 @@
 import {
   collection,
   query,
-  where,
   getDocs,
   writeBatch,
   doc,
@@ -14,7 +13,6 @@ import { setTransactions } from "../../store/transactionSlice";
 import { setCategories } from "../../store/categorySlice";
 import { setAccounts } from "../../store/accountSlice";
 import { setIsGlobalSyncing } from "../../store/settingsSlice";
-import { parseDateTime } from "./dataService";
 import { storage } from "../../utils/storage";
 
 let isPushing = false;

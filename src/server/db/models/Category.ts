@@ -1,5 +1,5 @@
 import { Model } from '@nozbe/watermelondb'
-import { field, text, date, children } from '@nozbe/watermelondb/decorators'
+import { text, date, children } from '@nozbe/watermelondb/decorators'
 
 export type SyncStatus = "pending" | "synced" | "deleted";
 

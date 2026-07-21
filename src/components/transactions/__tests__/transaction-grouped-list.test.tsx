@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import { TransactionGroupedList } from '../transaction-grouped-list';
 
 // Mock the child components so we don't need to pass complex Category props

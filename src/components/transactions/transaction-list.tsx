@@ -3,18 +3,14 @@ import { RootState } from "../../store/store";
 import { View, Text, useWindowDimensions } from "react-native";
 import { SortMode } from "./transaction-sort-filter";
 import { FlashList } from "@shopify/flash-list";
-import { useEffect, useMemo, useState } from "react";
-import { setTransactions } from "../../store/transactionSlice";
+import { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useTransactionDatabase } from "../../server/db/useTransactionDatabase";
 import { Ionicons } from "@expo/vector-icons";
-import { setCategories } from "../../store/categorySlice";
 import {
-  setAccounts,
   selectAccountsWithBalances,
 } from "../../store/accountSlice";
 import { AccountSelectModal } from "../accounts/account-select-modal";
-import { SkeletonTransactionRow } from "./skeleton-transaction-row";
 import { Heading } from "../../components/ui/typography";
 import { TransactionListItem } from "./transaction-list-item";
 import Animated, { FadeIn } from "react-native-reanimated";

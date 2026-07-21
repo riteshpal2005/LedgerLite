@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
-import { View, Text, Pressable, Alert, ScrollView } from "react-native";
+import { View, Text, Pressable, Alert } from "react-native";
 import * as Crypto from "expo-crypto";
-import { Button } from "../../components/ui/button";
 import { Heading } from "../../components/ui/typography";
 import { useTransactionDatabase } from "../../server/db/useTransactionDatabase";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,29 +9,22 @@ import {
   selectAccountsWithBalances,
   setAccounts,
 } from "../../store/accountSlice";
-import { addTransaction as addTransactionToRedux } from "../../store/transactionSlice";
-import { addQuickTemplate, removeQuickTemplate } from "../../store/settingsSlice";
+import { addQuickTemplate } from "../../store/settingsSlice";
 import {
   BottomSheetModal,
   BottomSheetView,
-  BottomSheetTextInput,
   BottomSheetScrollView,
-  BottomSheetBackdrop,
-  BottomSheetBackdropProps,
 } from "@gorhom/bottom-sheet";
 import { TransactionTypeToggle } from "./transaction-type-toggle";
 import { CategorySelectModal } from "./category-select-modal";
 import { AccountSelectModal } from "../accounts/account-select-modal";
 import { renderStandardBackdrop } from "../../components/ui/bottom-sheet-utils";
 import { DateTimePickerSection } from "./date-time-picker-section";
-import { BottomSheetFormField } from "../../components/ui/bottom-sheet-form-field";
 import { Transaction } from "../../server/db/schema";
 import { QuickTemplatesList } from "./quick-templates-list";
 import { TransactionActionButtons } from "./transaction-action-buttons";
 import { TransactionMetadataForm } from "./transaction-metadata-form";
 import {
-  updateTransactionAction,
-  deleteTransactionAction,
   setTransactions,
 } from "../../store/transactionSlice";
 import { DeleteConfirmationModal } from "../../components/ui/delete-confirmation-modal";

@@ -1,7 +1,5 @@
 import React, {
   useState,
-  useEffect,
-  useRef,
   useMemo,
   useCallback,
 } from "react";
@@ -9,9 +7,7 @@ import {
   View,
   Text,
   Pressable,
-  TextInput,
   Alert,
-  Platform,
 } from "react-native";
 import { Button } from "../../components/ui/button";
 import { Heading, Label } from "../../components/ui/typography";
