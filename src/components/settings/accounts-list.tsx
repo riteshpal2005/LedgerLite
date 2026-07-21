@@ -13,7 +13,7 @@ function AccountsListComponent({ accounts }: { accounts: Account[] }) {
   return (
     <>
       <View className="flex-row justify-between items-center mb-3">
-        <Text className="text-white text-base font-bold flex-1 mr-4" numberOfLines={1} adjustsFontSizeToFit>Accounts & Wallets</Text>
+        <Text className="text-white text-base font-bold flex-1">Accounts & Wallets</Text>
         <TouchableOpacity>
           <Text className="text-[#a855f7] text-sm font-bold">Manage {'>'}</Text>
         </TouchableOpacity>

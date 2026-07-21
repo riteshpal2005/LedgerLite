@@ -50,6 +50,9 @@ release-keystore.base64.txt
 *.apk
 !CHANGELOG.md
 !README.md
+!CONTRIBUTING.md
+!SECURITY.md
+!LICENSE.md
 /scripts
 *.txt
 coverage/
