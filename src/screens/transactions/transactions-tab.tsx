@@ -94,7 +94,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: ReturnType<typeof setTimeout>;
     if (openAddTransaction === "true") {
       timeoutId = setTimeout(() => {
         handlePresentModalPress();
