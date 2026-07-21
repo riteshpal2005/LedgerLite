@@ -102,7 +102,7 @@ export function ColumnSelectionModal({
                 <Text className="text-gray-500 text-xs mb-1">From</Text>
                 <Pressable
                   onPress={() => setActiveDatePicker("start")}
-                  className="bg-transparent border border-[#27272a] h-12 rounded-xl flex-row justify-between items-center px-4">
+                  className="bg-transparent border border-zinc-800 h-12 rounded-xl flex-row justify-between items-center px-4">
                   
                   <Ionicons name="calendar-outline" size={18} color="#7c3aed" />
                   <Text className="text-white font-medium text-sm ml-2 flex-1">{formatDate(startDate)}</Text>
@@ -117,14 +117,14 @@ export function ColumnSelectionModal({
                 <Text className="text-gray-500 text-xs mb-1">To</Text>
                 <Pressable
                   onPress={() => setActiveDatePicker("end")}
-                  className="bg-transparent border border-[#27272a] h-12 rounded-xl flex-row justify-between items-center px-4">
+                  className="bg-transparent border border-zinc-800 h-12 rounded-xl flex-row justify-between items-center px-4">
                   
                   <Ionicons name="calendar-outline" size={18} color="#7c3aed" />
                   <Text className="text-white font-medium text-sm ml-2 flex-1">{formatDate(endDate)}</Text>
                 </Pressable>
               </View>
             </View>
-            <Text className="text-gray-600 text-[10px] mb-8">
+            <Text className="text-gray-600 text-2xs mb-8">
               From {formatDate(startDate)}, 00:00:00 To {formatDate(endDate)}, 23:59:59
             </Text>
 
@@ -152,19 +152,19 @@ export function ColumnSelectionModal({
                     <Pressable
                       key={col.id}
                       onPress={() => toggleColumn(col.id)}
-                      className={`w-[23%] aspect-square rounded-xl border items-center justify-center mb-3 relative ${isSelected ? "bg-[#3b82f6]/10 border-[#3b82f6]" : "bg-transparent border-[#27272a]"}`}>
+                      className={`w-[23%] aspect-square rounded-xl border items-center justify-center mb-3 relative ${isSelected ? "bg-blue-500/10 border-blue-500" : "bg-transparent border-zinc-800"}`}>
                       
                       <Ionicons name={col.icon as any} size={24} color={isSelected ? "white" : "#71717a"} />
-                      <Text className={`text-[10px] mt-2 font-medium ${isSelected ? "text-white" : "text-gray-400"}`}>
+                      <Text className={`text-2xs mt-2 font-medium ${isSelected ? "text-white" : "text-gray-400"}`}>
                         {col.id}
                       </Text>
                       {isSelected &&
-                      <View className="absolute bottom-1.5 right-1.5 w-4 h-4 bg-[#3b82f6] rounded-full items-center justify-center border-2 border-[#131415]">
+                      <View className="absolute bottom-1.5 right-1.5 w-4 h-4 bg-blue-500 rounded-full items-center justify-center border-2 border-surface-elevated">
                           <Ionicons name="checkmark" size={10} color="white" />
                         </View>
                       }
                       {!isSelected &&
-                      <View className="absolute bottom-1.5 right-1.5 w-4 h-4 rounded-full border-2 border-[#3f3f46]" />
+                      <View className="absolute bottom-1.5 right-1.5 w-4 h-4 rounded-full border-2 border-zinc-700" />
                       }
                     </Pressable>);
 
@@ -172,10 +172,10 @@ export function ColumnSelectionModal({
               </View>
             </View>
 
-            <View className="bg-[#10b981]/10 border border-[#10b981]/30 rounded-xl p-4 flex-row items-center mb-8">
+            <View className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 flex-row items-center mb-8">
               <Ionicons name="shield-checkmark-outline" size={24} color="#10b981" />
               <View className="ml-3 flex-1">
-                <Text className="text-[#10b981] font-bold text-sm mb-0.5">Your data is safe</Text>
+                <Text className="text-emerald-500 font-bold text-sm mb-0.5">Your data is safe</Text>
                 <Text className="text-gray-400 text-xs">Exports are generated locally on your device.</Text>
               </View>
             </View>
@@ -183,13 +183,13 @@ export function ColumnSelectionModal({
             <View className="flex-row justify-between gap-4 mb-4">
               <Pressable
                 onPress={onClose}
-                className="flex-1 h-14 rounded-xl bg-transparent border border-[#27272a] items-center justify-center active:bg-white/5">
+                className="flex-1 h-14 rounded-xl bg-transparent border border-zinc-800 items-center justify-center active:bg-white/5">
                 
                 <Text className="text-white font-bold">Cancel</Text>
               </Pressable>
               <Pressable
                 onPress={handleConfirm}
-                className="flex-1 h-14 rounded-xl bg-[#10b981] flex-row items-center justify-center active:opacity-80">
+                className="flex-1 h-14 rounded-xl bg-emerald-500 flex-row items-center justify-center active:opacity-80">
                 
                 <Ionicons name="document-text-outline" size={18} color="white" style={{ marginRight: 6 }} />
                 <Text className="text-white font-bold">Generate PDF</Text>
@@ -197,7 +197,7 @@ export function ColumnSelectionModal({
             </View>
 
             <Text className="text-center text-gray-500 text-xs">
-              You can also export as <Text className="text-[#10b981] font-semibold">CSV</Text> from the More menu.
+              You can also export as <Text className="text-emerald-500 font-semibold">CSV</Text> from the More menu.
             </Text>
           </ScrollView>
         </View>

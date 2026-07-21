@@ -23,7 +23,7 @@ const AccountPickerModalComponent = ({ visible, onClose, onSelect, accounts, sel
         activeOpacity={1}
         onPress={onClose}>
         
-        <View className="bg-[#0f1011] w-full rounded-3xl p-2 border border-[#1b1b1c]">
+        <View className="bg-surface-base w-full rounded-3xl p-2 border border-card-base">
           <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 300 }}>
             {accounts.map((account) => {
               const isSelected = account.id === selectedAccountId;
@@ -31,12 +31,12 @@ const AccountPickerModalComponent = ({ visible, onClose, onSelect, accounts, sel
                 <TouchableOpacity
                   key={account.id}
                   onPress={() => {onSelect(account);onClose();}}
-                  className={`flex-row items-center justify-between p-4 rounded-2xl ${isSelected ? 'bg-[#1b1b1c]' : ''}`}>
+                  className={`flex-row items-center justify-between p-4 rounded-2xl ${isSelected ? 'bg-card-base' : ''}`}>
                   
-                  <Text className={`font-bold text-base ${isSelected ? 'text-[#a855f7]' : 'text-white'}`}>
+                  <Text className={`font-bold text-base ${isSelected ? 'text-brand-purple' : 'text-white'}`}>
                     {account.name}
                   </Text>
-                  <Text className={`text-sm ${isSelected ? 'text-[#a855f7]' : 'text-gray-400'}`}>
+                  <Text className={`text-sm ${isSelected ? 'text-brand-purple' : 'text-gray-400'}`}>
                     {formatCurrency(account.currentBalance ?? account.balance)}
                   </Text>
                 </TouchableOpacity>);

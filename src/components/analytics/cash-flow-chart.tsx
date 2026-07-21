@@ -95,7 +95,7 @@ const CashFlowChartComponent = ({ transactions, dateLabel = "This Month" }: Cash
   const formatShortLabel = (val: number) => `${getCurrencySymbol()}${(val / 1000).toFixed(0)}K`;
 
   return (
-    <View className="bg-[#0f1011] rounded-2xl p-4 mb-6 border border-[#1b1b1c]">
+    <View className="bg-surface-base rounded-2xl p-4 mb-6 border border-card-base">
       <View className="flex-row justify-between items-center mb-3">
         <Text className="text-white text-base font-bold">Cash Flow Trend</Text>
         <View className="flex-row items-center">
@@ -105,15 +105,15 @@ const CashFlowChartComponent = ({ transactions, dateLabel = "This Month" }: Cash
       
       <View className="flex-row items-center mb-6">
         <View className="flex-row items-center mr-4">
-          <View className="w-2 h-2 rounded-full bg-[#22c55e] mr-1.5" />
+          <View className="w-2 h-2 rounded-full bg-green-500 mr-1.5" />
           <Text className="text-gray-400 text-xs">Income</Text>
         </View>
         <View className="flex-row items-center mr-4">
-          <View className="w-2 h-2 rounded-full bg-[#ef4444] mr-1.5" />
+          <View className="w-2 h-2 rounded-full bg-red-500 mr-1.5" />
           <Text className="text-gray-400 text-xs">Expense</Text>
         </View>
         <View className="flex-row items-center">
-          <View className="w-2 h-2 rounded-full bg-[#6642f8] mr-1.5" />
+          <View className="w-2 h-2 rounded-full bg-brand-primary mr-1.5" />
           <Text className="text-gray-400 text-xs">Net</Text>
         </View>
       </View>
@@ -126,18 +126,18 @@ const CashFlowChartComponent = ({ transactions, dateLabel = "This Month" }: Cash
       <View className="h-48 relative flex-row">
           {}
           <View className="w-10 justify-between items-end pb-8 pr-2 pt-1">
-            <Text className="text-gray-500 text-[10px]">{formatShortLabel(chartPaths.maxVal)}</Text>
-            <Text className="text-gray-500 text-[10px]">{formatShortLabel(chartPaths.maxVal * 0.75)}</Text>
-            <Text className="text-gray-500 text-[10px]">{formatShortLabel(chartPaths.maxVal * 0.5)}</Text>
-            <Text className="text-gray-500 text-[10px]">{formatShortLabel(chartPaths.maxVal * 0.25)}</Text>
-            <Text className="text-gray-500 text-[10px]">{getCurrencySymbol()}0</Text>
+            <Text className="text-gray-500 text-2xs">{formatShortLabel(chartPaths.maxVal)}</Text>
+            <Text className="text-gray-500 text-2xs">{formatShortLabel(chartPaths.maxVal * 0.75)}</Text>
+            <Text className="text-gray-500 text-2xs">{formatShortLabel(chartPaths.maxVal * 0.5)}</Text>
+            <Text className="text-gray-500 text-2xs">{formatShortLabel(chartPaths.maxVal * 0.25)}</Text>
+            <Text className="text-gray-500 text-2xs">{getCurrencySymbol()}0</Text>
           </View>
 
           <View className="flex-1">
             {}
             <View className="absolute w-full h-full justify-between pb-8 pt-2">
               {[0, 1, 2, 3, 4].map((i) =>
-            <View key={i} className="w-full h-px bg-[#1b1b1c] border-dashed border-[#1b1b1c]" style={{ borderWidth: 0.5, borderStyle: 'dashed' }} />
+            <View key={i} className="w-full h-px bg-card-base border-dashed border-card-base" style={{ borderWidth: 0.5, borderStyle: 'dashed' }} />
             )}
             </View>
 
@@ -160,11 +160,11 @@ const CashFlowChartComponent = ({ transactions, dateLabel = "This Month" }: Cash
             
             {}
             <View className="absolute bottom-0 w-full flex-row justify-between px-1">
-                <Text className="text-gray-500 text-[10px]">1 Jun</Text>
-                <Text className="text-gray-500 text-[10px]">8 Jun</Text>
-                <Text className="text-gray-500 text-[10px]">15 Jun</Text>
-                <Text className="text-gray-500 text-[10px]">22 Jun</Text>
-                <Text className="text-gray-500 text-[10px]">30 Jun</Text>
+                <Text className="text-gray-500 text-2xs">1 Jun</Text>
+                <Text className="text-gray-500 text-2xs">8 Jun</Text>
+                <Text className="text-gray-500 text-2xs">15 Jun</Text>
+                <Text className="text-gray-500 text-2xs">22 Jun</Text>
+                <Text className="text-gray-500 text-2xs">30 Jun</Text>
             </View>
           </View>
         </View>

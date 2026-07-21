@@ -97,7 +97,7 @@ export const TransactionSortFilter = forwardRef<TransactionSortFilterRef, Transa
                 }}
                 className="flex-1 items-end">
                 
-                <Text className="text-[#3b82f6] font-semibold text-sm">Reset</Text>
+                <Text className="text-blue-500 font-semibold text-sm">Reset</Text>
               </Pressable> :
 
               <View className="flex-1" />
@@ -118,7 +118,7 @@ export const TransactionSortFilter = forwardRef<TransactionSortFilterRef, Transa
                   <Pressable
                     key={mode.id}
                     onPress={() => setSortMode(mode.id as SortMode)}
-                    className={`flex-1 items-center justify-center py-3 rounded-xl border ${isActive ? "bg-[#4338ca]/10 border-[#7c3aed]" : "bg-transparent border-[#27272a]"}`}>
+                    className={`flex-1 items-center justify-center py-3 rounded-xl border ${isActive ? "bg-brand-indigo/10 border-brand-violet" : "bg-transparent border-zinc-800"}`}>
                     
                   <Ionicons name={mode.icon as any} size={20} color={isActive ? "#7c3aed" : "#71717a"} />
                   <Text className={`text-xs mt-2 font-medium ${isActive ? "text-white" : "text-gray-400"}`}>
@@ -134,14 +134,14 @@ export const TransactionSortFilter = forwardRef<TransactionSortFilterRef, Transa
           <View className="flex-row gap-2 mb-8">
             <Pressable
                 onPress={() => setFilterType("all")}
-                className={`flex-1 items-center justify-center py-3 rounded-xl border ${filterType === "all" ? "bg-[#4338ca] border-[#4338ca]" : "bg-transparent border-[#27272a]"}`}>
+                className={`flex-1 items-center justify-center py-3 rounded-xl border ${filterType === "all" ? "bg-brand-indigo border-brand-indigo" : "bg-transparent border-zinc-800"}`}>
                 
               <Text className={`font-semibold ${filterType === "all" ? "text-white" : "text-gray-400"}`}>All</Text>
             </Pressable>
             
             <Pressable
                 onPress={() => setFilterType("credit")}
-                className={`flex-1 flex-row items-center justify-center py-3 rounded-xl border ${filterType === "credit" ? "bg-[#4338ca] border-[#4338ca]" : "bg-transparent border-[#27272a]"}`}>
+                className={`flex-1 flex-row items-center justify-center py-3 rounded-xl border ${filterType === "credit" ? "bg-brand-indigo border-brand-indigo" : "bg-transparent border-zinc-800"}`}>
                 
               <Ionicons name="arrow-up" size={16} color={filterType === "credit" ? "white" : "#22c55e"} style={{ marginRight: 4 }} />
               <Text className={`font-semibold ${filterType === "credit" ? "text-white" : "text-gray-400"}`}>Income</Text>
@@ -149,7 +149,7 @@ export const TransactionSortFilter = forwardRef<TransactionSortFilterRef, Transa
 
             <Pressable
                 onPress={() => setFilterType("debit")}
-                className={`flex-1 flex-row items-center justify-center py-3 rounded-xl border ${filterType === "debit" ? "bg-[#4338ca] border-[#4338ca]" : "bg-transparent border-[#27272a]"}`}>
+                className={`flex-1 flex-row items-center justify-center py-3 rounded-xl border ${filterType === "debit" ? "bg-brand-indigo border-brand-indigo" : "bg-transparent border-zinc-800"}`}>
                 
               <Ionicons name="arrow-down" size={16} color={filterType === "debit" ? "white" : "#ef4444"} style={{ marginRight: 4 }} />
               <Text className={`font-semibold ${filterType === "debit" ? "text-white" : "text-gray-400"}`}>Expense</Text>
@@ -162,7 +162,7 @@ export const TransactionSortFilter = forwardRef<TransactionSortFilterRef, Transa
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20 }}>
               <Pressable
                   onPress={() => setFilterAccountId("all")}
-                  className={`w-24 h-24 items-center justify-center mr-3 rounded-2xl border ${filterAccountId === "all" ? "bg-[#4338ca]/10 border-[#7c3aed]" : "bg-transparent border-[#27272a]"}`}>
+                  className={`w-24 h-24 items-center justify-center mr-3 rounded-2xl border ${filterAccountId === "all" ? "bg-brand-indigo/10 border-brand-violet" : "bg-transparent border-zinc-800"}`}>
                   
                 <Ionicons name="layers" size={24} color={filterAccountId === "all" ? "#7c3aed" : "#a1a1aa"} />
                 <Text className={`text-xs mt-2 text-center font-medium ${filterAccountId === "all" ? "text-white" : "text-gray-400"}`}>All Accounts</Text>
@@ -172,7 +172,7 @@ export const TransactionSortFilter = forwardRef<TransactionSortFilterRef, Transa
                 <Pressable
                   key={account.id}
                   onPress={() => setFilterAccountId(account.id)}
-                  className={`w-24 h-24 items-center justify-center mr-3 rounded-2xl border ${filterAccountId === account.id ? "bg-[#4338ca]/10 border-[#7c3aed]" : "bg-transparent border-[#27272a]"}`}>
+                  className={`w-24 h-24 items-center justify-center mr-3 rounded-2xl border ${filterAccountId === account.id ? "bg-brand-indigo/10 border-brand-violet" : "bg-transparent border-zinc-800"}`}>
                   
                   <Ionicons name={getAccountIcon(account.type)} size={24} color={filterAccountId === account.id ? "#7c3aed" : "#a1a1aa"} />
                   <Text className={`text-xs mt-2 text-center font-medium ${filterAccountId === account.id ? "text-white" : "text-gray-400"}`} numberOfLines={2}>
@@ -185,7 +185,7 @@ export const TransactionSortFilter = forwardRef<TransactionSortFilterRef, Transa
 
           {}
           <Text className="text-gray-400 text-sm font-semibold mb-3">Date Range</Text>
-          <Pressable className="flex-row items-center justify-between p-4 mb-6 rounded-2xl border border-[#27272a]">
+          <Pressable className="flex-row items-center justify-between p-4 mb-6 rounded-2xl border border-zinc-800">
             <View className="flex-row items-center">
               <Ionicons name="calendar-outline" size={20} color="#7c3aed" />
               <Text className="text-white ml-3 font-medium">Custom Range</Text>
@@ -197,7 +197,7 @@ export const TransactionSortFilter = forwardRef<TransactionSortFilterRef, Transa
           </Pressable>
 
           <Text className="text-gray-400 text-sm font-semibold mb-3">Amount Range</Text>
-          <Pressable className="flex-row items-center justify-between p-4 mb-8 rounded-2xl border border-[#27272a]">
+          <Pressable className="flex-row items-center justify-between p-4 mb-8 rounded-2xl border border-zinc-800">
             <View className="flex-row items-center">
               <Ionicons name="cash-outline" size={20} color="#7c3aed" />
               <Text className="text-white ml-3 font-medium">All Amounts</Text>
@@ -236,9 +236,9 @@ export const TransactionSortFilter = forwardRef<TransactionSortFilterRef, Transa
             }
 
           {}
-          <Pressable onPress={closeSheet} className="w-full bg-[#4338ca] h-14 rounded-2xl flex-row items-center justify-center">
+          <Pressable onPress={closeSheet} className="w-full bg-brand-indigo h-14 rounded-2xl flex-row items-center justify-center">
             <Ionicons name="filter" size={20} color="white" />
-            <Text className="text-white font-bold text-[16px] ml-2">Apply Filters</Text>
+            <Text className="text-white font-bold text-base ml-2">Apply Filters</Text>
           </Pressable>
         </BottomSheetScrollView>
       </BottomSheetModal>

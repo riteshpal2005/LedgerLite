@@ -35,7 +35,7 @@ function CategoriesScreenComponent({ categories }: {categories: CategoryModel[];
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0f1011]" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-surface-base" edges={["top"]}>
       <View className="px-6 py-4 flex-row items-center">
         <Pressable onPress={() => router.back()} className="mr-4 p-2 -ml-2">
           <Ionicons name="arrow-back" size={24} color="#a1a1aa" />

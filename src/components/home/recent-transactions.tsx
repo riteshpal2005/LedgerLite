@@ -37,7 +37,7 @@ const RecentTransactionRowComponent = ({ tx, category, isLast }: {tx: Transactio
           <Ionicons name="chevron-forward" size={16} color="#6b7280" />
         </View>
       </View>
-      {!isLast && <View className="h-px bg-[#1b1b1c] mx-3" />}
+      {!isLast && <View className="h-px bg-card-base mx-3" />}
     </>);
 
 };
@@ -55,7 +55,7 @@ function RecentTransactionsComponent({ transactions }: {transactions: Transactio
     return (
       <View>
         <Text className="text-white text-lg font-bold mb-3">Recent Transactions</Text>
-        <View className="bg-[#0f1011] rounded-2xl p-6 items-center justify-center mb-8">
+        <View className="bg-surface-base rounded-2xl p-6 items-center justify-center mb-8">
           <Text className="text-gray-400">No recent transactions.</Text>
         </View>
       </View>);
@@ -67,11 +67,11 @@ function RecentTransactionsComponent({ transactions }: {transactions: Transactio
       <View className="flex-row justify-between items-end mb-3">
         <Text className="text-white text-lg font-bold">Recent Transactions</Text>
         <TouchableOpacity onPress={() => router.push("/(tabs)/transactions")}>
-          <Text className="text-[#6642f8] text-sm font-bold">See all</Text>
+          <Text className="text-brand-primary text-sm font-bold">See all</Text>
         </TouchableOpacity>
       </View>
 
-      <View className="bg-[#0f1011] rounded-2xl p-2 mb-8">
+      <View className="bg-surface-base rounded-2xl p-2 mb-8">
         {transactions.map((tx, index) =>
         <RecentTransactionRow
           key={tx.id}

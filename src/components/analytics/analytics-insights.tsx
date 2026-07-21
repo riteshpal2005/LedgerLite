@@ -52,7 +52,7 @@ const AnalyticsInsightsComponent = ({ transactions, categories }: AnalyticsInsig
     if (highestCategory) {
       return (
         <Text className="text-gray-400 text-xs leading-5">
-          You spent <Text className="text-[#6642f8] font-bold">12.5%</Text> less on {highestCategory.name} compared to last month.
+          You spent <Text className="text-brand-primary font-bold">12.5%</Text> less on {highestCategory.name} compared to last month.
         </Text>);
 
     }
@@ -64,9 +64,9 @@ const AnalyticsInsightsComponent = ({ transactions, categories }: AnalyticsInsig
     <TouchableOpacity
       activeOpacity={0.7}
       onPress={() => router.push("/insights")}
-      className="bg-[#0f1011] rounded-2xl p-4 mb-6 border border-[#1b1b1c] flex-row items-center">
+      className="bg-surface-base rounded-2xl p-4 mb-6 border border-card-base flex-row items-center">
       
-      <View className="w-12 h-12 rounded-full bg-[#6642f8]/10 items-center justify-center mr-3">
+      <View className="w-12 h-12 rounded-full bg-brand-primary/10 items-center justify-center mr-3">
         <Ionicons name="bulb-outline" size={24} color="#6642f8" />
       </View>
       <View className="flex-1 mr-2 pl-1">

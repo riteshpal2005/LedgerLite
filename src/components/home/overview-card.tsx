@@ -57,14 +57,14 @@ const OverviewCardComponent = ({ transactions, accounts }: OverviewCardProps) =>
 
         {}
         {isTrayOpen &&
-        <View className="absolute top-full right-0 mt-2 bg-[#18181b] w-40 rounded-2xl border border-[#27272a] overflow-hidden shadow-2xl z-50">
+        <View className="absolute top-full right-0 mt-2 bg-zinc-900 w-40 rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl z-50">
             {(["This Month", "This Week", "Today"] as const).map((item, index) =>
           <TouchableOpacity
             key={item}
-            className={`px-4 py-3 ${index !== 2 ? 'border-b border-[#27272a]' : ''} ${timeframe === item ? 'bg-[#3b82f6]/10' : ''}`}
+            className={`px-4 py-3 ${index !== 2 ? 'border-b border-zinc-800' : ''} ${timeframe === item ? 'bg-blue-500/10' : ''}`}
             onPress={() => {setTimeframe(item);setIsTrayOpen(false);}}>
             
-                <Text className={`text-sm ${timeframe === item ? 'text-[#3b82f6] font-bold' : 'text-gray-300'}`}>
+                <Text className={`text-sm ${timeframe === item ? 'text-blue-500 font-bold' : 'text-gray-300'}`}>
                   {item}
                 </Text>
               </TouchableOpacity>
@@ -73,7 +73,7 @@ const OverviewCardComponent = ({ transactions, accounts }: OverviewCardProps) =>
         }
       </View>
 
-      <View className="bg-[#0f1011] rounded-2xl p-5 mb-8">
+      <View className="bg-surface-base rounded-2xl p-5 mb-8">
         <View className="flex-row justify-between items-center mb-1">
           <Text className="text-gray-400 text-sm">Total Balance</Text>
           <TouchableOpacity onPress={() => setIsBalanceVisible(!isBalanceVisible)}>
@@ -84,7 +84,7 @@ const OverviewCardComponent = ({ transactions, accounts }: OverviewCardProps) =>
           {isBalanceVisible ? formatCurrency(totalBalance) : "••••••••"}
         </Text>
         
-        <View className="h-px bg-[#1b1b1c] w-full mb-4" />
+        <View className="h-px bg-card-base w-full mb-4" />
         
         <View className="flex-row justify-between items-center">
           <View className="flex-1 flex-row justify-between items-center">
@@ -94,11 +94,11 @@ const OverviewCardComponent = ({ transactions, accounts }: OverviewCardProps) =>
                 {isBalanceVisible ? formatCurrency(income) : "••••••••"}
               </Text>
             </View>
-            <View className="w-10 h-10 rounded-full bg-[#112417] items-center justify-center mr-2">
+            <View className="w-10 h-10 rounded-full bg-emerald-highlight-dark items-center justify-center mr-2">
               <Ionicons name="trending-up" size={18} color="#22c55e" />
             </View>
           </View>
-          <View className="w-px h-12 bg-[#1b1b1c] mx-2" />
+          <View className="w-px h-12 bg-card-base mx-2" />
           <View className="flex-1 flex-row justify-between items-center pl-2">
             <View>
               <Text className="text-red-500 text-xs mb-1">Expense</Text>
@@ -106,7 +106,7 @@ const OverviewCardComponent = ({ transactions, accounts }: OverviewCardProps) =>
                 {isBalanceVisible ? formatCurrency(expense) : "••••••••"}
               </Text>
             </View>
-            <View className="w-10 h-10 rounded-full bg-[#271416] items-center justify-center">
+            <View className="w-10 h-10 rounded-full bg-red-bg-dark items-center justify-center">
               <Ionicons name="trending-down" size={18} color="#ef4444" />
             </View>
           </View>

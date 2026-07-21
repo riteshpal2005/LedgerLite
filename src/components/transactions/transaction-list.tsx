@@ -190,26 +190,26 @@ function EmptyTransactionState({ searchQuery }: {searchQuery: string;}) {
         {}
         <View className="w-24 h-24 mb-6 items-center justify-center relative">
           {}
-          <Text className="absolute top-2 left-0 text-[#facc15] text-[18px]">✦</Text>
-          <Text className="absolute bottom-6 right-0 text-[#facc15] text-[12px]">✦</Text>
+          <Text className="absolute top-2 left-0 text-yellow-400 text-lg">✦</Text>
+          <Text className="absolute bottom-6 right-0 text-yellow-400 text-xs">✦</Text>
 
           {}
           <View className="relative w-16 h-16 mr-3 mb-3">
             {}
-            <View className="absolute -bottom-3 -right-3 w-[26px] h-[8px] bg-[#d4d4d8] rounded-full rotate-45 z-0" />
+            <View className="absolute -bottom-3 -right-3 w-[26px] h-[8px] bg-zinc-300 rounded-full rotate-45 z-0" />
             
             {}
-            <View className="w-full h-full rounded-full border-[5px] border-[#7c3aed] bg-[#1e1b4b] z-10 overflow-hidden relative">
+            <View className="w-full h-full rounded-full border-[5px] border-brand-violet bg-indigo-bg-dark z-10 overflow-hidden relative">
               {}
               <View className="absolute top-1 left-2 w-10 h-10 rounded-full border-t-4 border-l-4 border-white/20 -rotate-12" />
             </View>
           </View>
         </View>
 
-        <Text className="font-bold text-[17px] text-white mb-2">
+        <Text className="font-bold text-17px text-white mb-2">
           No transactions found
         </Text>
-        <Text className="text-center text-[13px] text-gray-400 px-10">
+        <Text className="text-center text-sm text-gray-400 px-10">
           Try adjusting your search or filters
         </Text>
       </Animated.View>);

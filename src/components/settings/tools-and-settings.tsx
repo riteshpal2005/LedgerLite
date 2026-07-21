@@ -14,7 +14,7 @@ export function ToolsAndSettings() {
   return (
     <>
       <Text className="text-white text-base font-bold mb-3">Tools & Settings</Text>
-      <View className="bg-[#0f1011] rounded-2xl p-2 mb-6 border border-[#1b1b1c] z-50">
+      <View className="bg-surface-base rounded-2xl p-2 mb-6 border border-card-base z-50">
         
         <View className="relative z-50">
           <TouchableOpacity
@@ -34,14 +34,14 @@ export function ToolsAndSettings() {
           </TouchableOpacity>
 
           {isAppearanceDropdownOpen &&
-          <View className="absolute top-full right-3 mt-1 bg-[#18181b] w-40 rounded-2xl border border-[#27272a] overflow-hidden shadow-2xl z-50">
+          <View className="absolute top-full right-3 mt-1 bg-zinc-900 w-40 rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl z-50">
               {(["System", "Light", "Dark"] as const).map((item, index) =>
             <TouchableOpacity
               key={item}
-              className={`px-4 py-3 ${index !== 2 ? 'border-b border-[#27272a]' : ''} ${appearance === item ? 'bg-[#a855f7]/10' : ''}`}
+              className={`px-4 py-3 ${index !== 2 ? 'border-b border-zinc-800' : ''} ${appearance === item ? 'bg-brand-purple/10' : ''}`}
               onPress={() => {setAppearance(item);setIsAppearanceDropdownOpen(false);}}>
               
-                  <Text className={`text-sm ${appearance === item ? 'text-[#a855f7] font-bold' : 'text-gray-300'}`}>
+                  <Text className={`text-sm ${appearance === item ? 'text-brand-purple font-bold' : 'text-gray-300'}`}>
                     {item}
                   </Text>
                 </TouchableOpacity>
@@ -50,7 +50,7 @@ export function ToolsAndSettings() {
           }
         </View>
 
-        <View className="h-px bg-[#1b1b1c] mx-3" />
+        <View className="h-px bg-card-base mx-3" />
 
         <View className="flex-row justify-between items-center p-3">
           <View className="flex-row items-center">
@@ -68,7 +68,7 @@ export function ToolsAndSettings() {
           
         </View>
 
-        <View className="h-px bg-[#1b1b1c] mx-3" />
+        <View className="h-px bg-card-base mx-3" />
 
         <TouchableOpacity
           className="flex-row justify-between items-center p-3"
@@ -84,7 +84,7 @@ export function ToolsAndSettings() {
           <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
         </TouchableOpacity>
 
-        <View className="h-px bg-[#1b1b1c] mx-3" />
+        <View className="h-px bg-card-base mx-3" />
 
         <TouchableOpacity className="flex-row justify-between items-center p-3">
           <View className="flex-row items-center">
@@ -97,7 +97,7 @@ export function ToolsAndSettings() {
           <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
         </TouchableOpacity>
 
-        <View className="h-px bg-[#1b1b1c] mx-3" />
+        <View className="h-px bg-card-base mx-3" />
 
         <TouchableOpacity className="flex-row justify-between items-center p-3">
           <View className="flex-row items-center">
@@ -110,7 +110,7 @@ export function ToolsAndSettings() {
           <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
         </TouchableOpacity>
 
-        <View className="h-px bg-[#1b1b1c] mx-3" />
+        <View className="h-px bg-card-base mx-3" />
 
         <TouchableOpacity className="flex-row justify-between items-center p-3">
           <View className="flex-row items-center">

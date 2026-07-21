@@ -196,7 +196,7 @@ export default function AddTransactionScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0a0b0d]">
+    <SafeAreaView className="flex-1 bg-app-bg">
       {}
       <View className="flex-row items-center justify-between px-6 mt-4 mb-6">
         <TouchableOpacity onPress={() => router.back()} className="w-10">
@@ -206,11 +206,11 @@ export default function AddTransactionScreen() {
         <View className="flex-row items-center">
           {id ?
           <TouchableOpacity onPress={handleDelete} className="items-end">
-              <Text className="text-[#ef4444] font-bold text-base">Delete</Text>
+              <Text className="text-red-500 font-bold text-base">Delete</Text>
             </TouchableOpacity> :
 
           <TouchableOpacity onPress={handleSave} className="items-end">
-              <Text className="text-[#a855f7] font-bold text-base">Save</Text>
+              <Text className="text-brand-purple font-bold text-base">Save</Text>
             </TouchableOpacity>
           }
         </View>
@@ -219,24 +219,24 @@ export default function AddTransactionScreen() {
       <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
         
         {}
-        <View className="flex-row bg-[#0f1011] rounded-xl p-1 mb-6 border border-[#1b1b1c]">
+        <View className="flex-row bg-surface-base rounded-xl p-1 mb-6 border border-card-base">
           <TouchableOpacity
             onPress={() => setType('debit')}
-            className={`flex-1 flex-row items-center justify-center py-2.5 ${type === 'debit' ? 'bg-[#a855f7]/10 rounded-lg border border-[#a855f7]' : ''}`}>
+            className={`flex-1 flex-row items-center justify-center py-2.5 ${type === 'debit' ? 'bg-brand-purple/10 rounded-lg border border-brand-purple' : ''}`}>
             
             <Ionicons name="arrow-down" size={16} color={type === 'debit' ? "#ef4444" : "#9ca3af"} className="mr-1.5" />
             <Text className={`${type === 'debit' ? 'text-white' : 'text-gray-400'} font-bold text-xs`}>Expense</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setType('credit')}
-            className={`flex-1 flex-row items-center justify-center py-2.5 ${type === 'credit' ? 'bg-[#a855f7]/10 rounded-lg border border-[#a855f7]' : ''}`}>
+            className={`flex-1 flex-row items-center justify-center py-2.5 ${type === 'credit' ? 'bg-brand-purple/10 rounded-lg border border-brand-purple' : ''}`}>
             
             <Ionicons name="arrow-up" size={16} color={type === 'credit' ? "#22c55e" : "#9ca3af"} className="mr-1.5" />
             <Text className={`${type === 'credit' ? 'text-white' : 'text-gray-400'} font-bold text-xs`}>Income</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setType('transfer')}
-            className={`flex-1 flex-row items-center justify-center py-2.5 ${type === 'transfer' ? 'bg-[#a855f7]/10 rounded-lg border border-[#a855f7]' : ''}`}>
+            className={`flex-1 flex-row items-center justify-center py-2.5 ${type === 'transfer' ? 'bg-brand-purple/10 rounded-lg border border-brand-purple' : ''}`}>
             
             <Ionicons name="swap-horizontal" size={16} color={type === 'transfer' ? "#6642f8" : "#9ca3af"} className="mr-1.5" />
             <Text className={`${type === 'transfer' ? 'text-white' : 'text-gray-400'} font-bold text-xs`}>Transfer</Text>
@@ -245,7 +245,7 @@ export default function AddTransactionScreen() {
 
         {}
         <Text className="text-gray-400 text-xs mb-2 ml-1">Account</Text>
-        <TouchableOpacity onPress={() => setShowAccountPicker(true)} className="bg-[#0f1011] rounded-2xl p-3 flex-row items-center justify-between mb-6 border border-[#1b1b1c]">
+        <TouchableOpacity onPress={() => setShowAccountPicker(true)} className="bg-surface-base rounded-2xl p-3 flex-row items-center justify-between mb-6 border border-card-base">
           <View className="flex-row items-center">
             <View className="w-10 h-10 bg-blue-900 rounded-full items-center justify-center mr-3">
               <Ionicons name="business-outline" size={20} color="white" />
@@ -262,9 +262,9 @@ export default function AddTransactionScreen() {
 
         {}
         <Text className="text-gray-400 text-xs mb-2 ml-1">Amount</Text>
-        <View className="bg-[#0f1011] rounded-2xl p-4 flex-row items-center justify-between mb-6 border border-[#1b1b1c]">
+        <View className="bg-surface-base rounded-2xl p-4 flex-row items-center justify-between mb-6 border border-card-base">
           <View className="flex-row items-center flex-1">
-            <Text className={`${type === 'debit' ? 'text-[#ef4444]' : 'text-green-500'} text-2xl font-bold mr-2`}>{getCurrencySymbol()}</Text>
+            <Text className={`${type === 'debit' ? 'text-red-500' : 'text-green-500'} text-2xl font-bold mr-2`}>{getCurrencySymbol()}</Text>
             <TextInput
               ref={amountInputRef}
               className="text-white text-3xl font-bold tracking-wider flex-1"
@@ -283,14 +283,14 @@ export default function AddTransactionScreen() {
 
         {}
         <Text className="text-gray-400 text-xs mb-2 ml-1">Category</Text>
-        <TouchableOpacity onPress={() => setShowCategoryPicker(true)} className="bg-[#0f1011] rounded-2xl p-3 flex-row items-center justify-between mb-6 border border-[#1b1b1c]">
+        <TouchableOpacity onPress={() => setShowCategoryPicker(true)} className="bg-surface-base rounded-2xl p-3 flex-row items-center justify-between mb-6 border border-card-base">
           <View className="flex-row items-center">
             {selectedCategory ?
             <View className="w-10 h-10 rounded-full items-center justify-center mr-3" style={{ backgroundColor: `${selectedCategory.color}30` }}>
                 <Ionicons name={selectedCategory.icon as any} size={20} color={selectedCategory.color} />
               </View> :
 
-            <View className="w-10 h-10 bg-[#ea580c] rounded-full items-center justify-center mr-3">
+            <View className="w-10 h-10 bg-orange-600 rounded-full items-center justify-center mr-3">
                 <Ionicons name="cart" size={20} color="white" />
               </View>
             }
@@ -304,7 +304,7 @@ export default function AddTransactionScreen() {
           {}
           <View className="flex-1 mr-3">
             <Text className="text-gray-400 text-xs mb-2 ml-1">Date</Text>
-            <TouchableOpacity onPress={() => setShowDatePicker(true)} className="bg-[#0f1011] rounded-2xl p-3.5 flex-row items-center justify-between border border-[#1b1b1c]">
+            <TouchableOpacity onPress={() => setShowDatePicker(true)} className="bg-surface-base rounded-2xl p-3.5 flex-row items-center justify-between border border-card-base">
               <View className="flex-row items-center">
                 <Ionicons name="calendar-outline" size={18} color="#9ca3af" className="mr-2" />
                 <Text className="text-white text-sm">{format(date, "dd MMM yyyy")}</Text>
@@ -316,7 +316,7 @@ export default function AddTransactionScreen() {
           {}
           <View className="flex-1 ml-1">
             <Text className="text-gray-400 text-xs mb-2 ml-1">Time</Text>
-            <TouchableOpacity onPress={() => setShowTimePicker(true)} className="bg-[#0f1011] rounded-2xl p-3.5 flex-row items-center justify-between border border-[#1b1b1c]">
+            <TouchableOpacity onPress={() => setShowTimePicker(true)} className="bg-surface-base rounded-2xl p-3.5 flex-row items-center justify-between border border-card-base">
               <View className="flex-row items-center">
                 <Ionicons name="time-outline" size={18} color="#9ca3af" className="mr-2" />
                 <Text className="text-white text-sm">{format(date, "hh:mm a")}</Text>
@@ -328,7 +328,7 @@ export default function AddTransactionScreen() {
 
         {}
         <Text className="text-gray-400 text-xs mb-2 ml-1">Notes</Text>
-        <View className="bg-[#0f1011] rounded-2xl p-3 mb-6 border border-[#1b1b1c] h-28 justify-between">
+        <View className="bg-surface-base rounded-2xl p-3 mb-6 border border-card-base h-28 justify-between">
           <TextInput
             placeholder="Add a note..."
             placeholderTextColor="#6b7280"
@@ -344,8 +344,8 @@ export default function AddTransactionScreen() {
         {}
         <Text className="text-gray-400 text-xs mb-2 ml-1">Attach Receipt (Optional)</Text>
         {receiptUri ?
-        <View className="mb-8 relative rounded-2xl overflow-hidden border border-[#1b1b1c]">
-            <Image source={{ uri: receiptUri }} className="w-full h-40 bg-[#0f1011]" resizeMode="cover" />
+        <View className="mb-8 relative rounded-2xl overflow-hidden border border-card-base">
+            <Image source={{ uri: receiptUri }} className="w-full h-40 bg-surface-base" resizeMode="cover" />
             <TouchableOpacity
             onPress={() => setReceiptUri(null)}
             className="absolute top-2 right-2 w-8 h-8 bg-black/50 rounded-full items-center justify-center">
@@ -354,24 +354,24 @@ export default function AddTransactionScreen() {
             </TouchableOpacity>
           </View> :
 
-        <TouchableOpacity onPress={handlePickReceipt} className="bg-[#0f1011] rounded-2xl p-6 items-center justify-center mb-8 border border-dashed border-[#a855f7]/30">
+        <TouchableOpacity onPress={handlePickReceipt} className="bg-surface-base rounded-2xl p-6 items-center justify-center mb-8 border border-dashed border-brand-purple/30">
             <View className="flex-row items-center mb-2">
               <Ionicons name="cloud-upload-outline" size={20} color="#6642f8" className="mr-2" />
               <Text className="text-white text-sm font-bold">Upload Receipt</Text>
             </View>
-            <Text className="text-gray-500 text-[10px]">JPG, PNG, PDF (Max 5MB)</Text>
+            <Text className="text-gray-500 text-2xs">JPG, PNG, PDF (Max 5MB)</Text>
           </TouchableOpacity>
         }
 
       </ScrollView>
 
       {}
-      <View className="px-6 pb-6 pt-2 bg-[#0a0b0d]">
+      <View className="px-6 pb-6 pt-2 bg-app-bg">
         <View className="flex-row items-center justify-center mb-4">
           <Ionicons name="shield-checkmark-outline" size={14} color="#a855f7" className="mr-1.5" />
           <Text className="text-gray-400 text-xs text-center">Your data is stored securely on your device and works offline.</Text>
         </View>
-        <TouchableOpacity onPress={handleSave} className="bg-[#6642f8] rounded-2xl p-4 flex-row items-center justify-center">
+        <TouchableOpacity onPress={handleSave} className="bg-brand-primary rounded-2xl p-4 flex-row items-center justify-center">
           <Ionicons name="save-outline" size={20} color="white" className="mr-2" />
           <Text className="text-white text-base font-bold">Save Transaction</Text>
         </TouchableOpacity>

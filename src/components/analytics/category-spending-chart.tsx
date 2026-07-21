@@ -83,14 +83,14 @@ const CategorySpendingChartComponent = ({ transactions, categories, dateLabel = 
 
   if (chartData.totalExpense === 0) {
     return (
-      <View className="bg-[#0f1011] rounded-2xl p-4 mb-6 border border-[#1b1b1c] items-center justify-center h-48">
+      <View className="bg-surface-base rounded-2xl p-4 mb-6 border border-card-base items-center justify-center h-48">
         <Text className="text-gray-400">No expenses in this period.</Text>
       </View>);
 
   }
 
   return (
-    <View className="bg-[#0f1011] rounded-2xl p-4 mb-6 border border-[#1b1b1c]">
+    <View className="bg-surface-base rounded-2xl p-4 mb-6 border border-card-base">
       <View className="flex-row justify-between items-center mb-6">
         <Text className="text-white text-base font-bold">Spending by Category</Text>
         <View className="flex-row items-center">
@@ -118,7 +118,7 @@ const CategorySpendingChartComponent = ({ transactions, categories, dateLabel = 
           </Svg>
           <View className="absolute items-center justify-center">
             <Text className="text-white font-bold text-base mb-0.5">{formatCurrency(chartData.totalExpense)}</Text>
-            <Text className="text-gray-400 text-[10px]">Total Expense</Text>
+            <Text className="text-gray-400 text-2xs">Total Expense</Text>
           </View>
         </View>
 
@@ -137,7 +137,7 @@ const CategorySpendingChartComponent = ({ transactions, categories, dateLabel = 
               </View>
               <View className="flex-row items-center">
                 <Text className="text-white text-xs mr-2">{formatCurrency(slice.amount)}</Text>
-                <Text className="text-gray-500 text-[10px] w-8 text-right">{slice.percentage}%</Text>
+                <Text className="text-gray-500 text-2xs w-8 text-right">{slice.percentage}%</Text>
               </View>
             </View>
           )}

@@ -15,7 +15,7 @@ export default function AnalyticsScreen() {
   const [activeTab, setActiveTab] = useState<AnalyticsTabType>("Overview");
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0a0b0d]">
+    <SafeAreaView className="flex-1 bg-app-bg">
       <AnalyticsHeader
         onDateRangeChange={(start, end, label, prevStart, prevEnd, prevLabel) => {
           setDateRange({ start, end, prevStart, prevEnd });

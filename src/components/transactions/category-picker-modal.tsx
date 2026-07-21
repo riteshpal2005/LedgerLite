@@ -22,7 +22,7 @@ const CategoryPickerModalComponent = ({ visible, onClose, onSelect, categories, 
         activeOpacity={1}
         onPress={onClose}>
         
-        <View className="bg-[#0f1011] w-full rounded-3xl p-2 border border-[#1b1b1c]">
+        <View className="bg-surface-base w-full rounded-3xl p-2 border border-card-base">
           <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 300 }}>
             {categories.map((category) => {
               const isSelected = category.id === selectedCategoryId;
@@ -30,13 +30,13 @@ const CategoryPickerModalComponent = ({ visible, onClose, onSelect, categories, 
                 <TouchableOpacity
                   key={category.id}
                   onPress={() => {onSelect(category);onClose();}}
-                  className={`flex-row items-center justify-between p-4 rounded-2xl ${isSelected ? 'bg-[#1b1b1c]' : ''}`}>
+                  className={`flex-row items-center justify-between p-4 rounded-2xl ${isSelected ? 'bg-card-base' : ''}`}>
                   
                   <View className="flex-row items-center">
                     <View className="w-6 h-6 rounded-full items-center justify-center mr-3" style={{ backgroundColor: `${category.color}30` }}>
                       <Ionicons name={category.icon as any} size={12} color={category.color} />
                     </View>
-                    <Text className={`font-bold text-base ${isSelected ? 'text-[#a855f7]' : 'text-white'}`}>
+                    <Text className={`font-bold text-base ${isSelected ? 'text-brand-purple' : 'text-white'}`}>
                       {category.name}
                     </Text>
                   </View>

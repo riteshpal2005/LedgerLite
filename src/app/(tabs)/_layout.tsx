@@ -24,7 +24,7 @@ function CustomTabBar({ state, navigation }: any) {
   const router = useRouter();
   return (
     <View
-      className="flex-row bg-[#0a0b0d] items-center justify-between border-t border-[#1b1b1c]"
+      className="flex-row bg-app-bg items-center justify-between border-t border-card-base"
       style={{ height: 70 + insets.bottom, paddingBottom: insets.bottom, paddingHorizontal: 10 }}>
       
       <TouchableOpacity onPress={() => navigation.navigate("index")} className="items-center flex-1">
@@ -39,7 +39,7 @@ function CustomTabBar({ state, navigation }: any) {
 
       <View className="flex-1 items-center justify-center relative z-50">
         <TouchableOpacity
-          className="w-16 h-16 bg-[#6642f8] rounded-full items-center justify-center absolute -top-8 border-[6px] border-[#0a0b0d]"
+          className="w-16 h-16 bg-brand-primary rounded-full items-center justify-center absolute -top-8 border-[6px] border-app-bg"
           style={{ shadowColor: "#6642f8", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.5, shadowRadius: 10, elevation: 10 }}
           onPress={() => router.push("/add-transaction")}>
           

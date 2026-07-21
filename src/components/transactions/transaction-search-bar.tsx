@@ -11,14 +11,14 @@ export function TransactionSearchBar({
   setSearchQuery
 }: TransactionSearchBarProps) {
   return (
-    <View className="w-full flex-row items-center bg-[#131415] rounded-2xl px-4 h-[48px] border border-[#27272a]">
+    <View className="w-full flex-row items-center bg-surface-elevated rounded-2xl px-4 h-[48px] border border-zinc-800">
       <Ionicons name="search" size={20} color="#7c3aed" />
       <TextInput
         value={searchQuery}
         onChangeText={setSearchQuery}
         placeholder="Search transactions..."
         placeholderTextColor="#71717a"
-        className="flex-1 text-white text-[15px] ml-3" />
+        className="flex-1 text-white text-15px ml-3" />
       
       {searchQuery.length > 0 &&
       <Pressable

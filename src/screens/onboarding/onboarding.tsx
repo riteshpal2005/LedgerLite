@@ -101,12 +101,12 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0a0b0d]">
+    <SafeAreaView className="flex-1 bg-app-bg">
       {}
       <View className="flex-row justify-end px-6 pt-4 h-14">
         {!isLastSlide &&
         <TouchableOpacity onPress={handleSkip}>
-            <Text className="text-[#6642f8] font-bold text-base">Skip</Text>
+            <Text className="text-brand-primary font-bold text-base">Skip</Text>
           </TouchableOpacity>
         }
       </View>
@@ -138,7 +138,7 @@ export default function OnboardingScreen() {
 
             <Text className="text-white text-3xl font-extrabold mb-4 text-center">
               {slide.titleStart}
-              <Text className="text-[#6642f8]">{slide.titleHighlight}</Text>
+              <Text className="text-brand-primary">{slide.titleHighlight}</Text>
               {slide.titleEnd}
             </Text>
             
@@ -158,7 +158,7 @@ export default function OnboardingScreen() {
           <View
             key={index}
             className={`h-2 rounded-full mx-1.5 transition-all ${
-            currentIndex === index ? "w-2 bg-[#6642f8]" : "w-2 bg-[#1b1b1c]"}`
+            currentIndex === index ? "w-2 bg-brand-primary" : "w-2 bg-card-base"}`
             } />
 
           )}
@@ -175,7 +175,7 @@ export default function OnboardingScreen() {
             <View className="flex-row items-center justify-between mb-8">
               <TouchableOpacity
               onPress={handlePrev}
-              className="w-14 h-14 bg-[#0f1011] rounded-full items-center justify-center border border-[#1b1b1c]"
+              className="w-14 h-14 bg-surface-base rounded-full items-center justify-center border border-card-base"
               style={{ opacity: currentIndex === 0 ? 0.3 : 1 }}
               disabled={currentIndex === 0}>
               
@@ -184,7 +184,7 @@ export default function OnboardingScreen() {
 
               <TouchableOpacity
               onPress={handleNext}
-              className="flex-1 ml-4 h-14 bg-[#6642f8] rounded-full flex-row items-center justify-center">
+              className="flex-1 ml-4 h-14 bg-brand-primary rounded-full flex-row items-center justify-center">
               
                 <Text className="text-white font-bold text-base mr-2">Next</Text>
                 <Ionicons name="arrow-forward" size={20} color="white" />
@@ -201,7 +201,7 @@ export default function OnboardingScreen() {
         <View className="w-full">
             <TouchableOpacity
             onPress={handleComplete}
-            className="w-full h-14 bg-[#6642f8] rounded-xl flex-row items-center justify-center mb-4">
+            className="w-full h-14 bg-brand-primary rounded-xl flex-row items-center justify-center mb-4">
             
               <Ionicons name="person-outline" size={20} color="white" className="mr-2" />
               <Text className="text-white font-bold text-base">Continue as Guest</Text>
@@ -209,7 +209,7 @@ export default function OnboardingScreen() {
 
             <TouchableOpacity
             onPress={handleLogin}
-            className="w-full h-14 bg-[#0a0b0d] rounded-xl flex-row items-center justify-center border border-[#4c358f] mb-8">
+            className="w-full h-14 bg-app-bg rounded-xl flex-row items-center justify-center border border-brand-deep mb-8">
             
               <Ionicons name="log-in-outline" size={20} color="#6642f8" className="mr-2 transform rotate-180" />
               <Text className="text-white font-bold text-base">Sign In</Text>

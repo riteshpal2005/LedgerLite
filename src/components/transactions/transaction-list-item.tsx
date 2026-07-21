@@ -41,19 +41,19 @@ const TransactionListItemComponent = ({ transaction, category, isLast }: Transac
             <Text className="text-gray-400 text-xs mt-0.5" numberOfLines={1}>{subtitle}</Text>
             <View className="flex-row items-center mt-1">
               <View className={`w-1.5 h-1.5 rounded-full mr-1.5 ${isIncome ? 'bg-green-500' : 'bg-red-500'}`} />
-              <Text className={isIncome ? 'text-green-500 text-[10px]' : 'text-red-500 text-[10px]'}>{isIncome ? 'Income' : 'Expense'}</Text>
+              <Text className={isIncome ? 'text-green-500 text-2xs' : 'text-red-500 text-2xs'}>{isIncome ? 'Income' : 'Expense'}</Text>
             </View>
           </View>
         </View>
         <View className="items-center flex-row">
           <View className="items-end mr-3">
             <Text className={`${amountColor} text-base font-bold`}>{sign} {formatCurrency(transaction.amount)}</Text>
-            <Text className="text-gray-500 text-[10px] mt-1">{format(new Date(transaction.date), 'hh:mm a')}</Text>
+            <Text className="text-gray-500 text-2xs mt-1">{format(new Date(transaction.date), 'hh:mm a')}</Text>
           </View>
           <Ionicons name="chevron-forward" size={16} color="#6b7280" />
         </View>
       </View>
-      {!isLast && <View className="h-px bg-[#1b1b1c] mx-3" />}
+      {!isLast && <View className="h-px bg-card-base mx-3" />}
     </TouchableOpacity>);
 
 };

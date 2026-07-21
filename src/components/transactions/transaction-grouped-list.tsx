@@ -103,7 +103,7 @@ const TransactionGroupedListComponent = ({ transactions, sortMode }: Transaction
           <Ionicons name={isListOpen ? "chevron-up" : "chevron-down"} size={16} color="#6642f8" />
         </TouchableOpacity>
         <View className="flex-row items-center">
-          <Text className="text-[#6642f8] text-base font-bold mr-1">
+          <Text className="text-brand-primary text-base font-bold mr-1">
             {formatCurrency(currentMonthTotal)}
           </Text>
         </View>
@@ -114,7 +114,7 @@ const TransactionGroupedListComponent = ({ transactions, sortMode }: Transaction
       <>
           {groupedData.map((group) => {
           return (
-            <View key={group.title} className="mb-4 bg-[#0f1011] rounded-2xl p-2 border border-[#1b1b1c]">
+            <View key={group.title} className="mb-4 bg-surface-base rounded-2xl p-2 border border-card-base">
                 <View className="flex-row justify-between items-center mb-2 px-3 pt-2">
                   <View className="flex-row items-center">
                     <Ionicons name="calendar-outline" size={14} color="#6b7280" className="mr-2" />
@@ -135,14 +135,14 @@ const TransactionGroupedListComponent = ({ transactions, sortMode }: Transaction
         })}
 
           {}
-          <View className="items-center justify-center py-6 mb-24 bg-[#0f1011] rounded-2xl border border-[#1b1b1c]">
+          <View className="items-center justify-center py-6 mb-24 bg-surface-base rounded-2xl border border-card-base">
              <View className="flex-row items-center">
                <Ionicons name="cube-outline" size={32} color="#6642f8" className="mr-4" opacity={0.8} />
                <View>
                  <Text className="text-white text-base font-bold">No more transactions</Text>
                  <Text className="text-gray-400 text-xs mt-1 mb-1">You've reached the end of your history.</Text>
                  <TouchableOpacity className="flex-row items-center" onPress={() => router.push('/add-transaction')}>
-                   <Text className="text-[#6642f8] text-xs font-bold">Add a new transaction</Text>
+                   <Text className="text-brand-primary text-xs font-bold">Add a new transaction</Text>
                    <Ionicons name="chevron-forward" size={12} color="#6642f8" className="ml-1" />
                  </TouchableOpacity>
                </View>

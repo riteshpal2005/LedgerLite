@@ -15,11 +15,11 @@ function AccountsListComponent({ accounts }: {accounts: Account[];}) {
       <View className="flex-row justify-between items-center mb-3">
         <Text className="text-white text-base font-bold flex-1">Accounts & Wallets</Text>
         <TouchableOpacity>
-          <Text className="text-[#a855f7] text-sm font-bold">Manage {'>'}</Text>
+          <Text className="text-brand-purple text-sm font-bold">Manage {'>'}</Text>
         </TouchableOpacity>
       </View>
 
-      <View className="bg-[#0f1011] rounded-2xl p-2 mb-8 border border-[#1b1b1c]">
+      <View className="bg-surface-base rounded-2xl p-2 mb-8 border border-card-base">
         {accounts.length === 0 ?
         <View className="p-4 items-center">
             <Text className="text-gray-400 text-sm">No accounts found</Text>
@@ -27,17 +27,17 @@ function AccountsListComponent({ accounts }: {accounts: Account[];}) {
         accounts.map((account: Account, index: number) => {
           let iconName = "wallet-outline";
           let iconColor = "#a855f7";
-          let iconBg = "bg-[#a855f7]/10";
+          let iconBg = "bg-brand-purple/10";
           let typeDesc = `${account.type} Account`;
 
           if (account.type === 'checking' || account.type === 'savings' || account.name.includes('Bank')) {
             iconName = "business-outline";
             iconColor = "#3b82f6";
-            iconBg = "bg-[#3b82f6]/10";
+            iconBg = "bg-blue-500/10";
           } else if (account.type === 'credit_card' || account.name.includes('Credit')) {
             iconName = "card-outline";
             iconColor = "#f97316";
-            iconBg = "bg-[#f97316]/10";
+            iconBg = "bg-orange-500/10";
           } else if (account.type === 'upi' || account.name.includes('UPI')) {
             iconName = "wallet-outline";
             iconColor = "#94a3b8";
@@ -63,7 +63,7 @@ function AccountsListComponent({ accounts }: {accounts: Account[];}) {
                   <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
                 </View>
               </TouchableOpacity>
-              {index < accounts.length - 1 && <View className="h-px bg-[#1b1b1c] mx-3" />}
+              {index < accounts.length - 1 && <View className="h-px bg-card-base mx-3" />}
             </React.Fragment>);
 
         })}

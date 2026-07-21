@@ -53,17 +53,17 @@ export function CustomDateTimePickerModal({
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="w-full">
           
-          <View className="w-full bg-[#131415] rounded-[24px] border border-[#27272a] p-5 shadow-xl">
+          <View className="w-full bg-surface-elevated rounded-[24px] border border-zinc-800 p-5 shadow-xl">
             
             {}
             <View className="flex-row items-center justify-between mb-6">
-              <View className="w-10 h-10 rounded-full border border-[#7c3aed]/30 bg-[#7c3aed]/10 items-center justify-center">
+              <View className="w-10 h-10 rounded-full border border-brand-violet/30 bg-brand-violet/10 items-center justify-center">
                 <Ionicons name={iconName} size={20} color="#7c3aed" />
               </View>
               
               <View className="flex-1 items-center px-2">
-                <Text className="text-white font-bold text-[17px] mb-0.5">{title}</Text>
-                <Text className="text-gray-400 text-[11px]">{subtitle}</Text>
+                <Text className="text-white font-bold text-17px mb-0.5">{title}</Text>
+                <Text className="text-gray-400 text-xs">{subtitle}</Text>
               </View>
 
               <Pressable
@@ -87,15 +87,15 @@ export function CustomDateTimePickerModal({
             <View className="flex-row justify-between w-full">
               <Pressable
                 onPress={onClose}
-                className="flex-1 h-[48px] border border-[#27272a] rounded-xl justify-center items-center mr-3 active:bg-[#27272a]/50">
+                className="flex-1 h-[48px] border border-zinc-800 rounded-xl justify-center items-center mr-3 active:bg-zinc-800/50">
                 
-                <Text className="text-white font-bold text-[15px]">Cancel</Text>
+                <Text className="text-white font-bold text-15px">Cancel</Text>
               </Pressable>
               <Pressable
                 onPress={onClose}
-                className="flex-1 h-[48px] bg-[#7c3aed] rounded-xl justify-center items-center active:opacity-80">
+                className="flex-1 h-[48px] bg-brand-violet rounded-xl justify-center items-center active:opacity-80">
                 
-                <Text className="text-white font-bold text-[15px]">Done</Text>
+                <Text className="text-white font-bold text-15px">Done</Text>
               </Pressable>
             </View>
 

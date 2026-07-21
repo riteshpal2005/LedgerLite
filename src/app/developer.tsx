@@ -19,9 +19,9 @@ export default function DeveloperScreen() {
 
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0a0b0d]">
-      <View className="px-6 pt-10 pb-6 border-b border-[#1b1b1c]">
-        <Text className="text-[#6642f8] text-3xl font-bold mb-2">Developer Menu</Text>
+    <SafeAreaView className="flex-1 bg-app-bg">
+      <View className="px-6 pt-10 pb-6 border-b border-card-base">
+        <Text className="text-brand-primary text-3xl font-bold mb-2">Developer Menu</Text>
         <Text className="text-gray-400 text-sm">Quick navigation to all mocked screens for testing.</Text>
       </View>
 
@@ -29,7 +29,7 @@ export default function DeveloperScreen() {
         {screens.map((screen, index) =>
         <TouchableOpacity
           key={index}
-          className="w-full bg-[#0f1011] rounded-2xl p-5 mb-4 border border-[#1b1b1c] flex-row items-center justify-between"
+          className="w-full bg-surface-base rounded-2xl p-5 mb-4 border border-card-base flex-row items-center justify-between"
           onPress={() => router.push(screen.route as any)}>
           
             <Text className="text-white text-lg font-bold">{screen.name}</Text>

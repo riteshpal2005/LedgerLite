@@ -62,11 +62,11 @@ export function DatePickerCalendar({ date, setDate, onClose }: DatePickerCalenda
 
       days.push(
         <Pressable key={`current-${i}`} onPress={() => handleDateSelect(i, 0)} className="w-[14.28%] h-[46px] justify-center items-center">
-          <View className={`w-8 h-8 justify-center items-center rounded-full ${isSelected ? "bg-[#7c3aed]" : ""}`}>
+          <View className={`w-8 h-8 justify-center items-center rounded-full ${isSelected ? "bg-brand-violet" : ""}`}>
             <Text className={`font-semibold ${isSelected ? "text-white" : "text-gray-200"}`}>{i}</Text>
           </View>
           {}
-          {isSelected && <View className="absolute bottom-1 w-1 h-1 rounded-full bg-[#7c3aed]" />}
+          {isSelected && <View className="absolute bottom-1 w-1 h-1 rounded-full bg-brand-violet" />}
         </Pressable>
       );
     }
@@ -90,7 +90,7 @@ export function DatePickerCalendar({ date, setDate, onClose }: DatePickerCalenda
         <Pressable onPress={handlePrevMonth} className="w-8 h-8 rounded-full bg-white/5 items-center justify-center active:bg-white/10">
           <Ionicons name="chevron-back" size={16} color="#a1a1aa" />
         </Pressable>
-        <Text className="text-white text-[15px] font-bold">
+        <Text className="text-white text-15px font-bold">
           {monthNames[month]} {year}
         </Text>
         <Pressable onPress={handleNextMonth} className="w-8 h-8 rounded-full bg-white/5 items-center justify-center active:bg-white/10">
@@ -100,7 +100,7 @@ export function DatePickerCalendar({ date, setDate, onClose }: DatePickerCalenda
 
       <View className="flex-row justify-around mb-2">
         {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d, i) =>
-        <Text key={i} className="text-gray-500 text-[10px] font-bold w-[14.28%] text-center">
+        <Text key={i} className="text-gray-500 text-2xs font-bold w-[14.28%] text-center">
             {d}
           </Text>
         )}

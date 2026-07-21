@@ -37,12 +37,12 @@ export function CustomAlert({
 
   const isLight = alertTheme === "light";
 
-  const bgColor = isLight ? "bg-white" : "bg-[#131415]";
-  const borderColor = isLight ? "border-gray-200" : "border-[#27272a]";
+  const bgColor = isLight ? "bg-white" : "bg-surface-elevated";
+  const borderColor = isLight ? "border-gray-200" : "border-zinc-800";
   const titleColor = isLight ? "text-black" : "text-white";
   const messageColor = isLight ? "text-gray-500" : "text-gray-400";
   const cancelBgColor = "bg-transparent";
-  const cancelBorderColor = isLight ? "border-gray-300" : "border-[#27272a]";
+  const cancelBorderColor = isLight ? "border-gray-300" : "border-zinc-800";
   const cancelTextColor = isLight ? "text-black" : "text-white";
 
   let iconName = "";
@@ -53,21 +53,21 @@ export function CustomAlert({
   if (iconType === "question") {
     iconName = "help";
     iconColor = "#7c3aed";
-    iconBgColor = isLight ? "bg-[#f5f3ff]" : "bg-[#7c3aed]/10";
-    iconBorderColor = isLight ? "border-[#ddd6fe]" : "border-[#7c3aed]/30";
+    iconBgColor = isLight ? "bg-violet-50" : "bg-brand-violet/10";
+    iconBorderColor = isLight ? "border-violet-200" : "border-brand-violet/30";
   } else if (iconType === "warning") {
     iconName = "warning-outline";
     iconColor = "#ef4444";
-    iconBgColor = isLight ? "bg-[#fef2f2]" : "bg-[#ef4444]/10";
-    iconBorderColor = isLight ? "border-[#fecaca]" : "border-[#ef4444]/30";
+    iconBgColor = isLight ? "bg-red-50" : "bg-red-500/10";
+    iconBorderColor = isLight ? "border-red-200" : "border-red-500/30";
   } else if (iconType === "info") {
     iconName = "information";
     iconColor = "#7c3aed";
-    iconBgColor = isLight ? "bg-[#f5f3ff]" : "bg-[#7c3aed]/10";
-    iconBorderColor = isLight ? "border-[#ddd6fe]" : "border-[#7c3aed]/30";
+    iconBgColor = isLight ? "bg-violet-50" : "bg-brand-violet/10";
+    iconBorderColor = isLight ? "border-violet-200" : "border-brand-violet/30";
   }
 
-  const confirmBgColor = confirmStyle === "danger" ? "bg-[#ef4444]" : "bg-[#7c3aed]";
+  const confirmBgColor = confirmStyle === "danger" ? "bg-red-500" : "bg-brand-violet";
 
   return (
     <Modal
@@ -88,10 +88,10 @@ export function CustomAlert({
             </View>
           }
 
-          <Text className={`${titleColor} text-[22px] font-bold text-center mb-2`}>
+          <Text className={`${titleColor} text-xl font-bold text-center mb-2`}>
             {title}
           </Text>
-          <Text className={`${messageColor} text-[15px] text-center mb-8 px-2 leading-5`}>
+          <Text className={`${messageColor} text-15px text-center mb-8 px-2 leading-5`}>
             {message}
           </Text>
 
@@ -100,9 +100,9 @@ export function CustomAlert({
               {actions.map((action, index) => {
               const isCancel = action.style === "cancel";
               const isDestructive = action.style === "destructive";
-              const btnBg = isCancel ? cancelBgColor : isDestructive ? "bg-[#ef4444]/10" : "bg-[#7c3aed]/10";
-              const btnBorder = isCancel ? cancelBorderColor : isDestructive ? "border-[#ef4444]/30" : "border-[#7c3aed]/30";
-              const btnText = isCancel ? cancelTextColor : isDestructive ? "text-[#ef4444]" : "text-[#7c3aed]";
+              const btnBg = isCancel ? cancelBgColor : isDestructive ? "bg-red-500/10" : "bg-brand-violet/10";
+              const btnBorder = isCancel ? cancelBorderColor : isDestructive ? "border-red-500/30" : "border-brand-violet/30";
+              const btnText = isCancel ? cancelTextColor : isDestructive ? "text-red-500" : "text-brand-violet";
 
               return (
                 <Pressable

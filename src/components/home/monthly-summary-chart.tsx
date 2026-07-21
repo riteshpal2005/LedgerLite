@@ -48,12 +48,12 @@ function MonthlySummaryChartComponent({ transactions, categories }: {transaction
       <View className="flex-row justify-between items-end mb-4">
         <Text className="text-white text-lg font-bold">Spending by Category</Text>
         <TouchableOpacity className="flex-row items-center" onPress={() => router.push("/(tabs)/analytics")}>
-          <Text className="text-[#6642f8] text-sm font-bold mr-1">View analytics</Text>
+          <Text className="text-brand-primary text-sm font-bold mr-1">View analytics</Text>
           <Ionicons name="chevron-forward" size={16} color="#6642f8" />
         </TouchableOpacity>
       </View>
 
-      <View className="bg-[#0f1011] rounded-2xl p-5 mb-8 flex-row items-center">
+      <View className="bg-surface-base rounded-2xl p-5 mb-8 flex-row items-center">
         <View className="w-40 h-40 relative justify-center items-center">
             <Svg width="140" height="140" viewBox="0 0 120 120" style={{ transform: [{ rotate: '-90deg' }] }}>
               {categoryTotals.map((cat, index) => {
@@ -78,7 +78,7 @@ function MonthlySummaryChartComponent({ transactions, categories }: {transaction
             </Svg>
             <View className="absolute items-center justify-center">
                <Text className="text-white text-lg font-bold">{formatCurrency(totalExpense)}</Text>
-               <Text className="text-gray-400 text-[10px] mt-1">Total Expense</Text>
+               <Text className="text-gray-400 text-2xs mt-1">Total Expense</Text>
             </View>
         </View>
         

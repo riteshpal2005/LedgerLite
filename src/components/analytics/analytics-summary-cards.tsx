@@ -61,8 +61,8 @@ const AnalyticsSummaryCardsComponent = ({ transactions, prevTransactions, accoun
   return (
     <View className="flex-row justify-between mb-6">
       {}
-      <View className="bg-[#0f1011] p-3 pb-4 rounded-2xl flex-1 mr-2 border border-[#1b1b1c]">
-        <View className="w-8 h-8 bg-[#22c55e]/20 rounded-full items-center justify-center mb-3">
+      <View className="bg-surface-base p-3 pb-4 rounded-2xl flex-1 mr-2 border border-card-base">
+        <View className="w-8 h-8 bg-green-500/20 rounded-full items-center justify-center mb-3">
           <Ionicons name="arrow-down" size={16} color="#22c55e" />
         </View>
         <Text className="text-gray-400 text-xs mb-1">Total Income</Text>
@@ -70,11 +70,11 @@ const AnalyticsSummaryCardsComponent = ({ transactions, prevTransactions, accoun
         <View className="mb-3 min-h-[28px] justify-center">
           <View className="flex-row items-center mb-0.5">
             <Ionicons name={incomeChange >= 0 ? "caret-up" : "caret-down"} size={10} color={incomeChange >= 0 ? "#22c55e" : "#ef4444"} />
-            <Text className={`${incomeChange >= 0 ? 'text-green-500' : 'text-red-500'} text-[10px] font-bold mx-1`}>
+            <Text className={`${incomeChange >= 0 ? 'text-green-500' : 'text-red-500'} text-2xs font-bold mx-1`}>
               {Math.abs(incomeChange).toFixed(1)}%
             </Text>
           </View>
-          <Text className="text-gray-500 text-[8px]" numberOfLines={1}>{prevDateLabel}</Text>
+          <Text className="text-gray-500 text-3xs" numberOfLines={1}>{prevDateLabel}</Text>
         </View>
         <View className="h-6 w-full">
             <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
@@ -84,8 +84,8 @@ const AnalyticsSummaryCardsComponent = ({ transactions, prevTransactions, accoun
       </View>
 
       {}
-      <View className="bg-[#0f1011] p-3 pb-4 rounded-2xl flex-1 mr-2 border border-[#1b1b1c]">
-        <View className="w-8 h-8 bg-[#ef4444]/20 rounded-full items-center justify-center mb-3">
+      <View className="bg-surface-base p-3 pb-4 rounded-2xl flex-1 mr-2 border border-card-base">
+        <View className="w-8 h-8 bg-red-500/20 rounded-full items-center justify-center mb-3">
           <Ionicons name="arrow-up" size={16} color="#ef4444" />
         </View>
         <Text className="text-gray-400 text-xs mb-1">Total Expense</Text>
@@ -93,11 +93,11 @@ const AnalyticsSummaryCardsComponent = ({ transactions, prevTransactions, accoun
         <View className="mb-3 min-h-[28px] justify-center">
           <View className="flex-row items-center mb-0.5">
             <Ionicons name={expenseChange >= 0 ? "caret-up" : "caret-down"} size={10} color={expenseChange >= 0 ? "#ef4444" : "#22c55e"} />
-            <Text className={`${expenseChange >= 0 ? 'text-red-500' : 'text-green-500'} text-[10px] font-bold mx-1`}>
+            <Text className={`${expenseChange >= 0 ? 'text-red-500' : 'text-green-500'} text-2xs font-bold mx-1`}>
               {Math.abs(expenseChange).toFixed(1)}%
             </Text>
           </View>
-          <Text className="text-gray-500 text-[8px]" numberOfLines={1}>{prevDateLabel}</Text>
+          <Text className="text-gray-500 text-3xs" numberOfLines={1}>{prevDateLabel}</Text>
         </View>
         <View className="h-6 w-full">
             <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
@@ -107,22 +107,22 @@ const AnalyticsSummaryCardsComponent = ({ transactions, prevTransactions, accoun
       </View>
 
       {}
-      <View className="bg-[#0f1011] p-3 pb-4 rounded-2xl flex-1 border border-[#1b1b1c]">
-        <View className="w-8 h-8 bg-[#6642f8]/20 rounded-full items-center justify-center mb-3">
+      <View className="bg-surface-base p-3 pb-4 rounded-2xl flex-1 border border-card-base">
+        <View className="w-8 h-8 bg-brand-primary/20 rounded-full items-center justify-center mb-3">
           <Ionicons name="analytics" size={16} color="#6642f8" />
         </View>
         <Text className="text-gray-400 text-xs mb-1">Net Balance</Text>
-        <Text className={`${netBalance >= 0 ? 'text-[#6642f8]' : 'text-[#6642f8]'} text-sm font-bold mb-2`}>
+        <Text className={`${netBalance >= 0 ? 'text-brand-primary' : 'text-brand-primary'} text-sm font-bold mb-2`}>
           {formatCurrency(netBalance)}
         </Text>
         <View className="mb-3 min-h-[28px] justify-center">
           <View className="flex-row items-center mb-0.5">
             <Ionicons name={netChange >= 0 ? "caret-up" : "caret-down"} size={10} color={netChange >= 0 ? "#6642f8" : "#ef4444"} />
-            <Text className={`${netChange >= 0 ? 'text-[#6642f8]' : 'text-red-500'} text-[10px] font-bold mx-1`}>
+            <Text className={`${netChange >= 0 ? 'text-brand-primary' : 'text-red-500'} text-2xs font-bold mx-1`}>
               {Math.abs(netChange).toFixed(1)}%
             </Text>
           </View>
-          <Text className="text-gray-500 text-[8px]" numberOfLines={1}>{prevDateLabel}</Text>
+          <Text className="text-gray-500 text-3xs" numberOfLines={1}>{prevDateLabel}</Text>
         </View>
         <View className="h-6 w-full">
             <Svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">

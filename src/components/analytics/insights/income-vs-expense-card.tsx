@@ -37,12 +37,12 @@ export function IncomeVsExpenseCard({ currentMonthTxns }: IncomeVsExpenseCardPro
 
   if (!insight) {
     return (
-      <View className="mx-6 mb-4 rounded-2xl bg-[#0f1011] border border-[#1b1b1c] p-5">
+      <View className="mx-6 mb-4 rounded-2xl bg-surface-base border border-card-base p-5">
         <View className="flex-row items-center mb-3">
-          <View className="w-10 h-10 rounded-full bg-[#1b1b1c] items-center justify-center mr-3">
+          <View className="w-10 h-10 rounded-full bg-card-base items-center justify-center mr-3">
             <Ionicons name="trending-up" size={18} color="#71717a" />
           </View>
-          <Text className="text-[#10b981] text-[10px] font-bold tracking-wider uppercase">Income vs Expense</Text>
+          <Text className="text-emerald-500 text-2xs font-bold tracking-wider uppercase">Income vs Expense</Text>
         </View>
         <Text className="text-gray-500 text-sm italic">Add both income and expenses to see your savings rate.</Text>
       </View>);
@@ -64,15 +64,15 @@ export function IncomeVsExpenseCard({ currentMonthTxns }: IncomeVsExpenseCardPro
   const strokeDashoffset = circumference - clampedPercent / 100 * circumference;
 
   return (
-    <View className="mx-6 mb-4 rounded-2xl bg-[#0f1011] border border-[#1b1b1c] p-5">
+    <View className="mx-6 mb-4 rounded-2xl bg-surface-base border border-card-base p-5">
       <View className="flex-row justify-between mb-2">
         <View className="flex-row flex-1 pr-4">
-          <View className="w-12 h-12 rounded-full bg-[#1b1b1c] items-center justify-center mr-4">
+          <View className="w-12 h-12 rounded-full bg-card-base items-center justify-center mr-4">
             <Ionicons name={isPositive ? "trending-up" : "trending-down"} size={20} color={color} />
           </View>
           <View className="flex-1">
-            <Text style={{ color }} className="text-[10px] font-bold tracking-wider uppercase mb-1">Income vs Expense</Text>
-            <Text className="text-white font-medium text-[15px] leading-tight">
+            <Text style={{ color }} className="text-2xs font-bold tracking-wider uppercase mb-1">Income vs Expense</Text>
+            <Text className="text-white font-medium text-15px leading-tight">
               You've {label} <Text style={{ color }} className="font-bold">{Math.abs(insight.percentage)}%</Text> of your income this month.
             </Text>
           </View>
@@ -101,7 +101,7 @@ export function IncomeVsExpenseCard({ currentMonthTxns }: IncomeVsExpenseCardPro
           <View className="absolute items-center justify-center">
              <Text className="text-white font-bold text-xs">{Math.abs(insight.percentage)}%</Text>
           </View>
-          <Text className="text-gray-500 text-[9px] mt-1 text-center w-full">Savings Rate</Text>
+          <Text className="text-gray-500 text-3xs mt-1 text-center w-full">Savings Rate</Text>
         </View>
       </View>
 

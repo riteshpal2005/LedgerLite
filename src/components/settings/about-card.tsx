@@ -6,7 +6,7 @@ export function AboutCard() {
   return (
     <>
       <Text className="text-white text-base font-bold mb-3">About</Text>
-      <View className="bg-[#0f1011] rounded-2xl p-2 mb-6 border border-[#1b1b1c]">
+      <View className="bg-surface-base rounded-2xl p-2 mb-6 border border-card-base">
         
         <TouchableOpacity className="flex-row justify-between items-center p-3">
           <View className="flex-row items-center">
@@ -19,7 +19,7 @@ export function AboutCard() {
           <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
         </TouchableOpacity>
 
-        <View className="h-px bg-[#1b1b1c] mx-3" />
+        <View className="h-px bg-card-base mx-3" />
 
         <TouchableOpacity className="flex-row justify-between items-center p-3">
           <View className="flex-row items-center">

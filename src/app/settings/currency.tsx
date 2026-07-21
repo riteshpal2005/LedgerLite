@@ -40,11 +40,11 @@ export default function CurrencyScreen() {
     return (
       <TouchableOpacity
         onPress={() => handleSelectCurrency(item.code)}
-        className={`flex-row items-center p-4 rounded-2xl mb-2 border ${isSelected ? 'bg-[#a855f7]/10 border-[#a855f7]' : 'bg-[#0f1011] border-[#1b1b1c]'}`}>
+        className={`flex-row items-center p-4 rounded-2xl mb-2 border ${isSelected ? 'bg-brand-purple/10 border-brand-purple' : 'bg-surface-base border-card-base'}`}>
         
         <Text className="text-2xl mr-4">{item.flag}</Text>
         <View className="flex-1">
-          <Text className={`${isSelected ? 'text-[#a855f7] font-bold' : 'text-white'} text-base`}>
+          <Text className={`${isSelected ? 'text-brand-purple font-bold' : 'text-white'} text-base`}>
             {item.name}
           </Text>
           <Text className="text-gray-400 text-xs mt-0.5">{item.code} • {item.symbol}</Text>
@@ -66,7 +66,7 @@ export default function CurrencyScreen() {
         <View className="flex-row items-center px-6 pt-4 pb-2">
           <TouchableOpacity
             onPress={() => router.back()}
-            className="w-10 h-10 bg-[#1b1b1c] rounded-full items-center justify-center mr-4">
+            className="w-10 h-10 bg-card-base rounded-full items-center justify-center mr-4">
             
             <Ionicons name="arrow-back" size={20} color="white" />
           </TouchableOpacity>
@@ -91,7 +91,7 @@ export default function CurrencyScreen() {
           </View>
 
           {}
-          <View className="bg-[#1b1b1c] rounded-2xl flex-row items-center px-4 h-12 mb-6">
+          <View className="bg-card-base rounded-2xl flex-row items-center px-4 h-12 mb-6">
             <Ionicons name="search" size={20} color="#9ca3af" className="mr-2" />
             <TextInput
               placeholder="Search currency..."

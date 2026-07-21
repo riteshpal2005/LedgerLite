@@ -195,40 +195,40 @@ export function UpdateChecker() {
       onRequestClose={handleDismiss}>
       
       <View className="flex-1 justify-center items-center bg-black/80 px-6">
-        <View className="w-full bg-[#0f1011] border border-[#1b1b1c] rounded-[32px] overflow-hidden shadow-xl pb-6">
+        <View className="w-full bg-surface-base border border-card-base rounded-[32px] overflow-hidden shadow-xl pb-6">
           
           <Pressable
             onPress={handleDismiss}
-            className="absolute top-4 right-4 w-8 h-8 bg-[#1b1b1c] rounded-full items-center justify-center z-10">
+            className="absolute top-4 right-4 w-8 h-8 bg-card-base rounded-full items-center justify-center z-10">
             
             <Ionicons name="close" size={18} color="#9ca3af" />
           </Pressable>
 
           <View className="items-center pt-8 pb-4 relative">
             <View className="relative w-24 h-24 items-center justify-center mb-4">
-              <View className="absolute top-2 left-4"><Text className="text-[#10b981] text-xs">✦</Text></View>
-              <View className="absolute top-0 right-4"><Text className="text-[#10b981] text-[10px]">✦</Text></View>
-              <View className="absolute bottom-6 left-0"><Text className="text-[#10b981] text-[10px]">✦</Text></View>
-              <View className="absolute bottom-4 right-0"><Text className="text-[#10b981] text-xs">✦</Text></View>
+              <View className="absolute top-2 left-4"><Text className="text-emerald-500 text-xs">✦</Text></View>
+              <View className="absolute top-0 right-4"><Text className="text-emerald-500 text-2xs">✦</Text></View>
+              <View className="absolute bottom-6 left-0"><Text className="text-emerald-500 text-2xs">✦</Text></View>
+              <View className="absolute bottom-4 right-0"><Text className="text-emerald-500 text-xs">✦</Text></View>
               
-              <View className="w-16 h-16 rounded-full border border-[#10b981]/50 bg-[#10b981]/10 items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+              <View className="w-16 h-16 rounded-full border border-emerald-500/50 bg-emerald-500/10 items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)]">
                 <Ionicons name="cloud-download-outline" size={30} color="#10b981" />
               </View>
             </View>
             <Text className="text-white text-2xl font-bold text-center">Update Available!</Text>
             <Text className="text-gray-400 text-sm text-center mt-2 px-4">
-              Version <Text className="text-[#10b981]">{updateInfo.latestVersion}</Text> is ready to install
+              Version <Text className="text-emerald-500">{updateInfo.latestVersion}</Text> is ready to install
             </Text>
           </View>
 
           {updateInfo.releaseNotes ?
           <View className="px-6 mb-6 max-h-72">
-              <View className="bg-[#131415] border border-[#1b1b1c] rounded-2xl overflow-hidden flex-1">
-                <View className="flex-row items-center p-4 border-b border-[#1b1b1c]">
+              <View className="bg-surface-elevated border border-card-base rounded-2xl overflow-hidden flex-1">
+                <View className="flex-row items-center p-4 border-b border-card-base">
                   <Ionicons name="document-text-outline" size={20} color="#10b981" className="mr-3" />
                   <View>
                     <Text className="text-white font-bold text-sm">What's New</Text>
-                    <Text className="text-gray-500 text-[11px]">Check out what's been improved</Text>
+                    <Text className="text-gray-500 text-xs">Check out what's been improved</Text>
                   </View>
                 </View>
                 <ScrollView showsVerticalScrollIndicator={false} className="px-4 pb-4">
@@ -244,17 +244,17 @@ export function UpdateChecker() {
             <View className="items-center mb-4">
               <Text className="text-gray-400 text-sm">Download the latest version</Text>
               <Text className="text-gray-500 text-sm mt-1">
-                <Text className="text-[#10b981] font-bold">42.3 MB</Text> / 72.1 MB <Text className="mx-1">•</Text> <Text className="text-[#a855f7] font-bold">{downloadStatus === 'DOWNLOADING' ? Math.round(downloadProgress * 100) : 58}%</Text>
+                <Text className="text-emerald-500 font-bold">42.3 MB</Text> / 72.1 MB <Text className="mx-1">•</Text> <Text className="text-brand-purple font-bold">{downloadStatus === 'DOWNLOADING' ? Math.round(downloadProgress * 100) : 58}%</Text>
               </Text>
             </View>
 
             <Pressable
               onPress={handleUpdate}
               disabled={isButtonDisabled}
-              className="w-full h-14 bg-[#131415] border border-[#1b1b1c] rounded-full overflow-hidden mb-4 justify-center items-center relative active:opacity-80">
+              className="w-full h-14 bg-surface-elevated border border-card-base rounded-full overflow-hidden mb-4 justify-center items-center relative active:opacity-80">
               
               <View
-                className="absolute left-0 top-0 bottom-0 bg-[#10b981]"
+                className="absolute left-0 top-0 bottom-0 bg-emerald-500"
                 style={{
                   width:
                   downloadStatus === "IDLE" ||
@@ -283,17 +283,17 @@ export function UpdateChecker() {
               </View>
             </Pressable>
 
-            <Text className="text-gray-400 text-[13px] text-center mb-6 leading-5">
+            <Text className="text-gray-400 text-sm text-center mb-6 leading-5">
               The update will download in the background.{'\n'}You'll be prompted to install when it's ready.
             </Text>
 
             <Pressable
               onPress={handleDismiss}
               disabled={isButtonDisabled}
-              className="w-full h-14 border border-[#a855f7]/50 rounded-full justify-center items-center flex-row active:bg-[#a855f7]/10">
+              className="w-full h-14 border border-brand-purple/50 rounded-full justify-center items-center flex-row active:bg-brand-purple/10">
               
               <Ionicons name="time-outline" size={20} color="#a855f7" className="mr-2" />
-              <Text className="text-[#a855f7] font-bold text-base">Maybe Later</Text>
+              <Text className="text-brand-purple font-bold text-base">Maybe Later</Text>
             </Pressable>
 
             <View className="flex-row items-center justify-center mt-6 mb-2">

@@ -143,13 +143,13 @@ export function InsightsHeader({ onDateRangeChange }: InsightsHeaderProps) {
         <View className="flex-row items-center flex-1">
           <TouchableOpacity
             onPress={() => router.back()}
-            className="w-10 h-10 rounded-full bg-[#1b1b1c] items-center justify-center mr-4 active:opacity-70">
+            className="w-10 h-10 rounded-full bg-card-base items-center justify-center mr-4 active:opacity-70">
             
             <Ionicons name="chevron-back" size={24} color="white" />
           </TouchableOpacity>
           
           <View className="flex-row items-center flex-1">
-            <View className="w-10 h-10 rounded-full bg-[#6642f8]/10 items-center justify-center mr-3">
+            <View className="w-10 h-10 rounded-full bg-brand-primary/10 items-center justify-center mr-3">
               <Ionicons name="bulb-outline" size={20} color="#6642f8" />
             </View>
             <View>
@@ -159,7 +159,7 @@ export function InsightsHeader({ onDateRangeChange }: InsightsHeaderProps) {
         </View>
 
         <TouchableOpacity
-          className="flex-row items-center bg-[#131415] border border-[#27272a] rounded-xl px-3 py-1.5 active:opacity-70"
+          className="flex-row items-center bg-surface-elevated border border-zinc-800 rounded-xl px-3 py-1.5 active:opacity-70"
           onPress={() => setDropdownVisible(!dropdownVisible)}>
           
           <Ionicons name="calendar-outline" size={14} color="#a1a1aa" className="mr-1.5" />
@@ -168,15 +168,15 @@ export function InsightsHeader({ onDateRangeChange }: InsightsHeaderProps) {
         </TouchableOpacity>
 
         {dropdownVisible &&
-        <View className="absolute top-full right-0 mt-2 bg-[#18181b] w-64 rounded-2xl border border-[#27272a] overflow-hidden shadow-2xl z-50">
+        <View className="absolute top-full right-0 mt-2 bg-zinc-900 w-64 rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl z-50">
             {filterOptions.map((option, index) =>
           <TouchableOpacity
             key={option.value}
             onPress={() => handleSelectFilter(option.value)}
-            className={`px-4 py-3 ${index !== filterOptions.length - 1 || filter === "custom" ? "border-b border-[#27272a]" : ""} ${filter === option.value ? "bg-[#6642f8]/10" : ""}`}>
+            className={`px-4 py-3 ${index !== filterOptions.length - 1 || filter === "custom" ? "border-b border-zinc-800" : ""} ${filter === option.value ? "bg-brand-primary/10" : ""}`}>
             
                 <Text
-              className={`text-sm ${filter === option.value ? "text-[#6642f8] font-bold" : "text-gray-300"}`}>
+              className={`text-sm ${filter === option.value ? "text-brand-primary font-bold" : "text-gray-300"}`}>
               
                   {option.label}
                 </Text>
@@ -184,18 +184,18 @@ export function InsightsHeader({ onDateRangeChange }: InsightsHeaderProps) {
           )}
 
             {filter === "custom" &&
-          <View className="p-4 bg-[#18181b]">
+          <View className="p-4 bg-zinc-900">
                 <View className="flex-row justify-between gap-4">
-                  <View className="flex-1 bg-[#1b1b1c] rounded-xl p-3 border border-[#2b2b2b]">
-                    <Text className="text-gray-400 text-[10px] mb-1">From Date</Text>
+                  <View className="flex-1 bg-card-base rounded-xl p-3 border border-neutral-800">
+                    <Text className="text-gray-400 text-2xs mb-1">From Date</Text>
                     <TouchableOpacity onPress={() => setShowStartPicker(true)}>
                       <Text className="text-white text-xs font-semibold">
                         {customStart.toLocaleDateString()}
                       </Text>
                     </TouchableOpacity>
                   </View>
-                  <View className="flex-1 bg-[#1b1b1c] rounded-xl p-3 border border-[#2b2b2b]">
-                    <Text className="text-gray-400 text-[10px] mb-1">To Date</Text>
+                  <View className="flex-1 bg-card-base rounded-xl p-3 border border-neutral-800">
+                    <Text className="text-gray-400 text-2xs mb-1">To Date</Text>
                     <TouchableOpacity onPress={() => setShowEndPicker(true)}>
                       <Text className="text-white text-xs font-semibold">
                         {customEnd.toLocaleDateString()}

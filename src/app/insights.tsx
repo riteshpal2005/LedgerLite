@@ -87,7 +87,7 @@ export default function InsightsScreen() {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0a0b0d]">
+    <SafeAreaView className="flex-1 bg-app-bg">
       <InsightsHeader
         onDateRangeChange={(start, end, label, prevStart, prevEnd) => {
           setDateRange({ start, end, prevStart, prevEnd });

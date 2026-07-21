@@ -10,7 +10,7 @@ import { AboutCard } from "../../components/settings/about-card";
 
 export default function SettingsScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-[#0a0b0d]">
+    <SafeAreaView className="flex-1 bg-app-bg">
       <SettingsHeader />
 
       <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>

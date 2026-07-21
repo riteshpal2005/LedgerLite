@@ -30,7 +30,7 @@ export default function TransactionsScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0a0b0d]">
+    <SafeAreaView className="flex-1 bg-app-bg">
       <TransactionsHeader
         onSearchPress={() => setShowSearch(!showSearch)}
         onFilterPress={() => sortFilterRef.current?.present()}

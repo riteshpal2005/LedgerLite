@@ -55,12 +55,12 @@ export function HighActivityDayCard({ currentMonthTxns }: HighActivityDayCardPro
 
   if (!insight) {
     return (
-      <View className="mx-6 mb-4 rounded-2xl bg-[#0f1011] border border-[#1b1b1c] p-5">
+      <View className="mx-6 mb-4 rounded-2xl bg-surface-base border border-card-base p-5">
         <View className="flex-row items-center mb-3">
-          <View className="w-10 h-10 rounded-full bg-[#1b1b1c] items-center justify-center mr-3">
+          <View className="w-10 h-10 rounded-full bg-card-base items-center justify-center mr-3">
             <Ionicons name="calendar-outline" size={18} color="#71717a" />
           </View>
-          <Text className="text-[#a855f7] text-[10px] font-bold tracking-wider uppercase">High Activity Day</Text>
+          <Text className="text-brand-purple text-2xs font-bold tracking-wider uppercase">High Activity Day</Text>
         </View>
         <Text className="text-gray-500 text-sm italic">Not enough transaction history this month to determine your highest activity day.</Text>
       </View>);
@@ -68,16 +68,16 @@ export function HighActivityDayCard({ currentMonthTxns }: HighActivityDayCardPro
   }
 
   return (
-    <View className="mx-6 mb-4 rounded-2xl bg-[#0f1011] border border-[#1b1b1c] p-5">
+    <View className="mx-6 mb-4 rounded-2xl bg-surface-base border border-card-base p-5">
       <View className="flex-row justify-between mb-4">
         <View className="flex-row flex-1 pr-4">
-          <View className="w-12 h-12 rounded-full bg-[#1b1b1c] items-center justify-center mr-4 mt-1">
+          <View className="w-12 h-12 rounded-full bg-card-base items-center justify-center mr-4 mt-1">
             <Ionicons name="calendar-outline" size={20} color="#a855f7" />
           </View>
           <View className="flex-1">
-            <Text className="text-[#a855f7] text-[10px] font-bold tracking-wider uppercase mb-1">High Activity Day</Text>
-            <Text className="text-white font-medium text-[15px] leading-tight">
-              You tend to spend the most on <Text className="text-[#a855f7] font-bold">{insight.dayName}</Text>.
+            <Text className="text-brand-purple text-2xs font-bold tracking-wider uppercase mb-1">High Activity Day</Text>
+            <Text className="text-white font-medium text-15px leading-tight">
+              You tend to spend the most on <Text className="text-brand-purple font-bold">{insight.dayName}</Text>.
             </Text>
           </View>
         </View>
@@ -98,15 +98,15 @@ export function HighActivityDayCard({ currentMonthTxns }: HighActivityDayCardPro
             return (
               <View key={i} className="items-center relative w-2.5">
                 {isMax &&
-                <View className="absolute -top-5 bg-[#a855f7]/20 rounded px-1 py-0.5 whitespace-nowrap z-10 w-8 items-center -ml-[10px]">
-                    <Text className="text-[#a855f7] text-[8px] font-bold">{insight.percentage}%</Text>
+                <View className="absolute -top-5 bg-brand-purple/20 rounded px-1 py-0.5 whitespace-nowrap z-10 w-8 items-center -ml-[10px]">
+                    <Text className="text-brand-purple text-3xs font-bold">{insight.percentage}%</Text>
                   </View>
                 }
                 <View
                   style={heightStyle}
-                  className={`w-full rounded-t-sm ${isMax ? 'bg-[#a855f7]' : 'bg-[#27272a]'}`} />
+                  className={`w-full rounded-t-sm ${isMax ? 'bg-brand-purple' : 'bg-zinc-800'}`} />
                 
-                <Text className="text-[8px] text-gray-500 mt-1 absolute -bottom-4">{insight.uiDays[i]}</Text>
+                <Text className="text-3xs text-gray-500 mt-1 absolute -bottom-4">{insight.uiDays[i]}</Text>
               </View>);
 
           })}

@@ -12,35 +12,35 @@ interface AnalyticsTabsProps {
 
 export function AnalyticsTabs({ activeTab, onChange }: AnalyticsTabsProps) {
   return (
-    <View className="flex-row bg-[#0f1011] rounded-2xl p-1 mb-6 border border-[#1b1b1c] items-center">
+    <View className="flex-row bg-surface-base rounded-2xl p-1 mb-6 border border-card-base items-center">
       <TouchableOpacity
         onPress={() => onChange("Overview")}
-        className={`flex-1 flex-row items-center justify-center py-2.5 rounded-xl ${activeTab === "Overview" ? "bg-[#6642f8]/20 border border-[#6642f8]/30" : ""}`}>
+        className={`flex-1 flex-row items-center justify-center py-2.5 rounded-xl ${activeTab === "Overview" ? "bg-brand-primary/20 border border-brand-primary/30" : ""}`}>
         
-        <Text className={`font-bold text-xs ${activeTab === "Overview" ? "text-[#6642f8]" : "text-gray-400"}`}>Overview</Text>
+        <Text className={`font-bold text-xs ${activeTab === "Overview" ? "text-brand-primary" : "text-gray-400"}`}>Overview</Text>
       </TouchableOpacity>
       
-      {activeTab !== "Overview" && activeTab !== "Income" && <View className="w-px h-6 bg-[#1b1b1c]" />}
+      {activeTab !== "Overview" && activeTab !== "Income" && <View className="w-px h-6 bg-card-base" />}
 
       <TouchableOpacity
         onPress={() => onChange("Income")}
-        className={`flex-1 flex-row items-center justify-center py-2.5 rounded-xl ${activeTab === "Income" ? "bg-[#22c55e]/10 border border-[#22c55e]/30" : ""}`}>
+        className={`flex-1 flex-row items-center justify-center py-2.5 rounded-xl ${activeTab === "Income" ? "bg-green-500/10 border border-green-500/30" : ""}`}>
         
         <Ionicons name="trending-up" size={14} color={activeTab === "Income" ? "#22c55e" : "#22c55e"} className="mr-1.5" />
         <Text className={`font-bold text-xs ${activeTab === "Income" ? "text-green-500" : "text-gray-400"}`}>Income</Text>
       </TouchableOpacity>
       
-      {activeTab !== "Income" && activeTab !== "Expense" && <View className="w-px h-6 bg-[#1b1b1c]" />}
+      {activeTab !== "Income" && activeTab !== "Expense" && <View className="w-px h-6 bg-card-base" />}
 
       <TouchableOpacity
         onPress={() => onChange("Expense")}
-        className={`flex-1 flex-row items-center justify-center py-2.5 rounded-xl ${activeTab === "Expense" ? "bg-[#ef4444]/10 border border-[#ef4444]/30" : ""}`}>
+        className={`flex-1 flex-row items-center justify-center py-2.5 rounded-xl ${activeTab === "Expense" ? "bg-red-500/10 border border-red-500/30" : ""}`}>
         
         <Ionicons name="trending-down" size={14} color={activeTab === "Expense" ? "#ef4444" : "#ef4444"} className="mr-1.5" />
         <Text className={`font-bold text-xs ${activeTab === "Expense" ? "text-red-500" : "text-gray-400"}`}>Expense</Text>
       </TouchableOpacity>
       
-      {activeTab !== "Expense" && activeTab !== "Categories" && <View className="w-px h-6 bg-[#1b1b1c]" />}
+      {activeTab !== "Expense" && activeTab !== "Categories" && <View className="w-px h-6 bg-card-base" />}
 
       <TouchableOpacity
         onPress={() => onChange("Categories")}

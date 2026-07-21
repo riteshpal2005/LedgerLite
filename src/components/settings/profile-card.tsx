@@ -10,9 +10,9 @@ export function ProfileCard() {
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
-    <TouchableOpacity className="bg-[#0f1011] rounded-2xl p-4 flex-row items-center justify-between mb-6 border border-[#1b1b1c]">
+    <TouchableOpacity className="bg-surface-base rounded-2xl p-4 flex-row items-center justify-between mb-6 border border-card-base">
       <View className="flex-row items-center">
-        <View className="w-14 h-14 bg-[#6642f8] rounded-full items-center justify-center mr-4">
+        <View className="w-14 h-14 bg-brand-primary rounded-full items-center justify-center mr-4">
           <Text className="text-white text-2xl font-bold">{initial}</Text>
         </View>
         <View>

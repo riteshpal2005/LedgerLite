@@ -49,12 +49,12 @@ export function SpendingStreakCard({ currentMonthTxns, currentDate }: SpendingSt
 
   if (!insight) {
     return (
-      <View className="mx-6 mb-4 rounded-2xl bg-[#0f1011] border border-[#1b1b1c] p-5">
+      <View className="mx-6 mb-4 rounded-2xl bg-surface-base border border-card-base p-5">
         <View className="flex-row items-center mb-3">
-          <View className="w-10 h-10 rounded-full bg-[#1b1b1c] items-center justify-center mr-3">
+          <View className="w-10 h-10 rounded-full bg-card-base items-center justify-center mr-3">
             <Ionicons name="trophy-outline" size={18} color="#71717a" />
           </View>
-          <Text className="text-[#3b82f6] text-[10px] font-bold tracking-wider uppercase">Spending Streak</Text>
+          <Text className="text-blue-500 text-2xs font-bold tracking-wider uppercase">Spending Streak</Text>
         </View>
         <Text className="text-gray-500 text-sm italic">Track your expenses regularly to unlock spending streak insights.</Text>
       </View>);
@@ -62,16 +62,16 @@ export function SpendingStreakCard({ currentMonthTxns, currentDate }: SpendingSt
   }
 
   return (
-    <View className="mx-6 mb-8 rounded-2xl bg-[#0f1011] border border-[#1b1b1c] p-5">
+    <View className="mx-6 mb-8 rounded-2xl bg-surface-base border border-card-base p-5">
       <View className="flex-row justify-between items-center">
         <View className="flex-row flex-1 pr-4">
-          <View className="w-12 h-12 rounded-full bg-[#1b1b1c] items-center justify-center mr-4">
+          <View className="w-12 h-12 rounded-full bg-card-base items-center justify-center mr-4">
             <Ionicons name="trophy-outline" size={20} color="#3b82f6" />
           </View>
           <View className="flex-1">
-            <Text className="text-[#3b82f6] text-[10px] font-bold tracking-wider uppercase mb-1">Spending Streak</Text>
-            <Text className="text-white font-medium text-[15px] leading-tight mb-2">
-              Great! You stayed under budget for <Text className="text-[#3b82f6] font-bold">{insight.underBudgetDays} days</Text> this month.
+            <Text className="text-blue-500 text-2xs font-bold tracking-wider uppercase mb-1">Spending Streak</Text>
+            <Text className="text-white font-medium text-15px leading-tight mb-2">
+              Great! You stayed under budget for <Text className="text-blue-500 font-bold">{insight.underBudgetDays} days</Text> this month.
             </Text>
             <Text className="text-gray-400 text-xs">Keep it up! Consistency is the key.</Text>
           </View>
@@ -79,18 +79,18 @@ export function SpendingStreakCard({ currentMonthTxns, currentDate }: SpendingSt
         
         <View className="items-center justify-center relative w-20 h-20">
            {}
-           <View className="absolute inset-0 bg-[#3b82f6]/10 rounded-full" style={{ transform: [{ scale: 1.2 }] }} />
-           <View className="absolute inset-2 bg-[#3b82f6]/20 rounded-full" />
-           <View className="w-14 h-14 bg-[#1b1b1c] rounded-full items-center justify-center border-2 border-[#3b82f6]">
+           <View className="absolute inset-0 bg-blue-500/10 rounded-full" style={{ transform: [{ scale: 1.2 }] }} />
+           <View className="absolute inset-2 bg-blue-500/20 rounded-full" />
+           <View className="w-14 h-14 bg-card-base rounded-full items-center justify-center border-2 border-blue-500">
              <Text className="text-white text-xl font-bold">{insight.underBudgetDays}</Text>
-             <Text className="text-gray-400 text-[8px] -mt-1 uppercase">Days</Text>
+             <Text className="text-gray-400 text-3xs -mt-1 uppercase">Days</Text>
            </View>
            
            {}
-           <View className="absolute top-0 right-2 w-1.5 h-1.5 bg-[#10b981] rotate-45" />
-           <View className="absolute bottom-1 right-0 w-1 h-2 bg-[#a855f7] rotate-12" />
-           <View className="absolute top-4 -left-1 w-2 h-1 bg-[#ef4444] -rotate-12" />
-           <View className="absolute bottom-3 left-1 w-1.5 h-1.5 bg-[#f59e0b] rotate-45" />
+           <View className="absolute top-0 right-2 w-1.5 h-1.5 bg-emerald-500 rotate-45" />
+           <View className="absolute bottom-1 right-0 w-1 h-2 bg-brand-purple rotate-12" />
+           <View className="absolute top-4 -left-1 w-2 h-1 bg-red-500 -rotate-12" />
+           <View className="absolute bottom-3 left-1 w-1.5 h-1.5 bg-amber-500 rotate-45" />
         </View>
       </View>
     </View>);
